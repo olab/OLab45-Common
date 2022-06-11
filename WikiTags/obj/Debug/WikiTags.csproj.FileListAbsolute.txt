@@ -1,0 +1,11 @@
+D:\Client\olab\devel\repos\OLab45\OLab45-Api\Service\bin\Debug\netcoreapp3.1\PlugIns\WikiTags.deps.json
+D:\Client\olab\devel\repos\OLab45\OLab45-Api\Service\bin\Debug\netcoreapp3.1\PlugIns\WikiTags.dll
+D:\Client\olab\devel\repos\OLab45\OLab45-Api\Service\bin\Debug\netcoreapp3.1\PlugIns\WikiTags.pdb
+D:\Client\olab\devel\repos\OLab45\OLab45-Api\WikiTags\obj\Debug\WikiTags.csproj.AssemblyReference.cache
+D:\Client\olab\devel\repos\OLab45\OLab45-Api\WikiTags\obj\Debug\WikiTags.GeneratedMSBuildEditorConfig.editorconfig
+D:\Client\olab\devel\repos\OLab45\OLab45-Api\WikiTags\obj\Debug\WikiTags.AssemblyInfoInputs.cache
+D:\Client\olab\devel\repos\OLab45\OLab45-Api\WikiTags\obj\Debug\WikiTags.AssemblyInfo.cs
+D:\Client\olab\devel\repos\OLab45\OLab45-Api\WikiTags\obj\Debug\WikiTags.csproj.CoreCompileInputs.cache
+D:\Client\olab\devel\repos\OLab45\OLab45-Api\WikiTags\obj\Debug\WikiTags.csproj.CopyComplete
+D:\Client\olab\devel\repos\OLab45\OLab45-Api\WikiTags\obj\Debug\WikiTags.dll
+D:\Client\olab\devel\repos\OLab45\OLab45-Api\WikiTags\obj\Debug\WikiTags.pdb

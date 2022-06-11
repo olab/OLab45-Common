@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Data\Data.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\WikiTags\WikiTags.csproj" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <ItemGroup>
+      <OutputFiles Include="$(ProjectDir)$(OutputPath)*.*" />  
+    </ItemGroup>
+    <Copy 
+      SourceFiles="@(OutputFiles)"
+      DestinationFolder="../bin/$(Configuration)/$(TargetFramework)"
+      SkipUnchangedFiles="true"/>
+  </Target>
+  
+</Project>
