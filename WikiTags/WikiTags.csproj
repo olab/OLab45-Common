@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <OutputPath>..\Service\bin\$(Configuration)\$(TargetFramework)\PlugIns</OutputPath>
+    <OutputPath>..\bin\$(Configuration)\$(TargetFramework)\PlugIns</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
