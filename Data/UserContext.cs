@@ -23,7 +23,7 @@ namespace OLabWebAPI.Model
     private readonly OLabLogger _logger;
     protected IList<SecurityRoles> _roleAcls = new List<SecurityRoles>();
     protected IList<SecurityUsers> _userAcls = new List<SecurityUsers>();
-    
+
     public readonly IOLabSession Session;
     public string SessionId { get; set; }
     public string Role { get; protected set; }
@@ -43,7 +43,7 @@ namespace OLabWebAPI.Model
       _dbContext = context;
       _logger = logger;
       Session = new OLabSession(_logger.GetLogger(), context);
-    
+
       LoadHttpContext(httpContext);
     }
 
@@ -52,7 +52,7 @@ namespace OLabWebAPI.Model
       _httpContext = httpContext;
 
       SessionId = _httpContext.Request.Headers["OLabSessionId"].FirstOrDefault();
-      if ( !string.IsNullOrWhiteSpace( SessionId ))
+      if (!string.IsNullOrWhiteSpace(SessionId))
         _logger.LogInformation($"Found SessionId {SessionId}.");
 
       IPAddress = httpContext.Connection.RemoteIpAddress.ToString();
@@ -65,14 +65,14 @@ namespace OLabWebAPI.Model
       _claims = identity.Claims;
 
       UserName = httpContext.Items["User"].ToString();
+      Role = httpContext.Items["Role"].ToString();
+      _roleAcls = _dbContext.SecurityRoles.Where(x => x.Name.ToLower() == Role.ToLower()).ToList();
 
+      // test for a local user
       var user = _dbContext.Users.FirstOrDefault(x => x.Username == UserName);
       if (user != null)
       {
         UserId = user.Id;
-        Role = httpContext.Items["Role"].ToString();
-
-        _roleAcls = _dbContext.SecurityRoles.Where(x => x.Name.ToLower() == Role.ToLower()).ToList();
         _userAcls = _dbContext.SecurityUsers.Where(x => x.UserId == UserId).ToList();
       }
       else
