@@ -3,7 +3,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using OLabWebAPI.Utils;
 using OLabWebAPI.Data.Session;
 
@@ -42,30 +41,30 @@ namespace OLabWebAPI.Model
     {
       _dbContext = context;
       _logger = logger;
+      _httpContext = httpContext;
       Session = new OLabSession(_logger.GetLogger(), context);
 
-      LoadHttpContext(httpContext);
+      LoadHttpContext();
     }
 
-    protected virtual void LoadHttpContext(HttpContext httpContext)
+    protected virtual void LoadHttpContext()
     {
-      _httpContext = httpContext;
 
       SessionId = _httpContext.Request.Headers["OLabSessionId"].FirstOrDefault();
       if (!string.IsNullOrWhiteSpace(SessionId))
         _logger.LogInformation($"Found SessionId {SessionId}.");
 
-      IPAddress = httpContext.Connection.RemoteIpAddress.ToString();
+      IPAddress = _httpContext.Connection.RemoteIpAddress.ToString();
 
       var identity = (ClaimsIdentity)_httpContext.User.Identity;
       if (identity == null)
         throw new Exception($"Unable to establish identity from token");
 
-      _user = httpContext.User;
+      _user = _httpContext.User;
       _claims = identity.Claims;
 
-      UserName = httpContext.Items["User"].ToString();
-      Role = httpContext.Items["Role"].ToString();
+      UserName = _httpContext.Items["User"].ToString();
+      Role = _httpContext.Items["Role"].ToString();
       _roleAcls = _dbContext.SecurityRoles.Where(x => x.Name.ToLower() == Role.ToLower()).ToList();
 
       // test for a local user
@@ -78,20 +77,6 @@ namespace OLabWebAPI.Model
       else
         _logger.LogWarning($"User {UserName} does not exist");
 
-    }
-
-    /// <summary>
-    /// Test if have requested access to securable object
-    /// </summary>
-    /// <param name="httpContext">HttpContext (when not known at CTOR time)</param>
-    /// <param name="requestedPerm">Request permissions (RWED)</param>
-    /// <param name="objectType">Securable object type</param>
-    /// <param name="objectId">(optional) securable object id</param>
-    /// <returns>true/false</returns>
-    public bool HasAccess(HttpContext httpContext, string requestedPerm, string objectType, uint? objectId = null)
-    {
-      LoadHttpContext(httpContext);
-      return HasAccess(requestedPerm, objectType, objectId);
     }
 
     /// <summary>
