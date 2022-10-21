@@ -13,10 +13,10 @@ using OLabWebAPI.Utils;
 
 namespace OLabWebAPI.Endpoints
 {
-  public partial class ConstantsEndpoint : OlabEndpoint
+  public partial class CountersEndpoint : OlabEndpoint
   {
 
-    public ConstantsEndpoint( 
+    public CountersEndpoint( 
       OLabLogger logger, 
       OLabDBContext context, 
       IOlabAuthentication auth) : base(logger, context, auth)
@@ -30,7 +30,7 @@ namespace OLabWebAPI.Endpoints
     /// <returns></returns>
     private bool Exists(uint id)
     {
-      return context.SystemConstants.Any(e => e.Id == id);
+      return context.SystemCounters.Any(e => e.Id == id);
     }
 
     /// <summary>
@@ -41,28 +41,28 @@ namespace OLabWebAPI.Endpoints
     /// <returns></returns>
     public async Task<IActionResult> GetAsync(int? take, int? skip)
     {
-      logger.LogDebug($"ConstantsEndpoint.GetAsync(int? take={take}, int? skip={skip})");
+      logger.LogDebug($"CountersController.GetAsync(int? take={take}, int? skip={skip})");
 
-      var Constants = new List<SystemConstants>();
+      var Counters = new List<SystemCounters>();
       var total = 0;
       var remaining = 0;
 
       if (!skip.HasValue)
         skip = 0;
 
-      Constants = await context.SystemConstants.OrderBy(x => x.Name).ToListAsync();
-      total = Constants.Count;
+      Counters = await context.SystemCounters.OrderBy(x => x.Name).ToListAsync();
+      total = Counters.Count;
 
       if (take.HasValue && skip.HasValue)
       {
-        Constants = Constants.Skip(skip.Value).Take(take.Value).ToList();
+        Counters = Counters.Skip(skip.Value).Take(take.Value).ToList();
         remaining = total - take.Value - skip.Value;
       }
 
-      logger.LogDebug(string.Format("found {0} Constants", Constants.Count));
+      logger.LogDebug(string.Format("found {0} Counters", Counters.Count));
 
-      var dtoList = new ObjectMapper.Constants(logger).PhysicalToDto(Constants);
-      return OLabObjectPagedListResult<ConstantsDto>.Result(dtoList, remaining);
+      var dtoList = new ObjectMapper.Counters(logger).PhysicalToDto(Counters);
+      return OLabObjectPagedListResult<CountersDto>.Result(dtoList, remaining);
     }
 
     /// <summary>
@@ -72,13 +72,13 @@ namespace OLabWebAPI.Endpoints
     /// <returns></returns>
     public async Task<IActionResult> GetAsync(uint id)
     {
-      logger.LogDebug($"ConstantsEndpoint.GetAsync(uint id={id})");
+      logger.LogDebug($"CountersController.GetAsync(uint id={id})");
 
       if (!Exists(id))
         return OLabNotFoundResult<uint>.Result(id);
 
-      var phys = await context.SystemConstants.FirstAsync(x => x.Id == id);
-      var dto = new ObjectMapper.Constants(logger).PhysicalToDto(phys);
+      var phys = await GetCounterAsync(id);
+      var dto = new CountersFull(logger).PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = auth.HasAccess(dto);
@@ -87,7 +87,47 @@ namespace OLabWebAPI.Endpoints
 
       AttachParentObject(dto);
 
-      return OLabObjectResult<ConstantsDto>.Result(dto);
+      return OLabObjectResult<CountersFullDto>.Result(dto);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public async Task<IActionResult> DeleteAsync(uint id)
+    {
+      logger.LogDebug($"CountersController.DeleteAsync(uint id={id})");
+
+      if (!Exists(id))
+        return OLabNotFoundResult<uint>.Result(id);
+
+      try
+      {
+        var phys = await GetCounterAsync(id);
+        var dto = new CountersFull(logger).PhysicalToDto(phys);
+
+        // test if user has access to object
+        var accessResult = auth.HasAccess(dto);
+        if (accessResult is UnauthorizedResult)
+          return accessResult;
+
+        context.SystemCounters.Remove(phys);
+        await context.SaveChangesAsync();
+
+      }
+      catch (DbUpdateConcurrencyException)
+      {
+        var existingObject = await GetCounterAsync(id);
+        if (existingObject == null)
+          return OLabNotFoundResult<uint>.Result(id);
+        else
+        {
+          throw;
+        }
+      }
+
+      return null;
     }
 
     /// <summary>
@@ -95,7 +135,7 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id">question id</param>
     /// <returns>IActionResult</returns>
-    public async Task<IActionResult> PutAsync(uint id, ConstantsDto dto)
+    public async Task<IActionResult> PutAsync(uint id, CountersFullDto dto)
     {
       logger.LogDebug($"PutAsync(uint id={id})");
 
@@ -108,7 +148,7 @@ namespace OLabWebAPI.Endpoints
 
       try
       {
-        var builder = new ConstantsFull(logger);
+        var builder = new CountersFull(logger);
         var phys = builder.DtoToPhysical(dto);
 
         phys.UpdatedAt = DateTime.Now;
@@ -118,7 +158,7 @@ namespace OLabWebAPI.Endpoints
       }
       catch (DbUpdateConcurrencyException)
       {
-        var existingObject = await GetConstantAsync(id);
+        var existingObject = await GetCounterAsync(id);
         if (existingObject == null)
           return OLabNotFoundResult<uint>.Result(id);
         else
@@ -132,15 +172,16 @@ namespace OLabWebAPI.Endpoints
     }
 
     /// <summary>
-    /// Create new object
+    /// Create new counter
     /// </summary>
-    /// <param name="dto">object data</param>
+    /// <param name="dto">Counter data</param>
     /// <returns>IActionResult</returns>
-    public async Task<IActionResult> PostAsync(ConstantsDto dto)
+    public async Task<IActionResult> PostAsync(CountersFullDto dto)
     {
-      logger.LogDebug($"ConstantsEndpoint.PostAsync({dto.Name})");
+      logger.LogDebug($"CountersController.PostAsync({dto.Name})");
 
       dto.ImageableId = dto.ParentObj.Id;
+      dto.Value = dto.StartValue;
 
       // test if user has access to object
       var accessResult = auth.HasAccess(dto);
@@ -149,16 +190,19 @@ namespace OLabWebAPI.Endpoints
 
       try
       {
-        var builder = new ConstantsFull(logger);
+        var builder = new CountersFull(logger);
         var phys = builder.DtoToPhysical(dto);
 
         phys.CreatedAt = DateTime.Now;
 
-        context.SystemConstants.Add(phys);
+        context.SystemCounters.Add(phys);
         await context.SaveChangesAsync();
 
         dto = builder.PhysicalToDto(phys);
-        return OLabObjectResult<ConstantsDto>.Result(dto);
+
+        AttachParentObject(dto);
+
+        return OLabObjectResult<CountersFullDto>.Result(dto);
 
       }
       catch (Exception ex)
@@ -166,47 +210,6 @@ namespace OLabWebAPI.Endpoints
         return OLabServerErrorResult.Result(ex.Message);
       }
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public async Task<IActionResult> DeleteAsync(uint id)
-    {
-      logger.LogDebug($"ConstantsEndpoint.DeleteAsync(uint id={id})");
-
-      if (!Exists(id))
-        return OLabNotFoundResult<uint>.Result(id);
-
-      try
-      {
-        var phys = await GetConstantAsync(id);
-        var dto = new ConstantsFull(logger).PhysicalToDto(phys);
-
-        // test if user has access to object
-        var accessResult = auth.HasAccess(dto);
-        if (accessResult is UnauthorizedResult)
-          return accessResult;
-
-        context.SystemConstants.Remove(phys);
-        await context.SaveChangesAsync();
-
-      }
-      catch (DbUpdateConcurrencyException)
-      {
-        var existingObject = await GetConstantAsync(id);
-        if (existingObject == null)
-          return OLabNotFoundResult<uint>.Result(id);
-        else
-        {
-          throw;
-        }
-      }
-
-      return null;
-    }
-
   }
 
 }

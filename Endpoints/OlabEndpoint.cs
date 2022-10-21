@@ -11,7 +11,7 @@ using OLabWebAPI.Interface;
 using OLabWebAPI.Model;
 using OLabWebAPI.Utils;
 
-namespace OLabWebAPI.Controllers
+namespace OLabWebAPI.Endpoints
 {
   public class OlabEndpoint
   {
