@@ -6,6 +6,6 @@ namespace OLabWebAPI.Interface
 {
     public interface IOlabAuthentication
     {
-      IActionResult HasAccess(ScopedObjectDto dto);
+      IActionResult HasAccess(string acl, ScopedObjectDto dto);
     }
 }

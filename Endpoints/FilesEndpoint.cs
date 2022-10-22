@@ -17,13 +17,13 @@ namespace OLabWebAPI.Endpoints
 {
   public partial class FilesEndpoint : OlabEndpoint
   {
-    
+
     private readonly AppSettings _appSettings;
 
-    public FilesEndpoint( 
-      OLabLogger logger, 
+    public FilesEndpoint(
+      OLabLogger logger,
       IOptions<AppSettings> appSettings,
-      OLabDBContext context, 
+      OLabDBContext context,
       IOlabAuthentication auth) : base(logger, context, auth)
     {
       _appSettings = appSettings.Value;
@@ -92,7 +92,7 @@ namespace OLabWebAPI.Endpoints
         var dto = new ObjectMapper.FilesFull(logger).PhysicalToDto(phys);
 
         // test if user has access to object
-        var accessResult = auth.HasAccess(dto);
+        var accessResult = auth.HasAccess("R", dto);
         if (accessResult is UnauthorizedResult)
           return accessResult;
 
@@ -121,7 +121,7 @@ namespace OLabWebAPI.Endpoints
         dto.ImageableId = dto.ParentObj.Id;
 
         // test if user has access to object
-        var accessResult = auth.HasAccess(dto);
+        var accessResult = auth.HasAccess("W", dto);
         if (accessResult is UnauthorizedResult)
           return accessResult;
 
@@ -144,6 +144,31 @@ namespace OLabWebAPI.Endpoints
     }
 
     /// <summary>
+    /// Create new file
+    /// </summary>
+    /// <param name="phys">Physical object to save</param>
+    /// <returns>FilesFullDto</returns>
+    public async Task<FilesFullDto> PostAsync(SystemFiles phys)
+    {
+      logger.LogDebug($"FilesController.PostAsync()");
+      var builder = new FilesFull(logger);
+      var dto = builder.PhysicalToDto(phys);
+
+      // test if user has access to object
+      var accessResult = auth.HasAccess("W", dto);
+      if (accessResult is UnauthorizedResult)
+        throw new UnauthorizedAccessException();
+
+      phys.CreatedAt = DateTime.Now;
+
+      context.SystemFiles.Add(phys);
+      await context.SaveChangesAsync();
+
+      dto = builder.PhysicalToDto(phys);
+      return dto;
+    }
+
+    /// <summary>
     /// 
     /// </summary>
     /// <param name="id"></param>
@@ -162,7 +187,7 @@ namespace OLabWebAPI.Endpoints
         var dto = new FilesFull(logger).PhysicalToDto(phys);
 
         // test if user has access to object
-        var accessResult = auth.HasAccess(dto);
+        var accessResult = auth.HasAccess("W", dto);
         if (accessResult is UnauthorizedResult)
           return accessResult;
 

@@ -81,7 +81,7 @@ namespace OLabWebAPI.Endpoints
       var dto = new CountersFull(logger).PhysicalToDto(phys);
 
       // test if user has access to object
-      var accessResult = auth.HasAccess(dto);
+      var accessResult = auth.HasAccess("R", dto);
       if (accessResult is UnauthorizedResult)
         return accessResult;
 
@@ -108,7 +108,7 @@ namespace OLabWebAPI.Endpoints
         var dto = new CountersFull(logger).PhysicalToDto(phys);
 
         // test if user has access to object
-        var accessResult = auth.HasAccess(dto);
+        var accessResult = auth.HasAccess("W", dto);
         if (accessResult is UnauthorizedResult)
           return accessResult;
 
@@ -142,7 +142,7 @@ namespace OLabWebAPI.Endpoints
       dto.ImageableId = dto.ParentObj.Id;
 
       // test if user has access to object
-      var accessResult = auth.HasAccess(dto);
+      var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
         return accessResult;
 
@@ -184,7 +184,7 @@ namespace OLabWebAPI.Endpoints
       dto.Value = dto.StartValue;
 
       // test if user has access to object
-      var accessResult = auth.HasAccess(dto);
+      var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
         return accessResult;
 
