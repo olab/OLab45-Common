@@ -121,10 +121,6 @@ namespace OLabWebAPI.Endpoints
         var existingObject = await GetConstantAsync(id);
         if (existingObject == null)
           return OLabNotFoundResult<uint>.Result(id);
-        else
-        {
-          throw;
-        }
       }
 
       return null;
@@ -198,10 +194,6 @@ namespace OLabWebAPI.Endpoints
         var existingObject = await GetConstantAsync(id);
         if (existingObject == null)
           return OLabNotFoundResult<uint>.Result(id);
-        else
-        {
-          throw;
-        }
       }
 
       return null;

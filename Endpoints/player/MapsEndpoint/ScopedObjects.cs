@@ -4,6 +4,7 @@ using OLabWebAPI.Model;
 using OLabWebAPI.Common;
 using System.Text;
 using System;
+using OLabWebAPI.Common.Exceptions;
 
 namespace OLabWebAPI.Endpoints.Player
 {
@@ -14,13 +15,13 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<IActionResult> GetScopedObjectsRawAsync(uint id)
+    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint id)
     {
-      logger.LogDebug($"MapsController.GetScopedObjectsRawAsync(uint id={id})");
+      logger.LogDebug($"MapsController.GetScopedObjectsTranslatedAsync(uint id={id})");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, id))
-        return OLabUnauthorizedObjectResult<uint>.Result(id);
+        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 
       return await GetScopedObjectsAsync(id, false);
     }
@@ -30,23 +31,15 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<IActionResult> GetScopedObjectsAsync(uint id)
+    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsAsync(uint id)
     {
-      try
-      {
-        logger.LogDebug($"MapsController.GetScopedObjectsTranslatedAsync(uint id={id})");
+      logger.LogDebug($"MapsController.GetScopedObjectsTranslatedAsync(uint id={id})");
 
-        // test if user has access to map.
-        if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, id))
-          return OLabUnauthorizedObjectResult<uint>.Result(id);
+      // test if user has access to map.
+      if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, id))
+        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 
-        return await GetScopedObjectsAsync(id, true);
-      }
-      catch (Exception ex)
-      {
-        logger.LogError(ex, "GetScopedObjectsAsync");
-        throw;
-      }
+      return await GetScopedObjectsAsync(id, true);
     }
 
     /// <summary>
@@ -55,13 +48,13 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="id"></param>
     /// <param name="enableWikiTranslation"></param>
     /// <returns></returns>
-    public async Task<IActionResult> GetScopedObjectsAsync(
+    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsAsync(
       uint id,
       bool enableWikiTranslation)
     {
       var map = GetSimple(context, id);
       if (map == null)
-        return OLabNotFoundResult<uint>.Result( id );
+        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 
       var phys = await GetScopedObjectsAllAsync(map.Id, Utils.Constants.ScopeLevelMap);
 
@@ -88,7 +81,7 @@ namespace OLabWebAPI.Endpoints.Player
       var builder = new ObjectMapper.ScopedObjects(logger, enableWikiTranslation);
 
       var dto = builder.PhysicalToDto(phys);
-      return OLabObjectResult<OLabWebAPI.Dto.ScopedObjectsDto>.Result(dto);
+      return dto;
     }
 
   }

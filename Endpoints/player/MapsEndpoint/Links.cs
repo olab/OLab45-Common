@@ -59,8 +59,6 @@ namespace OLabWebAPI.Endpoints.Player
         var existingMap = GetLinkSimple(context, linkId);
         if (existingMap == null)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
-        else
-          throw;
       }
 
     }

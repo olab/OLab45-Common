@@ -43,9 +43,17 @@ namespace OLabWebAPI.Endpoints.Player
 
       MapsNodesFullRelationsDto dto;
       if (nodeId > 0)
+      {
         dto = await GetNodeAsync(map, nodeId);
+        if (!dto.Id.HasValue)
+          throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, nodeId);
+      }
       else
+      {
         dto = await GetRootNodeAsync(map);
+        if (!dto.Id.HasValue)
+          throw new OLabGeneralException($"map {map.Id} has no root node");
+      }
 
       return dto;
     }

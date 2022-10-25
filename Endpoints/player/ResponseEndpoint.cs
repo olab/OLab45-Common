@@ -1,16 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using OLabWebAPI.Model;
 using OLabWebAPI.Dto;
-using OLabWebAPI.ObjectMapper;
-using OLabWebAPI.Common;
 using OLabWebAPI.Interface;
 using OLabWebAPI.Utils;
-using OLabWebAPI.Dto.Designer;
 using System;
+using OLabWebAPI.Common.Exceptions;
 
 namespace OLabWebAPI.Endpoints.Player
 {
@@ -36,7 +31,7 @@ namespace OLabWebAPI.Endpoints.Player
 
       var question = await GetQuestionAsync(body.QuestionId);
       if (question == null)
-        throw new Exception($"Question {body.QuestionId} not found");
+        throw new OLabGeneralException($"Question {body.QuestionId} not found");
 
       // test if counter associated with the question
       if (question.CounterId.HasValue && (question.CounterId.Value > 0))
@@ -56,7 +51,7 @@ namespace OLabWebAPI.Endpoints.Player
             // handle questions that have multiple responses
             ProcessMultipleResponseQuestion(question, counterDto, body);
           else
-            throw new NotImplementedException($"question {question.Id} not implemented");
+            throw new OLabGeneralException($"question {question.Id} not implemented");
         }
         else
           // handle questions that have no underlying responses (e.g. slider)

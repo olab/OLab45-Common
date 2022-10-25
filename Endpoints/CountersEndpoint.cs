@@ -121,10 +121,6 @@ namespace OLabWebAPI.Endpoints
         var existingObject = await GetCounterAsync(id);
         if (existingObject == null)
           return OLabNotFoundResult<uint>.Result(id);
-        else
-        {
-          throw;
-        }
       }
 
       return null;
@@ -161,10 +157,6 @@ namespace OLabWebAPI.Endpoints
         var existingObject = await GetCounterAsync(id);
         if (existingObject == null)
           return OLabNotFoundResult<uint>.Result(id);
-        else
-        {
-          throw;
-        }
       }
 
       return null;

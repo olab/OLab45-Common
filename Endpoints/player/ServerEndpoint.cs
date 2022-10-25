@@ -29,7 +29,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="take">Max number of records to return</param>
     /// <param name="skip">SKip over a number of records</param>
     /// <returns>IActionResult</returns>
-    public async Task<IActionResult> GetAsync([FromQuery] int? take, [FromQuery] int? skip)
+    public async Task<OLabAPIPagedResponse<Servers>> GetAsync([FromQuery] int? take, [FromQuery] int? skip)
     {
       var items = new List<Servers>();
       var total = 0;
@@ -52,7 +52,7 @@ namespace OLabWebAPI.Endpoints.Player
 
       logger.LogDebug(string.Format("found {0} servers", items.Count));
 
-      return OLabObjectPagedListResult<Servers>.Result(items, remaining);
+      return new OLabAPIPagedResponse<Servers> { Data = items, Remaining = remaining, Count = total };
     }
 
     /// <summary>
@@ -60,12 +60,11 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     /// <param name="serverId"></param>
     /// <returns></returns>
-    public async Task<IActionResult> GetScopedObjectsRawAsync(uint serverId)
+    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint serverId)
     {
       logger.LogDebug($"ServerController.GetScopedObjectsRawAsync(uint serverId={serverId})");
       var dto = await GetScopedObjectsAsync(serverId, false);
-      return OLabObjectResult<OLabWebAPI.Dto.ScopedObjectsDto>.Result(dto);      
-
+      return dto;      
     }
 
     /// <summary>
@@ -73,11 +72,11 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     /// <param name="serverId"></param>
     /// <returns></returns>
-    public async Task<IActionResult> GetScopedObjectsTranslatedAsync(uint serverId)
+    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsTranslatedAsync(uint serverId)
     {
       logger.LogDebug($"ServerController.GetScopedObjectsTranslatedAsync(uint serverId={serverId})");
       var dto = await GetScopedObjectsAsync(serverId, true);
-      return OLabObjectResult<OLabWebAPI.Dto.ScopedObjectsDto>.Result(dto);      
+      return dto;      
     }
 
     /// <summary>
