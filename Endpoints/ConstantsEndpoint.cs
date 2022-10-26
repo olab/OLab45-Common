@@ -10,15 +10,16 @@ using OLabWebAPI.ObjectMapper;
 using OLabWebAPI.Common;
 using OLabWebAPI.Interface;
 using OLabWebAPI.Utils;
+using OLabWebAPI.Common.Exceptions;
 
 namespace OLabWebAPI.Endpoints
 {
   public partial class ConstantsEndpoint : OlabEndpoint
   {
 
-    public ConstantsEndpoint( 
-      OLabLogger logger, 
-      OLabDBContext context, 
+    public ConstantsEndpoint(
+      OLabLogger logger,
+      OLabDBContext context,
       IOlabAuthentication auth) : base(logger, context, auth)
     {
     }
@@ -39,7 +40,7 @@ namespace OLabWebAPI.Endpoints
     /// <param name="take"></param>
     /// <param name="skip"></param>
     /// <returns></returns>
-    public async Task<IActionResult> GetAsync(int? take, int? skip)
+    public async Task<OLabAPIPagedResponse<ConstantsDto>> GetAsync(int? take, int? skip)
     {
       logger.LogDebug($"ConstantsEndpoint.GetAsync(int? take={take}, int? skip={skip})");
 
@@ -62,7 +63,7 @@ namespace OLabWebAPI.Endpoints
       logger.LogDebug(string.Format("found {0} Constants", Constants.Count));
 
       var dtoList = new ObjectMapper.Constants(logger).PhysicalToDto(Constants);
-      return OLabObjectPagedListResult<ConstantsDto>.Result(dtoList, remaining);
+      return new OLabAPIPagedResponse<ConstantsDto> { Data = dtoList, Remaining = remaining, Count = total };
     }
 
     /// <summary>
@@ -70,12 +71,12 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<IActionResult> GetAsync(uint id)
+    public async Task<ConstantsDto> GetAsync(uint id)
     {
       logger.LogDebug($"ConstantsEndpoint.GetAsync(uint id={id})");
 
       if (!Exists(id))
-        return OLabNotFoundResult<uint>.Result(id);
+        throw new OLabObjectNotFoundException("Constants", id);
 
       var phys = await context.SystemConstants.FirstAsync(x => x.Id == id);
       var dto = new ObjectMapper.Constants(logger).PhysicalToDto(phys);
@@ -83,11 +84,11 @@ namespace OLabWebAPI.Endpoints
       // test if user has access to object
       var accessResult = auth.HasAccess("R", dto);
       if (accessResult is UnauthorizedResult)
-        return accessResult;
+        throw new OLabUnauthorizedException("Constants", id);
 
       AttachParentObject(dto);
 
-      return OLabObjectResult<ConstantsDto>.Result(dto);
+      return dto;
     }
 
     /// <summary>
@@ -95,7 +96,7 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id">question id</param>
     /// <returns>IActionResult</returns>
-    public async Task<IActionResult> PutAsync(uint id, ConstantsDto dto)
+    public async Task PutAsync(uint id, ConstantsDto dto)
     {
       logger.LogDebug($"PutAsync(uint id={id})");
 
@@ -104,7 +105,7 @@ namespace OLabWebAPI.Endpoints
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
-        return accessResult;
+        throw new OLabUnauthorizedException("Constants", id);
 
       try
       {
@@ -120,10 +121,8 @@ namespace OLabWebAPI.Endpoints
       {
         var existingObject = await GetConstantAsync(id);
         if (existingObject == null)
-          return OLabNotFoundResult<uint>.Result(id);
+          throw new OLabObjectNotFoundException("Constants", id);
       }
-
-      return null;
 
     }
 
@@ -132,7 +131,7 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="dto">object data</param>
     /// <returns>IActionResult</returns>
-    public async Task<IActionResult> PostAsync(ConstantsDto dto)
+    public async Task<ConstantsDto> PostAsync(ConstantsDto dto)
     {
       logger.LogDebug($"ConstantsEndpoint.PostAsync({dto.Name})");
 
@@ -141,26 +140,18 @@ namespace OLabWebAPI.Endpoints
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
-        return accessResult;
+        throw new OLabUnauthorizedException("Constants", 0);
 
-      try
-      {
-        var builder = new ConstantsFull(logger);
-        var phys = builder.DtoToPhysical(dto);
+      var builder = new ConstantsFull(logger);
+      var phys = builder.DtoToPhysical(dto);
 
-        phys.CreatedAt = DateTime.Now;
+      phys.CreatedAt = DateTime.Now;
 
-        context.SystemConstants.Add(phys);
-        await context.SaveChangesAsync();
+      context.SystemConstants.Add(phys);
+      await context.SaveChangesAsync();
 
-        dto = builder.PhysicalToDto(phys);
-        return OLabObjectResult<ConstantsDto>.Result(dto);
-
-      }
-      catch (Exception ex)
-      {
-        return OLabServerErrorResult.Result(ex.Message);
-      }
+      dto = builder.PhysicalToDto(phys);
+      return dto;
     }
 
     /// <summary>
@@ -168,12 +159,12 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<IActionResult> DeleteAsync(uint id)
+    public async Task DeleteAsync(uint id)
     {
       logger.LogDebug($"ConstantsEndpoint.DeleteAsync(uint id={id})");
 
       if (!Exists(id))
-        return OLabNotFoundResult<uint>.Result(id);
+          throw new OLabObjectNotFoundException("Constants", id);
 
       try
       {
@@ -183,7 +174,7 @@ namespace OLabWebAPI.Endpoints
         // test if user has access to object
         var accessResult = auth.HasAccess("W", dto);
         if (accessResult is UnauthorizedResult)
-          return accessResult;
+          throw new OLabUnauthorizedException("Constants", id);
 
         context.SystemConstants.Remove(phys);
         await context.SaveChangesAsync();
@@ -193,10 +184,9 @@ namespace OLabWebAPI.Endpoints
       {
         var existingObject = await GetConstantAsync(id);
         if (existingObject == null)
-          return OLabNotFoundResult<uint>.Result(id);
+          throw new OLabObjectNotFoundException("Constants", id);
       }
 
-      return null;
     }
 
   }

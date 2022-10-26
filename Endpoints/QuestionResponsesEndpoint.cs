@@ -8,15 +8,17 @@ using OLabWebAPI.ObjectMapper;
 using OLabWebAPI.Common;
 using OLabWebAPI.Interface;
 using OLabWebAPI.Utils;
+using OLabWebAPI.Common.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace OLabWebAPI.Endpoints
 {
   public partial class QuestionResponsesEndpoint : OlabEndpoint
   {
 
-    public QuestionResponsesEndpoint( 
-      OLabLogger logger, 
-      OLabDBContext context, 
+    public QuestionResponsesEndpoint(
+      OLabLogger logger,
+      OLabDBContext context,
       IOlabAuthentication auth) : base(logger, context, auth)
     {
     }
@@ -36,21 +38,21 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id">question id</param>
     /// <returns>IActionResult</returns>
-    public async Task<IActionResult> PutAsync(uint id, QuestionResponsesDto dto)
+    public async Task PutAsync(uint id, QuestionResponsesDto dto)
     {
       logger.LogDebug($"PutAsync(uint id={id})");
 
+      var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
+      var builder = new QuestionsFull(logger);
+      var dtoQuestionTemp = builder.PhysicalToDto(physQuestionTemp);
+
+      // test if user has access to object
+      var accessResult = auth.HasAccess("W", dtoQuestionTemp);
+      if (accessResult is UnauthorizedResult)
+        throw new OLabUnauthorizedException("QuestionResponses", id);
+
       try
       {
-        var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
-        var builder = new QuestionsFull(logger);
-        var dtoQuestionTemp = builder.PhysicalToDto(physQuestionTemp);
-
-        // test if user has access to object
-        var accessResult = auth.HasAccess("W", dtoQuestionTemp);
-        if (accessResult is UnauthorizedResult)
-          return accessResult;
-
         var responsebuilder = new QuestionResponses(logger, dtoQuestionTemp);
         var physResponse = responsebuilder.DtoToPhysical(dto);
 
@@ -58,14 +60,14 @@ namespace OLabWebAPI.Endpoints
 
         context.SystemQuestionResponses.Update(physResponse);
         await context.SaveChangesAsync();
-
-        return OLabObjectResult<QuestionResponsesDto>.Result(dto);
-
       }
-      catch (Exception ex)
+      catch (DbUpdateConcurrencyException)
       {
-        return OLabServerErrorResult.Result(ex.Message);
+        var existingObject = await GetConstantAsync(id);
+        if (existingObject == null)
+          throw new OLabObjectNotFoundException("QuestionResponses", id);
       }
+
     }
 
     /// <summary>
@@ -73,35 +75,28 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="dto">object data</param>
     /// <returns>IActionResult</returns>
-    public async Task<IActionResult> PostAsync(QuestionResponsesDto dto)
+    public async Task<QuestionResponsesDto> PostAsync(QuestionResponsesDto dto)
     {
       logger.LogDebug($"QuestionResponsesController.PostAsync({dto.Response})");
 
-      try
-      {
-        var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
-        var questionBuilder = new QuestionsFull(logger);
-        var dtoQuestionTemp = questionBuilder.PhysicalToDto(physQuestionTemp);
+      var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
+      var questionBuilder = new QuestionsFull(logger);
+      var dtoQuestionTemp = questionBuilder.PhysicalToDto(physQuestionTemp);
 
-        // test if user has access to object
-        var accessResult = auth.HasAccess("W", dtoQuestionTemp);
-        if (accessResult is UnauthorizedResult)
-          return accessResult;
+      // test if user has access to object
+      var accessResult = auth.HasAccess("W", dtoQuestionTemp);
+      if (accessResult is UnauthorizedResult)
+        throw new OLabUnauthorizedException("QuestionResponses", 0);
 
-        var responsebuilder = new QuestionResponses(logger, dtoQuestionTemp);
-        var physResponse = responsebuilder.DtoToPhysical(dto);
+      var responsebuilder = new QuestionResponses(logger, dtoQuestionTemp);
+      var physResponse = responsebuilder.DtoToPhysical(dto);
 
-        context.SystemQuestionResponses.Add(physResponse);
-        await context.SaveChangesAsync();
+      context.SystemQuestionResponses.Add(physResponse);
+      await context.SaveChangesAsync();
 
-        var returnDto = responsebuilder.PhysicalToDto(physResponse);
-        return OLabObjectResult<QuestionResponsesDto>.Result(returnDto);
+      dto = responsebuilder.PhysicalToDto(physResponse);
+      return dto;
 
-      }
-      catch (Exception ex)
-      {
-        return OLabServerErrorResult.Result(ex.Message);
-      }
     }
 
     /// <summary>

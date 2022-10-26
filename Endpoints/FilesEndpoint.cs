@@ -12,6 +12,7 @@ using OLabWebAPI.Interface;
 using OLabWebAPI.Utils;
 using System.IO;
 using Microsoft.Extensions.Options;
+using OLabWebAPI.Common.Exceptions;
 
 namespace OLabWebAPI.Endpoints
 {
@@ -40,37 +41,30 @@ namespace OLabWebAPI.Endpoints
     /// <param name="take"></param>
     /// <param name="skip"></param>
     /// <returns></returns>
-    public async Task<IActionResult> GetAsync(int? take, int? skip)
+    public async Task<OLabAPIPagedResponse<FilesDto>> GetAsync(int? take, int? skip)
     {
-      try
+      logger.LogDebug($"FilesController.GetAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
+
+      var Files = new List<SystemFiles>();
+      var total = 0;
+      var remaining = 0;
+
+      if (!skip.HasValue)
+        skip = 0;
+
+      Files = await context.SystemFiles.OrderBy(x => x.Name).ToListAsync();
+      total = Files.Count;
+
+      if (take.HasValue && skip.HasValue)
       {
-        logger.LogDebug($"FilesController.GetAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
-
-        var Files = new List<SystemFiles>();
-        var total = 0;
-        var remaining = 0;
-
-        if (!skip.HasValue)
-          skip = 0;
-
-        Files = await context.SystemFiles.OrderBy(x => x.Name).ToListAsync();
-        total = Files.Count;
-
-        if (take.HasValue && skip.HasValue)
-        {
-          Files = Files.Skip(skip.Value).Take(take.Value).ToList();
-          remaining = total - take.Value - skip.Value;
-        }
-
-        logger.LogDebug(string.Format("found {0} Files", Files.Count));
-
-        var dtoList = new ObjectMapper.Files(logger).PhysicalToDto(Files);
-        return OLabObjectPagedListResult<FilesDto>.Result(dtoList, remaining);
+        Files = Files.Skip(skip.Value).Take(take.Value).ToList();
+        remaining = total - take.Value - skip.Value;
       }
-      catch (Exception ex)
-      {
-        return OLabServerErrorResult.Result(ex.Message);
-      }
+
+      logger.LogDebug(string.Format("found {0} Files", Files.Count));
+
+      var dtoList = new ObjectMapper.Files(logger).PhysicalToDto(Files);
+      return new OLabAPIPagedResponse<FilesDto> { Data = dtoList, Remaining = remaining, Count = total };
 
     }
 
@@ -79,31 +73,24 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<IActionResult> GetAsync(uint id)
+    public async Task<FilesFullDto> GetAsync(uint id)
     {
-      try
-      {
-        logger.LogDebug($"FilesController.GetAsync(uint id={id})");
 
-        if (!Exists(id))
-          return OLabNotFoundResult<uint>.Result(id);
+      logger.LogDebug($"FilesController.GetAsync(uint id={id})");
 
-        var phys = await context.SystemFiles.FirstAsync(x => x.Id == id);
-        var dto = new ObjectMapper.FilesFull(logger).PhysicalToDto(phys);
+      if (!Exists(id))
+        throw new OLabObjectNotFoundException("Files", id);
 
-        // test if user has access to object
-        var accessResult = auth.HasAccess("R", dto);
-        if (accessResult is UnauthorizedResult)
-          return accessResult;
+      var phys = await context.SystemFiles.FirstAsync(x => x.Id == id);
+      var dto = new ObjectMapper.FilesFull(logger).PhysicalToDto(phys);
 
-        AttachParentObject(dto);
+      // test if user has access to object
+      var accessResult = auth.HasAccess("R", dto);
+      if (accessResult is UnauthorizedResult)
+        throw new OLabUnauthorizedException("Files", id);
 
-        return OLabObjectResult<FilesFullDto>.Result(dto);
-      }
-      catch (Exception ex)
-      {
-        return OLabServerErrorResult.Result(ex.Message);
-      }
+      AttachParentObject(dto);
+      return dto;
 
     }
 
@@ -112,19 +99,20 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id">file id</param>
     /// <returns>IActionResult</returns>
-    public async Task<IActionResult> PutAsync(uint id, FilesFullDto dto)
+    public async Task PutAsync(uint id, FilesFullDto dto)
     {
+
+      logger.LogDebug($"PutAsync(uint id={id})");
+
+      dto.ImageableId = dto.ParentObj.Id;
+
+      // test if user has access to object
+      var accessResult = auth.HasAccess("W", dto);
+      if (accessResult is UnauthorizedResult)
+        throw new OLabUnauthorizedException("Files", id);
+
       try
       {
-        logger.LogDebug($"PutAsync(uint id={id})");
-
-        dto.ImageableId = dto.ParentObj.Id;
-
-        // test if user has access to object
-        var accessResult = auth.HasAccess("W", dto);
-        if (accessResult is UnauthorizedResult)
-          return accessResult;
-
         var builder = new FilesFull(logger);
         var phys = builder.DtoToPhysical(dto);
 
@@ -132,13 +120,12 @@ namespace OLabWebAPI.Endpoints
 
         context.Entry(phys).State = EntityState.Modified;
         await context.SaveChangesAsync();
-
-        return null;
-
       }
-      catch (Exception ex)
+      catch (DbUpdateConcurrencyException)
       {
-        return OLabServerErrorResult.Result(ex.Message);
+        var existingObject = await GetConstantAsync(id);
+        if (existingObject == null)
+          throw new OLabObjectNotFoundException("Files", id);
       }
 
     }
@@ -157,7 +144,7 @@ namespace OLabWebAPI.Endpoints
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
-        throw new UnauthorizedAccessException();
+        throw new OLabUnauthorizedException("Files", 0);
 
       phys.CreatedAt = DateTime.Now;
 
@@ -173,33 +160,33 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<IActionResult> DeleteAsync(uint id)
+    public async Task DeleteAsync(uint id)
     {
+
+      logger.LogDebug($"ConstantsEndpoint.DeleteAsync(uint id={id})");
+
+      if (!Exists(id))
+          throw new OLabObjectNotFoundException("Files", id);
 
       try
       {
-        logger.LogDebug($"FilesController.DeleteAsync(uint id={id})");
-
-        if (!Exists(id))
-          return OLabNotFoundResult<uint>.Result(id);
-
         var phys = await GetFileAsync(id);
         var dto = new FilesFull(logger).PhysicalToDto(phys);
 
         // test if user has access to object
         var accessResult = auth.HasAccess("W", dto);
         if (accessResult is UnauthorizedResult)
-          return accessResult;
+          throw new OLabUnauthorizedException("Constants", id);
 
         context.SystemFiles.Remove(phys);
         await context.SaveChangesAsync();
 
-        return null;
-
       }
-      catch (Exception ex)
+      catch (DbUpdateConcurrencyException)
       {
-        return OLabServerErrorResult.Result(ex.Message);
+        var existingObject = await GetFileAsync(id);
+        if (existingObject == null)
+          throw new OLabObjectNotFoundException("Files", id);
       }
 
     }
