@@ -24,8 +24,7 @@ namespace OLabWebAPI.Endpoints
     public FilesEndpoint(
       OLabLogger logger,
       IOptions<AppSettings> appSettings,
-      OLabDBContext context,
-      IOlabAuthentication auth) : base(logger, context, auth)
+      OLabDBContext context) : base(logger, context)
     {
       _appSettings = appSettings.Value;
     }
@@ -73,7 +72,9 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<FilesFullDto> GetAsync(uint id)
+    public async Task<FilesFullDto> GetAsync(
+      IOlabAuthentication auth, 
+      uint id)
     {
 
       logger.LogDebug($"FilesController.GetAsync(uint id={id})");
@@ -99,7 +100,9 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id">file id</param>
     /// <returns>IActionResult</returns>
-    public async Task PutAsync(uint id, FilesFullDto dto)
+    public async Task PutAsync(
+      IOlabAuthentication auth, 
+      uint id, FilesFullDto dto)
     {
 
       logger.LogDebug($"PutAsync(uint id={id})");
@@ -135,7 +138,9 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="phys">Physical object to save</param>
     /// <returns>FilesFullDto</returns>
-    public async Task<FilesFullDto> PostAsync(SystemFiles phys)
+    public async Task<FilesFullDto> PostAsync(
+      IOlabAuthentication auth, 
+      SystemFiles phys)
     {
       logger.LogDebug($"FilesController.PostAsync()");
       var builder = new FilesFull(logger);
@@ -160,7 +165,9 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task DeleteAsync(uint id)
+    public async Task DeleteAsync(
+      IOlabAuthentication auth, 
+      uint id)
     {
 
       logger.LogDebug($"ConstantsEndpoint.DeleteAsync(uint id={id})");

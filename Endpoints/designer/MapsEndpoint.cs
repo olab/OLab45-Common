@@ -21,8 +21,7 @@ namespace OLabWebAPI.Endpoints.Designer
 
     public MapsEndpoint(
       OLabLogger logger,
-      OLabDBContext context,
-      IOlabAuthentication auth) : base(logger, context, auth)
+      OLabDBContext context) : base(logger, context)
     {
     }
 
@@ -44,7 +43,7 @@ namespace OLabWebAPI.Endpoints.Designer
     /// <param name="mapId">map id</param>
     /// <param name="nodeId">node id</param>
     /// <returns>IActionResult</returns>
-    public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(uint mapId, uint nodeId)
+    public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(IOlabAuthentication auth, uint mapId, uint nodeId)
     {
       logger.LogDebug($"GetMapNodeAsync(uint mapId={mapId}, nodeId={nodeId})");
 
@@ -71,7 +70,9 @@ namespace OLabWebAPI.Endpoints.Designer
     /// </summary>
     /// <param name="mapId">Map id</param>
     /// <returns>IActionResult</returns>
-    public async Task<IList<MapNodesFullDto>> GetMapNodesAsync(uint mapId)
+    public async Task<IList<MapNodesFullDto>> GetMapNodesAsync(
+      IOlabAuthentication auth, 
+      uint mapId)
     {
       logger.LogDebug($"GetMapNodesAsync(uint mapId={mapId})");
 
@@ -92,7 +93,11 @@ namespace OLabWebAPI.Endpoints.Designer
     /// Create a new node link
     /// </summary>
     /// <returns>IActionResult</returns>
-    public async Task<PostNewLinkResponse> PostMapNodeLinkAsync(uint mapId, uint nodeId, [FromBody] PostNewLinkRequest body)
+    public async Task<PostNewLinkResponse> PostMapNodeLinkAsync(
+      IOlabAuthentication auth, 
+      uint mapId, 
+      uint nodeId, 
+      PostNewLinkRequest body)
     {
       logger.LogDebug($"PostMapNodeLinkAsync( destinationId = {body.DestinationId})");
 
@@ -136,7 +141,9 @@ namespace OLabWebAPI.Endpoints.Designer
     /// Create a new node
     /// </summary>
     /// <returns>IActionResult</returns>
-    public async Task<PostNewNodeResponse> PostMapNodesAsync(PostNewNodeRequest body)
+    public async Task<PostNewNodeResponse> PostMapNodesAsync(
+      IOlabAuthentication auth, 
+      PostNewNodeRequest body)
     {
       logger.LogDebug($"PostMapNodesAsync(x = {body.X}, y = {body.Y}, sourceId = {body.SourceId})");
 
@@ -193,7 +200,9 @@ namespace OLabWebAPI.Endpoints.Designer
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<OLabWebAPI.Dto.Designer.ScopedObjectsDto> GetScopedObjectsRawAsync(uint id)
+    public async Task<OLabWebAPI.Dto.Designer.ScopedObjectsDto> GetScopedObjectsRawAsync(
+      IOlabAuthentication auth, 
+      uint id)
     {
       logger.LogDebug($"MapsController.GetScopedObjectsRawAsync(uint id={id})");
 
@@ -209,7 +218,9 @@ namespace OLabWebAPI.Endpoints.Designer
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<OLabWebAPI.Dto.Designer.ScopedObjectsDto> GetScopedObjectsAsync(uint id)
+    public async Task<OLabWebAPI.Dto.Designer.ScopedObjectsDto> GetScopedObjectsAsync(
+      IOlabAuthentication auth, 
+      uint id)
     {
       logger.LogDebug($"MapsController.GetScopedObjectsTranslatedAsync(uint id={id})");
 

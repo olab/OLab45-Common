@@ -18,15 +18,13 @@ namespace OLabWebAPI.Endpoints
     protected readonly OLabDBContext context;
     protected OLabLogger logger;
     protected string token;
-    protected IOlabAuthentication auth;
     // protected string BaseUrl => $"{Request.Scheme}://{Request.Host.Value}";
     // protected string RequestPath => $"{Request.Path.ToString().Trim('/')}";
 
-    public OlabEndpoint(OLabLogger logger, OLabDBContext context, IOlabAuthentication auth)
+    public OlabEndpoint(OLabLogger logger, OLabDBContext context)
     {
       this.context = context;
       this.logger = logger;
-      this.auth = auth;
     }
 
     protected async ValueTask<Maps> GetMapAsync(uint id)

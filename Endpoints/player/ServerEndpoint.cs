@@ -18,8 +18,7 @@ namespace OLabWebAPI.Endpoints.Player
 
     public ServerEndpoint(
       OLabLogger logger,
-      OLabDBContext context,
-      IOlabAuthentication auth) : base(logger, context, auth)
+      OLabDBContext context) : base(logger, context)
     {
     }
 

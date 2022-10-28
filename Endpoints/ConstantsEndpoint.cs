@@ -19,8 +19,7 @@ namespace OLabWebAPI.Endpoints
 
     public ConstantsEndpoint(
       OLabLogger logger,
-      OLabDBContext context,
-      IOlabAuthentication auth) : base(logger, context, auth)
+      OLabDBContext context) : base(logger, context)
     {
     }
 
@@ -71,7 +70,9 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<ConstantsDto> GetAsync(uint id)
+    public async Task<ConstantsDto> GetAsync(
+      IOlabAuthentication auth, 
+      uint id)
     {
       logger.LogDebug($"ConstantsEndpoint.GetAsync(uint id={id})");
 
@@ -96,7 +97,10 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id">question id</param>
     /// <returns>IActionResult</returns>
-    public async Task PutAsync(uint id, ConstantsDto dto)
+    public async Task PutAsync(
+      IOlabAuthentication auth, 
+      uint id, 
+      ConstantsDto dto)
     {
       logger.LogDebug($"PutAsync(uint id={id})");
 
@@ -131,7 +135,9 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="dto">object data</param>
     /// <returns>IActionResult</returns>
-    public async Task<ConstantsDto> PostAsync(ConstantsDto dto)
+    public async Task<ConstantsDto> PostAsync(
+      IOlabAuthentication auth, 
+      ConstantsDto dto)
     {
       logger.LogDebug($"ConstantsEndpoint.PostAsync({dto.Name})");
 
@@ -159,7 +165,9 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task DeleteAsync(uint id)
+    public async Task DeleteAsync(
+      IOlabAuthentication auth, 
+      uint id)
     {
       logger.LogDebug($"ConstantsEndpoint.DeleteAsync(uint id={id})");
 

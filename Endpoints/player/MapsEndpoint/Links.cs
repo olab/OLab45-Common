@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using OLabWebAPI.Common;
 using OLabWebAPI.Common.Exceptions;
 using OLabWebAPI.Dto;
+using OLabWebAPI.Interface;
 using OLabWebAPI.Model;
 using OLabWebAPI.Model.ReaderWriter;
 using OLabWebAPI.ObjectMapper;
@@ -38,7 +39,12 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="nodeId">node id</param>
     /// <param name="linkId">link id</param>
     /// <returns>IActionResult</returns>
-    public async Task PutMapNodeLinksAsync(uint mapId, uint nodeId, uint linkId, [FromBody] MapNodeLinksFullDto linkdto)
+    public async Task PutMapNodeLinksAsync(
+      IOlabAuthentication auth, 
+      uint mapId, 
+      uint nodeId, 
+      uint linkId, 
+      MapNodeLinksFullDto linkdto)
     {
       logger.LogDebug($"PutMapNodeLinksAsync(uint mapId={mapId}, nodeId={nodeId}, linkId={linkId})");
 

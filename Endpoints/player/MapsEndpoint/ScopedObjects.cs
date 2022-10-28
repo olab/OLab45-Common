@@ -5,6 +5,7 @@ using OLabWebAPI.Common;
 using System.Text;
 using System;
 using OLabWebAPI.Common.Exceptions;
+using OLabWebAPI.Interface;
 
 namespace OLabWebAPI.Endpoints.Player
 {
@@ -15,7 +16,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint id)
+    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(IOlabAuthentication auth, uint id)
     {
       logger.LogDebug($"MapsController.GetScopedObjectsTranslatedAsync(uint id={id})");
 
@@ -31,7 +32,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsAsync(uint id)
+    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsAsync(IOlabAuthentication auth, uint id)
     {
       logger.LogDebug($"MapsController.GetScopedObjectsTranslatedAsync(uint id={id})");
 

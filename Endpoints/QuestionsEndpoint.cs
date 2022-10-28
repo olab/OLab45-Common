@@ -19,8 +19,7 @@ namespace OLabWebAPI.Endpoints
 
     public QuestionsEndpoint(
       OLabLogger logger,
-      OLabDBContext context,
-      IOlabAuthentication auth) : base(logger, context, auth)
+      OLabDBContext context) : base(logger, context)
     {
     }
 
@@ -73,7 +72,9 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<QuestionsFullDto> GetAsync(uint id)
+    public async Task<QuestionsFullDto> GetAsync(
+      IOlabAuthentication auth, 
+      uint id)
     {
 
       logger.LogDebug($"QuestionsController.GetAsync(uint id={id})");
@@ -101,7 +102,10 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id">question id</param>
     /// <returns>IActionResult</returns>
-    public async Task PutAsync(uint id, [FromBody] QuestionsFullDto dto)
+    public async Task PutAsync(
+      IOlabAuthentication auth, 
+      uint id, 
+      QuestionsFullDto dto)
     {
       logger.LogDebug($"PutAsync(uint id={id})");
 
@@ -136,7 +140,9 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="dto">Question data</param>
     /// <returns>IActionResult</returns>
-    public async Task<QuestionsFullDto> PostAsync([FromBody] QuestionsFullDto dto)
+    public async Task<QuestionsFullDto> PostAsync(
+      IOlabAuthentication auth, 
+      QuestionsFullDto dto)
     {
       logger.LogDebug($"QuestionsController.PostAsync({dto.Stem})");
 

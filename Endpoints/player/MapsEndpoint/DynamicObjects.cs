@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLabWebAPI.Common.Exceptions;
 using OLabWebAPI.Dto;
+using OLabWebAPI.Interface;
 using OLabWebAPI.Model;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="nodeId"></param>
     /// <param name="sinceTime"></param>
     /// <returns></returns>
-    public async Task<DynamicScopedObjectsDto> GetDynamicScopedObjectsRawAsync(uint mapId, uint nodeId, [FromQuery] uint sinceTime = 0)
+    public async Task<DynamicScopedObjectsDto> GetDynamicScopedObjectsRawAsync(IOlabAuthentication auth, uint mapId, uint nodeId, uint sinceTime = 0)
     {
       logger.LogDebug($"DynamicScopedObjectsController.GetDynamicScopedObjectsRawAsync({mapId}, {nodeId}, {sinceTime})");
 
@@ -38,7 +39,11 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="nodeId"></param>
     /// <param name="sinceTime"></param>
     /// <returns></returns>
-    public async Task<DynamicScopedObjectsDto> GetDynamicScopedObjectsTranslatedAsync(uint mapId, uint nodeId, [FromQuery] uint sinceTime = 0)
+    public async Task<DynamicScopedObjectsDto> GetDynamicScopedObjectsTranslatedAsync(
+      IOlabAuthentication auth, 
+      uint mapId, 
+      uint nodeId, 
+      uint sinceTime = 0)
     {
       logger.LogDebug($"DynamicScopedObjectsController.GetDynamicScopedObjectsTranslatedAsync({mapId}, {nodeId}, {sinceTime})");
 

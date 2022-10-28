@@ -19,8 +19,7 @@ namespace OLabWebAPI.Endpoints
 
     public CountersEndpoint(
       OLabLogger logger,
-      OLabDBContext context,
-      IOlabAuthentication auth) : base(logger, context, auth)
+      OLabDBContext context) : base(logger, context)
     {
     }
 
@@ -71,7 +70,7 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<CountersDto> GetAsync(uint id)
+    public async Task<CountersDto> GetAsync(IOlabAuthentication auth, uint id)
     {
       logger.LogDebug($"CountersController.GetAsync(uint id={id})");
 
@@ -95,7 +94,10 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id">question id</param>
     /// <returns>IActionResult</returns>
-    public async Task PutAsync(uint id, CountersFullDto dto)
+    public async Task PutAsync(
+      IOlabAuthentication auth, 
+      uint id, 
+      CountersFullDto dto)
     {
       logger.LogDebug($"PutAsync(uint id={id})");
 
@@ -130,7 +132,9 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="dto">Counter data</param>
     /// <returns>IActionResult</returns>
-    public async Task<CountersFullDto> PostAsync(CountersFullDto dto)
+    public async Task<CountersFullDto> PostAsync(
+      IOlabAuthentication auth, 
+      CountersFullDto dto)
     {
       logger.LogDebug($"CountersController.PostAsync({dto.Name})");
 
@@ -161,7 +165,9 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task DeleteAsync(uint id)
+    public async Task DeleteAsync(
+      IOlabAuthentication auth, 
+      uint id)
     {
       logger.LogDebug($"CountersController.DeleteAsync(uint id={id})");
 

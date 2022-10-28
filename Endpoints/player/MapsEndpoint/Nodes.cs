@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using OLabWebAPI.Common;
 using OLabWebAPI.Common.Exceptions;
 using OLabWebAPI.Dto;
+using OLabWebAPI.Interface;
 using OLabWebAPI.Model;
 using OLabWebAPI.Model.ReaderWriter;
 using OLabWebAPI.ObjectMapper;
@@ -25,7 +26,10 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="mapId">map id</param>
     /// <param name="nodeId">node id</param>
     /// <returns>IActionResult</returns>
-    public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(uint mapId, uint nodeId)
+    public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(
+      IOlabAuthentication auth, 
+      uint mapId, 
+      uint nodeId)
     {
       logger.LogDebug($"GetMapNodeAsync(uint mapId={mapId}, nodeId={nodeId})");
 
@@ -65,6 +69,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="nodeId">node id</param>
     /// <returns>IActionResult</returns>
     public async Task<MapNodesPostResponseDto> DeleteNodeAsync(
+      IOlabAuthentication auth, 
       uint mapId,
       uint nodeId
     )
@@ -114,6 +119,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="dto">node data</param>
     /// <returns>IActionResult</returns>
     public async Task<MapNodesPostResponseDto> PutNodeAsync(
+      IOlabAuthentication auth, 
       uint mapId,
       uint nodeId,
       [FromBody] MapNodesFullDto dto
