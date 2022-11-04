@@ -133,7 +133,7 @@ namespace OLabWebAPI.Endpoints.Designer
       catch (Exception ex)
       {
         logger.LogError(ex, "PostMapNodeLinkAsync");
-        throw ex;
+        throw;
       }
     }
 
@@ -187,10 +187,10 @@ namespace OLabWebAPI.Endpoints.Designer
 
         return dto;
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         await transaction.RollbackAsync();
-        throw ex;
+        throw;
       }
 
     }

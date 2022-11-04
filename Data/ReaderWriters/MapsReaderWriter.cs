@@ -80,10 +80,10 @@ namespace OLabWebAPI.Model.ReaderWriter
         await _context.SaveChangesAsync();
         await transaction.CommitAsync();
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         await transaction.RollbackAsync();
-        throw ex;
+        throw;
       }
 
       return map;

@@ -104,10 +104,10 @@ namespace OLabWebAPI.Endpoints.Player
         return responseDto;
 
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         await transaction.RollbackAsync();
-        throw ex;
+        throw;
       }
     }
 
@@ -150,10 +150,10 @@ namespace OLabWebAPI.Endpoints.Player
         return responseDto;
 
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         await transaction.RollbackAsync();
-        throw ex;
+        throw;
       }
 
 

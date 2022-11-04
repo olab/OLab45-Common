@@ -48,7 +48,7 @@ namespace OLabWebAPI.Common
     /// <returns>List of assemblies</returns>
     private List<Assembly> LoadPlugInAssemblies()
     {
-      var currentAssemblyFile = Assembly.GetExecutingAssembly().CodeBase;
+      var currentAssemblyFile = Assembly.GetExecutingAssembly().Location;
       var rootPath = Path.GetDirectoryName(currentAssemblyFile);
 
       // logger.LogDebug($"currentAssemblyFile path: {rootPath}");

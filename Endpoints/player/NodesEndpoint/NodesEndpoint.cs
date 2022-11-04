@@ -154,10 +154,10 @@ namespace OLabWebAPI.Endpoints.Player
 
         return dto;
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         await transaction.RollbackAsync();
-        throw ex;
+        throw;
       }
 
     }
