@@ -73,7 +73,7 @@ namespace OLabWebAPI.Endpoints
     /// <param name="id"></param>
     /// <returns></returns>
     public async Task<FilesFullDto> GetAsync(
-      IOlabAuthentication auth, 
+      IOLabAuthentication auth, 
       uint id)
     {
 
@@ -101,7 +101,7 @@ namespace OLabWebAPI.Endpoints
     /// <param name="id">file id</param>
     /// <returns>IActionResult</returns>
     public async Task PutAsync(
-      IOlabAuthentication auth, 
+      IOLabAuthentication auth, 
       uint id, FilesFullDto dto)
     {
 
@@ -139,7 +139,7 @@ namespace OLabWebAPI.Endpoints
     /// <param name="phys">Physical object to save</param>
     /// <returns>FilesFullDto</returns>
     public async Task<FilesFullDto> PostAsync(
-      IOlabAuthentication auth, 
+      IOLabAuthentication auth, 
       SystemFiles phys)
     {
       logger.LogDebug($"FilesController.PostAsync()");
@@ -166,7 +166,7 @@ namespace OLabWebAPI.Endpoints
     /// <param name="id"></param>
     /// <returns></returns>
     public async Task DeleteAsync(
-      IOlabAuthentication auth, 
+      IOLabAuthentication auth, 
       uint id)
     {
 

@@ -5,6 +5,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using OLabWebAPI.Utils;
 using OLabWebAPI.Data.Session;
+using System.IdentityModel.Tokens.Jwt;
 
 #nullable disable
 
@@ -15,7 +16,9 @@ namespace OLabWebAPI.Model
     public const string WildCardObjectType = "*";
     public const uint WildCardObjectId = 0;
 
-    private HttpContext _httpContext;
+    private readonly HttpContext _httpContext;
+    private readonly HttpRequest _httpRequest;
+    private readonly string _accessToken;
     private IEnumerable<Claim> _claims;
     private ClaimsPrincipal _user;
     private readonly OLabDBContext _dbContext;
@@ -37,6 +40,18 @@ namespace OLabWebAPI.Model
       Session = new OLabSession(_logger.GetLogger(), dbContext);
     }
 
+    public UserContext(OLabLogger logger, OLabDBContext context, HttpRequest request)
+    {
+      _dbContext = context;
+      _logger = logger;
+      _httpRequest = request;
+      _accessToken = AccessTokenUtils.ExtractBearerToken( request );
+      
+      Session = new OLabSession(_logger.GetLogger(), context);
+
+      LoadHttpRequest();
+    }
+
     public UserContext(OLabLogger logger, OLabDBContext context, HttpContext httpContext)
     {
       _dbContext = context;
@@ -45,6 +60,34 @@ namespace OLabWebAPI.Model
       Session = new OLabSession(_logger.GetLogger(), context);
 
       LoadHttpContext();
+    }
+
+    /// <summary>
+    /// Extract claims from token
+    /// </summary>
+    /// <param name="token">Bearer token</param>
+    private static IEnumerable<Claim> ExtractTokenClaims(string token)
+    {
+      var tokenHandler = new JwtSecurityTokenHandler();
+      var securityToken = (JwtSecurityToken)tokenHandler.ReadToken(token);
+      return securityToken.Claims;
+    }
+
+    protected virtual void LoadHttpRequest()
+    {
+      SessionId = _httpRequest.Headers["OLabSessionId"].FirstOrDefault();
+      if (!string.IsNullOrWhiteSpace(SessionId))
+        _logger.LogInformation($"Found SessionId {SessionId}.");
+
+      IPAddress = _httpRequest.Headers["X-Forwarded-Client-Ip"]; 
+
+      _claims = ExtractTokenClaims(_accessToken);
+
+      UserName = _claims.FirstOrDefault(c => c.Type == "name")?.Value;
+      Role = _claims.FirstOrDefault(c => c.Type == "role")?.Value;
+
+      _roleAcls = _dbContext.SecurityRoles.Where(x => x.Name.ToLower() == Role.ToLower()).ToList();      
+
     }
 
     protected virtual void LoadHttpContext()

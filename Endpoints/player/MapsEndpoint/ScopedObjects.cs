@@ -16,7 +16,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(IOlabAuthentication auth, uint id)
+    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(IOLabAuthentication auth, uint id)
     {
       logger.LogDebug($"MapsController.GetScopedObjectsTranslatedAsync(uint id={id})");
 
@@ -32,7 +32,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsAsync(IOlabAuthentication auth, uint id)
+    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsAsync(IOLabAuthentication auth, uint id)
     {
       logger.LogDebug($"MapsController.GetScopedObjectsTranslatedAsync(uint id={id})");
 

@@ -70,7 +70,7 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<CountersDto> GetAsync(IOlabAuthentication auth, uint id)
+    public async Task<CountersDto> GetAsync(IOLabAuthentication auth, uint id)
     {
       logger.LogDebug($"CountersController.GetAsync(uint id={id})");
 
@@ -95,7 +95,7 @@ namespace OLabWebAPI.Endpoints
     /// <param name="id">question id</param>
     /// <returns>IActionResult</returns>
     public async Task PutAsync(
-      IOlabAuthentication auth, 
+      IOLabAuthentication auth, 
       uint id, 
       CountersFullDto dto)
     {
@@ -133,7 +133,7 @@ namespace OLabWebAPI.Endpoints
     /// <param name="dto">Counter data</param>
     /// <returns>IActionResult</returns>
     public async Task<CountersFullDto> PostAsync(
-      IOlabAuthentication auth, 
+      IOLabAuthentication auth, 
       CountersFullDto dto)
     {
       logger.LogDebug($"CountersController.PostAsync({dto.Name})");
@@ -166,7 +166,7 @@ namespace OLabWebAPI.Endpoints
     /// <param name="id"></param>
     /// <returns></returns>
     public async Task DeleteAsync(
-      IOlabAuthentication auth, 
+      IOLabAuthentication auth, 
       uint id)
     {
       logger.LogDebug($"CountersController.DeleteAsync(uint id={id})");

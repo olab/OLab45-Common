@@ -20,7 +20,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="nodeId"></param>
     /// <param name="sinceTime"></param>
     /// <returns></returns>
-    public async Task<DynamicScopedObjectsDto> GetDynamicScopedObjectsRawAsync(IOlabAuthentication auth, uint mapId, uint nodeId, uint sinceTime = 0)
+    public async Task<DynamicScopedObjectsDto> GetDynamicScopedObjectsRawAsync(IOLabAuthentication auth, uint mapId, uint nodeId, uint sinceTime = 0)
     {
       logger.LogDebug($"DynamicScopedObjectsController.GetDynamicScopedObjectsRawAsync({mapId}, {nodeId}, {sinceTime})");
 
@@ -40,7 +40,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="sinceTime"></param>
     /// <returns></returns>
     public async Task<DynamicScopedObjectsDto> GetDynamicScopedObjectsTranslatedAsync(
-      IOlabAuthentication auth, 
+      IOLabAuthentication auth, 
       uint mapId, 
       uint nodeId, 
       uint sinceTime = 0)

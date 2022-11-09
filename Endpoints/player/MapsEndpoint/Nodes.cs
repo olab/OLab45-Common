@@ -27,7 +27,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="nodeId">node id</param>
     /// <returns>IActionResult</returns>
     public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(
-      IOlabAuthentication auth, 
+      IOLabAuthentication auth, 
       uint mapId, 
       uint nodeId)
     {
@@ -69,7 +69,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="nodeId">node id</param>
     /// <returns>IActionResult</returns>
     public async Task<MapNodesPostResponseDto> DeleteNodeAsync(
-      IOlabAuthentication auth, 
+      IOLabAuthentication auth, 
       uint mapId,
       uint nodeId
     )
@@ -119,7 +119,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="dto">node data</param>
     /// <returns>IActionResult</returns>
     public async Task<MapNodesPostResponseDto> PutNodeAsync(
-      IOlabAuthentication auth, 
+      IOLabAuthentication auth, 
       uint mapId,
       uint nodeId,
       [FromBody] MapNodesFullDto dto

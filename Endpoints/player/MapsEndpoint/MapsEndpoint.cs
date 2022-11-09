@@ -43,7 +43,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="skip">SKip over a number of records</param>
     /// <returns>IActionResult</returns>
     public async Task<OLabAPIPagedResponse<MapsDto>> GetAsync(
-      IOlabAuthentication auth,
+      IOLabAuthentication auth,
       int? take, 
       int? skip)
     {
@@ -83,7 +83,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="id"></param>
     /// <returns></returns>
     public async Task<MapsFullDto> GetAsync(
-      IOlabAuthentication auth,
+      IOLabAuthentication auth,
       uint id)
     {
       logger.LogDebug($"GetAsync(uint id={id})");
@@ -109,7 +109,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="CreateMapRequest.templateId">Template to add to map</param>
     /// <returns>IActionResult</returns>
     public async Task<ExtendMapResponse> PostExtendMapAsync(
-      IOlabAuthentication auth,
+      IOLabAuthentication auth,
       uint mapId,
       ExtendMapRequest body)
     {
@@ -157,7 +157,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="body">Create map request body</param>
     /// <returns>IActionResult</returns>
     public async Task<MapsFullRelationsDto> PostCreateMapAsync(
-      IOlabAuthentication auth,
+      IOLabAuthentication auth,
       CreateMapRequest body)
     {
       logger.LogDebug($"MapsController.PostCreateMapAsync(templateId = {body.TemplateId})");
@@ -200,7 +200,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="mapdto"></param>
     /// <returns></returns>
     public async Task PutAsync(
-      IOlabAuthentication auth,
+      IOLabAuthentication auth,
       uint id,
       MapsFullDto mapdto)
     {
@@ -236,7 +236,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="id"></param>
     /// <returns></returns>
     public async Task DeleteAsync(
-      IOlabAuthentication auth,
+      IOLabAuthentication auth,
       uint id)
     {
       logger.LogDebug($"DeleteAsync(uint mapId={id})");
@@ -259,7 +259,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="mapId"></param>
     /// <returns></returns>
     public async Task<IList<MapNodeLinksFullDto>> GetLinksAsync(
-      IOlabAuthentication auth,
+      IOLabAuthentication auth,
       uint mapId)
     {
       logger.LogDebug($"GetLinksAsync(uint mapId={mapId})");

@@ -89,35 +89,6 @@ namespace OLabWebAPI.Endpoints
     }
 
     /// <summary>
-    /// Central route to test if user has access to object
-    /// </summary>
-    /// <param name="dto"></param>
-    /// <returns></returns>
-    // [NonAction]
-    // protected IActionResult HasAccessToScopedObject(ScopedObjectDto dto)
-    // {
-    //   // test if user has access to write to parent.
-    //   var userContext = new UserContext(logger, context, HttpContext);
-    //   if (dto.ImageableType == Constants.ScopeLevelMap)
-    //   {
-    //     if (!userContext.HasAccess("W", Constants.ScopeLevelMap, dto.ImageableId))
-    //       return OLabUnauthorizedResult.Result();
-    //   }
-    //   if (dto.ImageableType == Constants.ScopeLevelServer)
-    //   {
-    //     if (!userContext.HasAccess("W", Constants.ScopeLevelServer, dto.ImageableId))
-    //       return OLabUnauthorizedResult.Result();
-    //   }
-    //   if (dto.ImageableType == Constants.ScopeLevelNode)
-    //   {
-    //     if (!userContext.HasAccess("W", Constants.ScopeLevelNode, dto.ImageableId))
-    //       return OLabUnauthorizedResult.Result();
-    //   }
-
-    //   return new NoContentResult();
-    // }
-
-    /// <summary>
     /// Get nodes for map
     /// </summary>
     /// <param name="map">Parent map to query for</param>
