@@ -8,5 +8,8 @@ namespace OLabWebAPI.Utils
         public string WebsitePublicFilesDirectory { get; set; }
         public string DefaultImportDirectory { get; set; }
         public string CertificateFile { get; set; }
+        public string StaticFilesConnectionString { get; set; }
+        public string StaticFilesContainerName { get; set; }
     }
+    
 }

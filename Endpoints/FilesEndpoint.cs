@@ -19,14 +19,10 @@ namespace OLabWebAPI.Endpoints
   public partial class FilesEndpoint : OlabEndpoint
   {
 
-    private readonly AppSettings _appSettings;
-
     public FilesEndpoint(
       OLabLogger logger,
-      IOptions<AppSettings> appSettings,
       OLabDBContext context) : base(logger, context)
     {
-      _appSettings = appSettings.Value;
     }
 
     private bool Exists(uint id)

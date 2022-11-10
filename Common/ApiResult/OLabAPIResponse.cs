@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace OLabWebAPI.Common
 {
@@ -27,7 +28,7 @@ namespace OLabWebAPI.Common
     {
       Diagnostics = new List<Diagnostics>();
       Message = MessageSuccess;
-      ErrorCode = StatusCodes.Status200OK;
+      ErrorCode = HttpStatusCode.OK;
     }
 
     [JsonProperty("extended_status_code")]
@@ -35,7 +36,7 @@ namespace OLabWebAPI.Common
     [JsonProperty("message")]
     public string Message { get; set; }
     [JsonProperty("error_code")]
-    public int? ErrorCode { get; set; }
+    public HttpStatusCode ErrorCode { get; set; }
     [JsonProperty("diagnostics")]
     public IList<Diagnostics> Diagnostics { get; set; }
     [JsonProperty("data")]
