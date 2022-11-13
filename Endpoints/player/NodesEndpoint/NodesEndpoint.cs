@@ -60,11 +60,15 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="id"></param>
     /// <param name="dto"></param>
     /// <returns></returns>
-    public async Task PutNodeAsync(uint id, [FromBody] MapNodesFullDto dto)
+    public async Task PutNodeAsync(IOLabAuthentication auth, uint id, MapNodesFullDto dto)
     {
       var phys = await GetMapNodeAsync(id);
       if (phys == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);      
+
+      // test if user has access to map.
+      if (!auth.HasAccess("W", Utils.Constants.ScopeLevelNode, id))
+        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, id);
 
       var builder = new ObjectMapper.MapNodesFullMapper(logger);
       phys = builder.DtoToPhysical(dto);
