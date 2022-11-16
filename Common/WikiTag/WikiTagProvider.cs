@@ -49,27 +49,41 @@ namespace OLabWebAPI.Common
     private List<Assembly> LoadPlugInAssemblies()
     {
       var currentAssemblyFile = Assembly.GetExecutingAssembly().Location;
+      // logger.LogInformation($"Current assembly path '{currentAssemblyFile}'");
+
       var rootPath = Path.GetDirectoryName(currentAssemblyFile);
+
+      // var rootFiles = Directory.GetFiles(rootPath, "*", SearchOption.TopDirectoryOnly);
+      // foreach (string file in rootFiles) {
+      //   logger.LogInformation($"file '{file}'");
+      // }
+
+      // var rootDirs = Directory.GetDirectories(rootPath, "*", SearchOption.TopDirectoryOnly);
+      // foreach (string dir in rootDirs) {
+      //   logger.LogInformation($"subdirectory '{dir}'");
+      // }
 
       // logger.LogDebug($"currentAssemblyFile path: {rootPath}");
 
       // remove the URI specifier (both for Windows and Linux)
       rootPath = rootPath.Replace("file:\\", "");
       rootPath = rootPath.Replace("file:", "");
-      rootPath = Path.Combine(rootPath, "PlugIns");
+      // rootPath = Path.Combine(rootPath, "PlugIns");
 
-      // logger.LogDebug($"pluginAssembly path: {rootPath}");
+      logger.LogInformation($"pluginAssembly path: {rootPath}");
 
       if (!Directory.Exists(rootPath))
-        throw new DirectoryNotFoundException("Unable to load plugin path");
+        throw new DirectoryNotFoundException($"Unable to load plugin path. '{rootPath}'");
 
-      var files = Directory.GetFiles(rootPath, "*.dll");
+      var files = Directory.GetFiles(rootPath, "WikiTags.dll");
 
       List<Assembly> plugInAssemblyList = new List<Assembly>();
 
       foreach (var file in files)
+      {
+        logger.LogInformation($"loading WikiTag assembly: '{file}'");
         plugInAssemblyList.Add(Assembly.LoadFile(file));
-
+      }
       return plugInAssemblyList;
     }
 

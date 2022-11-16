@@ -59,8 +59,6 @@ namespace OLabWebAPI.Endpoints
         remaining = total - take.Value - skip.Value;
       }
 
-      logger.LogDebug(string.Format("found {0} Counters", Counters.Count));
-
       var dtoList = new ObjectMapper.Counters(logger).PhysicalToDto(Counters);
       return new OLabAPIPagedResponse<CountersDto> { Data = dtoList, Remaining = remaining, Count = total };
     }

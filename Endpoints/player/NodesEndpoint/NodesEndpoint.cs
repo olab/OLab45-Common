@@ -82,22 +82,24 @@ namespace OLabWebAPI.Endpoints.Player
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="mapId"></param>
     /// <param name="nodeId"></param>
     /// <param name="data"></param>
     /// <returns></returns>
     public async Task<MapNodeLinksPostResponseDto> PostLinkAsync(
-      uint mapId,
       uint nodeId,
       [FromBody] MapNodeLinksPostDataDto data
     )
     {
-      logger.LogDebug($"MapsNodesController.PostAsync(PostLinkAsync(uint mapId = {mapId}, uint nodeId = {nodeId}, [FromBody] uint destinationId = {data.DestinationId})");
+      logger.LogDebug($"MapsNodesController.PostAsync(PostLinkAsync(uint nodeId = {nodeId}, uint destinationId = {data.DestinationId})");
+
+      var node = GetSimple( context, nodeId );
+      if ( node == null)
+        throw new OLabObjectNotFoundException(Constants.ScopeLevelNode, nodeId);
 
       MapNodeLinks phys = MapNodeLinks.CreateDefault();
       phys.NodeId1 = nodeId;
       phys.NodeId2 = data.DestinationId;
-      phys.MapId = mapId;
+      phys.MapId = node.MapId;
 
       context.MapNodeLinks.Add(phys);
       await context.SaveChangesAsync();
