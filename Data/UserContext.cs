@@ -50,6 +50,7 @@ namespace OLabWebAPI.Model
       Session = new OLabSession(_logger.GetLogger(), context);
 
       LoadHttpRequest();
+
     }
 
     public UserContext(OLabLogger logger, OLabDBContext context, HttpContext httpContext)
@@ -80,6 +81,9 @@ namespace OLabWebAPI.Model
         _logger.LogInformation($"Found SessionId {SessionId}.");
 
       IPAddress = _httpRequest.Headers["X-Forwarded-Client-Ip"]; 
+      if ( string.IsNullOrEmpty( IPAddress ) )
+        // request based requests need to get th eIPAddress using the context
+        IPAddress = _httpRequest.HttpContext.Connection.RemoteIpAddress.ToString();      
 
       _claims = ExtractTokenClaims(_accessToken);
 
