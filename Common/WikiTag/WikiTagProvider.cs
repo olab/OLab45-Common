@@ -70,7 +70,7 @@ namespace OLabWebAPI.Common
       rootPath = rootPath.Replace("file:", "");
       // rootPath = Path.Combine(rootPath, "PlugIns");
 
-      logger.LogInformation($"pluginAssembly path: {rootPath}");
+      // logger.LogInformation($"pluginAssembly path: {rootPath}");
 
       if (!Directory.Exists(rootPath))
         throw new DirectoryNotFoundException($"Unable to load plugin path. '{rootPath}'");
@@ -81,9 +81,11 @@ namespace OLabWebAPI.Common
 
       foreach (var file in files)
       {
-        logger.LogInformation($"loading WikiTag assembly: '{file}'");
+        // logger.LogInformation($"loading WikiTag assembly: '{file}'");
         plugInAssemblyList.Add(Assembly.LoadFile(file));
       }
+
+      logger.LogInformation($"loaded {plugInAssemblyList.Count} WikiTag assemblies");
       return plugInAssemblyList;
     }
 
