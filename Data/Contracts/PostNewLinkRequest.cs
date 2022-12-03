@@ -12,5 +12,5 @@ namespace OLabWebAPI.Model
     {
         [Required]
         public uint Id { get; set; }
-    }    
+    }
 }

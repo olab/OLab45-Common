@@ -1,6 +1,5 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using OLabWebAPI.Dto;
+using System.Collections.Generic;
 
 namespace OLabWebAPI.Model
 {
@@ -11,8 +10,8 @@ namespace OLabWebAPI.Model
 
         public ExtendMapResponse()
         {
-          Nodes = new List<MapNodesFullDto>();
-          Links = new List<MapNodeLinksDto>();
+            Nodes = new List<MapNodesFullDto>();
+            Links = new List<MapNodeLinksDto>();
         }
     }
 }

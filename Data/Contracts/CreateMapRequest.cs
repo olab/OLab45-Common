@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace OLabWebAPI.Model
 {
     public class CreateMapRequest

@@ -1,22 +1,20 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System.Collections.Generic;
 
 namespace OLabWebAPI.Common
 {
-  public class OLabObjectPagedListResult<D>
-  {
-    public static JsonResult Result(IList<D> value, int remaining)
+    public class OLabObjectPagedListResult<D>
     {
-      var result = new OLabAPIPagedResponse<D>
-      {
-        Data = value,
-        Remaining = remaining,
-        Count = value.Count
-      };
+        public static JsonResult Result(IList<D> value, int remaining)
+        {
+            OLabAPIPagedResponse<D> result = new OLabAPIPagedResponse<D>
+            {
+                Data = value,
+                Remaining = remaining,
+                Count = value.Count
+            };
 
-      return new JsonResult( result );
+            return new JsonResult(result);
+        }
     }
-  }
 }

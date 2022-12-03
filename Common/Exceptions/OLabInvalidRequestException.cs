@@ -12,6 +12,6 @@ namespace OLabWebAPI.Common.Exceptions
 
         public OLabInvalidRequestException(string message)
             : base(message)
-        { }        
+        { }
     }
 }

@@ -1,45 +1,44 @@
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Net;
 
 namespace OLabWebAPI.Common
 {
-  public class Diagnostics
-  {
-    public Diagnostics()
+    public class Diagnostics
     {
+        public Diagnostics()
+        {
+        }
+
+        [JsonProperty("stack")]
+        public string Stack { get; set; }
+        [JsonProperty("file")]
+        public string File { get; set; }
+        [JsonProperty("line")]
+        public string Line { get; set; }
     }
 
-    [JsonProperty("stack")]
-    public string Stack { get; set; }
-    [JsonProperty("file")]
-    public string File { get; set; }
-    [JsonProperty("line")]
-    public string Line { get; set; }
-  }
-
-  public class OLabAPIResponse<D> : ActionResult
-  {
-    public const string MessageSuccess = "success";
-
-    public OLabAPIResponse()
+    public class OLabAPIResponse<D> : ActionResult
     {
-      Diagnostics = new List<Diagnostics>();
-      Message = MessageSuccess;
-      ErrorCode = HttpStatusCode.OK;
-    }
+        public const string MessageSuccess = "success";
 
-    [JsonProperty("extended_status_code")]
-    public int? Status { get; set; }
-    [JsonProperty("message")]
-    public string Message { get; set; }
-    [JsonProperty("error_code")]
-    public HttpStatusCode ErrorCode { get; set; }
-    [JsonProperty("diagnostics")]
-    public IList<Diagnostics> Diagnostics { get; set; }
-    [JsonProperty("data")]
-    public D Data { get; set; }
-  }
+        public OLabAPIResponse()
+        {
+            Diagnostics = new List<Diagnostics>();
+            Message = MessageSuccess;
+            ErrorCode = HttpStatusCode.OK;
+        }
+
+        [JsonProperty("extended_status_code")]
+        public int? Status { get; set; }
+        [JsonProperty("message")]
+        public string Message { get; set; }
+        [JsonProperty("error_code")]
+        public HttpStatusCode ErrorCode { get; set; }
+        [JsonProperty("diagnostics")]
+        public IList<Diagnostics> Diagnostics { get; set; }
+        [JsonProperty("data")]
+        public D Data { get; set; }
+    }
 }

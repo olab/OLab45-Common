@@ -1,20 +1,17 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using System.Threading.Tasks;
 
 namespace OLabWebAPI.Common
 {
-  public class OLabObjectResult<D>
-  {
-    public static JsonResult Result(D value)
+    public class OLabObjectResult<D>
     {
-      var result = new OLabAPIResponse<D>
-      {
-        Data = value
-      };
+        public static JsonResult Result(D value)
+        {
+            OLabAPIResponse<D> result = new OLabAPIResponse<D>
+            {
+                Data = value
+            };
 
-      return new JsonResult( result );
+            return new JsonResult(result);
+        }
     }
-  }
 }

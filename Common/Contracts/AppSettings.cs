@@ -11,5 +11,5 @@ namespace OLabWebAPI.Utils
         public string StaticFilesConnectionString { get; set; }
         public string StaticFilesContainerName { get; set; }
     }
-    
+
 }

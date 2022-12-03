@@ -1,6 +1,5 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using OLabWebAPI.Utils;
+using System.Collections.Generic;
 
 namespace OLabWebAPI.Model
 {

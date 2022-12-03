@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
 using OLabWebAPI.Model;
 
 namespace OLabWebAPI.Importer
 {
-  public class XmlMap : XmlImportArray<Maps>
-  {
-  }
+    public class XmlMap : XmlImportArray<Maps>
+    {
+    }
 }

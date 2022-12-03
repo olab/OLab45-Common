@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
@@ -57,7 +56,7 @@ namespace OLabWebAPI.Model
         [ForeignKey(nameof(NodeId1))]
         [InverseProperty(nameof(MapNodes.MapNodeLinksNodeId1Navigation))]
         public virtual MapNodes NodeId1Navigation { get; set; }
-        
+
         [ForeignKey(nameof(NodeId2))]
         [InverseProperty(nameof(MapNodes.MapNodeLinksNodeId2Navigation))]
         public virtual MapNodes NodeId2Navigation { get; set; }

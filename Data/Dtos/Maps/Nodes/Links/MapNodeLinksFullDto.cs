@@ -1,10 +1,9 @@
-using System;
 using Newtonsoft.Json;
 
 namespace OLabWebAPI.Dto
 {
-  public class MapNodeLinksFullDto : MapNodeLinksDto
-  {    
+    public class MapNodeLinksFullDto : MapNodeLinksDto
+    {
         [JsonProperty("map_id")]
         public uint MapId { get; set; }
         [JsonProperty("node_id_1")]
@@ -27,5 +26,5 @@ namespace OLabWebAPI.Dto
         public int? LineType { get; set; }
         [JsonProperty("follow_once")]
         public int? FollowOnce { get; set; }
-  }
+    }
 }

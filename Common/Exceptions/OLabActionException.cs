@@ -1,15 +1,15 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace OLabWebAPI.Common.Exceptions
 {
-  public class OLabActionException : Exception
-  {
-    public IActionResult Result;
-
-    public OLabActionException(IActionResult result)
+    public class OLabActionException : Exception
     {
-      Result = result;
+        public IActionResult Result;
+
+        public OLabActionException(IActionResult result)
+        {
+            Result = result;
+        }
     }
-  }
 }

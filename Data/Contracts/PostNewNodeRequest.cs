@@ -18,5 +18,5 @@ namespace OLabWebAPI.Model
         public MapNodeLinks Links { get; set; }
         [Required]
         public uint Id { get; set; }
-    }    
+    }
 }

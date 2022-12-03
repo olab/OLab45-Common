@@ -1,13 +1,12 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OLabWebAPI.Common
 {
-  public class OLabUnauthorizedResult
-  {
-    public static UnauthorizedResult Result()
+    public class OLabUnauthorizedResult
     {
-      return new UnauthorizedResult();
+        public static UnauthorizedResult Result()
+        {
+            return new UnauthorizedResult();
+        }
     }
-  }
 }

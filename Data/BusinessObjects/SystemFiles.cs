@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
@@ -61,7 +59,7 @@ namespace OLabWebAPI.Model
         [Column("is_shared", TypeName = "tinyint(4)")]
         public sbyte IsShared { get; set; }
         [Column("is_media", TypeName = "tinyint(4)")]
-        public sbyte IsMediaResource { get; set; }        
+        public sbyte IsMediaResource { get; set; }
         [Column("is_private", TypeName = "tinyint(4)")]
         public sbyte IsPrivate { get; set; }
         [Column("is_embedded", TypeName = "tinyint(4)")]

@@ -10,7 +10,7 @@ namespace OLabWebAPI.Model
         public string EMail { get; set; }
         [Required]
         public string NickName { get; set; }
-        public string NewPassword { get; set; }        
+        public string NewPassword { get; set; }
         [Required]
         public string Group { get; set; }
         [Required]

@@ -1,23 +1,21 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace OLabWebAPI.Common
 {
-  [AttributeUsage(AttributeTargets.Class)]
-  public class WikiTagModuleAttribute : Attribute
-  {
-    private string _wikiTag;
-
-    public WikiTagModuleAttribute(string wikiTag)
+    [AttributeUsage(AttributeTargets.Class)]
+    public class WikiTagModuleAttribute : Attribute
     {
-      _wikiTag = wikiTag;
-    }
+        private string _wikiTag;
 
-    public string WikiTag
-    {
-      get { return _wikiTag; }
-      set { _wikiTag = value; }
+        public WikiTagModuleAttribute(string wikiTag)
+        {
+            _wikiTag = wikiTag;
+        }
+
+        public string WikiTag
+        {
+            get { return _wikiTag; }
+            set { _wikiTag = value; }
+        }
     }
-  }
 }

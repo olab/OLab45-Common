@@ -2,14 +2,14 @@ using OLabWebAPI.Model;
 
 namespace OLabWebAPI.Dto
 {
-  public class FileContentAccessDto
-  {
-    public FileContentAccessDto()
+    public class FileContentAccessDto
     {
-      AuthInfo = new RefreshToken();
-    }
+        public FileContentAccessDto()
+        {
+            AuthInfo = new RefreshToken();
+        }
 
-    public uint FileId { get; set; }
-    public RefreshToken AuthInfo { get; set; }
-  }
+        public uint FileId { get; set; }
+        public RefreshToken AuthInfo { get; set; }
+    }
 }

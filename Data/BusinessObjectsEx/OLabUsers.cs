@@ -1,5 +1,3 @@
-using System;
-
 namespace OLabWebAPI.Model
 {
     public class OLabUser
