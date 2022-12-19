@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http;
 using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Data;
 using OLabWebAPI.Model;
 using OLabWebAPI.Utils;
 using System;
@@ -8,7 +7,6 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using OLabWebAPI.Common.Interface;
 
 #nullable disable
 
@@ -61,8 +59,9 @@ namespace OLabWebAPI.Data
 
     public string IPAddress 
     {
-        get => _userName;
-        set => _userName = value;
+        get => _ipAddress;
+        set => _ipAddress
+         = value;
     }
 
     public string SessionId { get { return Session.GetSessionId(); } }

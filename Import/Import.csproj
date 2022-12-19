@@ -13,7 +13,7 @@
     <ProjectReference Include="..\WikiTags\WikiTags.csproj" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>
       <OutputFiles Include="$(ProjectDir)$(OutputPath)*.*" />  
     </ItemGroup>
@@ -21,6 +21,6 @@
       SourceFiles="@(OutputFiles)"
       DestinationFolder="../bin/$(Configuration)/$(TargetFramework)"
       SkipUnchangedFiles="true"/>
-  </Target>
+  </Target> -->
   
 </Project>

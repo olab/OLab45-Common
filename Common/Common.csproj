@@ -11,12 +11,13 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.10" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10" />
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />    
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />  
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.25.0" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>
       <OutputFiles Include="$(ProjectDir)$(OutputPath)*.*" />  
     </ItemGroup>
     <Copy SourceFiles="@(OutputFiles)" DestinationFolder="../bin/$(Configuration)/$(TargetFramework)" SkipUnchangedFiles="true" />
-  </Target>
+  </Target> -->
 </Project>

@@ -20,10 +20,10 @@
     <ProjectReference Include="..\Data\Data.csproj" />
     <ProjectReference Include="..\Import\Import.csproj" />
   </ItemGroup>  
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>
       <OutputFiles Include="$(ProjectDir)$(OutputPath)*.*" />  
     </ItemGroup>
     <Copy SourceFiles="@(OutputFiles)" DestinationFolder="../bin/$(Configuration)/$(TargetFramework)" SkipUnchangedFiles="true" />
-  </Target>
+  </Target> -->
 </Project>
