@@ -2,8 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLabWebAPI.Common.Exceptions;
 using OLabWebAPI.Dto;
-using OLabWebAPI.Interface;
+using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -94,7 +95,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <returns>void</returns>
     private async Task ProcessNodeCounters(Model.MapNodes node, IList<SystemCounters> counters)
     {
-      var counterActions = await context.SystemCounterActions.Where(x =>
+      var counterActions = await dbContext.SystemCounterActions.Where(x =>
         (x.ImageableId == node.Id) &&
         (x.ImageableType == Utils.Constants.ScopeLevelNode) &&
         (x.OperationType == "open")).ToListAsync();

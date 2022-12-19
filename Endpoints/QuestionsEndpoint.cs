@@ -8,7 +8,7 @@ using OLabWebAPI.Model;
 using OLabWebAPI.Dto;
 using OLabWebAPI.ObjectMapper;
 using OLabWebAPI.Common;
-using OLabWebAPI.Interface;
+using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Utils;
 using OLabWebAPI.Common.Exceptions;
 
@@ -30,7 +30,7 @@ namespace OLabWebAPI.Endpoints
     /// <returns></returns>
     private bool Exists(uint id)
     {
-      return context.SystemQuestions.Any(e => e.Id == id);
+      return dbContext.SystemQuestions.Any(e => e.Id == id);
     }
 
     /// <summary>
@@ -51,7 +51,7 @@ namespace OLabWebAPI.Endpoints
       if (!skip.HasValue)
         skip = 0;
 
-      physList = await context.SystemQuestions.OrderBy(x => x.Name).ToListAsync();
+      physList = await dbContext.SystemQuestions.OrderBy(x => x.Name).ToListAsync();
       total = physList.Count;
 
       if (take.HasValue && skip.HasValue)
@@ -82,7 +82,7 @@ namespace OLabWebAPI.Endpoints
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Questions", id);
 
-      var phys = await context.SystemQuestions.Include("SystemQuestionResponses").FirstAsync(x => x.Id == id);
+      var phys = await dbContext.SystemQuestions.Include("SystemQuestionResponses").FirstAsync(x => x.Id == id);
       var builder = new QuestionsFull(logger);
       var dto = builder.PhysicalToDto(phys);
 
@@ -123,8 +123,8 @@ namespace OLabWebAPI.Endpoints
 
         phys.UpdatedAt = DateTime.Now;
 
-        context.Entry(phys).State = EntityState.Modified;
-        await context.SaveChangesAsync();
+        dbContext.Entry(phys).State = EntityState.Modified;
+        await dbContext.SaveChangesAsync();
       }
       catch (DbUpdateConcurrencyException)
       {
@@ -159,8 +159,8 @@ namespace OLabWebAPI.Endpoints
 
       phys.CreatedAt = DateTime.Now;
 
-      context.SystemQuestions.Add(phys);
-      await context.SaveChangesAsync();
+      dbContext.SystemQuestions.Add(phys);
+      await dbContext.SaveChangesAsync();
 
       dto = builder.PhysicalToDto(phys);
       return dto;

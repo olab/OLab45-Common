@@ -7,7 +7,7 @@ using OLabWebAPI.Model;
 using OLabWebAPI.Dto;
 using OLabWebAPI.ObjectMapper;
 using OLabWebAPI.Common;
-using OLabWebAPI.Interface;
+using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Utils;
 using OLabWebAPI.Dto.Designer;
 
@@ -41,7 +41,7 @@ namespace OLabWebAPI.Endpoints.Designer
 
       if (take.HasValue && skip.HasValue)
       {
-        items = await context.Maps
+        items = await dbContext.Maps
           .Where(x => x.IsTemplate.HasValue && x.IsTemplate.Value == 1)
           .Skip(skip.Value)
           .Take(take.Value)
@@ -51,7 +51,7 @@ namespace OLabWebAPI.Endpoints.Designer
       }
       else
       {
-        items = await context.Maps
+        items = await dbContext.Maps
           .Where(x => x.IsTemplate.HasValue && x.IsTemplate.Value == 1)
           .OrderBy(x => x.Name)
           .ToListAsync();
@@ -62,7 +62,7 @@ namespace OLabWebAPI.Endpoints.Designer
       if (!skip.HasValue)
         skip = 0;
 
-      items = await context.Maps.Where(x => x.IsTemplate.HasValue && x.IsTemplate.Value == 1).OrderBy(x => x.Name).ToListAsync();
+      items = await dbContext.Maps.Where(x => x.IsTemplate.HasValue && x.IsTemplate.Value == 1).OrderBy(x => x.Name).ToListAsync();
       total = items.Count;
 
       if (take.HasValue && skip.HasValue)

@@ -8,7 +8,7 @@ using OLabWebAPI.Dto;
 using OLabWebAPI.ObjectMapper;
 using OLabWebAPI.Common;
 using OLabWebAPI.Common.Exceptions;
-using OLabWebAPI.Interface;
+using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Utils;
 using OLabWebAPI.Dto.Designer;
 using OLabWebAPI.Model.ReaderWriter;
@@ -38,7 +38,7 @@ namespace OLabWebAPI.Endpoints.Player
     {
       logger.LogDebug($"NodesController.GetScopedObjectsAsync(uint nodeId={id})");
 
-      var node = GetSimple(context, id);
+      var node = GetSimple(dbContext, id);
       if (node == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);      
 

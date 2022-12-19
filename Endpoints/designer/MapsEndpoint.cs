@@ -8,7 +8,7 @@ using OLabWebAPI.Model;
 using OLabWebAPI.Dto;
 using OLabWebAPI.ObjectMapper;
 using OLabWebAPI.Common;
-using OLabWebAPI.Interface;
+using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Utils;
 using System.Text;
 using OLabWebAPI.Model.ReaderWriter;
@@ -51,7 +51,7 @@ namespace OLabWebAPI.Endpoints.Designer
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      var map = await MapsReaderWriter.Instance(logger.GetLogger(), context).GetSingleAsync(mapId);
+      var map = await MapsReaderWriter.Instance(logger.GetLogger(), dbContext).GetSingleAsync(mapId);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
@@ -80,7 +80,7 @@ namespace OLabWebAPI.Endpoints.Designer
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      var map = await MapsReaderWriter.Instance(logger.GetLogger(), context).GetSingleAsync(mapId);
+      var map = await MapsReaderWriter.Instance(logger.GetLogger(), dbContext).GetSingleAsync(mapId);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
@@ -119,9 +119,9 @@ namespace OLabWebAPI.Endpoints.Designer
         phys.MapId = sourceNode.MapId;
         phys.NodeId1 = sourceNode.Id;
         phys.NodeId2 = destinationNode.Id;
-        context.Entry(phys).State = EntityState.Added;
+        dbContext.Entry(phys).State = EntityState.Added;
 
-        await context.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
 
         var dto = new PostNewLinkResponse
         {
@@ -147,7 +147,7 @@ namespace OLabWebAPI.Endpoints.Designer
     {
       logger.LogDebug($"PostMapNodesAsync(x = {body.X}, y = {body.Y}, sourceId = {body.SourceId})");
 
-      using var transaction = context.Database.BeginTransaction();
+      using var transaction = dbContext.Database.BeginTransaction();
 
       try
       {
@@ -163,17 +163,17 @@ namespace OLabWebAPI.Endpoints.Designer
         phys.X = body.X;
         phys.Y = body.Y;
         phys.MapId = sourceNode.MapId;
-        context.Entry(phys).State = EntityState.Added;
+        dbContext.Entry(phys).State = EntityState.Added;
 
-        await context.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
 
         var link = MapNodeLinks.CreateDefault();
         link.MapId = sourceNode.MapId;
         link.NodeId1 = body.SourceId;
         link.NodeId2 = phys.Id;
-        context.Entry(link).State = EntityState.Added;
+        dbContext.Entry(link).State = EntityState.Added;
 
-        await context.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
         await transaction.CommitAsync();
 
         link.NodeId1Navigation = null;
@@ -242,7 +242,7 @@ namespace OLabWebAPI.Endpoints.Designer
       uint id,
       bool enableWikiTranslation)
     {
-      var map = GetSimple(context, id);
+      var map = GetSimple(dbContext, id);
       if (map == null)
         return null;
 

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using OLabWebAPI.Model;
 using OLabWebAPI.Dto;
 using OLabWebAPI.Common.Exceptions;
-using OLabWebAPI.Interface;
+using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Utils;
 using System;
 
@@ -73,9 +73,9 @@ namespace OLabWebAPI.Endpoints.Player
       var builder = new ObjectMapper.MapNodesFullMapper(logger);
       phys = builder.DtoToPhysical(dto);
 
-      context.Entry(phys).State = EntityState.Modified;
+      dbContext.Entry(phys).State = EntityState.Modified;
 
-      await context.SaveChangesAsync();
+      await dbContext.SaveChangesAsync();
 
     }
 
@@ -92,7 +92,7 @@ namespace OLabWebAPI.Endpoints.Player
     {
       logger.LogDebug($"MapsNodesController.PostAsync(PostLinkAsync(uint nodeId = {nodeId}, uint destinationId = {data.DestinationId})");
 
-      var node = GetSimple( context, nodeId );
+      var node = GetSimple( dbContext, nodeId );
       if ( node == null)
         throw new OLabObjectNotFoundException(Constants.ScopeLevelNode, nodeId);
 
@@ -101,8 +101,8 @@ namespace OLabWebAPI.Endpoints.Player
       phys.NodeId2 = data.DestinationId;
       phys.MapId = node.MapId;
 
-      context.MapNodeLinks.Add(phys);
-      await context.SaveChangesAsync();
+      dbContext.MapNodeLinks.Add(phys);
+      await dbContext.SaveChangesAsync();
       logger.LogDebug($"created MapNodeLink id = {phys.Id}");
 
       var dto = new MapNodeLinksPostResponseDto
@@ -126,7 +126,7 @@ namespace OLabWebAPI.Endpoints.Player
     {
       logger.LogDebug($"MapsNodesController.PostAsync(MapNodesFullDto dtoNode)");
 
-      using var transaction = context.Database.BeginTransaction();
+      using var transaction = dbContext.Database.BeginTransaction();
 
       try
       {
@@ -135,8 +135,8 @@ namespace OLabWebAPI.Endpoints.Player
         phys.Y = data.Y;
         phys.MapId = mapId;
 
-        context.MapNodes.Add(phys);
-        await context.SaveChangesAsync();
+        dbContext.MapNodes.Add(phys);
+        await dbContext.SaveChangesAsync();
         logger.LogDebug($"created MapNode id = {phys.Id}");
 
         MapNodeLinks link = new MapNodeLinks
@@ -146,8 +146,8 @@ namespace OLabWebAPI.Endpoints.Player
           NodeId2 = phys.Id
         };
 
-        context.MapNodeLinks.Add(link);
-        await context.SaveChangesAsync();
+        dbContext.MapNodeLinks.Add(link);
+        await dbContext.SaveChangesAsync();
         logger.LogDebug($"created MapNodeLink id = {link.Id}");
 
         await transaction.CommitAsync();

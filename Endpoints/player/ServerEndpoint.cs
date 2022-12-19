@@ -7,7 +7,7 @@ using OLabWebAPI.Model;
 using OLabWebAPI.Dto;
 using OLabWebAPI.ObjectMapper;
 using OLabWebAPI.Common;
-using OLabWebAPI.Interface;
+using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Utils;
 using OLabWebAPI.Dto.Designer;
 
@@ -39,12 +39,12 @@ namespace OLabWebAPI.Endpoints.Player
 
       if (take.HasValue && skip.HasValue)
       {
-        items = await context.Servers.Skip(skip.Value).Take(take.Value).OrderBy(x => x.Name).ToListAsync();
+        items = await dbContext.Servers.Skip(skip.Value).Take(take.Value).OrderBy(x => x.Name).ToListAsync();
         remaining = total - take.Value - skip.Value;
       }
       else
       {
-        items = await context.Servers.OrderBy(x => x.Name).ToListAsync();
+        items = await dbContext.Servers.OrderBy(x => x.Name).ToListAsync();
       }
 
       total = items.Count;

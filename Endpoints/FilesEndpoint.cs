@@ -8,7 +8,7 @@ using OLabWebAPI.Model;
 using OLabWebAPI.Dto;
 using OLabWebAPI.ObjectMapper;
 using OLabWebAPI.Common;
-using OLabWebAPI.Interface;
+using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Utils;
 using System.IO;
 using Microsoft.Extensions.Options;
@@ -27,7 +27,7 @@ namespace OLabWebAPI.Endpoints
 
     private bool Exists(uint id)
     {
-      return context.SystemFiles.Any(e => e.Id == id);
+      return dbContext.SystemFiles.Any(e => e.Id == id);
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ namespace OLabWebAPI.Endpoints
       if (!skip.HasValue)
         skip = 0;
 
-      Files = await context.SystemFiles.OrderBy(x => x.Name).ToListAsync();
+      Files = await dbContext.SystemFiles.OrderBy(x => x.Name).ToListAsync();
       total = Files.Count;
 
       if (take.HasValue && skip.HasValue)
@@ -78,7 +78,7 @@ namespace OLabWebAPI.Endpoints
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Files", id);
 
-      var phys = await context.SystemFiles.FirstAsync(x => x.Id == id);
+      var phys = await dbContext.SystemFiles.FirstAsync(x => x.Id == id);
       var dto = new ObjectMapper.FilesFull(logger).PhysicalToDto(phys);
 
       // test if user has access to object
@@ -117,8 +117,8 @@ namespace OLabWebAPI.Endpoints
 
         phys.UpdatedAt = DateTime.Now;
 
-        context.Entry(phys).State = EntityState.Modified;
-        await context.SaveChangesAsync();
+        dbContext.Entry(phys).State = EntityState.Modified;
+        await dbContext.SaveChangesAsync();
       }
       catch (DbUpdateConcurrencyException)
       {
@@ -149,8 +149,8 @@ namespace OLabWebAPI.Endpoints
 
       phys.CreatedAt = DateTime.Now;
 
-      context.SystemFiles.Add(phys);
-      await context.SaveChangesAsync();
+      dbContext.SystemFiles.Add(phys);
+      await dbContext.SaveChangesAsync();
 
       dto = builder.PhysicalToDto(phys);
       return dto;
@@ -181,8 +181,8 @@ namespace OLabWebAPI.Endpoints
         if (accessResult is UnauthorizedResult)
           throw new OLabUnauthorizedException("Constants", id);
 
-        context.SystemFiles.Remove(phys);
-        await context.SaveChangesAsync();
+        dbContext.SystemFiles.Remove(phys);
+        await dbContext.SaveChangesAsync();
 
       }
       catch (DbUpdateConcurrencyException)

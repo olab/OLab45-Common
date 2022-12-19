@@ -7,7 +7,7 @@ using OLabWebAPI.Model;
 using OLabWebAPI.Dto;
 using OLabWebAPI.ObjectMapper;
 using OLabWebAPI.Common;
-using OLabWebAPI.Interface;
+using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Utils;
 using OLabWebAPI.Dto.Designer;
 using OLabWebAPI.Model.ReaderWriter;
@@ -58,12 +58,12 @@ namespace OLabWebAPI.Endpoints.Player
 
       if (take.HasValue && skip.HasValue)
       {
-        items = await context.Maps.Skip(skip.Value).Take(take.Value).OrderBy(x => x.Name).ToListAsync();
+        items = await dbContext.Maps.Skip(skip.Value).Take(take.Value).OrderBy(x => x.Name).ToListAsync();
         remaining = total - take.Value - skip.Value;
       }
       else
       {
-        items = await context.Maps.OrderBy(x => x.Name).ToListAsync();
+        items = await dbContext.Maps.OrderBy(x => x.Name).ToListAsync();
       }
 
       total = items.Count;
@@ -92,7 +92,7 @@ namespace OLabWebAPI.Endpoints.Player
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, id))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, id);
 
-      var map = GetSimple(context, id);
+      var map = GetSimple(dbContext, id);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
 
@@ -119,27 +119,27 @@ namespace OLabWebAPI.Endpoints.Player
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      var map = await context.Maps
+      var map = await dbContext.Maps
         .AsNoTracking()
         .Include(x => x.MapNodes)
         .FirstOrDefaultAsync(x => x.Id == mapId);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
-      var template = await context.Maps
+      var template = await dbContext.Maps
         .AsNoTracking()
         .Include(x => x.MapNodes)
         .FirstOrDefaultAsync(x => x.Id == body.TemplateId);
       if (template == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, body.TemplateId);
 
-      map = await MapsReaderWriter.Instance(logger.GetLogger(), context)
+      map = await MapsReaderWriter.Instance(logger.GetLogger(), dbContext)
         .CreateMapWithTemplateAsync(map, template);
 
-      var mapLinks = context.MapNodeLinks.AsNoTracking().Where(x => x.MapId == map.Id).ToList();
+      var mapLinks = dbContext.MapNodeLinks.AsNoTracking().Where(x => x.MapId == map.Id).ToList();
       var linksDto = new MapNodeLinksMapper(logger).PhysicalToDto(mapLinks);
 
-      var mapNodes = context.MapNodes.AsNoTracking().Where(x => x.MapId == map.Id).ToList();
+      var mapNodes = dbContext.MapNodes.AsNoTracking().Where(x => x.MapId == map.Id).ToList();
       var nodesDto = new MapNodesFullMapper(logger).PhysicalToDto(mapNodes);
 
       var dto = new ExtendMapResponse
@@ -172,19 +172,19 @@ namespace OLabWebAPI.Endpoints.Player
       if (!body.TemplateId.HasValue)
       {
         map = Maps.CreateDefault();
-        context.Maps.Add(map);
-        await context.SaveChangesAsync();
+        dbContext.Maps.Add(map);
+        await dbContext.SaveChangesAsync();
       }
       else
       {
-        var templateMap = await context.Maps
+        var templateMap = await dbContext.Maps
           .AsNoTracking()
           .Include(x => x.MapNodes)
           .FirstOrDefaultAsync(x => x.Id == body.TemplateId);
         if (templateMap == null)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, body.TemplateId.Value);
 
-        map = await MapsReaderWriter.Instance(logger.GetLogger(), context)
+        map = await MapsReaderWriter.Instance(logger.GetLogger(), dbContext)
           .CreateMapWithTemplateAsync(map, templateMap);
       }
 
@@ -215,15 +215,15 @@ namespace OLabWebAPI.Endpoints.Player
       if (id != map.Id)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, map.Id);
 
-      context.Entry(map).State = EntityState.Modified;
+      dbContext.Entry(map).State = EntityState.Modified;
 
       try
       {
-        await context.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
       }
       catch (DbUpdateConcurrencyException)
       {
-        var existingMap = GetSimple(context, id);
+        var existingMap = GetSimple(dbContext, id);
         if (existingMap == null)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
       }
@@ -245,12 +245,12 @@ namespace OLabWebAPI.Endpoints.Player
       if (!auth.HasAccess("D", Utils.Constants.ScopeLevelMap, id))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, id);
 
-      var map = GetSimple(context, id);
+      var map = GetSimple(dbContext, id);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 
-      context.Maps.Remove(map);
-      await context.SaveChangesAsync();
+      dbContext.Maps.Remove(map);
+      await dbContext.SaveChangesAsync();
     }
 
     /// <summary>
@@ -268,11 +268,11 @@ namespace OLabWebAPI.Endpoints.Player
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      var map = GetSimple(context, mapId);
+      var map = GetSimple(dbContext, mapId);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
-      var items = await context.MapNodeLinks.Where(x => x.MapId == mapId).ToListAsync();
+      var items = await dbContext.MapNodeLinks.Where(x => x.MapId == mapId).ToListAsync();
       logger.LogDebug(string.Format("found {0} MapNodeLinks", items.Count));
 
       var dtoList = new MapNodeLinksFullMapper(logger).PhysicalToDto(items);

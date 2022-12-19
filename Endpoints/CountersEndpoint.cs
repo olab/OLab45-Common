@@ -8,7 +8,7 @@ using OLabWebAPI.Model;
 using OLabWebAPI.Dto;
 using OLabWebAPI.ObjectMapper;
 using OLabWebAPI.Common;
-using OLabWebAPI.Interface;
+using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Utils;
 using OLabWebAPI.Common.Exceptions;
 
@@ -30,7 +30,7 @@ namespace OLabWebAPI.Endpoints
     /// <returns></returns>
     private bool Exists(uint id)
     {
-      return context.SystemCounters.Any(e => e.Id == id);
+      return dbContext.SystemCounters.Any(e => e.Id == id);
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ namespace OLabWebAPI.Endpoints
       if (!skip.HasValue)
         skip = 0;
 
-      Counters = await context.SystemCounters.OrderBy(x => x.Name).ToListAsync();
+      Counters = await dbContext.SystemCounters.OrderBy(x => x.Name).ToListAsync();
       total = Counters.Count;
 
       if (take.HasValue && skip.HasValue)
@@ -113,8 +113,8 @@ namespace OLabWebAPI.Endpoints
 
         phys.UpdatedAt = DateTime.Now;
 
-        context.Entry(phys).State = EntityState.Modified;
-        await context.SaveChangesAsync();
+        dbContext.Entry(phys).State = EntityState.Modified;
+        await dbContext.SaveChangesAsync();
       }
       catch (DbUpdateConcurrencyException)
       {
@@ -149,8 +149,8 @@ namespace OLabWebAPI.Endpoints
 
       phys.CreatedAt = DateTime.Now;
 
-      context.SystemCounters.Add(phys);
-      await context.SaveChangesAsync();
+      dbContext.SystemCounters.Add(phys);
+      await dbContext.SaveChangesAsync();
 
       dto = builder.PhysicalToDto(phys);
 
@@ -182,8 +182,8 @@ namespace OLabWebAPI.Endpoints
         if (accessResult is UnauthorizedResult)
           throw new OLabUnauthorizedException("Counters", id);
 
-        context.SystemCounters.Remove(phys);
-        await context.SaveChangesAsync();
+        dbContext.SystemCounters.Remove(phys);
+        await dbContext.SaveChangesAsync();
 
       }
       catch (DbUpdateConcurrencyException)

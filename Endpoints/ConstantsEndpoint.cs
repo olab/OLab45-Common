@@ -8,7 +8,7 @@ using OLabWebAPI.Model;
 using OLabWebAPI.Dto;
 using OLabWebAPI.ObjectMapper;
 using OLabWebAPI.Common;
-using OLabWebAPI.Interface;
+using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Utils;
 using OLabWebAPI.Common.Exceptions;
 
@@ -30,7 +30,7 @@ namespace OLabWebAPI.Endpoints
     /// <returns></returns>
     private bool Exists(uint id)
     {
-      return context.SystemConstants.Any(e => e.Id == id);
+      return dbContext.SystemConstants.Any(e => e.Id == id);
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ namespace OLabWebAPI.Endpoints
       if (!skip.HasValue)
         skip = 0;
 
-      Constants = await context.SystemConstants.OrderBy(x => x.Name).ToListAsync();
+      Constants = await dbContext.SystemConstants.OrderBy(x => x.Name).ToListAsync();
       total = Constants.Count;
 
       if (take.HasValue && skip.HasValue)
@@ -79,7 +79,7 @@ namespace OLabWebAPI.Endpoints
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Constants", id);
 
-      var phys = await context.SystemConstants.FirstAsync(x => x.Id == id);
+      var phys = await dbContext.SystemConstants.FirstAsync(x => x.Id == id);
       var dto = new ObjectMapper.Constants(logger).PhysicalToDto(phys);
 
       // test if user has access to object
@@ -118,8 +118,8 @@ namespace OLabWebAPI.Endpoints
 
         phys.UpdatedAt = DateTime.Now;
 
-        context.Entry(phys).State = EntityState.Modified;
-        await context.SaveChangesAsync();
+        dbContext.Entry(phys).State = EntityState.Modified;
+        await dbContext.SaveChangesAsync();
       }
       catch (DbUpdateConcurrencyException)
       {
@@ -153,8 +153,8 @@ namespace OLabWebAPI.Endpoints
 
       phys.CreatedAt = DateTime.Now;
 
-      context.SystemConstants.Add(phys);
-      await context.SaveChangesAsync();
+      dbContext.SystemConstants.Add(phys);
+      await dbContext.SaveChangesAsync();
 
       dto = builder.PhysicalToDto(phys);
       return dto;
@@ -184,8 +184,8 @@ namespace OLabWebAPI.Endpoints
         if (accessResult is UnauthorizedResult)
           throw new OLabUnauthorizedException("Constants", id);
 
-        context.SystemConstants.Remove(phys);
-        await context.SaveChangesAsync();
+        dbContext.SystemConstants.Remove(phys);
+        await dbContext.SaveChangesAsync();
 
       }
       catch (DbUpdateConcurrencyException)

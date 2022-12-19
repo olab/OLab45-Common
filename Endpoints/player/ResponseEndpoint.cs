@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OLabWebAPI.Model;
 using OLabWebAPI.Dto;
-using OLabWebAPI.Interface;
+using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Utils;
 using System;
 using OLabWebAPI.Common.Exceptions;
@@ -60,8 +60,8 @@ namespace OLabWebAPI.Endpoints.Player
         if (dbCounter.ImageableType == Utils.Constants.ScopeLevelServer)
         {
           dbCounter.ValueFromNumber(counterDto.ValueAsNumber());
-          context.SystemCounters.Update(dbCounter);
-          await context.SaveChangesAsync();
+          dbContext.SystemCounters.Update(dbCounter);
+          await dbContext.SaveChangesAsync();
         }
       }
       else

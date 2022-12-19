@@ -5,7 +5,7 @@ using OLabWebAPI.Common;
 using System.Text;
 using System;
 using OLabWebAPI.Common.Exceptions;
-using OLabWebAPI.Interface;
+using OLabWebAPI.Data.Interface;
 
 namespace OLabWebAPI.Endpoints.Player
 {
@@ -53,7 +53,7 @@ namespace OLabWebAPI.Endpoints.Player
       uint id,
       bool enableWikiTranslation)
     {
-      var map = GetSimple(context, id);
+      var map = GetSimple(dbContext, id);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 

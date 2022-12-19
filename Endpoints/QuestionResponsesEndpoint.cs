@@ -6,7 +6,7 @@ using OLabWebAPI.Model;
 using OLabWebAPI.Dto;
 using OLabWebAPI.ObjectMapper;
 using OLabWebAPI.Common;
-using OLabWebAPI.Interface;
+using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Utils;
 using OLabWebAPI.Common.Exceptions;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +29,7 @@ namespace OLabWebAPI.Endpoints
     /// <returns></returns>
     private bool Exists(uint id)
     {
-      return context.SystemQuestionResponses.Any(e => e.Id == id);
+      return dbContext.SystemQuestionResponses.Any(e => e.Id == id);
     }
 
     /// <summary>
@@ -60,8 +60,8 @@ namespace OLabWebAPI.Endpoints
 
         physResponse.UpdatedAt = DateTime.Now;
 
-        context.SystemQuestionResponses.Update(physResponse);
-        await context.SaveChangesAsync();
+        dbContext.SystemQuestionResponses.Update(physResponse);
+        await dbContext.SaveChangesAsync();
       }
       catch (DbUpdateConcurrencyException)
       {
@@ -95,8 +95,8 @@ namespace OLabWebAPI.Endpoints
       var responsebuilder = new QuestionResponses(logger, dtoQuestionTemp);
       var physResponse = responsebuilder.DtoToPhysical(dto);
 
-      context.SystemQuestionResponses.Add(physResponse);
-      await context.SaveChangesAsync();
+      dbContext.SystemQuestionResponses.Add(physResponse);
+      await dbContext.SaveChangesAsync();
 
       dto = responsebuilder.PhysicalToDto(physResponse);
       return dto;
@@ -129,8 +129,8 @@ namespace OLabWebAPI.Endpoints
         if (accessResult is UnauthorizedResult)
           return accessResult;
 
-        context.SystemQuestionResponses.Remove(physResponse);
-        await context.SaveChangesAsync();
+        dbContext.SystemQuestionResponses.Remove(physResponse);
+        await dbContext.SaveChangesAsync();
         return null;
       }
       catch (Exception ex)

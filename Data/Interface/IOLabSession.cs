@@ -1,14 +1,15 @@
 using System;
 
-namespace OLabWebAPI.Data.Session
+namespace OLabWebAPI.Data.Interface
 {
     public interface IOLabSession
     {
         public void OnStartSession(string userName, uint mapId, string ipAddress);
-        public void OnPlayNode(string sessionId, uint mapId, uint nodeId);
-        public void OnQuestionResponse(string sessionId, uint mapId, uint nodeId, uint questionId, string value);
-        public void OnEndSession(string sessionId, uint mapId, uint nodeId);
+        public void OnPlayNode(uint mapId, uint nodeId);
+        public void OnQuestionResponse(uint mapId, uint nodeId, uint questionId, string value);
+        public void OnEndSession(uint mapId, uint nodeId);
         public string GetSessionId();
+        public void SetSessionId( string sessionId );
 
         public static string GenerateSessionId()
         {

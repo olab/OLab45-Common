@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using OLabWebAPI.Common;
 using OLabWebAPI.Common.Exceptions;
 using OLabWebAPI.Dto;
-using OLabWebAPI.Interface;
+using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Model;
 using OLabWebAPI.Model.ReaderWriter;
 using OLabWebAPI.ObjectMapper;
@@ -57,12 +57,12 @@ namespace OLabWebAPI.Endpoints.Player
         var builder = new MapNodeLinksFullMapper(logger);
         var phys = builder.DtoToPhysical(linkdto);
 
-        context.Entry(phys).State = EntityState.Modified;
-        await context.SaveChangesAsync();
+        dbContext.Entry(phys).State = EntityState.Modified;
+        await dbContext.SaveChangesAsync();
       }
       catch (DbUpdateConcurrencyException)
       {
-        var existingMap = GetLinkSimple(context, linkId);
+        var existingMap = GetLinkSimple(dbContext, linkId);
         if (existingMap == null)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
       }
