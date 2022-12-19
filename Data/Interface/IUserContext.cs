@@ -32,5 +32,7 @@ namespace OLabWebAPI.Data.Interface
       set;
     }
 
+    bool HasAccess(string requestedPerm, string objectType, uint? objectId);
+
   }
 }
