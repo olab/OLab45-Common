@@ -1,10 +1,11 @@
 using Microsoft.Extensions.Logging;
+using OLabWebAPI.Common.Interface;
 using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Model;
 using System;
 using System.Linq;
 
-namespace OLabWebAPI.Data.Session
+namespace OLabWebAPI.Data
 {
   public class OLabSession : IOLabSession
   {

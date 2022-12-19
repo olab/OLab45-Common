@@ -1,6 +1,6 @@
 using System;
 
-namespace OLabWebAPI.Data.Interface
+namespace OLabWebAPI.Common.Interface
 {
     public interface IOLabSession
     {

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Data.Session;
+using OLabWebAPI.Data;
 using OLabWebAPI.Model;
 using OLabWebAPI.Utils;
 using System;
@@ -8,10 +8,11 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using OLabWebAPI.Common.Interface;
 
 #nullable disable
 
-namespace OLabWebAPI.Data.UserContext
+namespace OLabWebAPI.Data
 {
   public class UserContext : IUserContext
   {

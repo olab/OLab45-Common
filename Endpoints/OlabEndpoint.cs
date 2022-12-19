@@ -4,12 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using OLabWebAPI.Common;
+using OLabWebAPI.Common.Interface;
 using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Data.UserContext;
 using OLabWebAPI.Dto;
-using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Model;
 using OLabWebAPI.Utils;
 
