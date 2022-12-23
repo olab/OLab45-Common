@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using NuGet.Packaging.Signing;
 using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Model;
 using OLabWebAPI.Utils;
@@ -32,39 +33,51 @@ namespace OLabWebAPI.Data
     private uint _userId;
     private string _userName;
     private string _ipAddress;
+    private string _issuer;
 
-    public IOLabSession Session 
+    public IOLabSession Session
     {
-        get => _session;
-        set => _session = value;
+      get => _session;
+      set => _session = value;
     }
 
-    public string Role 
+    public string Role
     {
-        get => _role;
-        set => _role = value;
+      get => _role;
+      set => _role = value;
     }
 
-    public uint UserId 
+    public uint UserId
     {
-        get => _userId;
-        set => _userId = value;
+      get => _userId;
+      set => _userId = value;
     }
 
-    public string UserName 
+    public string UserName
     {
-        get => _userName;
-        set => _userName = value;
+      get => _userName;
+      set => _userName = value;
     }
 
-    public string IPAddress 
+    public string IPAddress
     {
-        get => _ipAddress;
-        set => _ipAddress
-         = value;
+      get => _ipAddress;
+      set => _ipAddress = value;
+    }
+
+    public string Issuer
+    {
+      get => _issuer;
+      set => _issuer = value;
     }
 
     public string SessionId { get { return Session.GetSessionId(); } }
+
+    // default ctor, needed for services Dependancy Injection
+    public UserContext()
+    {
+
+    }
 
     public UserContext(OLabLogger logger, OLabDBContext dbContext)
     {
@@ -83,7 +96,6 @@ namespace OLabWebAPI.Data
       Session = new OLabSession(_logger.GetLogger(), context, this);
 
       LoadHttpRequest();
-
     }
 
     public UserContext(OLabLogger logger, OLabDBContext dbContext, HttpContext httpContext)
@@ -95,7 +107,7 @@ namespace OLabWebAPI.Data
 
       LoadHttpContext();
     }
-    
+
     /// <summary>
     /// Extract claims from token
     /// </summary>
@@ -109,9 +121,13 @@ namespace OLabWebAPI.Data
 
     protected virtual void LoadHttpRequest()
     {
-      Session.SetSessionId(_httpRequest.Headers["OLabSessionId"].FirstOrDefault());
-      if (!string.IsNullOrWhiteSpace(Session.GetSessionId()))
-        _logger.LogInformation($"Found SessionId {Session.GetSessionId()}.");
+      var sessionId = _httpRequest.Headers["OLabSessionId"].FirstOrDefault();
+      if (!string.IsNullOrEmpty(sessionId) && (sessionId != "null"))
+      {
+        Session.SetSessionId(sessionId);
+        if (!string.IsNullOrWhiteSpace(Session.GetSessionId()))
+          _logger.LogInformation($"Found SessionId {Session.GetSessionId()}.");
+      }
 
       IPAddress = _httpRequest.Headers["X-Forwarded-Client-Ip"];
       if (string.IsNullOrEmpty(IPAddress))
@@ -122,6 +138,8 @@ namespace OLabWebAPI.Data
 
       UserName = _claims.FirstOrDefault(c => c.Type == "name")?.Value;
       Role = _claims.FirstOrDefault(c => c.Type == "role")?.Value;
+      UserId = (uint)Convert.ToInt32(_claims.FirstOrDefault(c => c.Type == "id")?.Value);
+      Issuer = _claims.FirstOrDefault(c => c.Type == "iss")?.Value;
 
       _roleAcls = _dbContext.SecurityRoles.Where(x => x.Name.ToLower() == Role.ToLower()).ToList();
 
@@ -129,10 +147,13 @@ namespace OLabWebAPI.Data
 
     protected virtual void LoadHttpContext()
     {
-
-      Session.SetSessionId(_httpContext.Request.Headers["OLabSessionId"].FirstOrDefault());
-      if (!string.IsNullOrWhiteSpace(Session.GetSessionId()))
-        _logger.LogInformation($"Found SessionId {Session.GetSessionId()}.");
+      var sessionId = _httpContext.Request.Headers["OLabSessionId"].FirstOrDefault();
+      if (!string.IsNullOrEmpty(sessionId) && (sessionId != "null"))
+      {
+        Session.SetSessionId(sessionId);
+        if (!string.IsNullOrWhiteSpace(Session.GetSessionId()))
+          _logger.LogInformation($"Found SessionId {Session.GetSessionId()}.");
+      }
 
       IPAddress = _httpContext.Connection.RemoteIpAddress.ToString();
 
@@ -143,8 +164,11 @@ namespace OLabWebAPI.Data
       _user = _httpContext.User;
       _claims = identity.Claims;
 
-      UserName = _httpContext.Items["User"].ToString();
-      Role = _httpContext.Items["Role"].ToString();
+      UserName = _user.FindFirst(ClaimTypes.Name).Value;
+      Role = _user.FindFirst(ClaimTypes.Role).Value;
+      Issuer = _user.FindFirst("iss").Value;
+      UserId = (uint)Convert.ToInt32(_user.FindFirst("id").Value);
+
       _roleAcls = _dbContext.SecurityRoles.Where(x => x.Name.ToLower() == Role.ToLower()).ToList();
 
       // test for a local user

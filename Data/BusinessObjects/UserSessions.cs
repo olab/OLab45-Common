@@ -29,6 +29,9 @@ namespace OLabWebAPI.Model
         [Required]
         [Column("uuid")]
         public string Uuid { get; set; }
+        [Required]
+        [Column("iss")]
+        public string Iss { get; set; }
         [Column("user_id", TypeName = "int(10) unsigned")]
         public uint UserId { get; set; }
         [Column("map_id", TypeName = "int(10) unsigned")]

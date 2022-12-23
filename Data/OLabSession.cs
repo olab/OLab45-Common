@@ -32,7 +32,7 @@ namespace OLabWebAPI.Data
       return _sessionId;
     }
 
-    public void OnStartSession(string userName, uint mapId, string ipAddress)
+    public void OnStartSession(IUserContext userContext, uint mapId)
     {
       _sessionId = IOLabSession.GenerateSessionId();
 
@@ -41,13 +41,14 @@ namespace OLabWebAPI.Data
         Uuid = _sessionId,
         MapId = mapId,
         StartTime = GetUnixTime(),
-        UserIp = ipAddress
+        UserIp = userContext.IPAddress,
+        Iss = userContext.Issuer
       };
 
       _context.UserSessions.Add(session);
       _context.SaveChanges();
 
-      _logger.LogInformation($"OnStartSession: session {_sessionId} ({userName}) MapId: {mapId}. Session PK: {session.Id}");
+      _logger.LogInformation($"OnStartSession: session {_sessionId} ({userContext.UserName}) MapId: {mapId}. Session PK: {session.Id}");
     }
 
     public void OnEndSession(uint mapId, uint nodeId)
@@ -85,9 +86,9 @@ namespace OLabWebAPI.Data
 
     }
 
-    public void OnQuestionResponse(uint mapId, uint nodeId, uint questionId, string value)
+    public void OnQuestionResponse(uint mapId, uint nodeId, SystemQuestions question, string value)
     {
-      _logger.LogInformation($"OnQuestionResponse: session {GetSessionId()} Map: {mapId} Node: {nodeId} Question: {questionId} = {value} ");
+      _logger.LogInformation($"OnQuestionResponse: session {GetSessionId()} Map: {mapId} Node: {nodeId} Question: {question.Id} = {value} ");
 
       UserSessions session = GetSession(GetSessionId());
       if (session == null)
@@ -96,7 +97,7 @@ namespace OLabWebAPI.Data
       UserResponses userResponse = new UserResponses
       {
         SessionId = session.Id,
-        QuestionId = questionId,
+        QuestionId = question.Id,
         Response = value,
         NodeId = nodeId,
         CreatedAt = GetUnixTime()

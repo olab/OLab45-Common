@@ -31,6 +31,11 @@ namespace OLabWebAPI.Data.Interface
       get;
       set;
     }
+    public string Issuer
+    {
+      get;
+      set;
+    }
 
     bool HasAccess(string requestedPerm, string objectType, uint? objectId);
 

@@ -19,25 +19,22 @@ namespace OLabWebAPI.Endpoints.Player
     }
 
     /// <summary>
-    /// 
+    /// Save a question response to the session
     /// </summary>
     /// <param name="body"></param>
     /// <returns></returns>
     public async Task<DynamicScopedObjectsDto> PostQuestionResponseAsync(
-      [FromBody] QuestionResponsePostDataDto body)
+      SystemQuestions question,
+      QuestionResponsePostDataDto body)
     {
       logger.LogDebug($"PostQuestionResponseAsync(questionId={body.QuestionId}, response={body.PreviousValue}->{body.Value}");
-
-      var question = await GetQuestionAsync(body.QuestionId);
-      if (question == null)
-        throw new OLabGeneralException($"Question {body.QuestionId} not found");
 
       // test if counter associated with the question
       if (question.CounterId.HasValue && (question.CounterId.Value > 0))
       {
         var dbCounter = await GetCounterAsync((uint)question.CounterId.Value);
         if (dbCounter == null)
-        throw new Exception($"Counter {(uint)question.CounterId.Value} not found");
+          throw new Exception($"Counter {(uint)question.CounterId.Value} not found");
 
         var counterDto = GetTargetCounter(question, dbCounter, body);
 

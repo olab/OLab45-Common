@@ -59,24 +59,20 @@ namespace OLabWebAPI.Endpoints.Player
           throw new OLabGeneralException($"map {map.Id} has no root node");
       }
 
-      // test if end node, meaning we can close the session.  otherwise
-      // record the OnPlay event
+      // test if end node, meaning we can close the session.  
       if (dto.End.HasValue && dto.End.Value)
-      {
-        _userContext.Session.OnPlayNode(mapId, dto.Id.Value);
         _userContext.Session.OnEndSession(mapId, dto.Id.Value);
-      }
-      else
-      {
-        if (nodeId == 0)
-        {
-          _userContext.Session.OnStartSession(_userContext.UserName, mapId, _userContext.IPAddress);
-          dto.SessionId = _userContext.Session.GetSessionId();
-          _userContext.Session.SetSessionId( dto.SessionId );
-        }
 
-        _userContext.Session.OnPlayNode(mapId, dto.Id.Value);
+      // if root node, then start a new session if we don't have
+      // a session id already
+      if ((dto.TypeId == 1) && string.IsNullOrEmpty(_userContext.Session.GetSessionId()))
+      {
+        _userContext.Session.OnStartSession(_userContext, mapId);
+        dto.SessionId = _userContext.Session.GetSessionId();
+        _userContext.Session.SetSessionId(dto.SessionId);
       }
+
+      _userContext.Session.OnPlayNode(mapId, dto.Id.Value);
 
       UpdateNodeCounter();
 
