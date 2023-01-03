@@ -34,39 +34,67 @@ namespace OLabWebAPI.Utils
     {
       get
       {
-        int count = 0;
-        mutex.WaitOne();
-        count = _items.Count;
-        mutex.ReleaseMutex();
-        return count;
+        try
+        {
+          Lock();
+          return _items.Count;
+        }
+        finally
+        {
+          Unlock();
+        }
+
       }
 
     }
 
     public void Remove(int index)
     {
-      mutex.WaitOne();
-      _items.RemoveAt(index);
-      mutex.ReleaseMutex();
+
+      try
+      {
+        Lock();
+        _items.RemoveAt(index);
+      }
+      finally
+      {
+        Unlock();
+      }
     }
 
     public void Remove(T item)
     {
-      mutex.WaitOne();
-      _items.Remove(item);
-      mutex.ReleaseMutex();
+
+      try
+      {
+        Lock();
+        _items.Remove(item);
+      }
+      finally
+      {
+        Unlock();
+      }
+
     }
 
     public int Add(T item)
     {
-      int count = 0;
 
-      mutex.WaitOne();
-      _items.Add(item);
-      count = _items.Count;
-      mutex.ReleaseMutex();
+      try
+      {
+        Lock();
 
-      return count;
+        int count = 0;
+        _items.Add(item);
+
+        count = _items.Count;
+        return count;
+      }
+      finally
+      {
+        Unlock();
+      }
+
     }
 
     public T this[int index]
@@ -76,12 +104,21 @@ namespace OLabWebAPI.Utils
 
     public T GetAt(int index)
     {
-      T item;
-      mutex.WaitOne();
-      item = _items[index];
-      mutex.ReleaseMutex();
 
-      return item;
+      try
+      {
+        Lock();
+
+        T item;
+        item = _items[index];
+
+        return item;
+
+      }
+      finally
+      {
+        Unlock();
+      }
     }
 
   }
