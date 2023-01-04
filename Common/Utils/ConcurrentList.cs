@@ -97,6 +97,21 @@ namespace OLabWebAPI.Utils
 
     }
 
+    public void Clear()
+    {
+
+      try
+      {
+        Lock();
+
+        _items.Clear();
+      }
+      finally
+      {
+        Unlock();
+      }
+    }
+
     public T this[int index]
     {
       get { return GetAt(index); }
