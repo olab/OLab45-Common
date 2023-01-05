@@ -53,7 +53,7 @@ namespace OLabWebAPI.ObjectMapper
                 phys.ImageableId = id;
             phys.Mime = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "mime"));
 
-            phys.Name = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "name"));
+            phys.Name = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "name"), true);
             phys.Path = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "path"));
             phys.Args = elements.FirstOrDefault(x => x.Name == "args").Value;
 
