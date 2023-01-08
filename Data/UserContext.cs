@@ -126,7 +126,7 @@ namespace OLabWebAPI.Data
       {
         Session.SetSessionId(sessionId);
         if (!string.IsNullOrWhiteSpace(Session.GetSessionId()))
-          _logger.LogInformation($"Found SessionId {Session.GetSessionId()}.");
+          _logger.LogInformation($"Found ContextId {Session.GetSessionId()}.");
       }
 
       IPAddress = _httpRequest.Headers["X-Forwarded-Client-Ip"];
@@ -152,7 +152,7 @@ namespace OLabWebAPI.Data
       {
         Session.SetSessionId(sessionId);
         if (!string.IsNullOrWhiteSpace(Session.GetSessionId()))
-          _logger.LogInformation($"Found SessionId {Session.GetSessionId()}.");
+          _logger.LogInformation($"Found ContextId {Session.GetSessionId()}.");
       }
 
       IPAddress = _httpContext.Connection.RemoteIpAddress.ToString();

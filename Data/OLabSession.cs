@@ -86,9 +86,9 @@ namespace OLabWebAPI.Data
 
     }
 
-    public void OnQuestionResponse(uint mapId, uint nodeId, SystemQuestions question, string value)
+    public void OnQuestionResponse(uint mapId, uint nodeId, uint questionId, string value)
     {
-      _logger.LogInformation($"OnQuestionResponse: session {GetSessionId()} Map: {mapId} Node: {nodeId} Question: {question.Id} = {value} ");
+      _logger.LogInformation($"OnQuestionResponse: session {GetSessionId()} Map: {mapId} Node: {nodeId} Question: {questionId} = {value} ");
 
       UserSessions session = GetSession(GetSessionId());
       if (session == null)
@@ -97,7 +97,7 @@ namespace OLabWebAPI.Data
       UserResponses userResponse = new UserResponses
       {
         SessionId = session.Id,
-        QuestionId = question.Id,
+        QuestionId = questionId,
         Response = value,
         NodeId = nodeId,
         CreatedAt = GetUnixTime()

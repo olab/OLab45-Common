@@ -4,8 +4,8 @@ namespace OLabWebAPI.Dto
 {
     public class MapNodesDto
     {
-        [JsonProperty("sessionId")]
-        public string SessionId { get; set; }
+        [JsonProperty("contextId")]
+        public string ContextId { get; set; }
         [JsonProperty("title")]
         public string Title { get; set; }
         [JsonProperty("url")]

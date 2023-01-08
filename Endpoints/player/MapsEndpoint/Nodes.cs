@@ -68,8 +68,8 @@ namespace OLabWebAPI.Endpoints.Player
       if ((dto.TypeId == 1) && string.IsNullOrEmpty(_userContext.Session.GetSessionId()))
       {
         _userContext.Session.OnStartSession(_userContext, mapId);
-        dto.SessionId = _userContext.Session.GetSessionId();
-        _userContext.Session.SetSessionId(dto.SessionId);
+        dto.ContextId = _userContext.Session.GetSessionId();
+        _userContext.Session.SetSessionId(dto.ContextId);
       }
 
       _userContext.Session.OnPlayNode(mapId, dto.Id.Value);

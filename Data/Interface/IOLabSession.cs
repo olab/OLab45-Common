@@ -7,7 +7,7 @@ namespace OLabWebAPI.Data.Interface
   {
     public void OnStartSession(IUserContext userContext, uint mapId);
     public void OnPlayNode(uint mapId, uint nodeId);
-    public void OnQuestionResponse(uint mapId, uint nodeId, SystemQuestions question, string value);
+    public void OnQuestionResponse(uint mapId, uint nodeId, uint questionId, string value);
     public void OnEndSession(uint mapId, uint nodeId);
     public string GetSessionId();
     public void SetSessionId(string sessionId);
