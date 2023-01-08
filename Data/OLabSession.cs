@@ -42,7 +42,8 @@ namespace OLabWebAPI.Data
         MapId = mapId,
         StartTime = GetUnixTime(),
         UserIp = userContext.IPAddress,
-        Iss = userContext.Issuer
+        Iss = userContext.Issuer,
+        UserId = userContext.UserId
       };
 
       _context.UserSessions.Add(session);
