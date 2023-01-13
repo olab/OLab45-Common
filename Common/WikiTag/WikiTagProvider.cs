@@ -84,7 +84,7 @@ namespace OLabWebAPI.Common
                 plugInAssemblyList.Add(Assembly.LoadFile(file));
             }
 
-            logger.LogInformation($"loaded {plugInAssemblyList.Count} WikiTag assemblies");
+            //logger.LogInformation($"loaded {plugInAssemblyList.Count} WikiTag assemblies");
             return plugInAssemblyList;
         }
 

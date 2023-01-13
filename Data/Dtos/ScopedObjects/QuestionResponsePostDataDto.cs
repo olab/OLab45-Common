@@ -4,8 +4,6 @@ namespace OLabWebAPI.Dto
 {
     public class QuestionResponsePostDataDto
     {
-        [JsonProperty("sessionId")]
-        public string SessionId { get; set; }
         [JsonProperty("questionId")]
         public uint QuestionId { get; set; }
         [JsonProperty("previousResponseId")]

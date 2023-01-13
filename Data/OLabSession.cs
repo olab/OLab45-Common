@@ -3,6 +3,7 @@ using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Model;
 using System;
 using System.Linq;
+using OLabWebAPI.Utils;
 
 namespace OLabWebAPI.Data
 {
@@ -36,11 +37,13 @@ namespace OLabWebAPI.Data
     {
       _sessionId = IOLabSession.GenerateSessionId();
 
+      _logger.LogInformation($"generated a new contextId: {_sessionId}");
+
       UserSessions session = new UserSessions
       {
         Uuid = _sessionId,
         MapId = mapId,
-        StartTime = GetUnixTime(),
+        StartTime = Conversions.GetCurrentUnixTime(),
         UserIp = userContext.IPAddress,
         Iss = userContext.Issuer,
         UserId = userContext.UserId
@@ -60,7 +63,7 @@ namespace OLabWebAPI.Data
       if (session == null)
         return;
 
-      session.EndTime = GetUnixTime();
+      session.EndTime = Conversions.GetCurrentUnixTime();
 
       _context.UserSessions.Update(session);
       _context.SaveChanges();
@@ -79,7 +82,7 @@ namespace OLabWebAPI.Data
         SessionId = session.Id,
         MapId = mapId,
         NodeId = nodeId,
-        DateStamp = GetUnixTime()
+        DateStamp = Conversions.GetCurrentUnixTime()
       };
 
       _context.UserSessionTraces.Add(sessionTrace);
@@ -101,18 +104,11 @@ namespace OLabWebAPI.Data
         QuestionId = questionId,
         Response = value,
         NodeId = nodeId,
-        CreatedAt = GetUnixTime()
+        CreatedAt = Conversions.GetCurrentUnixTime()
       };
 
       _context.UserResponses.Add(userResponse);
       _context.SaveChanges();
-    }
-
-    private decimal GetUnixTime()
-    {
-      TimeSpan span = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-      double unixTime = span.TotalSeconds;
-      return (decimal)unixTime;
     }
 
     private UserSessions GetSession(string sessionId)

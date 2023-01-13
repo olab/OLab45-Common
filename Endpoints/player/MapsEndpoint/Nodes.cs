@@ -63,9 +63,8 @@ namespace OLabWebAPI.Endpoints.Player
       if (dto.End.HasValue && dto.End.Value)
         _userContext.Session.OnEndSession(mapId, dto.Id.Value);
 
-      // if root node, then start a new session if we don't have
-      // a session id already
-      if ((dto.TypeId == 1) && string.IsNullOrEmpty(_userContext.Session.GetSessionId()))
+      // if root node, then start a new session
+      if (dto.TypeId == 1)
       {
         _userContext.Session.OnStartSession(_userContext, mapId);
         dto.ContextId = _userContext.Session.GetSessionId();

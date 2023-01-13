@@ -6,7 +6,7 @@ namespace OLabWebAPI.Dto
 {
   public class ReportDataDto
   {
-    public DateTime Timestamp { get; set; }
+    public DateTime StartedAt { get; set; }
     public string Text { get; set; }
 
     public IList<ReportEntryDto> Entry { get; set; }
@@ -14,7 +14,7 @@ namespace OLabWebAPI.Dto
 
   public class ReportEntryDto
   {
-    public DateTime Timestamp { get; set; }
+    public DateTime EntryAt{ get; set; }
     public string Text{ get; set; }
   }
 }

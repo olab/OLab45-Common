@@ -67,5 +67,27 @@ namespace OLabWebAPI.Utils
       return Encoding.Default.GetString(binary);
     }
 
+    /// <summary>
+    /// Get current time in epoch seconds
+    /// </summary>
+    /// <returns>Seconds (including fractional) since epoch</returns>
+    public static decimal GetCurrentUnixTime()
+    {
+      TimeSpan span = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+      double unixTime = span.TotalSeconds;
+      return (decimal)unixTime;
+    }
+
+    /// <summary>
+    /// Convert epoch seconds to a DateTime
+    /// </summary>
+    /// <param name="epochSeconds"></param>
+    /// <returns>DateTime</returns>
+    public static DateTime GetTime(decimal epochSeconds)
+    {
+      DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds((long)epochSeconds);
+      return dateTimeOffset.DateTime;
+    }
+
   }
 }
