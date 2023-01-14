@@ -43,9 +43,15 @@ namespace OLabWebAPI.Endpoints.Player
           if (question.EntryTypeId == 4)
             // handle questions that have a single response
             ProcessSingleResponseQuestion(question, counterDto, body);
+
           else if (question.EntryTypeId == 3)
             // handle questions that have multiple responses
             ProcessMultipleResponseQuestion(question, counterDto, body);
+
+          else if (question.EntryTypeId == 12)
+            // handle questions that have a slider
+            ProcessSingleResponseQuestion(question, counterDto, body);
+
           else
             throw new OLabGeneralException($"question {question.Id} not implemented");
         }
@@ -149,6 +155,7 @@ namespace OLabWebAPI.Endpoints.Player
         currentResponse = question.GetResponse(body.ResponseId.Value);
         if (currentResponse == null)
           throw new Exception($"Question response {body.ResponseId.Value} not found");
+
         if (currentResponse.Score.HasValue)
           currentScore = currentResponse.Score.Value;
         else
@@ -162,6 +169,7 @@ namespace OLabWebAPI.Endpoints.Player
         previousResponse = question.GetResponse(body.PreviousResponseId.Value);
         if (previousResponse == null)
           throw new Exception($"Question previous response {body.PreviousResponseId.Value} not found");
+
         if (previousResponse.Score.HasValue)
           previousScore = previousResponse.Score.Value;
         else

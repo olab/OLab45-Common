@@ -3,15 +3,21 @@ using System.Collections.Generic;
 
 namespace OLabWebAPI.Dto
 {
-    public class MapsNodesFullRelationsDto : MapNodesFullDto
+  public class MapsNodesFullRelationsDto : MapNodesFullDto
+  {
+    [JsonProperty("links")]
+    public IList<MapNodeLinksDto> MapNodeLinks { get; set; }
+
+    [JsonProperty("dynamicObjects")]
+    public DynamicScopedObjectsDto DynamicObjects { get; set; }
+
+    public int LinkCount { get { return MapNodeLinks.Count; } }
+
+    public MapsNodesFullRelationsDto()
     {
-        [JsonProperty("links")]
-        public IList<MapNodeLinksDto> MapNodeLinks { get; set; }
-
-        // [JsonProperty("counters")]
-        // public IList<MapNodeCountersDto> MapNodeCounters { get; set; }
-
-        public int LinkCount { get { return MapNodeLinks.Count; } }
-
+      MapNodeLinks= new List<MapNodeLinksDto>();
+      DynamicObjects= new DynamicScopedObjectsDto();
     }
+
+  }
 }

@@ -8,6 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OLabWebAPI.ObjectMapper;
+using OLabWebAPI.ObjectMapper.Designer;
+using Humanizer;
 
 namespace OLabWebAPI.Endpoints.Player
 {
@@ -41,9 +44,9 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="sinceTime"></param>
     /// <returns></returns>
     public async Task<DynamicScopedObjectsDto> GetDynamicScopedObjectsTranslatedAsync(
-      IOLabAuthentication auth, 
-      uint mapId, 
-      uint nodeId, 
+      IOLabAuthentication auth,
+      uint mapId,
+      uint nodeId,
       uint sinceTime = 0)
     {
       logger.LogDebug($"DynamicScopedObjectsController.GetDynamicScopedObjectsTranslatedAsync({mapId}, {nodeId}, {sinceTime})");
@@ -78,22 +81,59 @@ namespace OLabWebAPI.Endpoints.Player
       physNode.Counters = await GetScopedCountersAsync(Utils.Constants.ScopeLevelNode, node.Id);
       physMap.Counters = await GetScopedCountersAsync(Utils.Constants.ScopeLevelMap, node.MapId);
 
-
       await ProcessNodeCounters(node, physMap.Counters);
 
       var builder = new ObjectMapper.DynamicScopedObjects(logger, enableWikiTranslation);
-
       var dto = builder.PhysicalToDto(physServer, physMap, physNode);
+
       return dto;
     }
 
+    public async Task<IList<CountersDto>> ProcessNodeOpenCountersAsync(uint nodeId, IList<CountersDto> orgDtoList)
+    {
+      var newDtoList = new List<CountersDto>();
+      var node = await dbContext.MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
+
+      var counterActions = await dbContext.SystemCounterActions.Where(x =>
+        (x.ImageableId == node.Id) &&
+        (x.ImageableType == Utils.Constants.ScopeLevelNode) &&
+        (x.OperationType == "open")).ToListAsync();
+
+      logger.LogDebug($"Found {counterActions.Count} counterActions records for node {node.Id} ");
+
+      foreach (var counterAction in counterActions)
+      {
+        var dto = orgDtoList.FirstOrDefault(x => x.Id == counterAction.CounterId);
+        if (dto == null)
+          logger.LogError($"Enable to lookup counter {counterAction.CounterId} in action {counterAction.Id}");
+
+        else
+        {
+          // convert to physical object so we can use the counterActions code
+          var phys = new ObjectMapper.Counters(logger).DtoToPhysical(dto);
+
+          if (counterAction.ApplyFunctionToCounter(phys))
+          {
+            dto = new ObjectMapper.Counters(logger).PhysicalToDto(phys);
+            logger.LogDebug($"Updated counter '{dto.Name}' ({dto.Id}) with function '{counterAction.Expression}'. now = {dto.Value}");
+          }
+
+          newDtoList.Add(dto);
+
+        }
+
+      }
+
+      return newDtoList;
+    }
+
     /// <summary>
-    /// Apply MapNodeCounter expressions to counters
+    /// Apply MapNodeCounter expressions to orgDtoList
     /// </summary>
     /// <param name="node">Current node</param>
-    /// <param name="counters">Raw system (map-level) counters</param>
+    /// <param name="physList">Raw system (map-level) orgDtoList</param>
     /// <returns>void</returns>
-    private async Task ProcessNodeCounters(Model.MapNodes node, IList<SystemCounters> counters)
+    private async Task<IList<SystemCounters>> ProcessNodeCounters(Model.MapNodes node, IList<SystemCounters> physList)
     {
       var counterActions = await dbContext.SystemCounterActions.Where(x =>
         (x.ImageableId == node.Id) &&
@@ -104,14 +144,15 @@ namespace OLabWebAPI.Endpoints.Player
 
       foreach (var counterAction in counterActions)
       {
-        var rawCounter = counters.FirstOrDefault(x => x.Id == counterAction.CounterId);
-        if (rawCounter == null)
+        var phys = physList.FirstOrDefault(x => x.Id == counterAction.CounterId);
+        if (phys == null)
           logger.LogError($"Enable to lookup counter {counterAction.CounterId} in action {counterAction.Id}");
-        else if (counterAction.ApplyFunctionToCounter(rawCounter))
-          logger.LogDebug($"Updated counter id {rawCounter.Id} with function '{counterAction.Expression}'. now = {rawCounter.ValueAsString()}");
+
+        else if (counterAction.ApplyFunctionToCounter(phys))
+          logger.LogDebug($"Updated counter '{phys.Name}' ({phys.Id}) with function '{counterAction.Expression}'. now = {phys.Value}");
       }
 
-      return;
+      return physList;
     }
   }
 }

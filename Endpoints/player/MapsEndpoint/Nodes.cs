@@ -75,8 +75,10 @@ namespace OLabWebAPI.Endpoints.Player
 
       UpdateNodeCounter();
 
+      dto.DynamicObjects = await GetDynamicScopedObjectsTranslatedAsync(auth, mapId, nodeId);
+
       return dto;
-    }
+    }    
 
     /// <summary>
     /// Delete a node from the map
