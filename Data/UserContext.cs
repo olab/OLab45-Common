@@ -251,6 +251,15 @@ namespace OLabWebAPI.Data
       if (acl != null)
         return true;
 
+      // test for all for object type acl
+      acl = _roleAcls.Where(x =>
+       (x.ImageableType == objectType) &&
+       (x.ImageableId == 0) &&
+       x.Acl.Contains(requestedPerm)).FirstOrDefault();
+
+      if (acl != null)
+        return true;
+
       // test for generic acl
       acl = _roleAcls.Where(x =>
        (x.ImageableType == WildCardObjectType) &&
@@ -286,6 +295,15 @@ namespace OLabWebAPI.Data
       acl = _userAcls.Where(x =>
        (x.ImageableType == objectType) &&
        (x.ImageableId == WildCardObjectId) &&
+       x.Acl.Contains(requestedPerm)).FirstOrDefault();
+
+      if (acl != null)
+        return true;
+
+      // test for all for object type acl
+      acl = _userAcls.Where(x =>
+       (x.ImageableType == objectType) &&
+       (x.ImageableId == 0) &&
        x.Acl.Contains(requestedPerm)).FirstOrDefault();
 
       if (acl != null)

@@ -37,10 +37,6 @@ namespace OLabWebAPI.Endpoints.Player
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      // test if user has access to node.
-      if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, nodeId))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, nodeId);
-
       var map = await MapsReaderWriter.Instance(logger.GetLogger(), dbContext).GetSingleAsync(mapId);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
@@ -58,6 +54,10 @@ namespace OLabWebAPI.Endpoints.Player
         if (!dto.Id.HasValue)
           throw new OLabGeneralException($"map {map.Id} has no root node");
       }
+
+      // test if user has access to node.
+      if (!auth.HasAccess("R", Utils.Constants.ScopeLevelNode, dto.Id.Value))
+        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, dto.Id.Value);
 
       // test if end node, meaning we can close the session.  
       if (dto.End.HasValue && dto.End.Value)
