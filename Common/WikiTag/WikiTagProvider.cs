@@ -47,10 +47,10 @@ namespace OLabWebAPI.Common
         /// <returns>List of assemblies</returns>
         private List<Assembly> LoadPlugInAssemblies()
         {
-            string currentAssemblyFile = Assembly.GetExecutingAssembly().Location;
+            var currentAssemblyFile = Assembly.GetExecutingAssembly().Location;
             // logger.LogInformation($"Current assembly path '{currentAssemblyFile}'");
 
-            string rootPath = Path.GetDirectoryName(currentAssemblyFile);
+            var rootPath = Path.GetDirectoryName(currentAssemblyFile);
 
             // var rootFiles = Directory.GetFiles(rootPath, "*", SearchOption.TopDirectoryOnly);
             // foreach (string file in rootFiles) {
@@ -74,11 +74,11 @@ namespace OLabWebAPI.Common
             if (!Directory.Exists(rootPath))
                 throw new DirectoryNotFoundException($"Unable to load plugin path. '{rootPath}'");
 
-            string[] files = Directory.GetFiles(rootPath, "WikiTags.dll");
+            var files = Directory.GetFiles(rootPath, "WikiTags.dll");
 
-            List<Assembly> plugInAssemblyList = new List<Assembly>();
+            var plugInAssemblyList = new List<Assembly>();
 
-            foreach (string file in files)
+            foreach (var file in files)
             {
                 // logger.LogInformation($"loading WikiTag assembly: '{file}'");
                 plugInAssemblyList.Add(Assembly.LoadFile(file));
@@ -95,7 +95,7 @@ namespace OLabWebAPI.Common
         /// <returns>Dictionary of plug-ins</returns>
         private Dictionary<string, IWikiTagModule> GetPlugIns(List<Assembly> assemblies)
         {
-            List<Type> availableTypes = new List<Type>();
+            var availableTypes = new List<Type>();
 
             foreach (Assembly currentAssembly in assemblies)
                 availableTypes.AddRange(currentAssembly.GetTypes());
@@ -104,12 +104,12 @@ namespace OLabWebAPI.Common
             // have the WikiTagModuleAttribute
             List<Type> wikiTagList = availableTypes.FindAll(delegate (Type t)
             {
-                List<Type> interfaceTypes = new List<Type>(t.GetInterfaces());
-                object[] arr = t.GetCustomAttributes(typeof(WikiTagModuleAttribute), true);
+                var interfaceTypes = new List<Type>(t.GetInterfaces());
+                var arr = t.GetCustomAttributes(typeof(WikiTagModuleAttribute), true);
                 return !(arr == null || arr.Length == 0) && interfaceTypes.Contains(typeof(IWikiTagModule));
             });
 
-            Dictionary<string, IWikiTagModule> dict = new Dictionary<string, IWikiTagModule>();
+            var dict = new Dictionary<string, IWikiTagModule>();
             foreach (Type item in wikiTagList)
             {
                 WikiTagModuleAttribute t = item.GetCustomAttribute<WikiTagModuleAttribute>();

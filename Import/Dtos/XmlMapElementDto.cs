@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -32,15 +31,15 @@ namespace OLabWebAPI.Importer
         public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
         {
             Model.SystemFiles item = _mapper.ElementsToPhys(elements);
-            uint oldId = item.Id;
+            var oldId = item.Id;
 
             item.Id = 0;
 
-            XmlMapDto mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
+            var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
             item.ImageableId = mapDto.GetIdTranslation(GetFileName(), item.ImageableId).Value;
             item.ImageableType = "Maps";
 
-            String path = Path.Combine(GetImportPackageDirectory(), "media", Path.GetFileName(item.Path));
+            var path = Path.Combine(GetImportPackageDirectory(), "media", Path.GetFileName(item.Path));
             if (!File.Exists(path))
                 GetImporter().GetLogger().LogWarning(GetFileName(), 0, $"media file '{Path.GetFileName(item.Path)}' does not exist in import package");
 

@@ -6,7 +6,7 @@ namespace OLabWebAPI.Common
     {
         public static JsonResult Result(D value)
         {
-            OLabAPIResponse<D> result = new OLabAPIResponse<D>
+            var result = new OLabAPIResponse<D>
             {
                 Data = value
             };

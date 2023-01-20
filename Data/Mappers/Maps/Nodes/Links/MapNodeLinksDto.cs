@@ -24,7 +24,7 @@ namespace OLabWebAPI.ObjectMapper
 
         public new IList<MapNodeLinksDto> PhysicalToDto(IList<MapNodeLinks> physList)
         {
-            List<MapNodeLinksDto> dtoList = new List<MapNodeLinksDto>();
+            var dtoList = new List<MapNodeLinksDto>();
 
             foreach (MapNodeLinks phys in physList.OrderBy(x => x.Order))
             {
@@ -35,12 +35,12 @@ namespace OLabWebAPI.ObjectMapper
                 // do a probability of showing check
                 if (phys.Probability.HasValue && (phys.Probability.Value > 0))
                 {
-                    int chance = random.Next() % 100;
+                    var chance = random.Next() % 100;
                     if (chance > phys.Probability)
                         continue;
                 }
 
-                MapNodeLinksDto dto = new MapNodeLinksDto();
+                var dto = new MapNodeLinksDto();
                 PhysicalToDto(phys, dto);
                 dtoList.Add(dto);
             }

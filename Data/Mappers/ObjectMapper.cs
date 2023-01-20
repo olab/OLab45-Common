@@ -48,7 +48,7 @@ namespace OLabWebAPI.ObjectMapper
 
         public virtual IList<D> PhysicalToDto(IList<P> physList)
         {
-            List<D> dtoList = new List<D>();
+            var dtoList = new List<D>();
             foreach (P phys in physList)
             {
                 D dto = PhysicalToDto(phys);
@@ -72,7 +72,7 @@ namespace OLabWebAPI.ObjectMapper
 
         protected uint? GetIdTranslation(uint originalId)
         {
-            if (!_idTranslation.TryGetValue(originalId, out uint? newId))
+            if (!_idTranslation.TryGetValue(originalId, out var newId))
                 return newId;
 
             throw new KeyNotFoundException($"Cound not find Id key {originalId}");

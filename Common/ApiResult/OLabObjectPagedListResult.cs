@@ -7,7 +7,7 @@ namespace OLabWebAPI.Common
     {
         public static JsonResult Result(IList<D> value, int remaining)
         {
-            OLabAPIPagedResponse<D> result = new OLabAPIPagedResponse<D>
+            var result = new OLabAPIPagedResponse<D>
             {
                 Data = value,
                 Remaining = remaining,

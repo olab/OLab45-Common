@@ -11,7 +11,7 @@ namespace OLabWebAPI.Model
         public static Maps CreateDefault(Maps templateMap)
         {
             // use AutoMapper to do a Deep Copy
-            Mapper mapper = new Mapper(new MapperConfiguration(cfg =>
+            var mapper = new Mapper(new MapperConfiguration(cfg =>
               cfg.CreateMap<Maps, Maps>().ReverseMap()
             ));
 
@@ -31,7 +31,7 @@ namespace OLabWebAPI.Model
 
         public static Maps CreateDefault()
         {
-            Maps map = new Maps
+            var map = new Maps
             {
                 Abstract = "<b>New Map</b>",
                 DeltaTime = 0,

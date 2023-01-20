@@ -40,8 +40,8 @@ namespace OLabWebAPI.Importer
             if (phys.Key == "VPDText")
                 return true;
 
-            SystemConstants item = new SystemConstants();
-            uint oldId = phys.VpdId;
+            var item = new SystemConstants();
+            var oldId = phys.VpdId;
 
             item.Id = 0;
             item.ImageableType = "Maps";
@@ -50,10 +50,10 @@ namespace OLabWebAPI.Importer
             item.CreatedAt = DateTime.Now;
             item.Description = $"Imported from {GetFileName()} id = {phys.Id}.";
 
-            XmlMapVpdDto vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdDto) as XmlMapVpdDto;
+            var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdDto) as XmlMapVpdDto;
             XmlMapVpd vpd = vpdDto.GetModel().Data.First(x => x.Id == phys.VpdId);
 
-            XmlMapDto mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
+            var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
             item.ImageableId = mapDto.GetIdTranslation(GetFileName(), vpd.MapId).Value;
 
             Context.SystemConstants.Add(item);

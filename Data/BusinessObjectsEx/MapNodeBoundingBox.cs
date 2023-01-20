@@ -45,10 +45,10 @@ namespace OLabWebAPI.Utils
 
         public void Load(List<MapNodes> nodes)
         {
-            double? minX = nodes.Min(p => p.X);
-            double? minY = nodes.Min(p => p.Y);
-            double? maxX = nodes.Max(p => p.Width + p.X);
-            double? maxY = nodes.Max(p => p.Height + p.Y);
+            var minX = nodes.Min(p => p.X);
+            var minY = nodes.Min(p => p.Y);
+            var maxX = nodes.Max(p => p.Width + p.X);
+            var maxY = nodes.Max(p => p.Height + p.Y);
 
             Rect = RectangleF.FromLTRB((float)minX, (float)minY, (float)maxX, (float)maxY);
         }

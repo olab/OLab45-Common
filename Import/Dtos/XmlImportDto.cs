@@ -64,7 +64,7 @@ namespace OLabWebAPI.Importer
             if (originalId == 0)
                 return 0;
 
-            if (_idTranslation.TryGetValue(originalId, out uint? newId))
+            if (_idTranslation.TryGetValue(originalId, out var newId))
                 return newId;
 
             throw new KeyNotFoundException($"references {GetFileName()} Id {originalId}: not found");
@@ -79,7 +79,7 @@ namespace OLabWebAPI.Importer
         {
             if (!originalId.HasValue)
                 return originalId;
-            uint? value = GetIdTranslation(referencedFile, (uint)originalId.Value);
+            var value = GetIdTranslation(referencedFile, (uint)originalId.Value);
             return (int?)value;
         }
 
@@ -90,13 +90,13 @@ namespace OLabWebAPI.Importer
         /// <returns>Success/Failure</returns>
         public override bool Load(string importDirectory)
         {
-            bool rc = true;
+            var rc = true;
 
             try
             {
                 _importDirectory = importDirectory;
 
-                string filePath = Path.Combine(GetImportPackageDirectory(), GetFileName());
+                var filePath = Path.Combine(GetImportPackageDirectory(), GetFileName());
                 GetLogger().LogDebug($"Loading {GetFileName()}");
 
                 if (File.Exists(filePath))
@@ -109,14 +109,14 @@ namespace OLabWebAPI.Importer
 
                 dynamic outerElements = GetElements(GetXmlPhys());
 
-                int record = 0;
+                var record = 0;
 
                 foreach (dynamic innerElements in outerElements)
                 {
                     try
                     {
                         ++record;
-                        IEnumerable<dynamic> elements = (IEnumerable<dynamic>)innerElements.Elements();
+                        var elements = (IEnumerable<dynamic>)innerElements.Elements();
                         xmlImportElementSets.Add(elements);
                     }
                     catch (Exception ex)
@@ -147,7 +147,7 @@ namespace OLabWebAPI.Importer
         {
             GetLogger().LogDebug($"Saving {xmlImportElementSets.Count()} {GetFileName()} objects");
 
-            int recordIndex = 1;
+            var recordIndex = 1;
             foreach (IEnumerable<dynamic> elements in xmlImportElementSets)
             {
                 try
@@ -181,7 +181,7 @@ namespace OLabWebAPI.Importer
         /// <returns>Public directory for scope</returns>
         public string GetPublicFileDirectory(string parentType, uint parentId, string path = "")
         {
-            string targetDirectory = Path.Combine(GetWebsitePublicDirectory(), parentType);
+            var targetDirectory = Path.Combine(GetWebsitePublicDirectory(), parentType);
             targetDirectory = Path.Combine(targetDirectory, parentId.ToString());
 
             if (!string.IsNullOrEmpty(path))
@@ -197,13 +197,13 @@ namespace OLabWebAPI.Importer
         /// <returns>true/false</returns>
         public bool DoesPublicFileExist(string path)
         {
-            String filePath = Path.Combine(GetWebsitePublicDirectory(), Path.GetFileName(path));
+            var filePath = Path.Combine(GetWebsitePublicDirectory(), Path.GetFileName(path));
             return File.Exists(filePath);
         }
 
         public static IList<string> GetWikiTags(string source)
         {
-            List<string> tags = new List<string>();
+            var tags = new List<string>();
             return tags;
         }
 

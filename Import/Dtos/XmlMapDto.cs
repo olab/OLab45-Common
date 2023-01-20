@@ -46,7 +46,7 @@ namespace OLabWebAPI.Importer
         public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
         {
             Model.Maps item = _mapper.ElementsToPhys(elements);
-            uint oldId = item.Id;
+            var oldId = item.Id;
             item.Id = 0;
 
             Context.Maps.Add(item);

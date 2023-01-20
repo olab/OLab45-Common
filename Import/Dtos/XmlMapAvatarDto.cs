@@ -30,7 +30,7 @@ namespace OLabWebAPI.Importer
 
         public SystemFiles CreateAvatarSystemFile(IEnumerable<dynamic> elements, MapAvatars avatar)
         {
-            SystemFiles phys = new SystemFiles
+            var phys = new SystemFiles
             {
                 Id = 0,
                 Name = $"Avatar{avatar.Id}",
@@ -53,11 +53,11 @@ namespace OLabWebAPI.Importer
         public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
         {
             MapAvatars avItem = _avMapper.ElementsToPhys(elements);
-            uint oldId = avItem.Id;
+            var oldId = avItem.Id;
 
             avItem.Id = 0;
 
-            XmlMapDto mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
+            var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
             avItem.MapId = mapDto.GetIdTranslation(GetFileName(), avItem.MapId).Value;
 
             Context.MapAvatars.Add(avItem);
@@ -71,7 +71,7 @@ namespace OLabWebAPI.Importer
             fileItem.ImageableType = "Maps";
             fileItem.Path = avItem.Image;
 
-            String publicFile = GetPublicFileDirectory(fileItem.ImageableType, fileItem.ImageableId, fileItem.Path);
+            var publicFile = GetPublicFileDirectory(fileItem.ImageableType, fileItem.ImageableId, fileItem.Path);
             if (!File.Exists(publicFile))
                 GetImporter().GetLogger().LogWarning(GetFileName(), 0, $"media file '{publicFile}' does not exist in public directory");
 

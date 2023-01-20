@@ -61,7 +61,7 @@ namespace OLabWebAPI.Utils
         {
             if (_keepMessages)
             {
-                OLabLogMessage obj = new OLabLogMessage
+                var obj = new OLabLogMessage
                 {
                     Message = message,
                     Time = DateTime.Now,
@@ -73,7 +73,7 @@ namespace OLabWebAPI.Utils
 
         private void Log(OLabLogMessage.MessageLevel level, string type, int index, string message)
         {
-            OLabLogMessage obj = new OLabLogMessage
+            var obj = new OLabLogMessage
             {
                 ObjectIndex = index,
                 ObjectType = type,

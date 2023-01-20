@@ -32,7 +32,7 @@ namespace OLabWebAPI.ObjectMapper
           Model.ScopedObjects node
         )
         {
-            DynamicScopedObjectsDto dto = new DynamicScopedObjectsDto();
+            var dto = new DynamicScopedObjectsDto();
             PhysicalToDto(server, map, node, dto);
             return dto;
         }

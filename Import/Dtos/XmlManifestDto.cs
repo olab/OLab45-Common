@@ -18,13 +18,13 @@ namespace OLabWebAPI.Importer
         /// <returns></returns>
         public override bool Load(string importDirectory)
         {
-            bool result = base.Load(importDirectory);
+            var result = base.Load(importDirectory);
 
             if (result)
             {
                 dynamic elements = GetElements(GetXmlPhys());
 
-                int record = 0;
+                var record = 0;
                 foreach (dynamic element in elements)
                 {
                     try

@@ -31,15 +31,15 @@ namespace OLabWebAPI.Importer
         public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
         {
             Model.SystemQuestions item = _mapper.ElementsToPhys(elements);
-            uint oldId = item.Id;
+            var oldId = item.Id;
 
             item.Id = 0;
 
-            XmlMapDto mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
+            var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
             item.ImageableId = mapDto.GetIdTranslation(GetFileName(), item.ImageableId).Value;
             item.Description = $"Imported from {GetFileName()} id = {oldId}";
 
-            XmlMapCounterDto counterDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapCounterDto) as XmlMapCounterDto;
+            var counterDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapCounterDto) as XmlMapCounterDto;
             if (item.CounterId.HasValue)
                 item.CounterId = counterDto.GetIdTranslation(GetFileName(), item.CounterId.Value);
 

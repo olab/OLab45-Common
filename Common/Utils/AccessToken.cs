@@ -15,11 +15,11 @@ namespace OLabWebAPI.Utils
             if (string.IsNullOrEmpty(authorizationHeader))
                 throw new OLabUnauthorizedException();
 
-            string[] parts = authorizationHeader.Split(" ");
+            var parts = authorizationHeader.Split(" ");
             if (parts.Length != 2)
                 throw new OLabUnauthorizedException();
 
-            string accessToken = parts[1];
+            var accessToken = parts[1];
             return accessToken;
         }
     }

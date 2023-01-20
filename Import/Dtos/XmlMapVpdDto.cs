@@ -22,13 +22,13 @@ namespace OLabWebAPI.Importer
         /// <returns></returns>
         public override bool Load(string importDirectory)
         {
-            bool rc = true;
+            var rc = true;
 
             try
             {
                 SetImportDirectory(importDirectory);
 
-                string filePath = Path.Combine(GetImportPackageDirectory(), GetFileName());
+                var filePath = Path.Combine(GetImportPackageDirectory(), GetFileName());
                 GetLogger().LogDebug($"Loading '{Path.GetFileName(filePath)}'");
 
                 if (File.Exists(filePath))
@@ -40,19 +40,19 @@ namespace OLabWebAPI.Importer
                 }
 
                 dynamic outerElements = GetElements(GetXmlPhys());
-                int record = 0;
+                var record = 0;
 
                 foreach (dynamic innerElements in outerElements)
                 {
                     try
                     {
                         ++record;
-                        IEnumerable<dynamic> elements = (IEnumerable<dynamic>)innerElements.Elements();
+                        var elements = (IEnumerable<dynamic>)innerElements.Elements();
                         xmlImportElementSets.Add(elements);
 
                         Model.MapVpds item = _mapper.ElementsToPhys(elements);
 
-                        XmlMapVpd phys = new XmlMapVpd
+                        var phys = new XmlMapVpd
                         {
                             Id = item.Id,
                             MapId = item.MapId,
@@ -100,7 +100,7 @@ namespace OLabWebAPI.Importer
         public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
         {
             Model.MapVpds item = _mapper.ElementsToPhys(elements);
-            uint oldId = item.Id;
+            var oldId = item.Id;
             item.Id = 0;
 
             Context.MapVpds.Add(item);

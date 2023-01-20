@@ -32,14 +32,14 @@ namespace OLabWebAPI.Importer
         public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
         {
             Model.MapNodeLinks item = _mapper.ElementsToPhys(elements);
-            uint oldId = item.Id;
+            var oldId = item.Id;
 
             item.Id = 0;
 
-            XmlMapDto mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
+            var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
             item.MapId = mapDto.GetIdTranslation(GetFileName(), item.MapId).Value;
 
-            XmlMapNodeDto nodeDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapNodeDto) as XmlMapNodeDto;
+            var nodeDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapNodeDto) as XmlMapNodeDto;
             item.NodeId1 = nodeDto.GetIdTranslation(GetFileName(), item.NodeId1).Value;
             item.NodeId2 = nodeDto.GetIdTranslation(GetFileName(), item.NodeId2).Value;
 

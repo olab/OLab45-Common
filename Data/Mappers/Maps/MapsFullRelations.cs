@@ -43,13 +43,13 @@ namespace OLabWebAPI.ObjectMapper
         /// <returns>Dto object</returns>
         public override MapsFullRelationsDto PhysicalToDto(Model.Maps map)
         {
-            MapsFullRelationsDto dto = new MapsFullRelationsDto
+            var dto = new MapsFullRelationsDto
             {
                 Map = new MapsFullMapper(logger).PhysicalToDto(map),
                 MapNodes = new MapNodesFullMapper(logger).PhysicalToDto(map.MapNodes.ToList())
             };
 
-            List<MapNodeLinks> links = new List<MapNodeLinks>();
+            var links = new List<MapNodeLinks>();
             foreach (MapNodes node in map.MapNodes)
                 links.AddRange(node.MapNodeLinksNodeId1Navigation);
 

@@ -27,13 +27,13 @@ namespace OLabWebAPI.Model
 
         public int GetScoreFromResponses(string idList)
         {
-            List<string> ids = idList.Split(",").ToList();
-            List<uint> iduints = new List<uint>();
+            var ids = idList.Split(",").ToList();
+            var iduints = new List<uint>();
 
             // convert list of strings to list of uints
-            foreach (string id in ids)
+            foreach (var id in ids)
             {
-                if (uint.TryParse(id, out uint iduint))
+                if (uint.TryParse(id, out var iduint))
                     iduints.Add(iduint);
             }
 
@@ -42,8 +42,8 @@ namespace OLabWebAPI.Model
 
         public int GetScoreFromResponses(IList<uint> ids)
         {
-            int score = 0;
-            foreach (uint id in ids)
+            var score = 0;
+            foreach (var id in ids)
             {
                 SystemQuestionResponses response = GetResponse(id);
                 if (response != null)

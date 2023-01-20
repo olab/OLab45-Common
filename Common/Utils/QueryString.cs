@@ -18,7 +18,7 @@ namespace OLabWebAPI.Utils
 
         public string Get(string key)
         {
-            if (!_values.TryGetValue(key, out string value))
+            if (!_values.TryGetValue(key, out var value))
                 throw new KeyNotFoundException(key);
 
             return value;
@@ -26,7 +26,7 @@ namespace OLabWebAPI.Utils
 
         public int? GetOptional(string key, int? defaultValue)
         {
-            if (!_values.TryGetValue(key, out string value))
+            if (!_values.TryGetValue(key, out var value))
                 return defaultValue;
 
             return Convert.ToInt32(value);
@@ -34,7 +34,7 @@ namespace OLabWebAPI.Utils
 
         public string GetOptional(string key, string defaultValue)
         {
-            if (!_values.TryGetValue(key, out string value))
+            if (!_values.TryGetValue(key, out var value))
                 return defaultValue;
             return value;
         }

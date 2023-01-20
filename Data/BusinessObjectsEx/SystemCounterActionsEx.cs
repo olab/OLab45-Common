@@ -15,11 +15,11 @@ namespace OLabWebAPI.Model
         private bool ProcessNumericCounter(SystemCounters targetCounter)
         {
             // test for numeric constant function expression
-            Regex regex = new Regex("=[-,+]?[0-9]+");
+            var regex = new Regex("=[-,+]?[0-9]+");
             Match match = regex.Match(Expression);
             if (match.Success)
             {
-                if (!decimal.TryParse(match.Value[1..], out decimal newValue))
+                if (!decimal.TryParse(match.Value[1..], out var newValue))
                     targetCounter.ValueFromString(SystemCounters.NotANumber);
                 else
                     targetCounter.ValueFromNumber(newValue);
@@ -32,8 +32,8 @@ namespace OLabWebAPI.Model
             match = regex.Match(Expression);
             if (match.Success)
             {
-                decimal orgValue = targetCounter.ValueAsNumber();
-                if (!decimal.TryParse(match.Value[1..], out decimal newValue))
+                var orgValue = targetCounter.ValueAsNumber();
+                if (!decimal.TryParse(match.Value[1..], out var newValue))
                     targetCounter.ValueFromString(SystemCounters.NotANumber);
                 else
                     targetCounter.ValueFromNumber(orgValue + newValue);
@@ -47,7 +47,7 @@ namespace OLabWebAPI.Model
             match = regex.Match(Expression);
             if (match.Success)
             {
-                if (!decimal.TryParse(match.Value[1..], out decimal newValue))
+                if (!decimal.TryParse(match.Value[1..], out var newValue))
                     targetCounter.ValueFromString(SystemCounters.NotANumber);
                 else
                     targetCounter.ValueFromNumber(newValue);
@@ -65,13 +65,13 @@ namespace OLabWebAPI.Model
             try
             {
                 // test string literal function expression
-                Regex regex = new Regex("=[a-z,A-Z,0-9,\\ ]+");
+                var regex = new Regex("=[a-z,A-Z,0-9,\\ ]+");
                 Match match = regex.Match(Expression);
 
                 if (match.Success)
                 {
-                    string orgValue = targetCounter.ValueAsString();
-                    string newValue = match.Value[1..];
+                    var orgValue = targetCounter.ValueAsString();
+                    var newValue = match.Value[1..];
                     if (orgValue != newValue)
                         targetCounter.ValueFromString(newValue);
                 }

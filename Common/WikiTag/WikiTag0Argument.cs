@@ -13,20 +13,20 @@ namespace OLabWebAPI.Common
 
         protected override string BuildWikiTagHTMLElement()
         {
-            XDocument doc = new XDocument();
-            XElement xml = new XElement(
+            var doc = new XDocument();
+            var xml = new XElement(
               GetHtmlElementName(),
               string.Empty
             );
 
-            List<string> classes = new List<string> { GetHtmlElementName() };
+            var classes = new List<string> { GetHtmlElementName() };
             xml.SetAttributeValue("class", string.Join(" ", classes));
             xml.SetAttributeValue("props", "{props}");
 
             doc.Add(xml);
 
             // de-quote any attributes which are bindings
-            string element = doc.ToString();
+            var element = doc.ToString();
             element = element.Replace("\"{", "{");
             element = element.Replace("}\"", "}");
 
@@ -40,7 +40,7 @@ namespace OLabWebAPI.Common
 
             while (HaveWikiTag(source))
             {
-                string element = BuildWikiTagHTMLElement();
+                var element = BuildWikiTagHTMLElement();
                 _logger.LogDebug($"replacing {GetWiki()} <= {element}");
                 source = ReplaceWikiTag(source, element);
             }

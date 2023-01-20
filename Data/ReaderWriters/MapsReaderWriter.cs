@@ -95,12 +95,12 @@ namespace OLabWebAPI.Model.ReaderWriter
         /// <returns>Modified map</returns>
         private async Task<Maps> CloneMapAsync(Maps map, Maps template)
         {
-            uint oldMapId = template.Id;
+            var oldMapId = template.Id;
 
-            Dictionary<uint, uint> reverseNodeIdMap = new Dictionary<uint, uint>();
-            MapNodeBoundingBox mapBoundingBox = new MapNodeBoundingBox();
-            MapNodeBoundingBox templateBoundingBox = new MapNodeBoundingBox();
-            List<PointF> points = new List<PointF>();
+            var reverseNodeIdMap = new Dictionary<uint, uint>();
+            var mapBoundingBox = new MapNodeBoundingBox();
+            var templateBoundingBox = new MapNodeBoundingBox();
+            var points = new List<PointF>();
 
             // if no map passed in, then create a new one
             // which will be added to the database.  otherwise
@@ -135,7 +135,7 @@ namespace OLabWebAPI.Model.ReaderWriter
             // reassign nodes to target map and add to target map
             foreach (MapNodes node in template.MapNodes)
             {
-                uint oldNodeId = node.Id;
+                var oldNodeId = node.Id;
                 MapNodes.Reassign(map, node);
 
                 // if template node is a root node AND we are adding to an existing
@@ -144,7 +144,7 @@ namespace OLabWebAPI.Model.ReaderWriter
                     node.TypeId = 2;
 
                 // transform position of node using the transform vector
-                PointF nodeCoord = new PointF((float)node.X.Value, (float)node.Y.Value);
+                var nodeCoord = new PointF((float)node.X.Value, (float)node.Y.Value);
                 PointF newCoord = nodeCoord + transformVector;
 
                 _logger.LogDebug($"transforming: {nodeCoord} -> {newCoord}");
@@ -163,11 +163,11 @@ namespace OLabWebAPI.Model.ReaderWriter
 
             _logger.LogDebug($"{reverseNodeIdMap.Count} node ids to be remapped");
 
-            List<MapNodeLinks> templateLinks = _context.MapNodeLinks.AsNoTracking().Where(x => x.MapId == template.Id).ToList();
+            var templateLinks = _context.MapNodeLinks.AsNoTracking().Where(x => x.MapId == template.Id).ToList();
 
             foreach (MapNodeLinks templateLink in templateLinks)
             {
-                uint oldNodeLinkId = templateLink.Id;
+                var oldNodeLinkId = templateLink.Id;
                 MapNodeLinks.Reassign(reverseNodeIdMap, map.Id, templateLink);
 
                 _context.Entry(templateLink).State = EntityState.Added;
