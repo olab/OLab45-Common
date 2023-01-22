@@ -80,7 +80,7 @@ namespace OLabWebAPI.Endpoints.Player
 
             var builder = new ObjectMapper.DynamicScopedObjects(logger, enableWikiTranslation);
             DynamicScopedObjectsDto dto = builder.PhysicalToDto(physServer, physMap, physNode);
-
+            
             return dto;
         }
 
