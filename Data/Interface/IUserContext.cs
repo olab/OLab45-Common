@@ -1,43 +1,43 @@
 namespace OLabWebAPI.Data.Interface
 {
-    public interface IUserContext
+  public interface IUserContext
+  {
+    public IOLabSession Session
     {
-        public IOLabSession Session
-        {
-            get;
-            set;
-        }
-
-        public string Role
-        {
-            get;
-            set;
-        }
-
-        public uint UserId
-        {
-            get;
-            set;
-        }
-
-        public string UserName
-        {
-            get;
-            set;
-        }
-
-        public string IPAddress
-        {
-            get;
-            set;
-        }
-        public string Issuer
-        {
-            get;
-            set;
-        }
-
-        bool HasAccess(string requestedPerm, string objectType, uint? objectId);
-
+      get;
+      set;
     }
+
+    public string Role
+    {
+      get;
+      set;
+    }
+
+    public uint UserId
+    {
+      get;
+      set;
+    }
+
+    public string UserName
+    {
+      get;
+      set;
+    }
+
+    public string IPAddress
+    {
+      get;
+      set;
+    }
+    public string Issuer
+    {
+      get;
+      set;
+    }
+
+    bool HasAccess(string requestedPerm, string objectType, uint? objectId);
+
+  }
 }

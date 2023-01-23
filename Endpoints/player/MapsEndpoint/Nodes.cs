@@ -23,13 +23,21 @@ namespace OLabWebAPI.Endpoints.Player
     public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(
       IOLabAuthentication auth,
       uint mapId,
-      uint nodeId)
+      uint nodeId,
+      DynamicScopedObjectsDto body)
     {
       logger.LogDebug($"GetMapNodeAsync(uint mapId={mapId}, nodeId={nodeId})");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+
+      // dump out original dynamic objects for logging
+      body.Dump(logger, "Original");
+
+      // test for valid dynamic objects
+      if (!body.IsValid())
+        throw new OLabUnauthorizedException("Object validity check failed");
 
       Maps map = await MapsReaderWriter.Instance(logger.GetLogger(), dbContext).GetSingleAsync(mapId);
       if (map == null)
@@ -49,7 +57,7 @@ namespace OLabWebAPI.Endpoints.Player
           throw new OLabGeneralException($"map {map.Id} has no root node");
       }
 
-      // test if user has access to node.
+      // now that we had a real node id, test if user has access to node.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelNode, dto.Id.Value))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, dto.Id.Value);
 
@@ -68,12 +76,33 @@ namespace OLabWebAPI.Endpoints.Player
       }
 
       // if end node, close out the session
-      if ( dto.End.HasValue && ( dto.End.Value == true ) )
+      if (dto.End.HasValue && (dto.End.Value == true))
         _userContext.Session.OnEndSession(mapId, nodeId);
 
       UpdateNodeCounter();
 
       dto.DynamicObjects = await GetDynamicScopedObjectsTranslatedAsync(auth, mapId, nodeId);
+
+      if (body.IsEmpty() || (dto.TypeId == 1))
+        // requested a root node, so return an initial set of dynamic objects
+        dto.DynamicObjects = await GetDynamicScopedObjectsRawAsync(
+          auth,
+          mapId,
+          nodeId);
+      else
+      {
+        // apply any node open counter actions
+        await ProcessNodeOpenCountersAsync(nodeId, body.Map.Counters);
+        dto.DynamicObjects.Map = body.Map;
+      }
+
+      // save current session state to database
+      _userContext.Session.SaveSessionState(mapId, dto.Id.Value, dto.DynamicObjects);
+
+      dto.DynamicObjects.RefreshChecksum();
+
+      // dump out the dynamic objects for logging
+      dto.DynamicObjects.Dump(logger, "New");
 
       return dto;
     }
@@ -209,6 +238,11 @@ namespace OLabWebAPI.Endpoints.Player
 
       dbContext.SystemCounters.Update(counter);
       dbContext.SaveChanges();
+    }
+
+    public void SaveSessionState(uint mapId, uint nodeId, DynamicScopedObjectsDto dynamicObjects)
+    {
+      _userContext.Session.SaveSessionState(mapId, nodeId, dynamicObjects);
     }
 
   }

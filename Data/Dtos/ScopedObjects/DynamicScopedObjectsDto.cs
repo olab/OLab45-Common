@@ -1,7 +1,10 @@
+using Microsoft.Build.Framework;
 using Newtonsoft.Json;
 using OLabWebAPI.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
 
@@ -70,38 +73,6 @@ namespace OLabWebAPI.Dto
     }
 
     /// <summary>
-    /// Calculate a hash for a given string
-    /// </summary>
-    /// <param name="key">String to hash</param>
-    /// <returns>MD5 hash</returns>
-    private string GetStringHash(string plaintext)
-    {
-      string key = OLabConfiguration.ENCRYPTION_SECRET.Substring(0, 32);
-      string cypherString = AesOperation.EncryptString(key, plaintext);
-      return cypherString.Substring(cypherString.Length - 6);
-    }
-
-    /// <summary>
-    /// Generate a verification checksum on the dynamic scope
-    /// </summary>
-    /// <returns>checksum string</returns>
-    public string GenerateChecksum()
-    {
-      string counterValues = UpdatedAt.ToString();
-
-      foreach (var counter in Server.Counters)
-        counterValues += counter.Value;
-
-      foreach (var counter in Node.Counters)
-        counterValues += counter.Value;
-
-      foreach (var counter in Map.Counters)
-        counterValues += counter.Value;
-
-      return GetStringHash(counterValues);
-    }
-
-    /// <summary>
     /// Verify a checksum is valid for a given object
     /// </summary>
     /// <returns>true/false</returns>
@@ -110,7 +81,66 @@ namespace OLabWebAPI.Dto
       if (IsEmpty())
         return true;
 
-      return GenerateChecksum() == Checksum;
+      var expectedCheckSum = GenerateChecksum();
+      return expectedCheckSum == Checksum;
+    }
+
+    /// <summary>
+    /// Generate a verification checksum on the dynamic scope
+    /// </summary>
+    /// <returns>checksum string</returns>
+    public string GenerateChecksum()
+    {
+      var plainText = GetObjectPlainText();
+      var cypherText = GetStringHash(plainText);
+      return cypherText;
+    }
+
+    public int GetPlainTextBytes(string plainText)
+    {
+      byte[] bytes = Encoding.ASCII.GetBytes(plainText);
+      int byteSum = 0;
+
+      foreach (var singleByte in bytes)
+        byteSum+= singleByte;
+
+      return byteSum;
+    }
+
+    /// <summary>
+    /// Calculate a hash for a given string
+    /// </summary>
+    /// <param name="key">String to hash</param>
+    /// <returns>MD5 hash</returns>
+    private string GetStringHash(string plaintext)
+    {
+      string cypherString = StringUtils.GenerateCheckSum(plaintext);
+      return cypherString;
+    }
+
+    /// <summary>
+    /// Refresh the object checksum
+    /// </summary>
+    public void RefreshChecksum()
+    {
+      Checksum = GenerateChecksum();
+    }
+
+    public string GetObjectPlainText()
+    {
+      string counterValues = UpdatedAt.ToString() + "/";
+
+      foreach (var counter in Server.Counters.OrderBy( x => x.Id ) )
+        counterValues += counter.Value + "/";
+
+      foreach (var counter in Node.Counters.OrderBy(x => x.Id))
+        counterValues += counter.Value + "/";
+
+      foreach (var counter in Map.Counters.OrderBy(x => x.Id))
+        counterValues += counter.Value + "/";
+
+      return counterValues;
+
     }
 
     /// <summary>
@@ -134,6 +164,36 @@ namespace OLabWebAPI.Dto
       }
 
       return dto;
+    }
+
+    public void Dump(OLabLogger logger, string prefix)
+    {
+      string message = $"{prefix}{Environment.NewLine}";
+
+      if (IsEmpty())
+      {
+        message += $"IsEmpty{Environment.NewLine}";
+        return;
+      }
+
+      var plainText = GetObjectPlainText();
+      message += $"Text:   {plainText}{Environment.NewLine}";
+      message += $"Bytes:  {GetPlainTextBytes(plainText)}{Environment.NewLine}";
+      
+      foreach (var counter in Server.Counters)
+        message += $"Server: {counter}{Environment.NewLine}";
+
+      foreach (var counter in Node.Counters)
+        message += $"Node:   {counter}{Environment.NewLine}";
+
+      foreach (var counter in Map.Counters)
+        message += $"Map:    {counter}{Environment.NewLine}";
+
+      message += $"Update  {UpdatedAt.ToString()}{Environment.NewLine}";
+      message += $"ChkSum  {Checksum}{Environment.NewLine}";
+
+      logger.LogDebug(message);
+
     }
   }
 }

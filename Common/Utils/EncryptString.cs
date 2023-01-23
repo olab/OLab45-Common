@@ -1,4 +1,5 @@
 ﻿
+using NuGet.Packaging.Signing;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -6,8 +7,18 @@ using System.Text;
 
 namespace OLabWebAPI.Utils
 {
-  public class AesOperation
+  public class StringUtils
   {
+    public static string GenerateCheckSum( string plainText )
+    {
+      int sum = 0;
+      byte[] bytes = Encoding.ASCII.GetBytes(plainText);
+      foreach (var singleByte in bytes)
+        sum += singleByte * 1013;
+    
+      return sum.ToString("X");
+    }
+
     public static string EncryptString(string key, string plainText)
     {
       byte[] iv = new byte[16];
