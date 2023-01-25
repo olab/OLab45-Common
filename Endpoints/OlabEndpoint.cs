@@ -321,7 +321,12 @@ namespace OLabWebAPI.Endpoints
       foreach (var item in items)
       {
         var subPath = $"{scopeLevel}/{parentId}/{item.Path}";
-        item.Path = $"/{Path.GetFileName(appSettings.WebsitePublicFilesDirectory)}/{subPath}";
+        var physicalPath = Path.Combine(appSettings.WebsitePublicFilesDirectory, subPath.Replace('/', Path.DirectorySeparatorChar));
+
+        if (File.Exists(physicalPath))
+          item.Path = $"/{Path.GetFileName(appSettings.WebsitePublicFilesDirectory)}/{subPath}";
+        else
+          item.Path = null;
       }
 
       return items;
