@@ -13,10 +13,10 @@ namespace OLabWebAPI.Common
         public WikiTag1Argument(OLabLogger logger, string htmlElementName) : base(logger, htmlElementName)
         {
             wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:[0-9]*\\]\\]");
-            wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:\"[.A-Za-z0-9 ]*\"\\]\\]");
-            wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:[.A-Za-z0-9 ]*\\]\\]");
-            wikiTagNamePatterns.Add("\"[.A-Za-z0-9 ]*\"");
-            wikiTagNamePatterns.Add("[.A-Za-z0-9 ]*");
+            wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:\"[.A-Za-z0-9\\- ]*\"\\]\\]");
+            wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:[.A-Za-z0-9\\- ]*\\]\\]");
+            wikiTagNamePatterns.Add("\"[.A-Za-z0-9\\- ]*\"");
+            wikiTagNamePatterns.Add("[.A-Za-z0-9\\- ]*");
             wikiTagNamePatterns.Add("[0-9]*");
         }
 
