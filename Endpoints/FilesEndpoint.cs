@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using OLabWebAPI.Common;
 using OLabWebAPI.Common.Exceptions;
 using OLabWebAPI.Data.Interface;
@@ -19,7 +20,8 @@ namespace OLabWebAPI.Endpoints
 
         public FilesEndpoint(
           OLabLogger logger,
-          OLabDBContext context) : base(logger, context)
+          IOptions<AppSettings> appSettings,
+          OLabDBContext context) : base(logger, appSettings, context)
         {
         }
 

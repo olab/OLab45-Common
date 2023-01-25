@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Dto;
 using OLabWebAPI.Model;
@@ -8,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dawn;
+using System.IO;
 
 namespace OLabWebAPI.Endpoints
 {
@@ -17,10 +20,16 @@ namespace OLabWebAPI.Endpoints
     protected OLabLogger logger;
     protected string token;
     protected IUserContext _userContext;
+    AppSettings appSettings;
 
-    public OlabEndpoint(OLabLogger logger, OLabDBContext context)
+    public OlabEndpoint(OLabLogger logger, IOptions<AppSettings> appSettings, OLabDBContext context)
     {
+      Guard.Argument(logger).NotNull(nameof(logger));
+      Guard.Argument(appSettings).NotNull(nameof(appSettings));
+      Guard.Argument(context).NotNull(nameof(context));
+
       this.dbContext = context;
+      this.appSettings = appSettings.Value;
       this.logger = logger;
     }
 
@@ -308,6 +317,12 @@ namespace OLabWebAPI.Endpoints
 
       items.AddRange(await dbContext.SystemFiles.Where(x =>
         x.ImageableType == scopeLevel && x.ImageableId == parentId).ToListAsync());
+
+      foreach (var item in items)
+      {
+        var subPath = $"{scopeLevel}/{parentId}/{item.Path}";
+        item.Path = $"/{Path.GetFileName(appSettings.WebsitePublicFilesDirectory)}/{subPath}";
+      }
 
       return items;
     }

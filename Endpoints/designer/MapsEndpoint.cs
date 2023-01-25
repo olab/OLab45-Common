@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using OLabWebAPI.Common.Exceptions;
 using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Dto;
@@ -18,7 +19,8 @@ namespace OLabWebAPI.Endpoints.Designer
 
         public MapsEndpoint(
           OLabLogger logger,
-          OLabDBContext context) : base(logger, context)
+          IOptions<AppSettings> appSettings,
+          OLabDBContext context) : base(logger, appSettings, context)
         {
         }
 

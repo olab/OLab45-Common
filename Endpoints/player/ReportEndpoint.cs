@@ -1,5 +1,6 @@
 ﻿using Data.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using OLabWebAPI.Common.Exceptions;
 using OLabWebAPI.Dto;
 using OLabWebAPI.Model;
@@ -13,7 +14,8 @@ namespace OLabWebAPI.Endpoints.Player
   {
     public ReportEndpoint(
       OLabLogger logger,
-      OLabDBContext context) : base(logger, context)
+      IOptions<AppSettings> appSettings, 
+      OLabDBContext context) : base(logger, appSettings, context)
     {
     }
 

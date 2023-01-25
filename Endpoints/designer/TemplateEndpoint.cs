@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using OLabWebAPI.Common;
 using OLabWebAPI.Dto;
 using OLabWebAPI.Dto.Designer;
@@ -17,7 +18,8 @@ namespace OLabWebAPI.Endpoints.Designer
 
         public TemplateEndpoint(
           OLabLogger logger,
-          OLabDBContext context) : base(logger, context)
+          IOptions<AppSettings> appSettings,
+          OLabDBContext context) : base(logger, appSettings, context)
         {
         }
 
