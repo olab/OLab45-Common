@@ -29,9 +29,9 @@ namespace OLabWebAPI.ObjectMapper.Designer
         public override ScopedObjectDto PhysicalToDto(SystemFiles phys, ScopedObjectDto dto)
         {
             if (string.IsNullOrEmpty(phys.Name))
-                dto.Wiki = $"[[FILE:{phys.Id}]]";
+                dto.Wiki = $"[[MR:{phys.Id}]]";
             else
-                dto.Wiki = $"[[FILE:{phys.Name}]]";
+                dto.Wiki = $"[[MR:{phys.Name}]]";
             return dto;
         }
 
