@@ -324,9 +324,9 @@ namespace OLabWebAPI.Endpoints
         var physicalPath = Path.Combine(appSettings.WebsitePublicFilesDirectory, subPath.Replace('/', Path.DirectorySeparatorChar));
 
         if (File.Exists(physicalPath))
-          item.Path = $"/{Path.GetFileName(appSettings.WebsitePublicFilesDirectory)}/{subPath}";
+          item.OriginUrl = $"/{Path.GetFileName(appSettings.WebsitePublicFilesDirectory)}/{subPath}";
         else
-          item.Path = null;
+          item.OriginUrl = null;
       }
 
       return items;
