@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using OLabWebAPI.Utils;
 
 namespace OLabWebAPI.Dto.Designer
 {
@@ -22,6 +23,9 @@ namespace OLabWebAPI.Dto.Designer
         public int? IsSystem { get; set; }
         [JsonProperty("url")]
         public string Url { get; set; }
+
+        [JsonProperty("parentInfo")]
+        public IdName ParentInfo { get; set; }
 
         public ScopedObjectDto()
         {

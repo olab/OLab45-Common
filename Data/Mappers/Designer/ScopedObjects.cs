@@ -1,7 +1,9 @@
 using OLabWebAPI.Common;
 using OLabWebAPI.Dto.Designer;
+using OLabWebAPI.Model;
 using OLabWebAPI.Utils;
 using System;
+using System.Collections.Generic;
 
 namespace OLabWebAPI.ObjectMapper.Designer
 {
@@ -17,7 +19,9 @@ namespace OLabWebAPI.ObjectMapper.Designer
         {
         }
 
-        public override ScopedObjectsDto PhysicalToDto(Model.ScopedObjects phys, object source = null)
+        public override ScopedObjectsDto PhysicalToDto(
+          Model.ScopedObjects phys, 
+          object source = null)
         {
             ScopedObjectsDto dto = GetDto(source);
 

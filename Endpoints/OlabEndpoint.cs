@@ -56,25 +56,22 @@ namespace OLabWebAPI.Endpoints
       if (dto.ImageableType == Constants.ScopeLevelServer)
       {
         Servers obj = dbContext.Servers.FirstOrDefault(x => x.Id == dto.ImageableId);
-        dto.ParentObj.Id = obj.Id;
-        dto.ParentObj.Name = obj.Name;
-        dto.ParentObj.Description = obj.Description;
+        dto.ParentInfo.Id = obj.Id;
+        dto.ParentInfo.Name = obj.Name;
       }
 
       else if (dto.ImageableType == Constants.ScopeLevelMap)
       {
         Maps obj = dbContext.Maps.FirstOrDefault(x => x.Id == dto.ImageableId);
-        dto.ParentObj.Id = obj.Id;
-        dto.ParentObj.Name = obj.Name;
-        dto.ParentObj.Description = obj.Name;
+        dto.ParentInfo.Id = obj.Id;
+        dto.ParentInfo.Name = obj.Name;
       }
 
       else if (dto.ImageableType == Constants.ScopeLevelNode)
       {
         MapNodes obj = dbContext.MapNodes.FirstOrDefault(x => x.Id == dto.ImageableId);
-        dto.ParentObj.Id = obj.Id;
-        dto.ParentObj.Name = obj.Title;
-        dto.ParentObj.Description = obj.Title;
+        dto.ParentInfo.Id = obj.Id;
+        dto.ParentInfo.Name = obj.Title;
       }
     }
 
@@ -97,6 +94,37 @@ namespace OLabWebAPI.Endpoints
                   .FirstAsync();
 
       return item;
+    }
+
+    protected IList<IdName> GetMapIdNames()
+    {
+      return dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
+    }
+
+    protected IList<IdName> GetNodeIdNames()
+    {
+      return dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
+    }
+
+    protected IList<IdName> GetServerIdNames()
+    {
+      return dbContext.Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
+    }
+
+    protected IdName FindParentInfo(
+      string scopeLevel,
+      uint parentId,
+      IList<IdName> maps,
+      IList<IdName> nodes,
+      IList<IdName> servers)
+    {
+      if (scopeLevel == Utils.Constants.ScopeLevelServer)
+        return servers.FirstOrDefault(x => x.Id == parentId);
+      if (scopeLevel == Utils.Constants.ScopeLevelMap)
+        return maps.FirstOrDefault(x => x.Id == parentId);
+      if (scopeLevel == Utils.Constants.ScopeLevelNode)
+        return nodes.FirstOrDefault(x => x.Id == parentId);
+      return null;
     }
 
     /// <summary>

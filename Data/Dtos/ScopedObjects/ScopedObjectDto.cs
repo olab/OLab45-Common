@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using OLabWebAPI.Dto.Designer;
+using OLabWebAPI.Utils;
 using System;
 
 namespace OLabWebAPI.Dto
@@ -22,11 +23,11 @@ namespace OLabWebAPI.Dto
         public DateTime? UpdatedAt { get; set; }
 
         [JsonProperty("scopeLevelObj")]
-        public ScopeLevelObj ParentObj { get; set; }
+        public IdName ParentInfo { get; set; }
 
         public ScopedObjectDto()
         {
-            ParentObj = new ScopeLevelObj();
+            ParentInfo = new IdName();
         }
     }
 }

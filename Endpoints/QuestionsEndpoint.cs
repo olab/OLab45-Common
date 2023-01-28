@@ -1,3 +1,4 @@
+using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -65,6 +66,14 @@ namespace OLabWebAPI.Endpoints
       logger.LogDebug(string.Format("found {0} questions", physList.Count));
 
       IList<QuestionsDto> dtoList = new ObjectMapper.Questions(logger, new WikiTagProvider(logger)).PhysicalToDto(physList);
+
+      var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
+      var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
+      var servers = dbContext.Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
+
+      foreach (var dto in dtoList)
+        dto.ParentInfo = FindParentInfo(dto.ImageableType, dto.ImageableId, maps, nodes, servers);
+
       return new OLabAPIPagedResponse<QuestionsDto> { Data = dtoList, Remaining = remaining, Count = total };
 
     }
@@ -111,7 +120,7 @@ namespace OLabWebAPI.Endpoints
     {
       logger.LogDebug($"PutAsync(uint id={id})");
 
-      dto.ImageableId = dto.ParentObj.Id;
+      dto.ImageableId = dto.ParentInfo.Id;
 
       // test if user has access to object
       IActionResult accessResult = auth.HasAccess("W", dto);
@@ -148,7 +157,7 @@ namespace OLabWebAPI.Endpoints
     {
       logger.LogDebug($"QuestionsController.PostAsync({dto.Stem})");
 
-      dto.ImageableId = dto.ParentObj.Id;
+      dto.ImageableId = dto.ParentInfo.Id;
       dto.Prompt = !string.IsNullOrEmpty(dto.Prompt) ? dto.Prompt : "";
 
       // test if user has access to object

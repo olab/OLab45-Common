@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace OLabWebAPI.ObjectMapper
 {
-  public class Files : ObjectMapper<SystemFiles, FilesDto>
+  public class Files : OLabMapper<SystemFiles, FilesDto>
   {
     public Files(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
@@ -16,32 +16,6 @@ namespace OLabWebAPI.ObjectMapper
 
     public Files(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
-    }
-
-    public override FilesDto PhysicalToDto(SystemFiles phys, Object source = null)
-    {
-      FilesDto dto = GetDto(source);
-
-      dto.CreatedAt = phys.CreatedAt;
-      dto.Description = phys.Description;
-      dto.Id = phys.Id;
-      dto.Name = phys.Name;
-      dto.UpdatedAt = phys.UpdatedAt;
-
-      return dto;
-    }
-
-    public override SystemFiles DtoToPhysical(FilesDto dto, Object source = null)
-    {
-      SystemFiles phys = GetPhys(source);
-
-      phys.Id = (uint)dto.Id;
-      phys.CreatedAt = dto.CreatedAt;
-      phys.Description = dto.Description;
-      phys.Name = dto.Name;
-      phys.UpdatedAt = dto.UpdatedAt;
-
-      return phys;
     }
 
     public override SystemFiles ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)

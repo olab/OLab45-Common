@@ -15,188 +15,196 @@ using System.Threading.Tasks;
 
 namespace OLabWebAPI.Endpoints
 {
-    public partial class CountersEndpoint : OlabEndpoint
+  public partial class CountersEndpoint : OlabEndpoint
+  {
+
+    public CountersEndpoint(
+      OLabLogger logger,
+      IOptions<AppSettings> appSettings,
+      OLabDBContext context) : base(logger, appSettings, context)
     {
+    }
 
-        public CountersEndpoint(
-          OLabLogger logger,
-          IOptions<AppSettings> appSettings,
-          OLabDBContext context) : base(logger, appSettings, context)
-        {
-        }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    private bool Exists(uint id)
+    {
+      return dbContext.SystemCounters.Any(e => e.Id == id);
+    }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        private bool Exists(uint id)
-        {
-            return dbContext.SystemCounters.Any(e => e.Id == id);
-        }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="take"></param>
+    /// <param name="skip"></param>
+    /// <returns></returns>
+    public async Task<OLabAPIPagedResponse<CountersDto>> GetAsync(int? take, int? skip)
+    {
+      logger.LogDebug($"CountersController.GetAsync(int? take={take}, int? skip={skip})");
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="take"></param>
-        /// <param name="skip"></param>
-        /// <returns></returns>
-        public async Task<OLabAPIPagedResponse<CountersDto>> GetAsync(int? take, int? skip)
-        {
-            logger.LogDebug($"CountersController.GetAsync(int? take={take}, int? skip={skip})");
+      var Counters = new List<SystemCounters>();
+      var total = 0;
+      var remaining = 0;
 
-            var Counters = new List<SystemCounters>();
-            var total = 0;
-            var remaining = 0;
+      if (!skip.HasValue)
+        skip = 0;
 
-            if (!skip.HasValue)
-                skip = 0;
+      Counters = await dbContext.SystemCounters.OrderBy(x => x.Name).ToListAsync();
+      total = Counters.Count;
 
-            Counters = await dbContext.SystemCounters.OrderBy(x => x.Name).ToListAsync();
-            total = Counters.Count;
+      if (take.HasValue && skip.HasValue)
+      {
+        Counters = Counters.Skip(skip.Value).Take(take.Value).ToList();
+        remaining = total - take.Value - skip.Value;
+      }
 
-            if (take.HasValue && skip.HasValue)
-            {
-                Counters = Counters.Skip(skip.Value).Take(take.Value).ToList();
-                remaining = total - take.Value - skip.Value;
-            }
+      IList<CountersDto> dtoList = new ObjectMapper.Counters(logger).PhysicalToDto(Counters);
 
-            IList<CountersDto> dtoList = new ObjectMapper.Counters(logger).PhysicalToDto(Counters);
-            return new OLabAPIPagedResponse<CountersDto> { Data = dtoList, Remaining = remaining, Count = total };
-        }
+      var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
+      var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
+      var servers = dbContext.Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public async Task<CountersDto> GetAsync(IOLabAuthentication auth, uint id)
-        {
-            logger.LogDebug($"CountersController.GetAsync(uint id={id})");
+      foreach (var dto in dtoList)
+        dto.ParentInfo = FindParentInfo(dto.ImageableType, dto.ImageableId, maps, nodes, servers);
 
-            if (!Exists(id))
-                throw new OLabObjectNotFoundException("Counters", id);
+      return new OLabAPIPagedResponse<CountersDto> { Data = dtoList, Remaining = remaining, Count = total };
+    }
 
-            SystemCounters phys = await GetCounterAsync(id);
-            CountersFullDto dto = new CountersFull(logger).PhysicalToDto(phys);
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public async Task<CountersDto> GetAsync(IOLabAuthentication auth, uint id)
+    {
+      logger.LogDebug($"CountersController.GetAsync(uint id={id})");
 
-            // test if user has access to object
-            IActionResult accessResult = auth.HasAccess("R", dto);
-            if (accessResult is UnauthorizedResult)
-                throw new OLabUnauthorizedException("Counters", id);
+      if (!Exists(id))
+        throw new OLabObjectNotFoundException("Counters", id);
 
-            AttachParentObject(dto);
-            return dto;
-        }
+      SystemCounters phys = await GetCounterAsync(id);
+      CountersFullDto dto = new CountersFull(logger).PhysicalToDto(phys);
 
-        /// <summary>
-        /// Saves a object edit
-        /// </summary>
-        /// <param name="id">question id</param>
-        /// <returns>IActionResult</returns>
-        public async Task PutAsync(
-          IOLabAuthentication auth,
-          uint id,
-          CountersFullDto dto)
-        {
-            logger.LogDebug($"PutAsync(uint id={id})");
+      // test if user has access to object
+      IActionResult accessResult = auth.HasAccess("R", dto);
+      if (accessResult is UnauthorizedResult)
+        throw new OLabUnauthorizedException("Counters", id);
 
-            dto.ImageableId = dto.ParentObj.Id;
+      AttachParentObject(dto);
+      return dto;
+    }
 
-            // test if user has access to object
-            IActionResult accessResult = auth.HasAccess("W", dto);
-            if (accessResult is UnauthorizedResult)
-                throw new OLabUnauthorizedException("Counters", id);
+    /// <summary>
+    /// Saves a object edit
+    /// </summary>
+    /// <param name="id">question id</param>
+    /// <returns>IActionResult</returns>
+    public async Task PutAsync(
+      IOLabAuthentication auth,
+      uint id,
+      CountersFullDto dto)
+    {
+      logger.LogDebug($"PutAsync(uint id={id})");
 
-            try
-            {
-                var builder = new CountersFull(logger);
-                SystemCounters phys = builder.DtoToPhysical(dto);
+      dto.ImageableId = dto.ParentInfo.Id;
 
-                phys.UpdatedAt = DateTime.Now;
+      // test if user has access to object
+      IActionResult accessResult = auth.HasAccess("W", dto);
+      if (accessResult is UnauthorizedResult)
+        throw new OLabUnauthorizedException("Counters", id);
 
-                dbContext.Entry(phys).State = EntityState.Modified;
-                await dbContext.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                SystemCounters existingObject = await GetCounterAsync(id);
-                if (existingObject == null)
-                    throw new OLabObjectNotFoundException("Counters", id);
-            }
+      try
+      {
+        var builder = new CountersFull(logger);
+        SystemCounters phys = builder.DtoToPhysical(dto);
 
-        }
+        phys.UpdatedAt = DateTime.Now;
 
-        /// <summary>
-        /// Create new counter
-        /// </summary>
-        /// <param name="dto">Counter data</param>
-        /// <returns>IActionResult</returns>
-        public async Task<CountersFullDto> PostAsync(
-          IOLabAuthentication auth,
-          CountersFullDto dto)
-        {
-            logger.LogDebug($"CountersController.PostAsync({dto.Name})");
-
-            dto.ImageableId = dto.ParentObj.Id;
-            dto.Value = dto.StartValue;
-
-            // test if user has access to object
-            IActionResult accessResult = auth.HasAccess("W", dto);
-            if (accessResult is UnauthorizedResult)
-                throw new OLabUnauthorizedException("Counters", 0);
-
-            var builder = new CountersFull(logger);
-            SystemCounters phys = builder.DtoToPhysical(dto);
-
-            phys.CreatedAt = DateTime.Now;
-
-            dbContext.SystemCounters.Add(phys);
-            await dbContext.SaveChangesAsync();
-
-            dto = builder.PhysicalToDto(phys);
-
-            AttachParentObject(dto);
-            return dto;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public async Task DeleteAsync(
-          IOLabAuthentication auth,
-          uint id)
-        {
-            logger.LogDebug($"CountersController.DeleteAsync(uint id={id})");
-
-            if (!Exists(id))
-                throw new OLabObjectNotFoundException("Counters", id);
-
-            try
-            {
-                SystemCounters phys = await GetCounterAsync(id);
-                CountersFullDto dto = new CountersFull(logger).PhysicalToDto(phys);
-
-                // test if user has access to object
-                IActionResult accessResult = auth.HasAccess("W", dto);
-                if (accessResult is UnauthorizedResult)
-                    throw new OLabUnauthorizedException("Counters", id);
-
-                dbContext.SystemCounters.Remove(phys);
-                await dbContext.SaveChangesAsync();
-
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                SystemCounters existingObject = await GetCounterAsync(id);
-                if (existingObject == null)
-                    throw new OLabObjectNotFoundException("Counters", id);
-            }
-
-        }
+        dbContext.Entry(phys).State = EntityState.Modified;
+        await dbContext.SaveChangesAsync();
+      }
+      catch (DbUpdateConcurrencyException)
+      {
+        SystemCounters existingObject = await GetCounterAsync(id);
+        if (existingObject == null)
+          throw new OLabObjectNotFoundException("Counters", id);
+      }
 
     }
+
+    /// <summary>
+    /// Create new counter
+    /// </summary>
+    /// <param name="dto">Counter data</param>
+    /// <returns>IActionResult</returns>
+    public async Task<CountersFullDto> PostAsync(
+      IOLabAuthentication auth,
+      CountersFullDto dto)
+    {
+      logger.LogDebug($"CountersController.PostAsync({dto.Name})");
+
+      dto.ImageableId = dto.ParentInfo.Id;
+      dto.Value = dto.StartValue;
+
+      // test if user has access to object
+      IActionResult accessResult = auth.HasAccess("W", dto);
+      if (accessResult is UnauthorizedResult)
+        throw new OLabUnauthorizedException("Counters", 0);
+
+      var builder = new CountersFull(logger);
+      SystemCounters phys = builder.DtoToPhysical(dto);
+
+      phys.CreatedAt = DateTime.Now;
+
+      dbContext.SystemCounters.Add(phys);
+      await dbContext.SaveChangesAsync();
+
+      dto = builder.PhysicalToDto(phys);
+
+      AttachParentObject(dto);
+      return dto;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public async Task DeleteAsync(
+      IOLabAuthentication auth,
+      uint id)
+    {
+      logger.LogDebug($"CountersController.DeleteAsync(uint id={id})");
+
+      if (!Exists(id))
+        throw new OLabObjectNotFoundException("Counters", id);
+
+      try
+      {
+        SystemCounters phys = await GetCounterAsync(id);
+        CountersFullDto dto = new CountersFull(logger).PhysicalToDto(phys);
+
+        // test if user has access to object
+        IActionResult accessResult = auth.HasAccess("W", dto);
+        if (accessResult is UnauthorizedResult)
+          throw new OLabUnauthorizedException("Counters", id);
+
+        dbContext.SystemCounters.Remove(phys);
+        await dbContext.SaveChangesAsync();
+
+      }
+      catch (DbUpdateConcurrencyException)
+      {
+        SystemCounters existingObject = await GetCounterAsync(id);
+        if (existingObject == null)
+          throw new OLabObjectNotFoundException("Counters", id);
+      }
+
+    }
+
+  }
 
 }
