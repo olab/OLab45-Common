@@ -59,7 +59,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <returns></returns>
     public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint serverId)
     {
-      logger.LogDebug($"ServerController.GetScopedObjectsRawAsync(uint serverId={serverId})");
+      logger.LogDebug($"ServerEndpoint.GetScopedObjectsRawAsync(uint serverId={serverId})");
       Dto.ScopedObjectsDto dto = await GetScopedObjectsAsync(serverId, false);
       return dto;
     }
@@ -71,7 +71,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <returns></returns>
     public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsTranslatedAsync(uint serverId)
     {
-      logger.LogDebug($"ServerController.GetScopedObjectsTranslatedAsync(uint serverId={serverId})");
+      logger.LogDebug($"ServerEndpoint.GetScopedObjectsTranslatedAsync(uint serverId={serverId})");
       Dto.ScopedObjectsDto dto = await GetScopedObjectsAsync(serverId, true);
       return dto;
     }
@@ -86,7 +86,7 @@ namespace OLabWebAPI.Endpoints.Player
       uint serverId,
       bool enableWikiTranslation)
     {
-      logger.LogDebug($"ServerController.GetScopedObjectsAsync(uint serverId={serverId})");
+      logger.LogDebug($"ServerEndpoint.GetScopedObjectsAsync(uint serverId={serverId})");
 
       Model.ScopedObjects phys = await GetScopedObjectsAllAsync(serverId, Utils.Constants.ScopeLevelServer);
       var builder = new ObjectMapper.ScopedObjects(logger, enableWikiTranslation);
