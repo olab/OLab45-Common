@@ -85,7 +85,8 @@ namespace OLabWebAPI.Data
         SessionId = session.Id,
         MapId = mapId,
         NodeId = nodeId,
-        DateStamp = Conversions.GetCurrentUnixTime()
+        DateStamp = Conversions.GetCurrentUnixTime(),
+        UserId = session.UserId
       };
 
       _context.UserSessionTraces.Add(sessionTrace);
