@@ -139,6 +139,15 @@ namespace OLabWebAPI.Endpoints
       List<MapNodes> physList = await dbContext.MapNodes.Where(x => x.MapId == map.Id).ToListAsync();
       logger.LogDebug(string.Format("found {0} mapNodes", physList.Count));
 
+      // patch up any malformed nodes that have 0/0 sizes, 
+      // whic prevent them from being displayed
+      var physNodes = physList.Where(x => (x.Height == 0) || (x.Width == 0) ).ToList();
+      foreach (var physNode in physNodes)
+      {
+        physNode.Height = 440;
+        physNode.Width = 300;
+      }
+
       IList<MapNodesFullDto> dtoList = new ObjectMapper.MapNodesFullMapper(logger, enableWikiTanslation).PhysicalToDto(physList);
       return dtoList;
     }

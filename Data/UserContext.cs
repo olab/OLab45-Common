@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
 
 #nullable disable
@@ -169,6 +170,11 @@ namespace OLabWebAPI.Data
       UserId = (uint)Convert.ToInt32(_user.FindFirst("id").Value);
 
       _roleAcls = _dbContext.SecurityRoles.Where(x => x.Name.ToLower() == Role.ToLower()).ToList();
+
+      var ipAddress = _httpContext.Request.Headers["x-forwarded-for"].ToString();
+      if (string.IsNullOrEmpty(ipAddress))
+        ipAddress = _httpContext.Connection.RemoteIpAddress.ToString();
+      _ipAddress = ipAddress;
 
       // test for a local user
       Users user = _dbContext.Users.FirstOrDefault(x => x.Username == UserName);

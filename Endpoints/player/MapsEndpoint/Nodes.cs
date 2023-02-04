@@ -183,6 +183,10 @@ namespace OLabWebAPI.Endpoints.Player
         var builder = new ObjectMapper.MapNodesFullMapper(logger);
         MapNodes phys = builder.DtoToPhysical(dto);
 
+        // patch up node size, just in case it's not set properly
+        if ( phys.Height == 0 ) phys.Height = 440;
+        if ( phys.Width == 0 ) phys.Width = 300;
+
         dbContext.MapNodes.Update(phys);
         await dbContext.SaveChangesAsync();
         await transaction.CommitAsync();

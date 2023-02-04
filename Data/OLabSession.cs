@@ -102,6 +102,10 @@ namespace OLabWebAPI.Data
       if (session == null)
         return;
 
+      // truncate the message in case it's too long
+      if ( string.IsNullOrEmpty(value) && ( value.Length > 1000 ) )
+        value = value.Substring( 997 ) + "...";
+
       var userResponse = new UserResponses
       {
         SessionId = session.Id,
