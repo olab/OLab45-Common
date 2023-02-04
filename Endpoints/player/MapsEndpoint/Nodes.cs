@@ -61,23 +61,19 @@ namespace OLabWebAPI.Endpoints.Player
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelNode, dto.Id.Value))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, dto.Id.Value);
 
-      // test if end node, meaning we can close the session.  
-      if (dto.End.HasValue && dto.End.Value)
-        _userContext.Session.OnEndSession(mapId, dto.Id.Value);
-
       // if root node, then start a new session
       if (dto.TypeId == 1)
       {
         _userContext.Session.OnStartSession(_userContext, mapId);
         dto.ContextId = _userContext.Session.GetSessionId();
         _userContext.Session.SetSessionId(dto.ContextId);
-
-        _userContext.Session.OnPlayNode(mapId, dto.Id.Value);
       }
 
       // if end node, close out the session
       if (dto.End.HasValue && (dto.End.Value == true))
         _userContext.Session.OnEndSession(mapId, nodeId);
+
+      _userContext.Session.OnPlayNode(mapId, dto.Id.Value);
 
       UpdateNodeCounter();
 
