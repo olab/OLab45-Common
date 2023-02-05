@@ -37,6 +37,8 @@ namespace OLabWebAPI.Data.Interface
       set;
     }
 
+    string CourseName { get; }
+
     bool HasAccess(string requestedPerm, string objectType, uint? objectId);
 
   }

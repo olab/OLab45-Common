@@ -3,24 +3,30 @@ using OLabWebAPI.Common.Exceptions;
 
 namespace OLabWebAPI.Utils
 {
-    public static class AccessTokenUtils
+  public static class AccessTokenUtils
+  {
+    public static string ExtractAccessToken(HttpRequest request, bool allowAnonymous = false)
     {
-        public static string ExtractBearerToken(HttpRequest request)
-        {
-            if (!request.Headers.ContainsKey("Authorization"))
-                throw new OLabUnauthorizedException();
+      string token = "";
 
-            string authorizationHeader = request.Headers["Authorization"];
-            // Check if the value is empty.
-            if (string.IsNullOrEmpty(authorizationHeader))
-                throw new OLabUnauthorizedException();
+      if (request.Headers.ContainsKey("Authorization"))
+      {
+        token = request.Headers["Authorization"];
 
-            var parts = authorizationHeader.Split(" ");
-            if (parts.Length != 2)
-                throw new OLabUnauthorizedException();
+        var parts = token.Split(" ");
+        if (parts.Length != 2)
+          throw new OLabUnauthorizedException();
 
-            var accessToken = parts[1];
-            return accessToken;
-        }
+        token = parts[1];
+      }
+
+      if ( request.Query.ContainsKey("token") )
+        token = request.Query["token"];
+
+      if ( string.IsNullOrEmpty(token) && !allowAnonymous )
+        throw new OLabUnauthorizedException();
+
+      return token;
     }
+  }
 }

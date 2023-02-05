@@ -52,6 +52,8 @@ namespace OLabWebAPI.Model
         public decimal? ResetAt { get; set; }
         [Column("end_time")]
         public decimal? EndTime { get; set; }
+        [Column("course_name")]
+        public string CourseName { get; set; }
 
         [ForeignKey(nameof(MapId))]
         [InverseProperty(nameof(Maps.UserSessions))]

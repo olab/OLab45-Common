@@ -20,7 +20,6 @@ namespace OLabWebAPI.Data
 
     private readonly HttpContext _httpContext;
     private readonly HttpRequest _httpRequest;
-    private readonly string _accessToken;
     private IEnumerable<Claim> _claims;
     private ClaimsPrincipal _user;
     private readonly OLabDBContext _dbContext;
@@ -34,6 +33,8 @@ namespace OLabWebAPI.Data
     private string _userName;
     private string _ipAddress;
     private string _issuer;
+    private string _courseName;
+    private string _accessToken;
 
     public IOLabSession Session
     {
@@ -73,6 +74,8 @@ namespace OLabWebAPI.Data
 
     public string SessionId { get { return Session.GetSessionId(); } }
 
+    public string CourseName { get { return _courseName; } }
+
     // default ctor, needed for services Dependancy Injection
     public UserContext()
     {
@@ -91,7 +94,6 @@ namespace OLabWebAPI.Data
       _dbContext = context;
       _logger = logger;
       _httpRequest = request;
-      _accessToken = AccessTokenUtils.ExtractBearerToken(request);
 
       Session = new OLabSession(_logger.GetLogger(), context, this);
 
@@ -142,6 +144,7 @@ namespace OLabWebAPI.Data
       Issuer = _claims.FirstOrDefault(c => c.Type == "iss")?.Value;
 
       _roleAcls = _dbContext.SecurityRoles.Where(x => x.Name.ToLower() == Role.ToLower()).ToList();
+      _accessToken = AccessTokenUtils.ExtractAccessToken(_httpRequest);
 
     }
 
@@ -165,11 +168,15 @@ namespace OLabWebAPI.Data
       _claims = identity.Claims;
 
       UserName = _user.FindFirst(ClaimTypes.Name).Value;
-      Role = _user.FindFirst(ClaimTypes.Role).Value;
       Issuer = _user.FindFirst("iss").Value;
       UserId = (uint)Convert.ToInt32(_user.FindFirst("id").Value);
 
-      _roleAcls = _dbContext.SecurityRoles.Where(x => x.Name.ToLower() == Role.ToLower()).ToList();
+      var role = _user.FindFirst(ClaimTypes.Role).Value;
+      // remove all spaces from string and make lower case
+      role = String.Concat(role.Where(c => !Char.IsWhiteSpace(c))).ToLower();
+      var roles = role.Split(',');
+
+      _roleAcls = _dbContext.SecurityRoles.Where(x => roles.Contains( x.Name.ToLower() ) ).ToList();
 
       var ipAddress = _httpContext.Request.Headers["x-forwarded-for"].ToString();
       if (string.IsNullOrEmpty(ipAddress))

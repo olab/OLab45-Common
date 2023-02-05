@@ -22,7 +22,7 @@ namespace Data.Contracts
     public DateTime End { get; set; }
     public string UserName { get; set; }
     public string CheckSum { get; set; }
-
+    public string CourseName { get; set;  }
     public IList<NodeSession> Nodes { get; set; }
     public IList<CounterSession> Counters{ get; set; }
   }

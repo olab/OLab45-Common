@@ -87,6 +87,7 @@ namespace Endpoints.player.ReportEndpoint
 
     private void BuildSession(SessionReport dto)
     {
+      dto.CourseName = _session.CourseName;
       dto.SessionId = _session.Uuid;
       dto.Start = Conversions.GetTime(_session.StartTime);
       if (_session.EndTime.HasValue)
@@ -94,6 +95,25 @@ namespace Endpoints.player.ReportEndpoint
       dto.UserName = _session.UserId.ToString();
 
       dto.Nodes = BuildNodesReport();
+      dto.CheckSum = BuildCheckSum(dto);
+
+    }
+
+    private string BuildCheckSum(SessionReport dto)
+    {
+      string plainText ="";
+
+      foreach (var counter in dto.Counters)
+        plainText += counter.Value;
+
+      foreach (var node in dto.Nodes)
+      {
+        foreach (var response in node.Responses)
+          plainText += response.ResponseText;
+      }
+
+      var cypherText = StringUtils.GenerateCheckSum(plainText);
+      return cypherText;
     }
 
     private IList<NodeSession> BuildNodesReport()
@@ -204,7 +224,7 @@ namespace Endpoints.player.ReportEndpoint
 
     private string ProcessDropDownQuestion(SystemQuestions question, IList<SystemQuestionResponses> questionResponses, string response)
     {
-      return ProcessPickChoiceQuestion( question, questionResponses, response);
+      return ProcessPickChoiceQuestion(question, questionResponses, response);
     }
 
     private string ProcessDragAndDropQuestion(SystemQuestions question, IList<SystemQuestionResponses> questionResponses, string response)
@@ -256,7 +276,7 @@ namespace Endpoints.player.ReportEndpoint
       if (!Int32.TryParse(response, out responseId))
         return true;
 
-      var questionResponse = _questionsResponses.FirstOrDefault( x => x.Id == responseId);
+      var questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
       if (questionResponse == null)
         return true;
 

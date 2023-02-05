@@ -49,7 +49,8 @@ namespace OLabWebAPI.Data
         StartTime = Conversions.GetCurrentUnixTime(),
         UserIp = userContext.IPAddress,
         Iss = userContext.Issuer,
-        UserId = userContext.UserId
+        UserId = userContext.UserId,
+        CourseName = userContext.CourseName
       };
 
       _context.UserSessions.Add(session);
