@@ -20,8 +20,13 @@ namespace OLabWebAPI.Utils
         token = parts[1];
       }
 
+      // handler external app posted token
       if ( request.Query.ContainsKey("token") )
         token = request.Query["token"];
+
+      // handler SignalR posted token
+      if (request.Query.ContainsKey("access_token"))
+        token = request.Query["access_token"];
 
       if ( string.IsNullOrEmpty(token) && !allowAnonymous )
         throw new OLabUnauthorizedException();
