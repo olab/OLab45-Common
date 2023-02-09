@@ -29,6 +29,7 @@ namespace OLabWebAPI.Data
 
     private IOLabSession _session;
     private string _role;
+    private IList<string> _roles;
     private uint _userId;
     private string _userName;
     private string _ipAddress;
@@ -140,10 +141,18 @@ namespace OLabWebAPI.Data
 
       UserName = _claims.FirstOrDefault(c => c.Type == "name")?.Value;
       Role = _claims.FirstOrDefault(c => c.Type == "role")?.Value;
+
+      // separate out multiple roles, make lower case, remove spaces, and sort
+      _roles = Role.Split(',')
+        .Select(x => x.Trim())
+        .Select( x => x.ToLower())
+        .OrderBy(x => x)
+        .ToList();
+
       UserId = (uint)Convert.ToInt32(_claims.FirstOrDefault(c => c.Type == "id")?.Value);
       Issuer = _claims.FirstOrDefault(c => c.Type == "iss")?.Value;
 
-      _roleAcls = _dbContext.SecurityRoles.Where(x => x.Name.ToLower() == Role.ToLower()).ToList();
+      _roleAcls = _dbContext.SecurityRoles.Where(x => _roles.Contains( x.Name.ToLower() ) ).ToList();
       _accessToken = AccessTokenUtils.ExtractAccessToken(_httpRequest);
 
     }
@@ -171,12 +180,15 @@ namespace OLabWebAPI.Data
       Issuer = _user.FindFirst("iss").Value;
       UserId = (uint)Convert.ToInt32(_user.FindFirst("id").Value);
 
-      var role = _user.FindFirst(ClaimTypes.Role).Value;
-      // remove all spaces from string and make lower case
-      role = String.Concat(role.Where(c => !Char.IsWhiteSpace(c))).ToLower();
-      var roles = role.Split(',');
+      var Role = _user.FindFirst(ClaimTypes.Role).Value;
+      // separate out multiple roles, make lower case, remove spaces, and sort
+      _roles = Role.Split(',')
+        .Select(x => x.Trim())
+        .Select(x => x.ToLower())
+        .OrderBy(x => x)
+        .ToList();
 
-      _roleAcls = _dbContext.SecurityRoles.Where(x => roles.Contains( x.Name.ToLower() ) ).ToList();
+      _roleAcls = _dbContext.SecurityRoles.Where(x => _roles.Contains(x.Name.ToLower())).ToList();
 
       var ipAddress = _httpContext.Request.Headers["x-forwarded-for"].ToString();
       if (string.IsNullOrEmpty(ipAddress))
