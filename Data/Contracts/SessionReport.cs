@@ -49,7 +49,7 @@ namespace Data.Contracts
     public uint QuestionId { get; set; }
     public string QuestionName { get; set; }
     public string QuestionType { get; set; }
-    public bool isCorrect { get; set; }
+    public string CorrectResponse { get; set; }
     public string QuestionStem { get; set; }
     public string ResponseText { get; set; }
   }

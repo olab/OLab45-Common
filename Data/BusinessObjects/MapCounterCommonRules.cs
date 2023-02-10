@@ -27,7 +27,7 @@ namespace OLabWebAPI.Model
         public string Rule { get; set; }
         [Column("lightning", TypeName = "int(10)")]
         public int Lightning { get; set; }
-        [Column("isCorrect")]
+        [Column("CorrectResponse")]
         public bool IsCorrect { get; set; }
 
         [ForeignKey(nameof(MapId))]

@@ -42,13 +42,13 @@ namespace Endpoints.player.ReportEndpoint
       if (_session == null)
         throw new OLabObjectNotFoundException("Session", contextId);
 
-      ReadSession(contextId);
-      BuildSession(dto);
+      ReadSessionFromDb(contextId);
+      BuildSessionDto(dto);
 
       return dto;
     }
 
-    private void ReadSession(string contextId)
+    private void ReadSessionFromDb(string contextId)
     {
       _sessionTraces = dbContext.UserSessionTraces
         .Where(x => x.SessionId == _session.Id)
@@ -73,7 +73,7 @@ namespace Endpoints.player.ReportEndpoint
 
       _questionsResponses = dbContext.SystemQuestionResponses
         .Where(x => questionIds.Contains(x.QuestionId.Value)).ToList();
-      logger.LogDebug($"Found {_questionsResponses.Count} question questionResponse records for userSession {contextId}");
+      logger.LogDebug($"Found {_questionsResponses.Count} question correctREsponses records for userSession {contextId}");
 
       var nodeIds = _sessionTraces.Select(x => x.NodeId).ToList();
       _nodes = dbContext.MapNodes
@@ -85,7 +85,7 @@ namespace Endpoints.player.ReportEndpoint
     }
 
 
-    private void BuildSession(SessionReport dto)
+    private void BuildSessionDto(SessionReport dto)
     {
       dto.CourseName = _session.CourseName;
       dto.SessionId = _session.Uuid;
@@ -94,7 +94,8 @@ namespace Endpoints.player.ReportEndpoint
         dto.End = Conversions.GetTime(_session.EndTime.Value);
       dto.UserName = _session.UserId.ToString();
 
-      dto.Nodes = BuildNodesReport();
+      // build nodes sections
+      dto.Nodes = BuildNodesReportDto();
       dto.CheckSum = BuildCheckSum(dto);
 
     }
@@ -116,7 +117,7 @@ namespace Endpoints.player.ReportEndpoint
       return cypherText;
     }
 
-    private IList<NodeSession> BuildNodesReport()
+    private IList<NodeSession> BuildNodesReportDto()
     {
       var sessionNodes = new List<NodeSession>();
 
@@ -130,7 +131,8 @@ namespace Endpoints.player.ReportEndpoint
         sessionNode.NodeId = sessionTrace.NodeId;
         sessionNode.TimeStamp = Conversions.GetTime(sessionTrace.DateStamp.Value);
 
-        sessionNode.Responses = BuildNodeResponses(sessionNode.NodeId);
+        // build question correctREsponses section
+        sessionNode.Responses = BuildNodeResponsesDto(sessionNode.NodeId);
 
         sessionNodes.Add(sessionNode);
       }
@@ -138,7 +140,7 @@ namespace Endpoints.player.ReportEndpoint
       return sessionNodes;
     }
 
-    private IList<NodeResponse> BuildNodeResponses(uint nodeId)
+    private IList<NodeResponse> BuildNodeResponsesDto(uint nodeId)
     {
       var nodeResponses = new List<NodeResponse>();
       var nodeSessionResponses = _sessionResponses.Where(x => x.NodeId == nodeId).ToList();
@@ -164,10 +166,9 @@ namespace Endpoints.player.ReportEndpoint
           questionResponses,
           nodeSessionResponse.Response);
 
-        nodeResponse.isCorrect = GetQuestionIsCorrect(
+        nodeResponse.CorrectResponse = GetQuestionCorrectResponse(
           question,
-          questionResponses,
-          nodeSessionResponse.Response);
+          questionResponses.Where( x => x.QuestionId == question.Id ).ToList());
 
         nodeResponses.Add(nodeResponse);
       }
@@ -267,22 +268,18 @@ namespace Endpoints.player.ReportEndpoint
       return questionResponse.Response;
     }
 
-    private bool GetQuestionIsCorrect(
+    private string GetQuestionCorrectResponse(
       SystemQuestions question,
-      IList<SystemQuestionResponses> questionResponses,
-      string response)
+      IList<SystemQuestionResponses> questionResponses)
     {
-      int responseId = 0;
-      if (!Int32.TryParse(response, out responseId))
-        return true;
+      var correctResponses = questionResponses.Where(x => x.IsCorrect.HasValue && x.IsCorrect.Value ).ToList();
 
-      var questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
-      if (questionResponse == null)
-        return true;
+      if (correctResponses.Count == 0)
+        return "N/A";
 
-      return questionResponse.IsCorrect.HasValue ?
-        questionResponse.IsCorrect.Value :
-        true;
+      var responseTexts = correctResponses.Select( x => x.Response ).ToList();
+      var correctText = string.Join(',', responseTexts);
+      return correctText;
     }
 
   }

@@ -10,7 +10,7 @@ namespace OLabWebAPI.Dto
         public string Response { get; set; }
         [JsonProperty("feedback")]
         public string Feedback { get; set; }
-        [JsonProperty("isCorrect")]
+        [JsonProperty("CorrectResponse")]
         public int IsCorrect { get; set; }
         [JsonProperty("score")]
         public int? Score { get; set; }
