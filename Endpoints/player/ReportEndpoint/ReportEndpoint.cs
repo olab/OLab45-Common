@@ -260,12 +260,23 @@ namespace Endpoints.player.ReportEndpoint
 
     private string ProcessMultipleChoiceQuestion(SystemQuestions question, IList<SystemQuestionResponses> questionResponses, string response)
     {
-      int responseId = 0;
-      if (!Int32.TryParse(response, out responseId))
-        return response;
+      var responseIdStrings = response.Split(",");
+      var responsesText = new List<string>();
 
-      var questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
-      return questionResponse.Response;
+      foreach (var responseIdString in responseIdStrings)
+      {
+        int responseId = 0;
+        // if any non-id responses, then this probably isn't a MCQ
+        if (!Int32.TryParse(responseIdString, out responseId))
+          return response;
+
+        var questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
+        responsesText.Add( questionResponse.Response );
+
+      }
+
+      return string.Join(",", responsesText);
+
     }
 
     private string GetQuestionCorrectResponse(
