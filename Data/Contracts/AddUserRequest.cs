@@ -38,6 +38,9 @@ namespace OLabWebAPI.Model
             NickName = parts[3];
             Group = "";
             Role = parts[5];
-        }
+
+            Username = Username.ToLower();
+
     }
+  }
 }
