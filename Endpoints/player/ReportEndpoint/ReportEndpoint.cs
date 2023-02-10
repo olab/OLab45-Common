@@ -272,7 +272,7 @@ namespace Endpoints.player.ReportEndpoint
       SystemQuestions question,
       IList<SystemQuestionResponses> questionResponses)
     {
-      var correctResponses = questionResponses.Where(x => x.IsCorrect.HasValue && x.IsCorrect.Value ).ToList();
+      var correctResponses = questionResponses.Where(x => x.IsCorrect.HasValue && ( x.IsCorrect.Value == 1 ) ).ToList();
 
       if (correctResponses.Count == 0)
         return "N/A";

@@ -28,18 +28,10 @@ namespace OLabWebAPI.ObjectMapper
 
     public override SystemQuestionResponses DtoToPhysical(QuestionResponsesDto dto, SystemQuestionResponses phys)
     {
-      switch (dto.IsCorrect)
-      {
-        case 2:
-          phys.IsCorrect = null;
-          break;
-        case 1:
-          phys.IsCorrect = true;
-          break;
-        case 0:
-          phys.IsCorrect = false;
-          break;
-      }
+      if (!dto.IsCorrect.HasValue)
+        phys.IsCorrect = 0;
+      else
+        phys.IsCorrect = dto.IsCorrect.Value;
 
       return phys;
     }
@@ -49,19 +41,8 @@ namespace OLabWebAPI.ObjectMapper
       if (ParentQuestion != null)
       {
         dto.QuestionId = phys.QuestionId.Value;
+        dto.IsCorrect = phys.IsCorrect;
 
-        switch (phys.IsCorrect)
-        {
-          case null:
-            dto.IsCorrect = 2;
-            break;
-          case true:
-            dto.IsCorrect = 1;
-            break;
-          case false:
-            dto.IsCorrect = 0;
-            break;
-        }
         switch (ParentQuestion.EntryTypeId)
         {
           case (int)SystemQuestionTypes.Type.DragAndDrop:
@@ -96,7 +77,7 @@ namespace OLabWebAPI.ObjectMapper
       phys.Feedback = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "feedback"));
 
       if (int.TryParse(elements.FirstOrDefault(x => x.Name == "is_correct").Value, out int value))
-        phys.IsCorrect = value == 1;
+        phys.IsCorrect = value;
       if (int.TryParse(elements.FirstOrDefault(x => x.Name == "score").Value, out int value1))
         phys.Score = value1;
       phys.Order = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "order").Value);

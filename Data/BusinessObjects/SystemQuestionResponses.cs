@@ -36,7 +36,7 @@ namespace OLabWebAPI.Model
         [Column("feedback", TypeName = "text")]
         public string Feedback { get; set; }
         [Column("is_correct")]
-        public bool? IsCorrect { get; set; }
+        public int? IsCorrect { get; set; }
         [Column("score", TypeName = "int(10)")]
         public int? Score { get; set; }
         [Column("from")]
