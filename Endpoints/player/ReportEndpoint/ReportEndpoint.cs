@@ -144,7 +144,7 @@ namespace Endpoints.player.ReportEndpoint
     {
       var nodeResponses = new List<NodeResponse>();
       var nodeSessionResponses = _sessionResponses.Where(x => x.NodeId == nodeId).ToList();
-      var processedConversations = new List<KeyValuePair<uint, uint>>();
+      var processedConversations = new List<string>();
 
       foreach (var nodeSessionResponse in nodeSessionResponses)
       {
@@ -166,7 +166,7 @@ namespace Endpoints.player.ReportEndpoint
         if (question.EntryTypeId == 15)
         {
           // test if conversation already processed
-          if (processedConversations.Any(x => x.Key == question.Id && x.Value == nodeId))
+          if (processedConversations.Contains($"{question.Id}:{nodeId}:{_session.Id}"))
             continue;
 
           var conversationTextResponses = _sessionResponses
@@ -175,7 +175,7 @@ namespace Endpoints.player.ReportEndpoint
           foreach (var textResponse in conversationTextResponses)
             nodeResponse.ResponseText += $"{textResponse.Response}<br/>\n";
 
-          processedConversations.Add(new KeyValuePair<uint, uint>(question.Id, nodeId));
+          processedConversations.Add($"{question.Id}:{nodeId}:{_session.Id}");
         }
         else
         {
