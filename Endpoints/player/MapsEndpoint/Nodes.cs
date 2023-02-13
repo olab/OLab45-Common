@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLabWebAPI.Common.Exceptions;
+using OLabWebAPI.Data.Exceptions;
 using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Dto;
 using OLabWebAPI.Model;
@@ -59,7 +60,7 @@ namespace OLabWebAPI.Endpoints.Player
 
       // now that we had a real node id, test if user has access to node.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelNode, dto.Id.Value))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, dto.Id.Value);
+        throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelNode, dto.Id.Value);
 
       // if root node, then start a new session
       if (dto.TypeId == 1)

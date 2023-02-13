@@ -17,6 +17,7 @@ namespace OLabWebAPI.Utils
         if (parts.Length != 2)
           throw new OLabUnauthorizedException();
 
+
         token = parts[1];
       }
 

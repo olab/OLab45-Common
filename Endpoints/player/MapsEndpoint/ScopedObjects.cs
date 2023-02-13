@@ -1,4 +1,5 @@
 using OLabWebAPI.Common.Exceptions;
+using OLabWebAPI.Data.Exceptions;
 using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Model;
 using System.Text;

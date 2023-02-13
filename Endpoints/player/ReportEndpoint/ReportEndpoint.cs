@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using OLabWebAPI.Common.Exceptions;
+using OLabWebAPI.Data.Exceptions;
 using OLabWebAPI.Dto;
 using OLabWebAPI.Endpoints;
 using OLabWebAPI.Model;

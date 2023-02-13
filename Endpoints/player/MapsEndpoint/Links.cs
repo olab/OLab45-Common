@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using OLabWebAPI.Common.Exceptions;
+using OLabWebAPI.Data.Exceptions;
 using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Dto;
 using OLabWebAPI.Model;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace OLabWebAPI.Endpoints.Player
 {
-    public partial class MapsEndpoint : OlabEndpoint
+  public partial class MapsEndpoint : OlabEndpoint
     {
         /// <summary>
         /// 
