@@ -1,4 +1,4 @@
-﻿using Data.Contracts;
+using Data.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using OLabWebAPI.Common.Exceptions;
@@ -102,7 +102,7 @@ namespace Endpoints.player.ReportEndpoint
 
     private string BuildCheckSum(SessionReport dto)
     {
-      string plainText ="";
+      string plainText = "";
 
       foreach (var counter in dto.Counters)
         plainText += counter.Value;
@@ -131,7 +131,7 @@ namespace Endpoints.player.ReportEndpoint
         sessionNode.NodeId = sessionTrace.NodeId;
         sessionNode.TimeStamp = Conversions.GetTime(sessionTrace.DateStamp.Value);
 
-        // build question correctREsponses section
+        // build question correctResponses section
         sessionNode.Responses = BuildNodeResponsesDto(sessionNode.NodeId);
 
         sessionNodes.Add(sessionNode);
@@ -144,6 +144,7 @@ namespace Endpoints.player.ReportEndpoint
     {
       var nodeResponses = new List<NodeResponse>();
       var nodeSessionResponses = _sessionResponses.Where(x => x.NodeId == nodeId).ToList();
+      var processedConversations = new List<KeyValuePair<uint, uint>>();
 
       foreach (var nodeSessionResponse in nodeSessionResponses)
       {
@@ -161,14 +162,32 @@ namespace Endpoints.player.ReportEndpoint
         nodeResponse.QuestionType = questionType.Title;
         nodeResponse.QuestionStem = question.Stem;
 
-        nodeResponse.ResponseText = GetResponseText(
-          question,
-          questionResponses,
-          nodeSessionResponse.Response);
+        // handle special case of TTalk responses which are handled together
+        if (question.EntryTypeId == 15)
+        {
+          // test if conversation already processed
+          if (processedConversations.Any(x => x.Key == question.Id && x.Value == nodeId))
+            continue;
+
+          var conversationTextResponses = _sessionResponses
+            .Where(x => x.QuestionId == question.Id && x.NodeId == nodeId).OrderBy(x => x.CreatedAt).ToList();
+
+          foreach (var textResponse in conversationTextResponses)
+            nodeResponse.ResponseText += $"{textResponse.Response}<br/>\n";
+
+          processedConversations.Add(new KeyValuePair<uint, uint>(question.Id, nodeId));
+        }
+        else
+        {
+          nodeResponse.ResponseText = GetResponseText(
+            question,
+            questionResponses,
+            nodeSessionResponse.Response);
+        }
 
         nodeResponse.CorrectResponse = GetQuestionCorrectResponse(
           question,
-          questionResponses.Where( x => x.QuestionId == question.Id ).ToList());
+          questionResponses.Where(x => x.QuestionId == question.Id).ToList());
 
         nodeResponses.Add(nodeResponse);
       }
@@ -220,7 +239,7 @@ namespace Endpoints.player.ReportEndpoint
 
     private string ProcessTurkTalkQuestion(SystemQuestions question, IList<SystemQuestionResponses> questionResponses, string response)
     {
-      throw new NotImplementedException();
+      return response;
     }
 
     private string ProcessDropDownQuestion(SystemQuestions question, IList<SystemQuestionResponses> questionResponses, string response)
@@ -271,7 +290,7 @@ namespace Endpoints.player.ReportEndpoint
           return response;
 
         var questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
-        responsesText.Add( questionResponse.Response );
+        responsesText.Add(questionResponse.Response);
 
       }
 
@@ -283,12 +302,12 @@ namespace Endpoints.player.ReportEndpoint
       SystemQuestions question,
       IList<SystemQuestionResponses> questionResponses)
     {
-      var correctResponses = questionResponses.Where(x => x.IsCorrect.HasValue && ( x.IsCorrect.Value == 1 ) ).ToList();
+      var correctResponses = questionResponses.Where(x => x.IsCorrect.HasValue && (x.IsCorrect.Value == 1)).ToList();
 
       if (correctResponses.Count == 0)
         return "N/A";
 
-      var responseTexts = correctResponses.Select( x => x.Response ).ToList();
+      var responseTexts = correctResponses.Select(x => x.Response).ToList();
       var correctText = string.Join(',', responseTexts);
       return correctText;
     }
