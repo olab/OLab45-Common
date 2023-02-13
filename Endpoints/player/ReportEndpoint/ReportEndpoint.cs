@@ -170,7 +170,7 @@ namespace Endpoints.player.ReportEndpoint
             continue;
 
           var conversationTextResponses = _sessionResponses
-            .Where(x => x.QuestionId == question.Id && x.NodeId == nodeId).OrderBy(x => x.CreatedAt).ToList();
+            .Where(x => x.QuestionId == question.Id && x.NodeId == nodeId && x.SessionId == _session.id).OrderBy(x => x.CreatedAt).ToList();
 
           foreach (var textResponse in conversationTextResponses)
             nodeResponse.ResponseText += $"{textResponse.Response}<br/>\n";
