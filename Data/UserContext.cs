@@ -137,6 +137,7 @@ namespace OLabWebAPI.Data
         // request based requests need to get th eIPAddress using the context
         IPAddress = _httpRequest.HttpContext.Connection.RemoteIpAddress.ToString();
 
+      _accessToken = AccessTokenUtils.ExtractAccessToken(_httpRequest);
       _claims = ExtractTokenClaims(_accessToken);
 
       UserName = _claims.FirstOrDefault(c => c.Type == "name")?.Value;
@@ -153,7 +154,6 @@ namespace OLabWebAPI.Data
       Issuer = _claims.FirstOrDefault(c => c.Type == "iss")?.Value;
 
       _roleAcls = _dbContext.SecurityRoles.Where(x => _roles.Contains( x.Name.ToLower() ) ).ToList();
-      _accessToken = AccessTokenUtils.ExtractAccessToken(_httpRequest);
 
     }
 
