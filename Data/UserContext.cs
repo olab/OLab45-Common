@@ -17,6 +17,7 @@ namespace OLabWebAPI.Data
   {
     public const string WildCardObjectType = "*";
     public const uint WildCardObjectId = 0;
+    public const string NonAccessAcl = "-";
 
     private readonly HttpContext _httpContext;
     private readonly HttpRequest _httpRequest;
@@ -218,6 +219,11 @@ namespace OLabWebAPI.Data
     {
       var grantedCount = 0;
 
+      _logger.LogDebug($"ACL request: '{requestedPerm}' on '{objectType}({objectId})'");
+
+      if (!objectId.HasValue)
+        objectId = WildCardObjectId;
+
       for (var i = 0; i < requestedPerm.Length; i++)
       {
         if (HasSingleAccess(requestedPerm[i], objectType, objectId))
@@ -238,9 +244,6 @@ namespace OLabWebAPI.Data
     /// <returns>true/false</returns>
     private bool HasSingleAccess(char requestedPerm, string objectType, uint? objectId)
     {
-      if (!objectId.HasValue)
-        objectId = 0;
-
       var rc = HasUserLevelAccess(requestedPerm, objectType, objectId);
       if (!rc)
         rc = HasRoleLevelAccess(requestedPerm, objectType, objectId);
@@ -257,41 +260,53 @@ namespace OLabWebAPI.Data
     /// <returns>true/false</returns>
     private bool HasRoleLevelAccess(char requestedPerm, string objectType, uint? objectId)
     {
-      // test for most specific object acl
+      // test for explicit non-access to specific object type and id
       SecurityRoles acl = _roleAcls.Where(x =>
+       (x.ImageableType == objectType) &&
+       (x.ImageableId == objectId.Value) &&
+       ( x.Acl == NonAccessAcl)).FirstOrDefault();
+
+      if (acl != null)
+      {
+        _logger.LogDebug($"{acl} ? true");
+        return true;
+      }
+
+      // test for specific object type and id
+      acl = _roleAcls.Where(x =>
        (x.ImageableType == objectType) &&
        (x.ImageableId == objectId.Value) &&
        x.Acl.Contains(requestedPerm)).FirstOrDefault();
 
       if (acl != null)
+      {
+        _logger.LogDebug($"{acl} ? true");
         return true;
+      }
 
-      // test for specific object type acl
+      // test for specific object type and all ids
       acl = _roleAcls.Where(x =>
        (x.ImageableType == objectType) &&
        (x.ImageableId == WildCardObjectId) &&
        x.Acl.Contains(requestedPerm)).FirstOrDefault();
 
       if (acl != null)
+      {
+        _logger.LogDebug($"{acl} ? true");
         return true;
+      }
 
-      // test for all for object type acl
-      acl = _roleAcls.Where(x =>
-       (x.ImageableType == objectType) &&
-       (x.ImageableId == 0) &&
-       x.Acl.Contains(requestedPerm)).FirstOrDefault();
-
-      if (acl != null)
-        return true;
-
-      // test for generic acl
+      // test for default any object, any id
       acl = _roleAcls.Where(x =>
        (x.ImageableType == WildCardObjectType) &&
-       (x.ImageableId == 0) &&
+       (x.ImageableId == WildCardObjectId) &&
        x.Acl.Contains(requestedPerm)).FirstOrDefault();
 
       if (acl != null)
+      {
+        _logger.LogDebug($"{acl} ? true");
         return true;
+      }
 
       return false;
     }
@@ -306,14 +321,29 @@ namespace OLabWebAPI.Data
     private bool HasUserLevelAccess(char requestedPerm, string objectType, uint? objectId)
     {
 
-      // test for most specific object acl
+      // test for explicit non-access to specific object type and id
       SecurityUsers acl = _userAcls.Where(x =>
+       (x.ImageableType == objectType) &&
+       (x.ImageableId == objectId.Value) &&
+       (x.Acl == NonAccessAcl)).FirstOrDefault();
+
+      if (acl != null)
+      {
+        _logger.LogDebug($"{acl} ? false");
+        return false;
+      }
+
+      // test for most specific object acl
+      acl = _userAcls.Where(x =>
        (x.ImageableType == objectType) &&
        (x.ImageableId == objectId.Value) &&
        x.Acl.Contains(requestedPerm)).FirstOrDefault();
 
       if (acl != null)
+      {
+        _logger.LogDebug($"{acl} ? true");
         return true;
+      }
 
       // test for specific object type acl
       acl = _userAcls.Where(x =>
@@ -322,7 +352,10 @@ namespace OLabWebAPI.Data
        x.Acl.Contains(requestedPerm)).FirstOrDefault();
 
       if (acl != null)
+      {
+        _logger.LogDebug($"{acl} ? true");
         return true;
+      }
 
       // test for all for object type acl
       acl = _userAcls.Where(x =>
@@ -331,7 +364,10 @@ namespace OLabWebAPI.Data
        x.Acl.Contains(requestedPerm)).FirstOrDefault();
 
       if (acl != null)
+      {
+        _logger.LogDebug($"{acl} ? true");
         return true;
+      }
 
       // test for generic acl
       acl = _userAcls.Where(x =>
@@ -340,7 +376,10 @@ namespace OLabWebAPI.Data
        x.Acl.Contains(requestedPerm)).FirstOrDefault();
 
       if (acl != null)
+      {
+        _logger.LogDebug($"{acl} ? true");
         return true;
+      }
 
       return false;
     }

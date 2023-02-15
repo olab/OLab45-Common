@@ -7,6 +7,7 @@ using OLabWebAPI.Dto;
 using OLabWebAPI.Model;
 using OLabWebAPI.Model.ReaderWriter;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -58,9 +59,23 @@ namespace OLabWebAPI.Endpoints.Player
           throw new OLabGeneralException($"map {map.Id} has no root node");
       }
 
-      // now that we had a real node id, test if user has access to node.
-      if (!auth.HasAccess("R", Utils.Constants.ScopeLevelNode, dto.Id.Value))
-        throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelNode, dto.Id.Value);
+      // now that we had a real node id, test if user has explicit no access to node.
+      if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, dto.Id.Value))
+        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, dto.Id.Value);
+
+      // filter out any destination links the user
+      // does not have access to 
+      var filteredLinks = new List<MapNodeLinksDto>();
+      foreach (var mapNodeLink in dto.MapNodeLinks)
+      {
+        if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
+          continue;
+
+        filteredLinks.Add(mapNodeLink);
+      }
+
+      // replace original map node links with acl-filtered links
+      dto.MapNodeLinks = filteredLinks;
 
       // if root node, then start a new session
       if (dto.TypeId == 1)
@@ -181,8 +196,8 @@ namespace OLabWebAPI.Endpoints.Player
         MapNodes phys = builder.DtoToPhysical(dto);
 
         // patch up node size, just in case it's not set properly
-        if ( phys.Height == 0 ) phys.Height = 440;
-        if ( phys.Width == 0 ) phys.Width = 300;
+        if (phys.Height == 0) phys.Height = 440;
+        if (phys.Width == 0) phys.Width = 300;
 
         dbContext.MapNodes.Update(phys);
         await dbContext.SaveChangesAsync();
