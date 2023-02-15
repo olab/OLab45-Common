@@ -265,7 +265,7 @@ namespace Endpoints.player.ReportEndpoint
         }
       }
 
-      return string.Join(",", responseTexts);
+      return string.Join("<br/><br/>", responseTexts);
     }
 
     private string ProcessPickChoiceQuestion(SystemQuestions question, IList<SystemQuestionResponses> questionResponses, string response)
@@ -295,7 +295,7 @@ namespace Endpoints.player.ReportEndpoint
 
       }
 
-      return string.Join(",", responsesText);
+      return string.Join("<br/>", responsesText);
 
     }
 
