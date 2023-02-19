@@ -163,6 +163,15 @@ namespace Endpoints.player.ReportEndpoint
         nodeResponse.QuestionType = questionType.Title;
         nodeResponse.QuestionStem = question.Stem;
 
+        // handle special case of Drag and Drop, which only the last is displayed
+        // so this code jsut removes any previous responses for the question.
+        if (question.EntryTypeId == 6)
+        {
+          var previousResponse = nodeResponses.FirstOrDefault(x => (x.QuestionId == question.Id));
+          if (previousResponse != null)
+            nodeResponses.Remove(previousResponse);
+        }
+
         // handle special case of TTalk responses which are handled together
         if (question.EntryTypeId == 15)
         {
