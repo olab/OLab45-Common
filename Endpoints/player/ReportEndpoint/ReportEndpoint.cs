@@ -163,9 +163,9 @@ namespace Endpoints.player.ReportEndpoint
         nodeResponse.QuestionType = questionType.Title;
         nodeResponse.QuestionStem = question.Stem;
 
-        // handle special case of Drag and Drop, which only the last is displayed
-        // so this code jsut removes any previous responses for the question.
-        if (question.EntryTypeId == 6)
+        // handle special case of DnD or MCQ, which only the last response is
+        // displayed so this code jsut removes any previous responses for the question.
+        if ( (question.EntryTypeId == 6) || (question.EntryTypeId == 3) )
         {
           var previousResponse = nodeResponses.FirstOrDefault(x => (x.QuestionId == question.Id));
           if (previousResponse != null)
