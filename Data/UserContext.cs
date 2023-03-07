@@ -219,7 +219,7 @@ namespace OLabWebAPI.Data
     {
       var grantedCount = 0;
 
-      _logger.LogDebug($"ACL request: '{requestedPerm}' on '{objectType}({objectId})'");
+      //_logger.LogDebug($"ACL request: '{requestedPerm}' on '{objectType}({objectId})'");
 
       if (!objectId.HasValue)
         objectId = WildCardObjectId;
@@ -228,8 +228,8 @@ namespace OLabWebAPI.Data
       {
         if (HasSingleAccess(requestedPerm[i], objectType, objectId))
           grantedCount++;
-        else
-          _logger.LogError($"User {UserId}/{Role} does not have '{requestedPerm[i]}' access to '{objectType}({objectId})'");
+        //else
+        //  _logger.LogError($"User {UserId}/{Role} does not have '{requestedPerm[i]}' access to '{objectType}({objectId})'");
       }
 
       return grantedCount == requestedPerm.Length;

@@ -28,7 +28,7 @@ namespace OLabWebAPI.Endpoints.Player
       uint nodeId,
       DynamicScopedObjectsDto body)
     {
-      logger.LogDebug($"GetMapNodeAsync(uint mapId={mapId}, nodeId={nodeId})");
+      logger.LogDebug($"GetMapNodeAsync(mapId={mapId}, nodeId={nodeId})");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
