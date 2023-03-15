@@ -7,9 +7,14 @@ namespace OLabWebAPI.TurkTalk.Methods
   /// <summary>
   /// Defines a command method
   /// </summary>
-  public abstract class CommandMethod : Method
+  public class CommandMethod : Method
   {
     public string Command { get; set; }
+
+    public CommandMethod() : base( )
+    {
+
+    }
 
     public CommandMethod(string recipientGroupName, string command) : base(recipientGroupName, "Command")
     {
@@ -19,7 +24,7 @@ namespace OLabWebAPI.TurkTalk.Methods
 
     public override string ToJson()
     {
-      var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
+      var rawJson = JsonConvert.SerializeObject(this);
       return JToken.Parse(rawJson).ToString(Formatting.Indented);
     }
   }

@@ -1,21 +1,27 @@
 using Dawn;
+using System;
 
 namespace OLabWebAPI.TurkTalk.Methods
 {
-    public abstract class Method
+  public class Method
+  {
+    public string MethodName { get; set; }
+    public string CommandChannel { get; set; }
+
+    public Method()
     {
-        public string MethodName { get; set; }
-        public string CommandChannel { get; set; }
 
-        public Method(string recipientGroupName, string methodName)
-        {
-            Guard.Argument(recipientGroupName).NotEmpty(recipientGroupName);
-            Guard.Argument(methodName).NotEmpty(methodName);
-
-            MethodName = methodName;
-            CommandChannel = recipientGroupName;
-        }
-
-        public abstract string ToJson();
     }
+
+    public Method(string recipientGroupName, string methodName)
+    {
+      Guard.Argument(recipientGroupName).NotEmpty(recipientGroupName);
+      Guard.Argument(methodName).NotEmpty(methodName);
+
+      MethodName = methodName;
+      CommandChannel = recipientGroupName;
+    }
+
+    public virtual string ToJson() { throw new NotImplementedException(); }
+  }
 }
