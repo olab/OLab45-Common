@@ -8,6 +8,7 @@ namespace OLabWebAPI.Model
         public string UserName { get; set; }
         public string Role { get; set; }
         public RefreshToken AuthInfo { get; set; }
+        public string CourseName { get; set; }
 
         public AuthenticateResponse()
         {
