@@ -18,11 +18,11 @@ namespace OLabWebAPI.Data
     public const string WildCardObjectType = "*";
     public const uint WildCardObjectId = 0;
     public const string NonAccessAcl = "-";
+    public ClaimsPrincipal User;
 
     private readonly HttpContext _httpContext;
     private readonly HttpRequest _httpRequest;
     private IEnumerable<Claim> _claims;
-    private ClaimsPrincipal _user;
     private readonly OLabDBContext _dbContext;
     private readonly OLabLogger _logger;
     protected IList<SecurityRoles> _roleAcls = new List<SecurityRoles>();
@@ -42,6 +42,12 @@ namespace OLabWebAPI.Data
     {
       get => _session;
       set => _session = value;
+    }
+
+    public string ReferringCourse
+    {
+      get => _role;
+      set => _role = value;
     }
 
     public string Role
@@ -143,18 +149,19 @@ namespace OLabWebAPI.Data
 
       UserName = _claims.FirstOrDefault(c => c.Type == "name")?.Value;
       Role = _claims.FirstOrDefault(c => c.Type == "role")?.Value;
+      ReferringCourse = _claims.FirstOrDefault(c => c.Type == ClaimTypes.UserData)?.Value;
 
       // separate out multiple roles, make lower case, remove spaces, and sort
       _roles = Role.Split(',')
         .Select(x => x.Trim())
-        .Select( x => x.ToLower())
+        .Select(x => x.ToLower())
         .OrderBy(x => x)
         .ToList();
 
       UserId = (uint)Convert.ToInt32(_claims.FirstOrDefault(c => c.Type == "id")?.Value);
       Issuer = _claims.FirstOrDefault(c => c.Type == "iss")?.Value;
 
-      _roleAcls = _dbContext.SecurityRoles.Where(x => _roles.Contains( x.Name.ToLower() ) ).ToList();
+      _roleAcls = _dbContext.SecurityRoles.Where(x => _roles.Contains(x.Name.ToLower())).ToList();
 
     }
 
@@ -174,14 +181,16 @@ namespace OLabWebAPI.Data
       if (identity == null)
         throw new Exception($"Unable to establish identity from token");
 
-      _user = _httpContext.User;
+      User = _httpContext.User;
       _claims = identity.Claims;
 
-      UserName = _user.FindFirst(ClaimTypes.Name).Value;
-      Issuer = _user.FindFirst("iss").Value;
-      UserId = (uint)Convert.ToInt32(_user.FindFirst("id").Value);
+      UserName = User.FindFirst(ClaimTypes.Name).Value;
+      ReferringCourse = User.FindFirst(ClaimTypes.UserData).Value;
 
-      var Role = _user.FindFirst(ClaimTypes.Role).Value;
+      Issuer = User.FindFirst("iss").Value;
+      UserId = (uint)Convert.ToInt32(User.FindFirst("id").Value);
+
+      var Role = User.FindFirst(ClaimTypes.Role).Value;
       // separate out multiple roles, make lower case, remove spaces, and sort
       _roles = Role.Split(',')
         .Select(x => x.Trim())
@@ -195,6 +204,7 @@ namespace OLabWebAPI.Data
       if (string.IsNullOrEmpty(ipAddress))
         ipAddress = _httpContext.Connection.RemoteIpAddress.ToString();
       _ipAddress = ipAddress;
+
 
       // test for a local user
       Users user = _dbContext.Users.FirstOrDefault(x => x.Username == UserName);
@@ -264,7 +274,7 @@ namespace OLabWebAPI.Data
       SecurityRoles acl = _roleAcls.Where(x =>
        (x.ImageableType == objectType) &&
        (x.ImageableId == objectId.Value) &&
-       ( x.Acl == NonAccessAcl)).FirstOrDefault();
+       (x.Acl == NonAccessAcl)).FirstOrDefault();
 
       if (acl != null)
       {

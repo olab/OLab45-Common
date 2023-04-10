@@ -29,10 +29,11 @@ namespace OLabWebAPI.Dto
     public string Conditional { get; set; }
     public string ConditionalMessage { get; set; }
     public string Info { get; set; }
-    public string Rgb { get; set; }
+    //public string Rgb { get; set; }
     public string Text { get; set; }
     public uint? LinkStyleId { get; set; }
     public uint? MapId { get; set; }
+    public string Color { get; set; }
 
     [JsonProperty("data")]
     public MapNodesFullDto Data { get; set; }

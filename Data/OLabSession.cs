@@ -50,7 +50,7 @@ namespace OLabWebAPI.Data
         UserIp = userContext.IPAddress,
         Iss = userContext.Issuer,
         UserId = userContext.UserId,
-        CourseName = userContext.CourseName
+        CourseName = userContext.ReferringCourse
       };
 
       _context.UserSessions.Add(session);
