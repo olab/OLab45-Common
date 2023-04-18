@@ -5,13 +5,13 @@ using OLabWebAPI.TurkTalk.Methods;
 
 namespace OLabWebAPI.TurkTalk.Commands
 {
-  public class SystemMessageCommand : Method
+  public class LearnerMessageCommand : Method
   {
     public string Data { get; set; }
     /// <summary>
     /// Defines a Moderator removed command method
     /// </summary>
-    public SystemMessageCommand(MessagePayload payload) : base(payload.Envelope.To, "systemmessage")
+    public LearnerMessageCommand(MessagePayload payload) : base(payload.Envelope.To, "TURKEEMESSAGE")
     {
       Data = payload.Data;
     }

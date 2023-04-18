@@ -181,15 +181,21 @@ namespace OLabWebAPI.Endpoints.Player
       else
       {
         Maps templateMap = await dbContext.Maps
-  .AsNoTracking()
-  .Include(x => x.MapNodes)
-  .FirstOrDefaultAsync(x => x.Id == body.TemplateId);
+          .AsNoTracking()
+          .Include(x => x.MapNodes)
+          .FirstOrDefaultAsync(x => x.Id == body.TemplateId);
+
         if (templateMap == null)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, body.TemplateId.Value);
 
         map = await MapsReaderWriter.Instance(logger.GetLogger(), dbContext)
           .CreateMapWithTemplateAsync(map, templateMap);
       }
+
+      // set up default ACL for map author against map
+      var acl = SecurityUsers.CreateDefaultMapACL(auth.GetUserContext(), map);
+      dbContext.SecurityUsers.Add(acl);
+      await dbContext.SaveChangesAsync();
 
       MapsFullRelationsDto dto = new MapsFullRelationsMapper(logger).PhysicalToDto(map);
       return dto;

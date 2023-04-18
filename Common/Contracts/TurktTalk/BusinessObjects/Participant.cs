@@ -1,4 +1,5 @@
 using Dawn;
+using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using System;
@@ -13,12 +14,13 @@ namespace OLabWebAPI.TurkTalk.BusinessObjects
     private string _nickName;
     private int? _roomNumber;
     private string _connectionId;
-
+    
     public string UserId { get { return _userId; } set { _userId = value; } }
     public string TopicName { get { return _topicName; } set { _topicName = value; } }
     public string NickName { get { return _nickName; } set { _nickName = value; } }
     public string ConnectionId { get { return _connectionId; } set { _connectionId = value; } }
     public string RoomName { get; set; }
+    public string RemoteIpAddress { get; set; }
     // group name for direct-to-user method messages
     public string CommandChannel { get; set; }
     [JsonProperty("slotIndex")]
@@ -57,6 +59,8 @@ namespace OLabWebAPI.TurkTalk.BusinessObjects
       _connectionId = context.ConnectionId;
       _nickName = nickName;
       _userId = userId;
+
+      RemoteIpAddress = context.GetHttpContext().Connection.RemoteIpAddress.ToString();
     }
 
     public Participant(string topicName, string userId, string nickName, string connectionId)

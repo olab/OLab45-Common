@@ -30,5 +30,8 @@ namespace OLabWebAPI.Model
         [ForeignKey(nameof(UserId))]
         [InverseProperty(nameof(Users.SecurityUsers))]
         public virtual Users User { get; set; }
+
+        [Column("iss")]
+        public string Issuer { get; set; }
     }
 }
