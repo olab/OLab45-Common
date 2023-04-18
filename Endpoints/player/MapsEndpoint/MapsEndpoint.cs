@@ -91,16 +91,19 @@ namespace OLabWebAPI.Endpoints.Player
     {
       logger.LogDebug($"GetAsync(uint id={id})");
 
-      // test if user has access to map.
-      if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, id))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, id);
-
-      Maps map = GetSimple(dbContext, id);
+      Maps map = await GetMapAsync(id);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
 
-      Maps phys = await GetMapAsync(id);
-      MapsFullDto dto = new MapsFullMapper(logger).PhysicalToDto(phys);
+      // test if map set to use ACL for testing access
+      if (map.SecurityId == 3)
+      {
+        // test if user has access to map.
+        if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, id))
+          throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, id);
+      }
+
+      MapsFullDto dto = new MapsFullMapper(logger).PhysicalToDto(map);
 
       return dto;
     }
