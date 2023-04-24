@@ -19,6 +19,7 @@ namespace OLabWebAPI.Data
     public const uint WildCardObjectId = 0;
     public const string NonAccessAcl = "-";
     public ClaimsPrincipal User;
+    public Users OLabUser;
 
     private readonly HttpContext _httpContext;
     private readonly HttpRequest _httpRequest;
@@ -207,11 +208,28 @@ namespace OLabWebAPI.Data
 
 
       // test for a local user
-      Users user = _dbContext.Users.FirstOrDefault(x => x.Username == UserName);
+      Users user = _dbContext.Users.FirstOrDefault(x => (x.Username == UserName) && (x.Id == UserId));
       if (user != null)
       {
+        OLabUser = user;
         UserId = user.Id;
         _userAcls = _dbContext.SecurityUsers.Where(x => x.UserId == UserId).ToList();
+
+        // if user is anonymous user, add user access to anon-flagged maps
+        if (OLabUser.Group == "anonymous")
+        {
+          var anonymousMaps = _dbContext.Maps.Where(x => x.SecurityId == 1).ToList();
+          foreach (var item in anonymousMaps)
+          {
+            _userAcls.Add( new SecurityUsers
+            {
+              Id = item.Id,
+              ImageableId = item.Id,
+              ImageableType = Constants.ScopeLevelMap,
+              Acl = "RX"
+            });
+          }
+        }
       }
       else
         _logger.LogWarning($"User {UserName} does not exist");

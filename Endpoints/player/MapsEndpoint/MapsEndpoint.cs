@@ -33,6 +33,18 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="context"></param>
     /// <param name="id"></param>
     /// <returns></returns>
+    public async Task<Model.Maps> GetSimpleAnonymousAsync(uint id)
+    {
+      Maps phys = await dbContext.Maps.Include(x => x.SystemCounterActions).FirstOrDefaultAsync(x => x.Id == id);
+      return phys;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public Model.Maps GetSimple(OLabDBContext context, uint id)
     {
       Maps phys = context.Maps.Include(x => x.SystemCounterActions).FirstOrDefault(x => x.Id == id);
