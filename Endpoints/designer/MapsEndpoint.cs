@@ -229,7 +229,7 @@ namespace OLabWebAPI.Endpoints.Designer
         MapNodeLinks link = GetLinkSimple(dbContext, linkId);
 
         if ( link == null )
-          throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelLink, linkId);
+          throw new OLabObjectNotFoundException("Links", linkId);
 
         logger.LogDebug($"deleting link {link.Id} of map {link.MapId}");
         dbContext.MapNodeLinks.Remove(link);
