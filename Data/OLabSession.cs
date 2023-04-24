@@ -59,9 +59,9 @@ namespace OLabWebAPI.Data
       _logger.LogInformation($"OnStartSession: session {_sessionId} ({userContext.UserName}) MapId: {mapId}. Session PK: {session.Id}");
     }
 
-    public void OnEndSession(uint mapId, uint nodeId)
+    public void OnExtendSession(uint mapId, uint nodeId)
     {
-      _logger.LogInformation($"OnEndSession: session {GetSessionId()} Map: {mapId} Node: {nodeId}");
+      _logger.LogInformation($"OnExtendSession: session {GetSessionId()} Map: {mapId} Node: {nodeId}");
 
       UserSessions session = GetSession(GetSessionId());
       if (session == null)

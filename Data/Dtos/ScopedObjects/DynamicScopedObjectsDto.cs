@@ -44,6 +44,9 @@ namespace OLabWebAPI.Dto
 
   public class DynamicScopedObjectsDto
   {
+    [JsonProperty("newPlay")]
+    public bool NewPlay{ get; private set; }
+
     [JsonProperty("updatedAt")]
     public DateTime UpdatedAt { get; private set; }
 

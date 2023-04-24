@@ -77,19 +77,18 @@ namespace OLabWebAPI.Endpoints.Player
       // replace original map node links with acl-filtered links
       dto.MapNodeLinks = filteredLinks;
 
-      // if root node, then start a new session
-      if (dto.TypeId == 1)
+      // if browser signals a new play, then start a new session
+      if (body.NewPlay)
       {
         _userContext.Session.OnStartSession(_userContext, mapId);
         dto.ContextId = _userContext.Session.GetSessionId();
         _userContext.Session.SetSessionId(dto.ContextId);
       }
 
-      // if end node, close out the session
-      if (dto.End.HasValue && (dto.End.Value == true))
-        _userContext.Session.OnEndSession(mapId, nodeId);
-
       _userContext.Session.OnPlayNode(mapId, dto.Id.Value);
+
+      // extend the session into the new node
+      _userContext.Session.OnExtendSession(mapId, nodeId);
 
       UpdateNodeCounter();
 
