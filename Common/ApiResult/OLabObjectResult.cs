@@ -8,7 +8,8 @@ namespace OLabWebAPI.Common
         {
             var result = new OLabAPIResponse<D>
             {
-                Data = value
+                Data = value,
+                ErrorCode = System.Net.HttpStatusCode.OK                
             };
 
             return new JsonResult(result);

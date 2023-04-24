@@ -108,12 +108,12 @@ namespace OLabWebAPI.Endpoints.Player
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
 
       // test if map set to use ACL for testing access
-      if (map.SecurityId == 3)
-      {
+      //if (map.SecurityId == 3)
+      //{
         // test if user has access to map.
         if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, id))
           throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, id);
-      }
+      //}
 
       MapsFullDto dto = new MapsFullMapper(logger).PhysicalToDto(map);
 
