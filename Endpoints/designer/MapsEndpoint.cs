@@ -200,6 +200,52 @@ namespace OLabWebAPI.Endpoints.Designer
     /// <summary>
     /// 
     /// </summary>
+    /// <param name="context"></param>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public Model.MapNodeLinks GetLinkSimple(OLabDBContext context, uint id)
+    {
+        MapNodeLinks phys = context.MapNodeLinks.FirstOrDefault(x => x.Id == id);
+        return phys;
+    }
+
+    /// <summary>
+    /// Delete a node link
+    /// </summary>
+    /// <returns>IActionResult</returns>
+    public async Task<bool> DeleteMapNodeLinkAsync(
+      IOLabAuthentication auth,
+      uint mapId,
+      uint linkId)
+    {
+      logger.LogDebug($"DeleteMapNodeLinkAsync(mapId = {mapId}, linkId = {linkId})");
+
+      try
+      {
+        // test if user has access to map.
+        if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
+          throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+
+        MapNodeLinks link = GetLinkSimple(dbContext, linkId);
+
+        if ( link == null )
+          throw new OLabObjectNotFoundException("Links", linkId);
+
+        logger.LogDebug($"deleting link {link.Id} of map {link.MapId}");
+        dbContext.MapNodeLinks.Remove(link);
+        await dbContext.SaveChangesAsync();
+        return true;
+      }
+      catch (Exception ex)
+      {
+        logger.LogError(ex, "DeleteMapNodeLinkAsync");
+        throw;
+      }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     public async Task<OLabWebAPI.Dto.Designer.ScopedObjectsDto> GetScopedObjectsRawAsync(
