@@ -11,6 +11,8 @@ namespace OLabWebAPI.Common.Contracts
     public uint QuestionId { get; set; }
 
     public string RoomName { get; set; }
+    public string ReferringNode { get; set; }
+
     public string ToJson()
     {
       var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
