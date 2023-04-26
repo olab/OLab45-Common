@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Security.Claims;
+using Common.Utils;
+
 
 namespace OLabWebAPI.TurkTalk.BusinessObjects
 {
@@ -16,6 +18,7 @@ namespace OLabWebAPI.TurkTalk.BusinessObjects
     private string _nickName;
     private int? _roomNumber;
     private string _connectionId;
+    
 
     public string UserId { get { return _userId; } set { _userId = value; } }
     public string TopicName { get { return _topicName; } set { _topicName = value; } }
@@ -27,6 +30,9 @@ namespace OLabWebAPI.TurkTalk.BusinessObjects
     public string CommandChannel { get; set; }
     [JsonProperty("slotIndex")]
     public int SlotIndex { get; set; }
+
+    // this is used for misc purposes, like atrium insertion, etc.
+    public DateTime ReferenceDate { get; set; }
 
     public int? RoomNumber
     {
@@ -73,6 +79,11 @@ namespace OLabWebAPI.TurkTalk.BusinessObjects
     public Participant(string topicName, string userId, string nickName, string connectionId)
     {
       Initialize(topicName, userId, nickName, connectionId);
+    }
+
+    public string GetUniqueKey()
+    {
+      return $"{UserId}:{ConnectionIdUtils.Shorten(ConnectionId)}";
     }
 
     private void Initialize(string topicName, string userId, string nickName, string connectionId)

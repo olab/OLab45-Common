@@ -35,26 +35,25 @@ namespace OLabWebAPI.Endpoints.Player
       return phys;
     }
 
-    /// <summary>
-    /// Get full map node, with relations
-    /// </summary>
-    /// <param name="nodeId">Node id (0, if root node)</param>
-    /// <returns>MapsNodesFullRelationsDto response</returns>
-    public async Task<MapsNodesFullRelationsDto> GetNodeTranslatedAsync(uint nodeId)
-    {
-      return await GetNodeAsync(nodeId, true);
-    }
-
     private async Task<MapsNodesFullRelationsDto> GetNodeAsync(uint id, bool enableWikiTranslation)
     {
-      logger.LogDebug($"NodesController.GetNodeAsync(uint nodeId={id}, bool enableWikiTranslation={enableWikiTranslation})");
-
       MapNodes phys = await GetMapNodeAsync(id);
 
       var builder = new ObjectMapper.MapsNodesFullRelationsMapper(logger, enableWikiTranslation);
       MapsNodesFullRelationsDto dto = builder.PhysicalToDto(phys);
 
       return dto;
+    }
+
+    /// <summary>
+    /// Get full map node, with relations
+    /// </summary>
+    /// <param name="nodeId">Node id (0, if root node)</param>
+    /// <returns>MapsNodesFullRelationsDto response</returns>
+    public async Task<MapsNodesFullRelationsDto> GetNodeTranslatedAsync(IOLabAuthentication auth, uint nodeId)
+    {
+      logger.LogDebug($"{auth.GetUserContext().UserId}: NodesEndpoint.GetNodeTranslatedAsync");
+      return await GetNodeAsync(nodeId, true);
     }
 
     /// <summary>
@@ -65,6 +64,8 @@ namespace OLabWebAPI.Endpoints.Player
     /// <returns></returns>
     public async Task PutNodeAsync(IOLabAuthentication auth, uint id, MapNodesFullDto dto)
     {
+      logger.LogDebug($"{auth.GetUserContext().UserId}: NodesEndpoint.PutNodeAsync");
+
       MapNodes phys = await GetMapNodeAsync(id);
       if (phys == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
@@ -89,11 +90,12 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="data"></param>
     /// <returns></returns>
     public async Task<MapNodeLinksPostResponseDto> PostLinkAsync(
+      IOLabAuthentication auth,
       uint nodeId,
-      [FromBody] MapNodeLinksPostDataDto data
+      MapNodeLinksPostDataDto data
     )
     {
-      logger.LogDebug($"MapsNodesController.PostAsync(PostLinkAsync(uint nodeId = {nodeId}, uint destinationId = {data.DestinationId})");
+      logger.LogDebug($"{auth.GetUserContext().UserId}: NodesEndpoint.PostLinkAsync");
 
       MapNodes node = GetSimple(dbContext, nodeId);
       if (node == null)
@@ -123,11 +125,12 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="data"></param>
     /// <returns></returns>
     public async Task<MapNodesPostResponseDto> PostNodeAsync(
+      IOLabAuthentication auth,
       uint mapId,
       [FromBody] MapNodesPostDataDto data
     )
     {
-      logger.LogDebug($"MapsNodesController.PostAsync(MapNodesFullDto dtoNode)");
+      logger.LogDebug($"{auth.GetUserContext().UserId}: NodesEndpoint.PostNodeAsync");
 
       using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = dbContext.Database.BeginTransaction();
 

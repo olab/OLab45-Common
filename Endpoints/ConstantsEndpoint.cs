@@ -42,9 +42,12 @@ namespace OLabWebAPI.Endpoints
     /// <param name="take"></param>
     /// <param name="skip"></param>
     /// <returns></returns>
-    public async Task<OLabAPIPagedResponse<ConstantsDto>> GetAsync(int? take, int? skip)
+    public async Task<OLabAPIPagedResponse<ConstantsDto>> GetAsync(
+      IOLabAuthentication auth,
+      int? take, 
+      int? skip)
     {
-      logger.LogDebug($"ConstantsEndpoint.GetAsync(int? take={take}, int? skip={skip})");
+      logger.LogDebug($"{auth.GetUserContext().UserId}: ConstantsEndpoint.GetAsync");
 
       var Constants = new List<SystemConstants>();
       var total = 0;
@@ -85,7 +88,7 @@ namespace OLabWebAPI.Endpoints
       IOLabAuthentication auth,
       uint id)
     {
-      logger.LogDebug($"ConstantsEndpoint.GetAsync(uint id={id})");
+      logger.LogDebug($"{auth.GetUserContext().UserId}: ConstantsEndpoint.GetAsync");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Constants", id);
@@ -113,7 +116,7 @@ namespace OLabWebAPI.Endpoints
       uint id,
       ConstantsDto dto)
     {
-      logger.LogDebug($"PutAsync(uint id={id})");
+      logger.LogDebug($"{auth.GetUserContext().UserId}: ConstantsEndpoint.PutAsync");
 
       dto.ImageableId = dto.ParentInfo.Id;
 
@@ -150,7 +153,7 @@ namespace OLabWebAPI.Endpoints
       IOLabAuthentication auth,
       ConstantsDto dto)
     {
-      logger.LogDebug($"ConstantsEndpoint.PostAsync({dto.Name})");
+      logger.LogDebug($"{auth.GetUserContext().UserId}: ConstantsEndpoint.PostAsync");
 
       dto.ImageableId = dto.ParentInfo.Id;
 
@@ -180,7 +183,7 @@ namespace OLabWebAPI.Endpoints
       IOLabAuthentication auth,
       uint id)
     {
-      logger.LogDebug($"ConstantsEndpoint.DeleteAsync(uint id={id})");
+      logger.LogDebug($"{auth.GetUserContext().UserId}: ConstantsEndpoint.DeleteAsync");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Constants", id);

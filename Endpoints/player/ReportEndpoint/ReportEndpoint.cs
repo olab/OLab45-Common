@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using OLabWebAPI.Common.Exceptions;
 using OLabWebAPI.Data.Exceptions;
+using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Dto;
 using OLabWebAPI.Endpoints;
 using OLabWebAPI.Model;
@@ -35,8 +36,12 @@ namespace Endpoints.player.ReportEndpoint
     {
     }
 
-    public async Task<SessionReport> GetAsync(string contextId)
+    public async Task<SessionReport> GetAsync(
+      IOLabAuthentication auth,
+      string contextId)
     {
+      logger.LogDebug($"{auth.GetUserContext().UserId}: ReportEndpoint.GetAsync");
+
       var dto = new SessionReport();
 
       _session = await dbContext.UserSessions.FirstOrDefaultAsync(x => x.Uuid == contextId);

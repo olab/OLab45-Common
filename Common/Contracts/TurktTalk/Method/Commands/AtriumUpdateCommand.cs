@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using OLabWebAPI.TurkTalk.BusinessObjects;
 using OLabWebAPI.TurkTalk.Methods;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OLabWebAPI.TurkTalk.Commands
 {
@@ -16,7 +17,7 @@ namespace OLabWebAPI.TurkTalk.Commands
         // constructor for all moderators in a topic
         public AtriumUpdateCommand(string moderatorChannel, IList<Learner> atriumLearners) : base(moderatorChannel, "atriumupdate")
         {
-            Data = atriumLearners;
+            Data = atriumLearners.OrderBy(x => x.NickName).ToList();
         }
 
         public override string ToJson()

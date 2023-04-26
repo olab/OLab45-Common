@@ -1,6 +1,6 @@
 ﻿namespace Common.Utils
 {
-    public static class ConnectionId
+    public static class ConnectionIdUtils
     {
         public static string Shorten(string connectionId)
         {

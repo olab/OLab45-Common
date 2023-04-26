@@ -19,9 +19,13 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="nodeId"></param>
     /// <param name="sinceTime"></param>
     /// <returns></returns>
-    public async Task<DynamicScopedObjectsDto> GetDynamicScopedObjectsRawAsync(IOLabAuthentication auth, uint mapId, uint nodeId, uint sinceTime = 0)
+    public async Task<DynamicScopedObjectsDto> GetDynamicScopedObjectsRawAsync(
+      IOLabAuthentication auth, 
+      uint mapId, 
+      uint nodeId, 
+      uint sinceTime = 0)
     {
-      logger.LogDebug($"DynamicScopedObjectsController.GetDynamicScopedObjectsRawAsync({mapId}, {nodeId}, {sinceTime})");
+      logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetDynamicScopedObjectsRawAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -44,7 +48,7 @@ namespace OLabWebAPI.Endpoints.Player
       uint nodeId,
       uint sinceTime = 0)
     {
-      logger.LogDebug($"DynamicScopedObjectsController.GetDynamicScopedObjectsTranslatedAsync({mapId}, {nodeId}, {sinceTime})");
+      logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetDynamicScopedObjectsTranslatedAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -84,7 +88,7 @@ namespace OLabWebAPI.Endpoints.Player
       return dto;
     }
 
-    public async Task<IList<CountersDto>> ProcessNodeOpenCountersAsync(uint nodeId, IList<CountersDto> orgDtoList)
+    private async Task<IList<CountersDto>> ProcessNodeOpenCountersAsync(uint nodeId, IList<CountersDto> orgDtoList)
     {
       var newDtoList = new List<CountersDto>();
       MapNodes node = await dbContext.MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
