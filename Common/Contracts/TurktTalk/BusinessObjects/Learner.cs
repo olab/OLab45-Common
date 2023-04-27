@@ -10,7 +10,7 @@ namespace OLabWebAPI.TurkTalk.BusinessObjects
   {
     public const string Prefix = "learner";
     public RegisterAttendeePayload Session { get; set; }
-    public string ReferringNodeName { get; set; }
+    public string ReferringNodeName { get; }
 
     public Learner()
     {
@@ -25,6 +25,7 @@ namespace OLabWebAPI.TurkTalk.BusinessObjects
       RoomName = TopicName;
       CommandChannel = $"{TopicName}/{Prefix}/{UserId}";
       ReferringNodeName = session.ReferringNode;
+
 
       // test if topic and room provided
       if (roomNameParts.Length == 2)
