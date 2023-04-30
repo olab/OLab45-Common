@@ -22,6 +22,12 @@ namespace OLabWebAPI.Endpoints.Player
 
     public MapsEndpoint(
       OLabLogger logger,
+      OLabDBContext context) : base(logger, context)
+    {
+    }
+
+    public MapsEndpoint(
+      OLabLogger logger,
       IOptions<AppSettings> appSettings,
       OLabDBContext context) : base(logger, appSettings, context)
     {

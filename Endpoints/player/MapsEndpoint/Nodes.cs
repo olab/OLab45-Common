@@ -16,6 +16,54 @@ namespace OLabWebAPI.Endpoints.Player
   public partial class MapsEndpoint : OlabEndpoint
   {
     /// <summary>
+    /// Get map node with out scoped objects
+    /// </summary>
+    /// <param name="mapId">map id</param>
+    /// <param name="nodeId">node id</param>
+    /// <returns>MapsNodesFullRelationsDto</returns>
+    public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(
+      IOLabAuthentication auth,
+      uint mapId,
+      uint nodeId)
+    {
+      logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetMapNodeAsync");
+
+      MapsNodesFullRelationsDto dto;
+      if (nodeId > 0)
+      {
+        dto = await GetNodeAsync(mapId, nodeId);
+        if (!dto.Id.HasValue)
+          throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, nodeId);
+      }
+      else
+      {
+        dto = await GetRootNodeAsync(mapId);
+        if (!dto.Id.HasValue)
+          throw new OLabGeneralException($"map {mapId} has no root node");
+      }
+
+      // now that we had a real node id, test if user has explicit no access to node.
+      if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, nodeId))
+        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, nodeId);
+
+      // filter out any destination links the user
+      // does not have access to 
+      var filteredLinks = new List<MapNodeLinksDto>();
+      foreach (var mapNodeLink in dto.MapNodeLinks)
+      {
+        if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
+          continue;
+
+        filteredLinks.Add(mapNodeLink);
+      }
+
+      // replace original map node links with acl-filtered links
+      dto.MapNodeLinks = filteredLinks;
+
+      return dto;
+    }
+
+    /// <summary>
     /// Plays specific map node
     /// </summary>
     /// <param name="mapId">map id</param>
@@ -48,13 +96,13 @@ namespace OLabWebAPI.Endpoints.Player
       MapsNodesFullRelationsDto dto;
       if (nodeId > 0)
       {
-        dto = await GetNodeAsync(map, nodeId);
+        dto = await GetNodeAsync(map.Id, nodeId);
         if (!dto.Id.HasValue)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, nodeId);
       }
       else
       {
-        dto = await GetRootNodeAsync(map);
+        dto = await GetRootNodeAsync(map.Id);
         if (!dto.Id.HasValue)
           throw new OLabGeneralException($"map {map.Id} has no root node");
       }
@@ -224,19 +272,19 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     /// <param name="map">Map object</param>
     /// <returns>MapsNodesFullRelationsDto</returns>
-    private async Task<MapsNodesFullRelationsDto> GetRootNodeAsync(Model.Maps map)
+    private async Task<MapsNodesFullRelationsDto> GetRootNodeAsync(uint mapId)
     {
       MapNodes phys = await dbContext.MapNodes
-  .FirstOrDefaultAsync(x => x.MapId == map.Id && x.TypeId.Value == (int)Model.MapNodes.NodeType.RootNode);
+        .FirstOrDefaultAsync(x => x.MapId == mapId && x.TypeId.Value == (int)Model.MapNodes.NodeType.RootNode);
 
       if (phys == null)
       {
         // if no map node by this point, then the map doesn't have a root node
         // defined so take the first one (by id)        
-        phys = await dbContext.MapNodes.Where(x => x.MapId == map.Id).OrderBy(x => x.Id).FirstOrDefaultAsync();
+        phys = await dbContext.MapNodes.Where(x => x.MapId == mapId).OrderBy(x => x.Id).FirstOrDefaultAsync();
       }
 
-      return await GetNodeAsync(map, phys.Id);
+      return await GetNodeAsync(mapId, phys.Id);
     }
 
     /// <summary>

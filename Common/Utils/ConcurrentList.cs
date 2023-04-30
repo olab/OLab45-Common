@@ -8,10 +8,10 @@ namespace OLabWebAPI.Utils
   public class ConcurrentList<T>
   {
     private readonly IList<T> _items = new List<T>();
-    private readonly ILogger _logger;
+    private readonly OLabLogger _logger;
     private static readonly Mutex mutex = new Mutex();
 
-    public ConcurrentList(ILogger logger)
+    public ConcurrentList(OLabLogger logger)
     {
       _logger = logger;
     }

@@ -11,6 +11,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dawn;
 using System.IO;
+using OLabWebAPI.Data.Exceptions;
+using OLabWebAPI.Model.ReaderWriter;
 
 namespace OLabWebAPI.Endpoints
 {
@@ -21,6 +23,15 @@ namespace OLabWebAPI.Endpoints
     protected string token;
     protected IUserContext _userContext;
     AppSettings appSettings;
+
+    public OlabEndpoint(OLabLogger logger, OLabDBContext context)
+    {
+      Guard.Argument(logger).NotNull(nameof(logger));
+      Guard.Argument(context).NotNull(nameof(context));
+
+      this.dbContext = context;
+      this.logger = logger;
+    }
 
     public OlabEndpoint(OLabLogger logger, IOptions<AppSettings> appSettings, OLabDBContext context)
     {
@@ -160,10 +171,10 @@ namespace OLabWebAPI.Endpoints
     /// <param name="enableWikiTanslation">PErform WikiTag translation</param>
     /// <returns>MapsNodesFullRelationsDto</returns>
     [NonAction]
-    protected async Task<MapsNodesFullRelationsDto> GetNodeAsync(Maps map, uint nodeId, bool enableWikiTanslation = true)
+    protected async Task<MapsNodesFullRelationsDto> GetNodeAsync(uint mapId, uint nodeId, bool enableWikiTanslation = true)
     {
       MapNodes phys = await dbContext.MapNodes
-  .FirstOrDefaultAsync(x => x.MapId == map.Id && x.Id == nodeId);
+        .FirstOrDefaultAsync(x => x.MapId == mapId && x.Id == nodeId);
 
       if (phys == null)
         return new MapsNodesFullRelationsDto();
