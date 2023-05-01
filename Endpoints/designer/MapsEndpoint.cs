@@ -59,7 +59,7 @@ namespace OLabWebAPI.Endpoints.Designer
 
       MapsNodesFullRelationsDto dto;
       // get node with no wikitag translation
-      dto = await GetNodeAsync(map.Id, nodeId, false);
+      dto = await GetNodeAsync(map.Id, nodeId, false, false);
 
       if (!dto.Id.HasValue)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, nodeId);

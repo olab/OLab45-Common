@@ -152,7 +152,7 @@ namespace OLabWebAPI.Endpoints
 
       // patch up any malformed nodes that have 0/0 sizes, 
       // whic prevent them from being displayed
-      var physNodes = physList.Where(x => (x.Height == 0) || (x.Width == 0) ).ToList();
+      var physNodes = physList.Where(x => (x.Height == 0) || (x.Width == 0)).ToList();
       foreach (var physNode in physNodes)
       {
         physNode.Height = 440;
@@ -168,10 +168,11 @@ namespace OLabWebAPI.Endpoints
     /// </summary>
     /// <param name="map">Map object</param>
     /// <param name="nodeId">Node id</param>
+    /// <param name="hideHidden">flag to hide hidden links</param>
     /// <param name="enableWikiTanslation">PErform WikiTag translation</param>
     /// <returns>MapsNodesFullRelationsDto</returns>
     [NonAction]
-    protected async Task<MapsNodesFullRelationsDto> GetNodeAsync(uint mapId, uint nodeId, bool enableWikiTanslation = true)
+    protected async Task<MapsNodesFullRelationsDto> GetNodeAsync(uint mapId, uint nodeId, bool hideHidden, bool enableWikiTanslation)
     {
       MapNodes phys = await dbContext.MapNodes
         .FirstOrDefaultAsync(x => x.MapId == mapId && x.Id == nodeId);
@@ -188,6 +189,7 @@ namespace OLabWebAPI.Endpoints
       var linkedIds = phys.MapNodeLinksNodeId1Navigation.Select(x => x.NodeId2).Distinct().ToList();
       var linkedNodes = dbContext.MapNodes.Where(x => linkedIds.Contains(x.Id)).ToList();
 
+      // add destination node title to link information
       foreach (MapNodeLinksDto item in dto.MapNodeLinks)
       {
         MapNodes link = linkedNodes.Where(x => x.Id == item.DestinationId).FirstOrDefault();
@@ -195,6 +197,10 @@ namespace OLabWebAPI.Endpoints
         if (string.IsNullOrEmpty(item.LinkText))
           item.LinkText = item.DestinationTitle;
       }
+
+      // if asked for, remove any hidden links
+      if (hideHidden)
+        dto.MapNodeLinks = dto.MapNodeLinks.Where(x => !x.IsHidden).ToList();
 
       return dto;
     }

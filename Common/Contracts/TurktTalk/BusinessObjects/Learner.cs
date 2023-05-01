@@ -10,7 +10,7 @@ namespace OLabWebAPI.TurkTalk.BusinessObjects
   {
     public const string Prefix = "learner";
     public RegisterAttendeePayload Session { get; set; }
-    public string ReferringNodeName { get; }
+    public string ReferringNodeName { get; set; }
 
     public Learner()
     {

@@ -20,18 +20,20 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     /// <param name="mapId">map id</param>
     /// <param name="nodeId">node id</param>
+    /// <param name="hideHidden">Flag to suppress hidden links</param>
     /// <returns>MapsNodesFullRelationsDto</returns>
     public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(
       IOLabAuthentication auth,
       uint mapId,
-      uint nodeId)
+      uint nodeId,
+      bool hideHidden = true)
     {
       logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetMapNodeAsync");
 
       MapsNodesFullRelationsDto dto;
       if (nodeId > 0)
       {
-        dto = await GetNodeAsync(mapId, nodeId);
+        dto = await GetNodeAsync(mapId, nodeId, hideHidden, true);
         if (!dto.Id.HasValue)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, nodeId);
       }
@@ -96,7 +98,7 @@ namespace OLabWebAPI.Endpoints.Player
       MapsNodesFullRelationsDto dto;
       if (nodeId > 0)
       {
-        dto = await GetNodeAsync(map.Id, nodeId);
+        dto = await GetNodeAsync(map.Id, nodeId, true, true);
         if (!dto.Id.HasValue)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, nodeId);
       }
@@ -284,7 +286,7 @@ namespace OLabWebAPI.Endpoints.Player
         phys = await dbContext.MapNodes.Where(x => x.MapId == mapId).OrderBy(x => x.Id).FirstOrDefaultAsync();
       }
 
-      return await GetNodeAsync(mapId, phys.Id);
+      return await GetNodeAsync(mapId, phys.Id, true, true);
     }
 
     /// <summary>
