@@ -12,6 +12,7 @@ namespace OLabWebAPI.Common.Contracts
 
     public string RoomName { get; set; }
     public string ReferringNode { get; set; }
+    public string ConnectionId { get; set; }
 
     public string ToJson()
     {
