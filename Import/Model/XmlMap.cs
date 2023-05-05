@@ -2,7 +2,7 @@ using OLabWebAPI.Model;
 
 namespace OLabWebAPI.Importer
 {
-    public class XmlMap : XmlImportArray<Maps>
-    {
-    }
+  public class XmlMap : XmlImportArray<Maps>
+  {
+  }
 }

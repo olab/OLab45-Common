@@ -20,9 +20,9 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="sinceTime"></param>
     /// <returns></returns>
     public async Task<DynamicScopedObjectsDto> GetDynamicScopedObjectsRawAsync(
-      IOLabAuthentication auth, 
-      uint mapId, 
-      uint nodeId, 
+      IOLabAuthentication auth,
+      uint mapId,
+      uint nodeId,
       uint sinceTime = 0)
     {
       logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetDynamicScopedObjectsRawAsync");

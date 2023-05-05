@@ -1,10 +1,7 @@
-using Microsoft.Build.Framework;
 using Newtonsoft.Json;
 using OLabWebAPI.Utils;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
 
@@ -45,7 +42,7 @@ namespace OLabWebAPI.Dto
   public class DynamicScopedObjectsDto
   {
     [JsonProperty("newPlay")]
-    public bool NewPlay{ get; private set; }
+    public bool NewPlay { get; private set; }
 
     [JsonProperty("updatedAt")]
     public DateTime UpdatedAt { get; private set; }
@@ -101,11 +98,11 @@ namespace OLabWebAPI.Dto
 
     public int GetPlainTextBytes(string plainText)
     {
-      byte[] bytes = Encoding.ASCII.GetBytes(plainText);
-      int byteSum = 0;
+      var bytes = Encoding.ASCII.GetBytes(plainText);
+      var byteSum = 0;
 
       foreach (var singleByte in bytes)
-        byteSum+= singleByte;
+        byteSum += singleByte;
 
       return byteSum;
     }
@@ -117,7 +114,7 @@ namespace OLabWebAPI.Dto
     /// <returns>MD5 hash</returns>
     private string GetStringHash(string plaintext)
     {
-      string cypherString = StringUtils.GenerateCheckSum(plaintext);
+      var cypherString = StringUtils.GenerateCheckSum(plaintext);
       return cypherString;
     }
 
@@ -131,15 +128,15 @@ namespace OLabWebAPI.Dto
 
     public string GetObjectPlainText()
     {
-      string counterValues = UpdatedAt.ToString() + "/";
+      var counterValues = UpdatedAt.ToString() + "/";
 
-      foreach (var counter in Server.Counters.OrderBy( x => x.Id ) )
+      foreach (CountersDto counter in Server.Counters.OrderBy(x => x.Id))
         counterValues += counter.Value + "/";
 
-      foreach (var counter in Node.Counters.OrderBy(x => x.Id))
+      foreach (CountersDto counter in Node.Counters.OrderBy(x => x.Id))
         counterValues += counter.Value + "/";
 
-      foreach (var counter in Map.Counters.OrderBy(x => x.Id))
+      foreach (CountersDto counter in Map.Counters.OrderBy(x => x.Id))
         counterValues += counter.Value + "/";
 
       return counterValues;
@@ -171,7 +168,7 @@ namespace OLabWebAPI.Dto
 
     public void Dump(OLabLogger logger, string prefix)
     {
-      string message = $"{prefix}{Environment.NewLine}";
+      var message = $"{prefix}{Environment.NewLine}";
 
       if (IsEmpty())
       {
@@ -182,14 +179,14 @@ namespace OLabWebAPI.Dto
       var plainText = GetObjectPlainText();
       message += $"Text:   {plainText}{Environment.NewLine}";
       message += $"Bytes:  {GetPlainTextBytes(plainText)}{Environment.NewLine}";
-      
-      foreach (var counter in Server.Counters)
+
+      foreach (CountersDto counter in Server.Counters)
         message += $"Server: {counter}{Environment.NewLine}";
 
-      foreach (var counter in Node.Counters)
+      foreach (CountersDto counter in Node.Counters)
         message += $"Node:   {counter}{Environment.NewLine}";
 
-      foreach (var counter in Map.Counters)
+      foreach (CountersDto counter in Map.Counters)
         message += $"Map:    {counter}{Environment.NewLine}";
 
       message += $"Update  {UpdatedAt.ToString()}{Environment.NewLine}";

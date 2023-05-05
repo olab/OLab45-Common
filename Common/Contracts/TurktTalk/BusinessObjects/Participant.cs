@@ -1,12 +1,11 @@
+using Common.Utils;
 using Dawn;
-using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Security.Claims;
-using Common.Utils;
 
 
 namespace OLabWebAPI.TurkTalk.BusinessObjects
@@ -18,7 +17,7 @@ namespace OLabWebAPI.TurkTalk.BusinessObjects
     private string _nickName;
     private int? _roomNumber;
     private string _connectionId;
-    
+
 
     public string UserId { get { return _userId; } set { _userId = value; } }
     public string TopicName { get { return _topicName; } set { _topicName = value; } }
@@ -49,14 +48,14 @@ namespace OLabWebAPI.TurkTalk.BusinessObjects
 
     public Participant(HubCallerContext context)
     {
-      var httpContext = context.GetHttpContext();
+      HttpContext httpContext = context.GetHttpContext();
 
       // extract fields from bearer token
       var identity = (ClaimsIdentity)context.User.Identity;
-      var nameClaim = identity.FindFirst("name");
+      Claim nameClaim = identity.FindFirst("name");
       var userId = identity.FindFirst(ClaimTypes.Name).Value;
 
-      string nickName = "";
+      var nickName = "";
       if (nameClaim != null)
         nickName = nameClaim.Value;
       else

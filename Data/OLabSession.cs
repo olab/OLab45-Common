@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using NuGet.Protocol;
 using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Dto;
 using OLabWebAPI.Model;
@@ -104,8 +103,8 @@ namespace OLabWebAPI.Data
         return;
 
       // truncate the message in case it's too long
-      if ( string.IsNullOrEmpty(value) && ( value.Length > 1000 ) )
-        value = value.Substring( 997 ) + "...";
+      if (string.IsNullOrEmpty(value) && (value.Length > 1000))
+        value = value[997..] + "...";
 
       var userResponse = new UserResponses
       {

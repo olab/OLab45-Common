@@ -1,18 +1,14 @@
 using Data.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using OLabWebAPI.Common.Exceptions;
 using OLabWebAPI.Data.Exceptions;
 using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Dto;
 using OLabWebAPI.Endpoints;
 using OLabWebAPI.Model;
 using OLabWebAPI.Utils;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace Endpoints.player.ReportEndpoint
@@ -108,14 +104,14 @@ namespace Endpoints.player.ReportEndpoint
 
     private string BuildCheckSum(SessionReport dto)
     {
-      string plainText = "";
+      var plainText = "";
 
-      foreach (var counter in dto.Counters)
+      foreach (CounterSession counter in dto.Counters)
         plainText += counter.Value;
 
-      foreach (var node in dto.Nodes)
+      foreach (NodeSession node in dto.Nodes)
       {
-        foreach (var response in node.Responses)
+        foreach (NodeResponse response in node.Responses)
           plainText += response.ResponseText;
       }
 
@@ -127,11 +123,11 @@ namespace Endpoints.player.ReportEndpoint
     {
       var sessionNodes = new List<NodeSession>();
 
-      foreach (var sessionTrace in _sessionTraces)
+      foreach (UserSessionTraces sessionTrace in _sessionTraces)
       {
         var sessionNode = new NodeSession();
 
-        var node = _nodes.FirstOrDefault(x => x.Id == sessionTrace.NodeId);
+        MapNodes node = _nodes.FirstOrDefault(x => x.Id == sessionTrace.NodeId);
         sessionNode.NodeName = node.Title;
 
         sessionNode.NodeId = sessionTrace.NodeId;
@@ -152,27 +148,27 @@ namespace Endpoints.player.ReportEndpoint
       var nodeSessionResponses = _sessionResponses.Where(x => x.NodeId == nodeId).ToList();
       var processedConversations = new List<string>();
 
-      foreach (var nodeSessionResponse in nodeSessionResponses)
+      foreach (UserResponses nodeSessionResponse in nodeSessionResponses)
       {
         var nodeResponse = new NodeResponse();
         nodeResponse.TimeStamp = Conversions.GetTime(nodeSessionResponse.CreatedAt);
 
-        var question = _questions.FirstOrDefault(x => x.Id == nodeSessionResponse.QuestionId);
+        SystemQuestions question = _questions.FirstOrDefault(x => x.Id == nodeSessionResponse.QuestionId);
         var questionResponses =
           _questionsResponses.Where(x => x.QuestionId == question.Id).ToList();
 
         nodeResponse.QuestionId = question.Id;
         nodeResponse.QuestionName = question.Name;
-        var questionType =
+        SystemQuestionTypes questionType =
           _questionsTypes.FirstOrDefault(x => x.Id == question.EntryTypeId);
         nodeResponse.QuestionType = questionType.Title;
         nodeResponse.QuestionStem = question.Stem;
 
         // handle special case of DnD or MCQ, which only the last response is
         // displayed so this code jsut removes any previous responses for the question.
-        if ( (question.EntryTypeId == 6) || (question.EntryTypeId == 3) )
+        if ((question.EntryTypeId == 6) || (question.EntryTypeId == 3))
         {
-          var previousResponse = nodeResponses.FirstOrDefault(x => (x.QuestionId == question.Id));
+          NodeResponse previousResponse = nodeResponses.FirstOrDefault(x => (x.QuestionId == question.Id));
           if (previousResponse != null)
             nodeResponses.Remove(previousResponse);
         }
@@ -187,7 +183,7 @@ namespace Endpoints.player.ReportEndpoint
           var conversationTextResponses = _sessionResponses
             .Where(x => x.QuestionId == question.Id && x.NodeId == nodeId && x.SessionId == _session.Id).OrderBy(x => x.CreatedAt).ToList();
 
-          foreach (var textResponse in conversationTextResponses)
+          foreach (UserResponses textResponse in conversationTextResponses)
             nodeResponse.ResponseText += $"{textResponse.Response}<br/>\n";
 
           processedConversations.Add($"{question.Id}:{nodeId}:{_session.Id}");
@@ -215,7 +211,7 @@ namespace Endpoints.player.ReportEndpoint
       IList<SystemQuestionResponses> questionResponses,
       string response)
     {
-      string responseText = "???";
+      var responseText = "???";
 
       switch (question.EntryTypeId)
       {
@@ -269,12 +265,12 @@ namespace Endpoints.player.ReportEndpoint
 
       foreach (var responseIdString in responseIdStrings)
       {
-        int responseId = 0;
+        var responseId = 0;
         if (!Int32.TryParse(responseIdString, out responseId))
           responseTexts.Add(responseIdString.ToString());
         else
         {
-          var questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
+          SystemQuestionResponses questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
           responseTexts.Add(questionResponse.Response);
         }
       }
@@ -284,11 +280,11 @@ namespace Endpoints.player.ReportEndpoint
 
     private string ProcessPickChoiceQuestion(SystemQuestions question, IList<SystemQuestionResponses> questionResponses, string response)
     {
-      int responseId = 0;
+      var responseId = 0;
       if (!Int32.TryParse(response, out responseId))
         return response;
 
-      var questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
+      SystemQuestionResponses questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
       return questionResponse.Response;
     }
 
@@ -299,12 +295,12 @@ namespace Endpoints.player.ReportEndpoint
 
       foreach (var responseIdString in responseIdStrings)
       {
-        int responseId = 0;
+        var responseId = 0;
         // if any non-id responses, then this probably isn't a MCQ
         if (!Int32.TryParse(responseIdString, out responseId))
           return response;
 
-        var questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
+        SystemQuestionResponses questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
         responsesText.Add(questionResponse.Response);
 
       }

@@ -1,4 +1,4 @@
-﻿using OLabWebAPI.Common;
+using OLabWebAPI.Common;
 using OLabWebAPI.Utils;
 
 [WikiTagModule("REPORT")]

@@ -1,6 +1,6 @@
 namespace OLabWebAPI.Dto
 {
-    public class ScriptsDto : ScopedObjectDto
-    {
-    }
+  public class ScriptsDto : ScopedObjectDto
+  {
+  }
 }

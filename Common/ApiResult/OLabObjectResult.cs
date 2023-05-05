@@ -2,17 +2,17 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace OLabWebAPI.Common
 {
-    public class OLabObjectResult<D>
+  public class OLabObjectResult<D>
+  {
+    public static JsonResult Result(D value)
     {
-        public static JsonResult Result(D value)
-        {
-            var result = new OLabAPIResponse<D>
-            {
-                Data = value,
-                ErrorCode = System.Net.HttpStatusCode.OK                
-            };
+      var result = new OLabAPIResponse<D>
+      {
+        Data = value,
+        ErrorCode = System.Net.HttpStatusCode.OK
+      };
 
-            return new JsonResult(result);
-        }
+      return new JsonResult(result);
     }
+  }
 }

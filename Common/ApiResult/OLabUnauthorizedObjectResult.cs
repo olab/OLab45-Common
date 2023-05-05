@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using OLabWebAPI.Common;
 using System.Net;
 
 namespace OLabWebAPI.Common

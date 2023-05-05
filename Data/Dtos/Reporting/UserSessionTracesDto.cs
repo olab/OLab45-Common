@@ -1,6 +1,6 @@
-﻿namespace OLabWebAPI.Dto.Reporting
+namespace OLabWebAPI.Dto.Reporting
 {
-    internal class UserSessionTracesDto
-    {
-    }
+  internal class UserSessionTracesDto
+  {
+  }
 }

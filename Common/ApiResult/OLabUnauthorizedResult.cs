@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace OLabWebAPI.Common
 {
-    public class OLabUnauthorizedResult
+  public class OLabUnauthorizedResult
+  {
+    public static UnauthorizedResult Result()
     {
-        public static UnauthorizedResult Result()
-        {
-            return new UnauthorizedResult();
-        }
+      return new UnauthorizedResult();
     }
+  }
 }

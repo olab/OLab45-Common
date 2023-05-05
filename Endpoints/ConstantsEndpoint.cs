@@ -44,7 +44,7 @@ namespace OLabWebAPI.Endpoints
     /// <returns></returns>
     public async Task<OLabAPIPagedResponse<ConstantsDto>> GetAsync(
       IOLabAuthentication auth,
-      int? take, 
+      int? take,
       int? skip)
     {
       logger.LogDebug($"{auth.GetUserContext().UserId}: ConstantsEndpoint.GetAsync");
@@ -73,7 +73,7 @@ namespace OLabWebAPI.Endpoints
       var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
       var servers = dbContext.Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
 
-      foreach (var dto in dtoList)
+      foreach (ConstantsDto dto in dtoList)
         dto.ParentInfo = FindParentInfo(dto.ImageableType, dto.ImageableId, maps, nodes, servers);
 
       return new OLabAPIPagedResponse<ConstantsDto> { Data = dtoList, Remaining = remaining, Count = total };

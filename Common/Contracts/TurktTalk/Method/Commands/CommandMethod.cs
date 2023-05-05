@@ -11,7 +11,7 @@ namespace OLabWebAPI.TurkTalk.Methods
   {
     public string Command { get; set; }
 
-    public CommandMethod() : base( )
+    public CommandMethod() : base()
     {
 
     }

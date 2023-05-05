@@ -1,6 +1,6 @@
-﻿namespace OLabWebAPI.Dto.Reporting
+namespace OLabWebAPI.Dto.Reporting
 {
-    internal class UserSessionsDto
-    {
-    }
+  internal class UserSessionsDto
+  {
+  }
 }

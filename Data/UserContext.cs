@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Net.Http;
 using System.Security.Claims;
 
 #nullable disable
@@ -36,7 +35,7 @@ namespace OLabWebAPI.Data
     private string _userName;
     private string _ipAddress;
     private string _issuer;
-    private string _courseName;
+    private readonly string _courseName;
     private string _accessToken;
 
     public IOLabSession Session
@@ -219,9 +218,9 @@ namespace OLabWebAPI.Data
         if (OLabUser.Group == "anonymous")
         {
           var anonymousMaps = _dbContext.Maps.Where(x => x.SecurityId == 1).ToList();
-          foreach (var item in anonymousMaps)
+          foreach (Maps item in anonymousMaps)
           {
-            _userAcls.Add( new SecurityUsers
+            _userAcls.Add(new SecurityUsers
             {
               Id = item.Id,
               ImageableId = item.Id,

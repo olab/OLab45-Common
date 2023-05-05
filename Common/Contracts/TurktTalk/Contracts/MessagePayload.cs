@@ -1,10 +1,10 @@
-﻿
+
 using OLabWebAPI.TurkTalk.BusinessObjects;
 
 namespace OLabWebAPI.Common.Contracts
 {
 
-    public class SessionInfo
+  public class SessionInfo
   {
     public string ContextId { get; set; }
     public uint MapId { get; set; }

@@ -6,7 +6,6 @@ using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Dto;
 using OLabWebAPI.Model;
 using OLabWebAPI.Model.ReaderWriter;
-using OLabWebAPI.ObjectMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,7 +61,7 @@ namespace OLabWebAPI.Endpoints.Player
     {
       logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetMapNodeAsync");
 
-      var dto = await GetRawNodeAsync(mapId, nodeId, hideHidden);
+      MapsNodesFullRelationsDto dto = await GetRawNodeAsync(mapId, nodeId, hideHidden);
 
       // now that we had a real node id, test if user has explicit no access to node.
       if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, nodeId))
@@ -71,7 +70,7 @@ namespace OLabWebAPI.Endpoints.Player
       // filter out any destination links the user
       // does not have access to 
       var filteredLinks = new List<MapNodeLinksDto>();
-      foreach (var mapNodeLink in dto.MapNodeLinks)
+      foreach (MapNodeLinksDto mapNodeLink in dto.MapNodeLinks)
       {
         if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
           continue;
@@ -124,7 +123,7 @@ namespace OLabWebAPI.Endpoints.Player
       // filter out any destination links the user
       // does not have access to 
       var filteredLinks = new List<MapNodeLinksDto>();
-      foreach (var mapNodeLink in dto.MapNodeLinks)
+      foreach (MapNodeLinksDto mapNodeLink in dto.MapNodeLinks)
       {
         if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
           continue;

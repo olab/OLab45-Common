@@ -1,8 +1,8 @@
-﻿using OLabWebAPI.TurkTalk.BusinessObjects;
+using OLabWebAPI.TurkTalk.BusinessObjects;
 
 namespace OLabWebAPI.Common.Contracts
 {
-    public class RoomAssignmentPayload
+  public class RoomAssignmentPayload
   {
     public Learner Local { get; set; }
     public Moderator Remote { get; set; }

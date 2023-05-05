@@ -2,7 +2,6 @@ using OLabWebAPI.Common;
 using OLabWebAPI.Dto;
 using OLabWebAPI.Model;
 using OLabWebAPI.Utils;
-using System.Collections.Generic;
 using System.IO;
 
 namespace OLabWebAPI.ObjectMapper
@@ -20,7 +19,7 @@ namespace OLabWebAPI.ObjectMapper
 
     public override FilesFullDto PhysicalToDto(SystemFiles phys, FilesFullDto source)
     {
-      var dto = base.PhysicalToDto(phys, source);
+      FilesFullDto dto = base.PhysicalToDto(phys, source);
       dto.FileName = Path.GetFileName(phys.Path);
       return dto;
     }

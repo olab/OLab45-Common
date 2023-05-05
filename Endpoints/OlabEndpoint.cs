@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Dawn;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using OLabWebAPI.Data.Interface;
@@ -7,12 +8,9 @@ using OLabWebAPI.Model;
 using OLabWebAPI.Utils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Dawn;
-using System.IO;
-using OLabWebAPI.Data.Exceptions;
-using OLabWebAPI.Model.ReaderWriter;
 
 namespace OLabWebAPI.Endpoints
 {
@@ -22,7 +20,7 @@ namespace OLabWebAPI.Endpoints
     protected OLabLogger logger;
     protected string token;
     protected IUserContext _userContext;
-    AppSettings appSettings;
+    readonly AppSettings appSettings;
 
     public OlabEndpoint(OLabLogger logger, OLabDBContext context)
     {
@@ -153,7 +151,7 @@ namespace OLabWebAPI.Endpoints
       // patch up any malformed nodes that have 0/0 sizes, 
       // whic prevent them from being displayed
       var physNodes = physList.Where(x => (x.Height == 0) || (x.Width == 0)).ToList();
-      foreach (var physNode in physNodes)
+      foreach (MapNodes physNode in physNodes)
       {
         physNode.Height = 440;
         physNode.Width = 300;
@@ -372,7 +370,7 @@ namespace OLabWebAPI.Endpoints
       items.AddRange(await dbContext.SystemFiles.Where(x =>
         x.ImageableType == scopeLevel && x.ImageableId == parentId).ToListAsync());
 
-      foreach (var item in items)
+      foreach (SystemFiles item in items)
       {
         var subPath = $"{scopeLevel}/{parentId}/{item.Path}";
         var physicalPath = Path.Combine(appSettings.WebsitePublicFilesDirectory, subPath.Replace('/', Path.DirectorySeparatorChar));

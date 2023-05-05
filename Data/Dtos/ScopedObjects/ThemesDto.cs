@@ -1,6 +1,6 @@
 namespace OLabWebAPI.Dto
 {
-    public class ThemesDto : ScopedObjectDto
-    {
-    }
+  public class ThemesDto : ScopedObjectDto
+  {
+  }
 }

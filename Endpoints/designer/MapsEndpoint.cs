@@ -1,4 +1,3 @@
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using OLabWebAPI.Common.Exceptions;
@@ -7,7 +6,6 @@ using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Dto;
 using OLabWebAPI.Model;
 using OLabWebAPI.Model.ReaderWriter;
-using OLabWebAPI.ObjectMapper;
 using OLabWebAPI.Utils;
 using System;
 using System.Collections.Generic;
@@ -205,8 +203,8 @@ namespace OLabWebAPI.Endpoints.Designer
     /// <returns></returns>
     public Model.MapNodeLinks GetLinkSimple(OLabDBContext context, uint id)
     {
-        MapNodeLinks phys = context.MapNodeLinks.FirstOrDefault(x => x.Id == id);
-        return phys;
+      MapNodeLinks phys = context.MapNodeLinks.FirstOrDefault(x => x.Id == id);
+      return phys;
     }
 
     /// <summary>
@@ -228,7 +226,7 @@ namespace OLabWebAPI.Endpoints.Designer
 
         MapNodeLinks link = GetLinkSimple(dbContext, linkId);
 
-        if ( link == null )
+        if (link == null)
           throw new OLabObjectNotFoundException("Links", linkId);
 
         logger.LogDebug($"deleting link {link.Id} of map {link.MapId}");
@@ -336,19 +334,19 @@ namespace OLabWebAPI.Endpoints.Designer
       var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
       var servers = dbContext.Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
 
-      foreach (var question in dto.Questions)
+      foreach (Dto.Designer.ScopedObjectDto question in dto.Questions)
         question.ParentInfo = FindParentInfo(question.ScopeLevel, question.ParentId, maps, nodes, servers);
 
-      foreach (var constant in dto.Constants)
+      foreach (Dto.Designer.ScopedObjectDto constant in dto.Constants)
         constant.ParentInfo = FindParentInfo(constant.ScopeLevel, constant.ParentId, maps, nodes, servers);
 
-      foreach (var counter in dto.Counters)
+      foreach (Dto.Designer.ScopedObjectDto counter in dto.Counters)
         counter.ParentInfo = FindParentInfo(counter.ScopeLevel, counter.ParentId, maps, nodes, servers);
 
-      foreach (var file in dto.Files)
+      foreach (Dto.Designer.ScopedObjectDto file in dto.Files)
         file.ParentInfo = FindParentInfo(file.ScopeLevel, file.ParentId, maps, nodes, servers);
 
-      foreach (var script in dto.Scripts)
+      foreach (Dto.Designer.ScopedObjectDto script in dto.Scripts)
         script.ParentInfo = FindParentInfo(script.ScopeLevel, script.ParentId, maps, nodes, servers);
 
       return dto;

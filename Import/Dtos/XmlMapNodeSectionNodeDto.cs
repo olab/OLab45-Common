@@ -2,23 +2,23 @@ using System.Collections.Generic;
 
 namespace OLabWebAPI.Importer
 {
-    public class XmlMapNodeSectionNodeDto : XmlImportDto<XmlMapNodeSectionNode>
+  public class XmlMapNodeSectionNodeDto : XmlImportDto<XmlMapNodeSectionNode>
+  {
+    public XmlMapNodeSectionNodeDto(Importer importer) : base(importer, "map_node_section_node.xml")
     {
-        public XmlMapNodeSectionNodeDto(Importer importer) : base(importer, "map_node_section_node.xml")
-        {
 
-        }
-
-        /// <summary>
-        /// Extract records from the xml document
-        /// </summary>
-        /// <param name="importDirectory">Dynamic Xml object</param>
-        /// <returns>Sets of element sets</returns>
-        public override IEnumerable<dynamic> GetElements(dynamic xmlPhys)
-        {
-            return (IEnumerable<dynamic>)GetXmlPhys().map_node_section_node.Elements();
-        }
     }
+
+    /// <summary>
+    /// Extract records from the xml document
+    /// </summary>
+    /// <param name="importDirectory">Dynamic Xml object</param>
+    /// <returns>Sets of element sets</returns>
+    public override IEnumerable<dynamic> GetElements(dynamic xmlPhys)
+    {
+      return (IEnumerable<dynamic>)GetXmlPhys().map_node_section_node.Elements();
+    }
+  }
 
 
 }

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OLabWebAPI.Common.Contracts;
 using OLabWebAPI.TurkTalk.BusinessObjects;
@@ -13,7 +13,7 @@ namespace OLabWebAPI.TurkTalk.Commands
   {
     public RoomAssignmentPayload Data { get; set; }
 
-    public RoomAssignmentCommand(Learner local, Moderator remote = null ) :
+    public RoomAssignmentCommand(Learner local, Moderator remote = null) :
           base(local == null ? remote.CommandChannel : local.CommandChannel, "roomassignment")
     {
       Data = new RoomAssignmentPayload { Local = local, Remote = remote, SlotIndex = local.SlotIndex };

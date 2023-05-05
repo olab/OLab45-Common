@@ -3,7 +3,7 @@ using System;
 
 namespace OLabWebAPI.TurkTalk.BusinessObjects
 {
-    public class Moderator : Participant
+  public class Moderator : Participant
   {
     private const string _prefix = "moderator";
 

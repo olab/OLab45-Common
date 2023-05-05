@@ -1,4 +1,4 @@
-﻿using Dawn;
+using Dawn;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OLabWebAPI.TurkTalk.BusinessObjects;
@@ -21,10 +21,10 @@ namespace OLabWebAPI.TurkTalk.Commands
     public RoomUnassignmentCommand(string recipientGroupName, Participant participant) : base(recipientGroupName, "learnerunassignment")
     {
       Guard.Argument(participant).NotNull(nameof(participant));
-      Data = new RoomUnassignmentPayload 
-      { 
-        Participant = participant, 
-        SlotIndex = participant.SlotIndex 
+      Data = new RoomUnassignmentPayload
+      {
+        Participant = participant,
+        SlotIndex = participant.SlotIndex
       };
     }
 

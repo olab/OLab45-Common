@@ -5,10 +5,10 @@ using OLabWebAPI.Utils;
 
 namespace OLabWebAPI.ObjectMapper
 {
-    public class Scripts : OLabMapper<SystemScripts, ScriptsDto>
+  public class Scripts : OLabMapper<SystemScripts, ScriptsDto>
+  {
+    public Scripts(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
-        public Scripts(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
-        {
-        }
     }
+  }
 }

@@ -3,16 +3,16 @@ using System.Net;
 
 namespace OLabWebAPI.Common
 {
-    public class OLabBadRequestObjectResult
+  public class OLabBadRequestObjectResult
+  {
+    public static BadRequestObjectResult Result(string errorMessage = "Bad request")
     {
-        public static BadRequestObjectResult Result(string errorMessage = "Bad request")
-        {
-            return new BadRequestObjectResult(new OLabAPIResponse<string>()
-            {
-                Data = errorMessage,
-                ErrorCode = HttpStatusCode.BadRequest
-            });
-        }
-
+      return new BadRequestObjectResult(new OLabAPIResponse<string>()
+      {
+        Data = errorMessage,
+        ErrorCode = HttpStatusCode.BadRequest
+      });
     }
+
+  }
 }

@@ -1,5 +1,3 @@
-﻿
-using NuGet.Packaging.Signing;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -9,33 +7,33 @@ namespace OLabWebAPI.Utils
 {
   public class StringUtils
   {
-    public static string GenerateCheckSum( string plainText )
+    public static string GenerateCheckSum(string plainText)
     {
-      int sum = 0;
-      byte[] bytes = Encoding.ASCII.GetBytes(plainText);
+      var sum = 0;
+      var bytes = Encoding.ASCII.GetBytes(plainText);
       foreach (var singleByte in bytes)
         sum += singleByte * 1013;
-    
+
       return sum.ToString("X");
     }
 
     public static string EncryptString(string key, string plainText)
     {
-      byte[] iv = new byte[16];
+      var iv = new byte[16];
       byte[] array;
 
-      using (Aes aes = Aes.Create())
+      using (var aes = Aes.Create())
       {
         aes.Key = Encoding.UTF8.GetBytes(key);
         aes.IV = iv;
 
         ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
-        using (MemoryStream memoryStream = new MemoryStream())
+        using (var memoryStream = new MemoryStream())
         {
-          using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
+          using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
           {
-            using (StreamWriter streamWriter = new StreamWriter((Stream)cryptoStream))
+            using (var streamWriter = new StreamWriter(cryptoStream))
             {
               streamWriter.Write(plainText);
             }
@@ -50,20 +48,20 @@ namespace OLabWebAPI.Utils
 
     public static string DecryptString(string key, string cipherText)
     {
-      byte[] iv = new byte[16];
-      byte[] buffer = Convert.FromBase64String(cipherText);
+      var iv = new byte[16];
+      var buffer = Convert.FromBase64String(cipherText);
 
-      using (Aes aes = Aes.Create())
+      using (var aes = Aes.Create())
       {
         aes.Key = Encoding.UTF8.GetBytes(key);
         aes.IV = iv;
         ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
-        using (MemoryStream memoryStream = new MemoryStream(buffer))
+        using (var memoryStream = new MemoryStream(buffer))
         {
-          using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read))
+          using (var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
           {
-            using (StreamReader streamReader = new StreamReader((Stream)cryptoStream))
+            using (var streamReader = new StreamReader(cryptoStream))
             {
               return streamReader.ReadToEnd();
             }

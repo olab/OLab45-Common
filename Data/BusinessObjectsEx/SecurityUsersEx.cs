@@ -1,7 +1,5 @@
-﻿using OLabWebAPI.Data;
 using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Utils;
-using System;
 
 #nullable disable
 
@@ -9,7 +7,7 @@ namespace OLabWebAPI.Model
 {
   public partial class SecurityUsers
   {
-    public static SecurityUsers CreateDefaultMapACL( IUserContext userContext, Maps map )
+    public static SecurityUsers CreateDefaultMapACL(IUserContext userContext, Maps map)
     {
       var acl = new SecurityUsers();
       acl.UserId = userContext.UserId;

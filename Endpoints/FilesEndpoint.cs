@@ -1,4 +1,3 @@
-using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -62,12 +61,12 @@ namespace OLabWebAPI.Endpoints
 
       IList<FilesDto> dtoList = new ObjectMapper.Files(logger).PhysicalToDto(Files);
 
-      var maps = GetMapIdNames();
-      var nodes = GetNodeIdNames();
-      var servers = GetServerIdNames();
+      IList<IdName> maps = GetMapIdNames();
+      IList<IdName> nodes = GetNodeIdNames();
+      IList<IdName> servers = GetServerIdNames();
 
-      foreach (var dto in dtoList)
-        dto.ParentInfo = FindParentInfo( dto.ImageableType, dto.ImageableId, maps, nodes, servers);
+      foreach (FilesDto dto in dtoList)
+        dto.ParentInfo = FindParentInfo(dto.ImageableType, dto.ImageableId, maps, nodes, servers);
 
       return new OLabAPIPagedResponse<FilesDto> { Data = dtoList, Remaining = remaining, Count = total };
     }

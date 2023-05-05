@@ -1,11 +1,5 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using OLabWebAPI.Model;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Permissions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data.Contracts
 {
@@ -22,9 +16,9 @@ namespace Data.Contracts
     public DateTime End { get; set; }
     public string UserName { get; set; }
     public string CheckSum { get; set; }
-    public string CourseName { get; set;  }
+    public string CourseName { get; set; }
     public IList<NodeSession> Nodes { get; set; }
-    public IList<CounterSession> Counters{ get; set; }
+    public IList<CounterSession> Counters { get; set; }
   }
 
   public class NodeSession
@@ -40,12 +34,12 @@ namespace Data.Contracts
   {
     public uint Id { get; set; }
     public string Name { get; set; }
-    public string Value{ get; set; }
+    public string Value { get; set; }
   }
 
   public class NodeResponse
   {
-    public DateTime TimeStamp {  get; set; }
+    public DateTime TimeStamp { get; set; }
     public uint QuestionId { get; set; }
     public string QuestionName { get; set; }
     public string QuestionType { get; set; }

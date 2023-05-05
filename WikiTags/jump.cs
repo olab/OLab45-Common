@@ -4,7 +4,7 @@ using OLabWebAPI.Utils;
 [WikiTagModule("JUMP")]
 public class JumpWikiTag : WikiTag1Argument
 {
-    public JumpWikiTag(OLabLogger logger) : base(logger, "OlabJumpTag")
-    {
-    }
+  public JumpWikiTag(OLabLogger logger) : base(logger, "OlabJumpTag")
+  {
+  }
 }

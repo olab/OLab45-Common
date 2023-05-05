@@ -1,6 +1,3 @@
-﻿using AutoMapper;
-using System.Collections.Generic;
-
 #nullable disable
 
 namespace OLabWebAPI.Model

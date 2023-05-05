@@ -2,7 +2,7 @@ using OLabWebAPI.Model;
 
 namespace OLabWebAPI.Importer
 {
-    public class XmlMapCounters : XmlImportArray<SystemCounters>
-    {
-    }
+  public class XmlMapCounters : XmlImportArray<SystemCounters>
+  {
+  }
 }

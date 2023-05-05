@@ -1,9 +1,8 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OLabWebAPI.Common.Contracts;
 using OLabWebAPI.TurkTalk.BusinessObjects;
 using OLabWebAPI.TurkTalk.Methods;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace OLabWebAPI.TurkTalk.Commands
@@ -33,9 +32,9 @@ namespace OLabWebAPI.TurkTalk.Commands
       Learner learner,
       IList<MapNodeListItem> jumpNodes) : base(moderator.CommandChannel, "learnerassignment")
     {
-      Data = new LearnerAssignmentPayload 
-      { 
-        Learner = learner, 
+      Data = new LearnerAssignmentPayload
+      {
+        Learner = learner,
         SlotIndex = learner.SlotIndex,
         JumpNodes = jumpNodes
       };
