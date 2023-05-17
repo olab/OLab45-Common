@@ -23,16 +23,16 @@ namespace OLabWebAPI.ObjectMapper.Designer
     {
       ScopedObjectsDto dto = GetDto(source);
 
-      System.Collections.Generic.IList<ScopedObjectDto> dtConstantsList = new Constants(logger, new WikiTagProvider(logger)).PhysicalToDto(phys.Constants);
+      System.Collections.Generic.IList<ScopedObjectDto> dtConstantsList = new Constants(logger, GetWikiProvider()).PhysicalToDto(phys.Constants);
       dto.Constants.AddRange(dtConstantsList);
 
-      System.Collections.Generic.IList<ScopedObjectDto> dtoQuestionsList = new Questions(logger, new WikiTagProvider(logger)).PhysicalToDto(phys.Questions);
+      System.Collections.Generic.IList<ScopedObjectDto> dtoQuestionsList = new Questions(logger, GetWikiProvider()).PhysicalToDto(phys.Questions);
       dto.Questions.AddRange(dtoQuestionsList);
 
-      System.Collections.Generic.IList<ScopedObjectDto> dtCountersList = new Counters(logger, new WikiTagProvider(logger)).PhysicalToDto(phys.Counters);
+      System.Collections.Generic.IList<ScopedObjectDto> dtCountersList = new Counters(logger, GetWikiProvider()).PhysicalToDto(phys.Counters);
       dto.Counters.AddRange(dtCountersList);
 
-      System.Collections.Generic.IList<ScopedObjectDto> dtFilesList = new Files(logger, new WikiTagProvider(logger)).PhysicalToDto(phys.Files);
+      System.Collections.Generic.IList<ScopedObjectDto> dtFilesList = new Files(logger, GetWikiProvider()).PhysicalToDto(phys.Files);
       dto.Files.AddRange(dtFilesList);
 
       return dto;

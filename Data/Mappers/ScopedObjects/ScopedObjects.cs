@@ -22,23 +22,23 @@ namespace OLabWebAPI.ObjectMapper
       ScopedObjectsDto dto = GetDto(source);
 
       System.Collections.Generic.IList<QuestionsFullDto> dtoQuestionsList
-        = new ObjectMapper.QuestionsFull(logger, new WikiTagProvider(logger)).PhysicalToDto(phys.Questions);
+        = new ObjectMapper.QuestionsFull(logger, GetWikiProvider()).PhysicalToDto(phys.Questions);
       dto.Questions.AddRange(dtoQuestionsList);
 
       System.Collections.Generic.IList<CountersDto> dtCountersList
-        = new ObjectMapper.Counters(logger, new WikiTagProvider(logger)).PhysicalToDto(phys.Counters);
+        = new ObjectMapper.Counters(logger, GetWikiProvider()).PhysicalToDto(phys.Counters);
       dto.Counters.AddRange(dtCountersList);
 
       System.Collections.Generic.IList<ConstantsDto> dtConstantsList
-        = new ObjectMapper.Constants(logger, new WikiTagProvider(logger)).PhysicalToDto(phys.Constants);
+        = new ObjectMapper.Constants(logger, GetWikiProvider()).PhysicalToDto(phys.Constants);
       dto.Constants.AddRange(dtConstantsList);
 
       System.Collections.Generic.IList<FilesFullDto> dtFilesList
-        = new ObjectMapper.FilesFull(logger, new WikiTagProvider(logger)).PhysicalToDto(phys.Files);
+        = new ObjectMapper.FilesFull(logger, GetWikiProvider()).PhysicalToDto(phys.Files);
       dto.Files.AddRange(dtFilesList);
 
       System.Collections.Generic.IList<ScriptsDto> dtScriptsList
-        = new ObjectMapper.Scripts(logger, new WikiTagProvider(logger)).PhysicalToDto(phys.Scripts);
+        = new ObjectMapper.Scripts(logger, GetWikiProvider()).PhysicalToDto(phys.Scripts);
       dto.Scripts.AddRange(dtScriptsList);
 
       System.Collections.Generic.IList<ThemesFullDto> dtThemesList
@@ -46,7 +46,7 @@ namespace OLabWebAPI.ObjectMapper
       dto.Themes.AddRange(dtThemesList);
 
       System.Collections.Generic.IList<CounterActionsDto> dtCounterActionsList
-        = new CounterActionsMapper(logger, new WikiTagProvider(logger)).PhysicalToDto(phys.CounterActions);
+        = new CounterActionsMapper(logger, GetWikiProvider()).PhysicalToDto(phys.CounterActions);
       dto.CounterActions.AddRange(dtCounterActionsList);
 
       return dto;

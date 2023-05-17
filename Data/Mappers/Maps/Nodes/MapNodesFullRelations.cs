@@ -29,7 +29,7 @@ namespace OLabWebAPI.ObjectMapper
         dto.Text = phys.Text;
 
       dto.Width = phys.Width.HasValue ? phys.Width : ObjectMapper.MapNodesMapper.DefaultWidth;
-      dto.MapNodeLinks = new MapNodeLinksMapper(logger, new WikiTagProvider(logger)).PhysicalToDto(phys.MapNodeLinksNodeId1Navigation.ToList());
+      dto.MapNodeLinks = new MapNodeLinksMapper(logger, GetWikiProvider()).PhysicalToDto(phys.MapNodeLinksNodeId1Navigation.ToList());
 
       return dto;
     }
