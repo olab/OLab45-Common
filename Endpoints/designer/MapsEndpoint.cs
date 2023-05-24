@@ -386,7 +386,7 @@ namespace OLabWebAPI.Endpoints.Designer
     /// </summary>
     /// <param name="map">Relevent map object</param>
     /// <returns></returns>
-    public async Task<bool> PutMapAccessCandidate(
+    public async Task<bool> PutMapAccessCandidateAsync(
       Maps map,
       MapAccessCandidateRequest body
     )
@@ -445,6 +445,97 @@ namespace OLabWebAPI.Endpoints.Designer
       )).ToList();
 
       return users;
+    }
+
+    /// <summary>
+    /// Assign security user to map (inserts and patches)
+    /// </summary>
+    /// <param name="map">Relevent map object</param>
+    /// <returns></returns>
+    public async Task<bool> SetMapSecurityUserAsync(
+      Maps map,
+      AssignSecurityUserRequest body
+    )
+    {
+      if (map == null)
+        return false;
+
+      body.CheckAcl();
+
+      var user = dbContext.Users.Where(u => u.Id == body.UserId).FirstOrDefault();
+
+      if (null == user)
+        throw new OLabBadRequestException("User not found.");
+
+      SecurityUsers securityUser = dbContext.SecurityUsers.SingleOrDefault(x => x.ImageableId == map.Id
+      && (
+        // note: this excludes `ImageableType == "*"` entries, allowing authors
+        // to manipulate those rows may lead to unwanted side-effects
+        x.ImageableType == Utils.Constants.ScopeLevelMap
+        && x.UserId == body.UserId
+      ));
+
+      if ( null == securityUser )
+        securityUser = new SecurityUsers();
+
+      securityUser.ImageableId = map.Id;
+      securityUser.UserId = user.Id;
+      securityUser.ImageableType = Utils.Constants.ScopeLevelMap;
+      securityUser.Acl = body.Acl;
+
+      try
+      {
+        if ( securityUser.Id > 0 ) // update existing security user
+        {
+          dbContext.SecurityUsers.Update(securityUser)
+          var id = await dbContext.SaveChangesAsync();
+          return id > 0;
+        } else // insert security user
+        {
+          await dbContext.SecurityUsers.AddAsync(securityUser);
+          var id = await dbContext.SaveChangesAsync();
+          return id > 0;
+        }
+      } catch(Exception)
+      {
+        return false;
+      }
+    }
+
+    /// <summary>
+    /// Unassign security user from map (delete)
+    /// </summary>
+    /// <param name="map">Relevent map object</param>
+    /// <param name="userId">Relevent user id</param>
+    /// <returns></returns>
+    public async Task<bool> UnsetMapSecurityUserAsync(
+      Maps map,
+      uint userId
+    )
+    {
+      if (map == null)
+        return false;
+
+      SecurityUsers securityUser = dbContext.SecurityUsers.SingleOrDefault(x => x.ImageableId == map.Id
+      && (
+        // note: this excludes `ImageableType == "*"` entries, allowing authors
+        // to manipulate those rows may lead to unwanted side-effects
+        x.ImageableType == Utils.Constants.ScopeLevelMap
+        && x.UserId == userId
+      ));
+
+      if (null == securityUser)
+        return true;
+
+      try
+      {
+        dbContext.SecurityUsers.Remove(securityUser);
+        var changes = await dbContext.SaveChangesAsync();
+        return changes > 0;
+      } catch(Exception)
+      {
+        return false;
+      }
     }
   }
 }

@@ -11,14 +11,4 @@ namespace OLabWebAPI.Model
     [Required]
     public string Email { get; set; }
   }
-
-  public class MapAccessCandidateResponse
-  {
-    [Required]
-    public uint UserId { get; set; }
-    [Required]
-    public string Username { get; set; }
-    [Required]
-    public string Email { get; set; }
-  }
 }
