@@ -397,34 +397,34 @@ namespace OLabWebAPI.Endpoints.Designer
       if (String.IsNullOrEmpty(body.Email?.Trim()))
         throw new OLabBadRequestException("User email cannot be empty.");
 
-			if (String.IsNullOrEmpty(body.Username?.Trim()))
-				throw new OLabBadRequestException("Username cannot be empty.");
+      if (String.IsNullOrEmpty(body.Username?.Trim()))
+        throw new OLabBadRequestException("Username cannot be empty.");
 
       if (!GenericValidations.IsValidEmail(body.Email))
-				throw new OLabBadRequestException("Invalid email address.");
+        throw new OLabBadRequestException("Invalid email address.");
 
-			if (!GenericValidations.IsValidUsername(body.Username))
-				throw new OLabBadRequestException("Invalid username (can only contain alphanumeric and any of -_ characters).");
+      if (!GenericValidations.IsValidUsername(body.Username))
+        throw new OLabBadRequestException("Invalid username (can only contain alphanumeric and any of -_ characters).");
 
-			var existing = dbContext.Users.Where(u =>
+      var existing = dbContext.Users.Where(u =>
         u.Username.ToLower() == body.Username.ToLower()
         || u.Email.ToLower() == body.Email.ToLower()).FirstOrDefault();
 
       // email and/or username taken
-			if ( null != existing )
-				throw new OLabBadRequestException("Username and/or email already taken.");
+      if ( null != existing )
+        throw new OLabBadRequestException("Username and/or email already taken.");
 
-			var phys = Users.CreateDefault(new AddUserRequest
+      var phys = Users.CreateDefault(new AddUserRequest
       {
-				Username = body.Username,
-				NickName = body.Username,
+        Username = body.Username,
+        NickName = body.Username,
         EMail = body.Email,
-			});
+      });
 
-			await dbContext.Users.AddAsync(phys);
-			var id = await dbContext.SaveChangesAsync();
+      await dbContext.Users.AddAsync(phys);
+      var id = await dbContext.SaveChangesAsync();
 
-			return id > 0;
+      return id > 0;
     }
 
     /// <summary>
