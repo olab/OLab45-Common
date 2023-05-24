@@ -6,6 +6,7 @@ using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Dto;
 using OLabWebAPI.Model;
 using OLabWebAPI.Model.ReaderWriter;
+using OLabWebAPI.ObjectMapper;
 using OLabWebAPI.Utils;
 using System;
 using System.Collections.Generic;
@@ -350,6 +351,100 @@ namespace OLabWebAPI.Endpoints.Designer
         script.ParentInfo = FindParentInfo(script.ScopeLevel, script.ParentId, maps, nodes, servers);
 
       return dto;
+    }
+
+    /// <summary>
+    /// Get a list of security users attached to a map
+    /// </summary>
+    /// <param name="map">Relevent map object</param>
+    /// <returns></returns>
+    public IList<Users> GetMapAccessCandidates(Maps map)
+    {
+      if (map == null)
+        return null;
+
+      var users = dbContext.Users.Where(x => true);
+      var usersMin = new List<Users>();
+
+      // strip-out redundant properties
+      foreach (var user in users)
+      {
+        usersMin.Add(new Users
+        {
+          Id = user.Id,
+          Nickname = user.Nickname,
+          Email = user.Email,
+          Username = user.Username
+        });
+      }
+
+      return usersMin;
+    }
+
+    /// <summary>
+    /// Insert a user to the users table
+    /// </summary>
+    /// <param name="map">Relevent map object</param>
+    /// <returns></returns>
+    public async Task<bool> PutMapAccessCandidate(
+      Maps map,
+      MapAccessCandidateRequest body
+    )
+    {
+      if (map == null)
+        return false;
+
+      if (String.IsNullOrEmpty(body.Email?.Trim()))
+        throw new OLabBadRequestException("User email cannot be empty.");
+
+			if (String.IsNullOrEmpty(body.Username?.Trim()))
+				throw new OLabBadRequestException("Username cannot be empty.");
+
+      if (!GenericValidations.IsValidEmail(body.Email))
+				throw new OLabBadRequestException("Invalid email address.");
+
+			if (!GenericValidations.IsValidUsername(body.Username))
+				throw new OLabBadRequestException("Invalid username (can only contain alphanumeric and any of -_ characters).");
+
+			var existing = dbContext.Users.Where(u =>
+        u.Username.ToLower() == body.Username.ToLower()
+        || u.Email.ToLower() == body.Email.ToLower()).FirstOrDefault();
+
+      // email and/or username taken
+			if ( null != existing )
+				throw new OLabBadRequestException("Username and/or email already taken.");
+
+			var phys = Users.CreateDefault(new AddUserRequest
+      {
+				Username = body.Username,
+				NickName = body.Username,
+        EMail = body.Email,
+			});
+
+			await dbContext.Users.AddAsync(phys);
+			var id = await dbContext.SaveChangesAsync();
+
+			return id > 0;
+    }
+
+    /// <summary>
+    /// Get a list of security users attached to a map
+    /// </summary>
+    /// <param name="map">Relevent map object</param>
+    /// <returns></returns>
+    public IList<SecurityUsers> GetSecurityUsersRaw(Maps map)
+    {
+      if (map == null)
+        return null;
+
+      var users = dbContext.SecurityUsers.Where(x => x.ImageableId == map.Id
+      && (
+        // note: this excludes `ImageableType == "*"` entries, allowing authors
+        // to manipulate those rows may lead to unwanted side-effects
+        x.ImageableType == Utils.Constants.ScopeLevelMap /*|| x.ImageableType == "*"*/
+      )).ToList();
+
+      return users;
     }
   }
 }
