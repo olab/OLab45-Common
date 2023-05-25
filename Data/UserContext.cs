@@ -214,6 +214,8 @@ namespace OLabWebAPI.Data
         UserId = user.Id;
         _userAcls = _dbContext.SecurityUsers.Where(x => x.UserId == UserId).ToList();
 
+        _logger.LogWarning($"User '{UserName}' locally exists");
+
         // if user is anonymous user, add user access to anon-flagged maps
         if (OLabUser.Group == "anonymous")
         {
@@ -230,8 +232,6 @@ namespace OLabWebAPI.Data
           }
         }
       }
-      else
-        _logger.LogWarning($"User {UserName} does not exist");
 
     }
 
@@ -246,8 +246,6 @@ namespace OLabWebAPI.Data
     {
       var grantedCount = 0;
 
-      //_logger.LogDebug($"ACL request: '{requestedPerm}' on '{objectType}({objectId})'");
-
       if (!objectId.HasValue)
         objectId = WildCardObjectId;
 
@@ -255,8 +253,6 @@ namespace OLabWebAPI.Data
       {
         if (HasSingleAccess(requestedPerm[i], objectType, objectId))
           grantedCount++;
-        //else
-        //  _logger.LogError($"User {UserId}/{Role} does not have '{requestedPerm[i]}' access to '{objectType}({objectId})'");
       }
 
       return grantedCount == requestedPerm.Length;
@@ -295,7 +291,7 @@ namespace OLabWebAPI.Data
 
       if (acl != null)
       {
-        _logger.LogDebug($"{acl} ? true");
+        //_logger.LogDebug($"{acl} ? true");
         return true;
       }
 
@@ -307,7 +303,7 @@ namespace OLabWebAPI.Data
 
       if (acl != null)
       {
-        _logger.LogDebug($"{acl} ? true");
+        //_logger.LogDebug($"{acl} ? true");
         return true;
       }
 
@@ -319,7 +315,7 @@ namespace OLabWebAPI.Data
 
       if (acl != null)
       {
-        _logger.LogDebug($"{acl} ? true");
+        //_logger.LogDebug($"{acl} ? true");
         return true;
       }
 
@@ -331,7 +327,7 @@ namespace OLabWebAPI.Data
 
       if (acl != null)
       {
-        _logger.LogDebug($"{acl} ? true");
+        //_logger.LogDebug($"{acl} ? true");
         return true;
       }
 
@@ -368,7 +364,7 @@ namespace OLabWebAPI.Data
 
       if (acl != null)
       {
-        _logger.LogDebug($"{acl} ? true");
+        //_logger.LogDebug($"{acl} ? true");
         return true;
       }
 
@@ -380,7 +376,7 @@ namespace OLabWebAPI.Data
 
       if (acl != null)
       {
-        _logger.LogDebug($"{acl} ? true");
+        //_logger.LogDebug($"{acl} ? true");
         return true;
       }
 
@@ -392,7 +388,7 @@ namespace OLabWebAPI.Data
 
       if (acl != null)
       {
-        _logger.LogDebug($"{acl} ? true");
+        //_logger.LogDebug($"{acl} ? true");
         return true;
       }
 
@@ -404,7 +400,7 @@ namespace OLabWebAPI.Data
 
       if (acl != null)
       {
-        _logger.LogDebug($"{acl} ? true");
+        //_logger.LogDebug($"{acl} ? true");
         return true;
       }
 

@@ -5,6 +5,8 @@ namespace OLabWebAPI.Model
 {
   public partial class SystemQuestions
   {
+    public string Wiki {  get {  return GetWikiTag(); } }
+
     public string GetWikiTag()
     {
       if (string.IsNullOrEmpty(Name))

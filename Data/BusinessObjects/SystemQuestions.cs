@@ -1,4 +1,6 @@
+using Mapster;
 using Microsoft.EntityFrameworkCore;
+using OLabWebAPI.Dto;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -17,6 +19,11 @@ namespace OLabWebAPI.Model
       InverseParent = new HashSet<SystemQuestions>();
       SystemQuestionResponses = new HashSet<SystemQuestionResponses>();
       SystemQuestionValidation = new HashSet<SystemQuestionValidation>();
+
+      TypeAdapterConfig<SystemQuestions, QuestionsFullNewDto>.NewConfig()
+          .PreserveReference(true);
+      TypeAdapterConfig<SystemQuestionResponses, QuestionResponsesNewDto>.NewConfig()
+          .PreserveReference(true);
     }
 
     [Key]

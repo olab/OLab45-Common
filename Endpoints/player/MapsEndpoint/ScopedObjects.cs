@@ -13,7 +13,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(IOLabAuthentication auth, uint id)
+    public async Task<OLabWebAPI.Dto.ScopedObjectsNewDto> GetScopedObjectsRawAsync(IOLabAuthentication auth, uint id)
     {
       logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetScopedObjectsRawAsync");
 
@@ -29,7 +29,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsAsync(IOLabAuthentication auth, uint id)
+    public async Task<OLabWebAPI.Dto.ScopedObjectsNewDto> GetScopedObjectsAsync(IOLabAuthentication auth, uint id)
     {
       logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetScopedObjectsAsync");
 
@@ -46,7 +46,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="id"></param>
     /// <param name="enableWikiTranslation"></param>
     /// <returns></returns>
-    private async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsAsync(
+    private async Task<OLabWebAPI.Dto.ScopedObjectsNewDto> GetScopedObjectsAsync(
       uint id,
       bool enableWikiTranslation)
     {
@@ -76,9 +76,9 @@ namespace OLabWebAPI.Endpoints.Player
         Value = Encoding.ASCII.GetBytes(map.Name)
       });
 
-      var builder = new ObjectMapper.ScopedObjects(logger, enableWikiTranslation);
+      var builder = new ObjectMapper.ScopedObjectsNew(logger, enableWikiTranslation);
+      Dto.ScopedObjectsNewDto dto = builder.PhysicalToDto(phys);
 
-      Dto.ScopedObjectsDto dto = builder.PhysicalToDto(phys);
       return dto;
     }
 
