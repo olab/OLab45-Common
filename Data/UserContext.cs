@@ -210,6 +210,9 @@ namespace OLabWebAPI.Data
       Users user = _dbContext.Users.FirstOrDefault(x => (x.Username == UserName) && (x.Id == UserId));
       if (user != null)
       {
+
+        _logger.LogInformation($"Local user '{UserName}' found");
+
         OLabUser = user;
         UserId = user.Id;
         _userAcls = _dbContext.SecurityUsers.Where(x => x.UserId == UserId).ToList();
@@ -230,8 +233,6 @@ namespace OLabWebAPI.Data
           }
         }
       }
-      else
-        _logger.LogWarning($"User {UserName} does not exist");
 
     }
 
