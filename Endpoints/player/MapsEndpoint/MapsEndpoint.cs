@@ -110,7 +110,7 @@ namespace OLabWebAPI.Endpoints.Player
 
       Maps map = await GetMapAsync(id);
       if (map == null)
-        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
+        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 
       // test if map set to use ACL for testing access
       //if (map.SecurityId == 3)
