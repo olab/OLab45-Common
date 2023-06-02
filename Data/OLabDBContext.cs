@@ -82,7 +82,7 @@ namespace OLabWebAPI.Model
     public virtual DbSet<MapQuestionResponses> MapQuestionResponses { get; set; }
     public virtual DbSet<MapQuestionTypes> MapQuestionTypes { get; set; }
     public virtual DbSet<MapQuestionValidation> MapQuestionValidation { get; set; }
-    public virtual DbSet<MapQuestions> MapQuestions { get; set; }
+    //public virtual DbSet<MapQuestions> MapQuestions { get; set; }
     public virtual DbSet<MapSections> MapSections { get; set; }
     public virtual DbSet<MapSecurities> MapSecurities { get; set; }
     public virtual DbSet<MapSkins> MapSkins { get; set; }
@@ -143,8 +143,23 @@ namespace OLabWebAPI.Model
     public virtual DbSet<WebinarUsers> WebinarUsers { get; set; }
     public virtual DbSet<Webinars> Webinars { get; set; }
 
+    public DbSet<Question> Questions { get; set; }
+    public DbSet<MapQuestion> MapQuestions { get; set; }
+    public DbSet<MapNodeQuestion> MapNodeQuestions { get; set; }
+    public DbSet<ServerQuestion> ServerQuestions { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+      modelBuilder.Entity<Question>()
+              .HasDiscriminator(x => x.ImageableType)
+              .HasValue<MapQuestion>("MapQuestions")
+              .HasValue<MapNodeQuestion>("MapNodeQuestions")
+              .HasValue<ServerQuestion>("ServerQuestions");
+
+      modelBuilder.Entity<ServerQuestion>();
+      modelBuilder.Entity<MapNodeQuestion>();
+      modelBuilder.Entity<MapQuestion>();
+
       modelBuilder.HasCharSet("utf8")
           .UseCollation("utf8_general_ci");
 
@@ -682,22 +697,22 @@ namespace OLabWebAPI.Model
                   .HasConstraintName("map_question_validation_ibfk_1");
       });
 
-      modelBuilder.Entity<MapQuestions>(entity =>
-      {
-        entity.Property(e => e.NumTries).HasDefaultValueSql("-1");
+      //modelBuilder.Entity<MapQuestions>(entity =>
+      //{
+      //  entity.Property(e => e.NumTries).HasDefaultValueSql("-1");
 
-        entity.HasOne(d => d.Map)
-                  .WithMany(p => p.MapQuestions)
-                  .HasForeignKey(d => d.MapId)
-                  .OnDelete(DeleteBehavior.Cascade)
-                  .HasConstraintName("map_questions_ibfk_1");
+      //  entity.HasOne(d => d.Map)
+      //            .WithMany(p => p.MapQuestions)
+      //            .HasForeignKey(d => d.MapId)
+      //            .OnDelete(DeleteBehavior.Cascade)
+      //            .HasConstraintName("map_questions_ibfk_1");
 
-        entity.HasOne(d => d.Parent)
-                  .WithMany(p => p.InverseParent)
-                  .HasForeignKey(d => d.ParentId)
-                  .OnDelete(DeleteBehavior.Cascade)
-                  .HasConstraintName("map_questions_ibfk_2");
-      });
+      //  entity.HasOne(d => d.Parent)
+      //            .WithMany(p => p.InverseParent)
+      //            .HasForeignKey(d => d.ParentId)
+      //            .OnDelete(DeleteBehavior.Cascade)
+      //            .HasConstraintName("map_questions_ibfk_2");
+      //});
 
       modelBuilder.Entity<MapUsers>(entity =>
       {
