@@ -487,7 +487,7 @@ namespace OLabWebAPI.Endpoints.Designer
       {
         if ( securityUser.Id > 0 ) // update existing security user
         {
-          dbContext.SecurityUsers.Update(securityUser)
+          dbContext.SecurityUsers.Update(securityUser);
           var id = await dbContext.SaveChangesAsync();
           return id > 0;
         } else // insert security user
