@@ -358,12 +358,18 @@ namespace OLabWebAPI.Endpoints.Designer
     /// </summary>
     /// <param name="map">Relevent map object</param>
     /// <returns></returns>
-    public IList<Users> GetMapAccessCandidates(Maps map)
+    public IList<Users> GetMapAccessCandidates(Maps map, String search)
     {
       if (map == null)
         return null;
 
-      var users = dbContext.Users.Where(x => true);
+      search = search.Trim();
+
+      var users = dbContext.Users.Where(x => search.Length > 0 ? (
+        x.Nickname.Contains(search)
+        || x.Email.Contains(search)
+        || x.Username.Contains(search)
+      ) : true).Take(20);
       var usersMin = new List<Users>();
 
       // strip-out redundant properties
