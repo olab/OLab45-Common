@@ -392,13 +392,13 @@ namespace OLabWebAPI.Endpoints.Designer
     /// </summary>
     /// <param name="map">Relevent map object</param>
     /// <returns></returns>
-    public async Task<bool> PutMapAccessCandidateAsync(
+    public async Task<int> PutMapAccessCandidateAsync(
       Maps map,
       MapAccessCandidateRequest body
     )
     {
       if (map == null)
-        return false;
+        return 0;
 
       if (String.IsNullOrEmpty(body.Email?.Trim()))
         throw new OLabBadRequestException("User email cannot be empty.");
@@ -430,7 +430,7 @@ namespace OLabWebAPI.Endpoints.Designer
       await dbContext.Users.AddAsync(phys);
       var id = await dbContext.SaveChangesAsync();
 
-      return id > 0;
+      return (int) phys.Id;
     }
 
     /// <summary>
