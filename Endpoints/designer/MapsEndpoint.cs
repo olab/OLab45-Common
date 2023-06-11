@@ -369,22 +369,9 @@ namespace OLabWebAPI.Endpoints.Designer
         x.Nickname.Contains(search)
         || x.Email.Contains(search)
         || x.Username.Contains(search)
-      ) : true).Take(20);
-      var usersMin = new List<Users>();
+      ) : true).Take(20).ToList();
 
-      // strip-out redundant properties
-      foreach (var user in users)
-      {
-        usersMin.Add(new Users
-        {
-          Id = user.Id,
-          Nickname = user.Nickname,
-          Email = user.Email,
-          Username = user.Username
-        });
-      }
-
-      return usersMin;
+      return users;
     }
 
     /// <summary>
