@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 
 namespace OLabWebAPI.Model
 {
@@ -14,13 +15,17 @@ namespace OLabWebAPI.Model
     [Required]
     public string NickName { get; set; }
     public string Password { get; set; }
+    public string ModeUi { get; set; }
     public string Group { get; set; }
     [Required]
     public string Role { get; set; }
 
     public AddUserRequest()
     {
+      NickName = "";
+      ModeUi = "easy";
       Group = "";
+      Role = "";
     }
 
     public AddUserRequest(string userRequestText)
