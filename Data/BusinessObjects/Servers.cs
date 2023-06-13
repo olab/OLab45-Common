@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -18,5 +19,14 @@ namespace OLabWebAPI.Model
     [Column("description")]
     [StringLength(100)]
     public string Description { get; set; }
+    public List<Question> Questions { get; set; }
+
+    public virtual ICollection<ServerQuestion> ServerQuestions { get; set; }
+
+    public Servers()
+    {
+      Questions = new List<Question>();
+      ServerQuestions = new List<ServerQuestion>();
+    }
   }
 }

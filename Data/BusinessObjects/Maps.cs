@@ -17,7 +17,7 @@ namespace OLabWebAPI.Model
 
       Constants = new List<SystemConstants>();
       Counters = new List<SystemCounters>();
-      Questions = new List<SystemQuestions>();
+      SystemQuestions = new List<SystemQuestions>();
       Files = new List<SystemFiles>();
       Scripts = new List<SystemScripts>();
 
@@ -37,7 +37,6 @@ namespace OLabWebAPI.Model
       MapNodeLinks = new HashSet<MapNodeLinks>();
       MapNodeSections = new HashSet<MapNodeSections>();
       MapNodes = new HashSet<MapNodes>();
-      MapQuestions = new HashSet<MapQuestions>();
       MapUsers = new HashSet<MapUsers>();
       QCumulative = new HashSet<QCumulative>();
       ScenarioMaps = new HashSet<ScenarioMaps>();
@@ -154,7 +153,7 @@ namespace OLabWebAPI.Model
     [NotMapped]
     public List<SystemFiles> Files { get; set; }
     [NotMapped]
-    public List<SystemQuestions> Questions { get; set; }
+    public List<SystemQuestions> SystemQuestions { get; set; }
     [NotMapped]
     public List<SystemScripts> Scripts { get; set; }
     [NotMapped]
@@ -178,7 +177,6 @@ namespace OLabWebAPI.Model
     public virtual ICollection<MapNodeLinks> MapNodeLinks { get; set; }
     public virtual ICollection<MapNodeSections> MapNodeSections { get; set; }
     public virtual ICollection<MapNodes> MapNodes { get; set; }
-    public virtual ICollection<MapQuestions> MapQuestions { get; set; }
     public virtual ICollection<MapUsers> MapUsers { get; set; }
     public virtual ICollection<QCumulative> QCumulative { get; set; }
     public virtual ICollection<ScenarioMaps> ScenarioMaps { get; set; }
@@ -186,5 +184,9 @@ namespace OLabWebAPI.Model
     public virtual ICollection<UserSessions> UserSessions { get; set; }
     public virtual ICollection<UserSessionTraces> UserSessionTraces { get; set; }
     public virtual ICollection<UserState> UserState { get; set; }
+
+
+    public virtual ICollection<Question> Questions { get; } = new List<Question>();
+
   }
 }

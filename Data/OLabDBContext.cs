@@ -151,14 +151,21 @@ namespace OLabWebAPI.Model
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       modelBuilder.Entity<Question>()
-              .HasDiscriminator(x => x.ImageableType)
-              .HasValue<MapQuestion>("MapQuestions")
-              .HasValue<MapNodeQuestion>("MapNodeQuestions")
-              .HasValue<ServerQuestion>("ServerQuestions");
+              .HasDiscriminator<string>("imageable_type")
+              .HasValue<MapQuestion>("MapQuestion")
+              .HasValue<MapNodeQuestion>("MapNodeQuestion")
+              .HasValue<ServerQuestion>("ServerQuestion");
 
-      modelBuilder.Entity<ServerQuestion>();
-      modelBuilder.Entity<MapNodeQuestion>();
-      modelBuilder.Entity<MapQuestion>();
+      //modelBuilder.Entity<ServerQuestion>();
+      //modelBuilder.Entity<MapNodeQuestion>();
+      //modelBuilder.Entity<MapQuestion>(entity =>
+      //{
+      //  entity
+      //    .HasOne(d => d.Map)
+      //    .WithMany(p => p.MapQuestions)
+      //    .HasForeignKey(d => d.MapId)
+      //    .IsRequired();
+      //});
 
       modelBuilder.HasCharSet("utf8")
           .UseCollation("utf8_general_ci");

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OLabWebAPI.ObjectMapper;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,7 +10,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace OLabWebAPI.Model
 {
   [Table("Questions")]
-  [Index(nameof(ParentId), Name = "parent_id")]
   public abstract class Question
   {
     public Question()
@@ -66,8 +66,9 @@ namespace OLabWebAPI.Model
     [Column("external_source_id")]
     [StringLength(255)]
     public string ExternalSourceId { get; set; }
-    [Column("imageable_id", TypeName = "int(10) unsigned")]
-    public uint ImageableId { get; set; }
+    //[Required]
+    //[Column("imageable_id", TypeName = "int(10) unsigned")]
+    //public virtual uint ImageableId { get; set; }
     [Required]
     [Column("imageable_type")]
     [StringLength(45)]
@@ -77,15 +78,36 @@ namespace OLabWebAPI.Model
     [Column("updated_At", TypeName = "datetime")]
     public DateTime? UpdatedAt { get; set; }
 
-    [ForeignKey(nameof(ParentId))]
-    [InverseProperty(nameof(InverseParent))]
     public virtual Question Parent { get; set; }
     [InverseProperty(nameof(Parent))]
     public virtual ICollection<Question> InverseParent { get; set; }
   }
 
-  public class MapQuestion : Question { }
-  public class MapNodeQuestion : Question { }
-  public class ServerQuestion : Question { }
+  public class MapQuestion : Question
+  {
+    public Maps Map { get; set; } = null;
+
+    [Required]
+    [Column("imageable_id", TypeName = "int(10) unsigned")]
+    public uint MapId { get; set; }
+  }
+
+  public class MapNodeQuestion : Question
+  {
+    public virtual MapNodes MapNode { get; set; }
+
+    [Required]
+    [Column("imageable_id", TypeName = "int(10) unsigned")]
+    public uint MapNodeId { get; set; }
+  }
+
+  public class ServerQuestion : Question
+  {
+    public virtual Servers Server { get; set; }
+
+    [Required]
+    [Column("imageable_id", TypeName = "int(10) unsigned")]
+    public uint ServerId { get; set; }
+  }
 
 }

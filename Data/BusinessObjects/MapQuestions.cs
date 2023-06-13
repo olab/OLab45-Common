@@ -70,7 +70,7 @@ namespace OLabWebAPI.Model
     public string ExternalSourceId { get; set; }
 
     [ForeignKey(nameof(MapId))]
-    [InverseProperty(nameof(Maps.MapQuestions))]
+    [InverseProperty(nameof(Maps.Questions))]
     public virtual Maps Map { get; set; }
     [ForeignKey(nameof(ParentId))]
     [InverseProperty(nameof(MapQuestions.InverseParent))]

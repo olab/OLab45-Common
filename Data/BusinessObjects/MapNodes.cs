@@ -121,6 +121,8 @@ namespace OLabWebAPI.Model
     [InverseProperty(nameof(WebinarPoll.ToNodeNavigation))]
     public virtual ICollection<WebinarPoll> WebinarPollToNodeNavigation { get; set; }
 
+    public virtual ICollection<MapNodeQuestion> MapNodeQuestions { get; set; }
+
     public enum NodeType : int
     {
       RootNode = 1,
@@ -147,6 +149,8 @@ namespace OLabWebAPI.Model
       WebinarNodePoll = new HashSet<WebinarNodePoll>();
       WebinarPollOnNodeNavigation = new HashSet<WebinarPoll>();
       WebinarPollToNodeNavigation = new HashSet<WebinarPoll>();
+
+      MapNodeQuestions = new HashSet<MapNodeQuestion>();
     }
   }
 }

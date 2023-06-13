@@ -49,6 +49,8 @@ namespace OLabWebAPI.Endpoints
 
     protected async ValueTask<Maps> GetMapAsync(uint id)
     {
+      var mapQuestions = dbContext.MapQuestions.Where(x => x.MapId == id);
+
       Maps phys = await dbContext.Maps.FirstOrDefaultAsync(x => x.Id == id);
       if ( phys != null)
         dbContext.Entry(phys).Collection(b => b.MapNodes).Load();
