@@ -197,6 +197,63 @@ namespace OLabWebAPI.Endpoints.Designer
     }
 
     /// <summary>
+    /// Update a given map's nodegrid
+    /// </summary>
+    /// <param name="mapId">map id</param>
+    /// <param name="body">nodegrid DTO</param>
+    /// <returns>IActionResult</returns>
+    public async Task<bool> PutMapNodegridAsync(
+      IOLabAuthentication auth,
+      uint mapId,
+      PutNodeGridRequest[] body)
+    {
+      if (0 == body.Length)
+        return true;
+
+      using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = dbContext.Database.BeginTransaction();
+
+      try
+      {
+        Maps map = GetSimple(dbContext, mapId);
+
+        if (map == null)
+          throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
+
+        // test if user has access to map.
+        if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, map.Id))
+          throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, map.Id);
+
+        foreach ( PutNodeGridRequest nodeDto in body )
+        {
+          var phys = dbContext.MapNodes.FirstOrDefault(x => x.Id == nodeDto.Id);
+
+          if (null == phys)
+            throw new Exception("Bad request"); // replace with oLabBadRequestException once implemented
+
+          if (phys.MapId != map.Id)
+            throw new Exception("Bad request"); // replace with oLabBadRequestException once implemented
+
+          phys.Text = nodeDto.Text;
+          phys.Title = nodeDto.Title;
+          phys.X = nodeDto.X;
+          phys.Y = nodeDto.Y;
+
+          dbContext.MapNodes.Update(phys);
+        }
+
+        await dbContext.SaveChangesAsync();
+        await transaction.CommitAsync();
+
+        return true;
+      }
+      catch (Exception)
+      {
+        await transaction.RollbackAsync();
+        throw;
+      }
+    }
+
+    /// <summary>
     /// 
     /// </summary>
     /// <param name="context"></param>
