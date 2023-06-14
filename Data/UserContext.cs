@@ -35,7 +35,7 @@ namespace OLabWebAPI.Data
     private string _userName;
     private string _ipAddress;
     private string _issuer;
-    private readonly string _courseName;
+    //private readonly string _courseName;
     private string _accessToken;
 
     public IOLabSession Session
@@ -82,7 +82,8 @@ namespace OLabWebAPI.Data
 
     public string SessionId { get { return Session.GetSessionId(); } }
 
-    public string CourseName { get { return _courseName; } }
+    //public string CourseName { get { return _courseName; } }
+    public string CourseName { get { return null; } }
 
     // default ctor, needed for services Dependancy Injection
     public UserContext()
