@@ -6,7 +6,7 @@ namespace OLabWebAPI.Model
 {
   public class AddUserRequest
   {
-    private readonly string userRequestText;
+    //private readonly string userRequestText;
 
     [Required]
     public string Username { get; set; }
