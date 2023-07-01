@@ -37,5 +37,6 @@ namespace OLabWebAPI.Dto
     public uint SourceId { get; set; }
     public uint TypeId { get; set; }
     public uint? LanguageId { get; set; }
+    public uint? ReportNodeId { get; set; }
   }
 }

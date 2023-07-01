@@ -130,6 +130,8 @@ namespace OLabWebAPI.Model
     public float? RendererVersion { get; set; }
     [Column("is_template", TypeName = "int(10)")]
     public int? IsTemplate { get; set; }
+    [Column("report_node_id", TypeName = "int(10) unsigned")]
+    public uint? ReportNodeId { get; set; }
     [Column("created_at", TypeName = "datetime")]
     public DateTime? CreatedAt { get; set; }
     [Column("updated_At", TypeName = "datetime")]
