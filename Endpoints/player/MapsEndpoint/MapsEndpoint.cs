@@ -219,7 +219,6 @@ namespace OLabWebAPI.Endpoints.Player
 
       MapsFullRelationsDto dto = new MapsFullRelationsMapper(logger).PhysicalToDto(map);
       return dto;
-
     }
 
     /// <summary>
@@ -306,6 +305,47 @@ namespace OLabWebAPI.Endpoints.Player
 
       IList<MapNodeLinksFullDto> dtoList = new MapNodeLinksFullMapper(logger).PhysicalToDto(items);
       return dtoList;
+    }
+
+    /// <summary>
+    /// Retrieve all sessions for a given map
+    /// </summary>
+    /// <param name="mapId"></param>
+    /// <returns></returns>
+    public async Task<IList<SessionInfo>> GetSessionsAsync(
+      IOLabAuthentication auth,
+      uint mapId)
+    {
+      logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetSessionsAsync");
+
+      // test if user has access to map.
+      if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
+        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+
+      Maps map = GetSimple(dbContext, mapId);
+
+      if (map == null)
+        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
+
+      IList<SessionInfo> sessions = await dbContext.SessionInfo.FromSqlInterpolated(@$"
+        select s.uuid,
+               cast(from_unixtime(s.start_time) as datetime) as `Timestamp`,
+               case
+                 when u.nickname is null or u.nickname = ''
+                  then u.username
+                 else u.nickname
+               end                         as User,
+               count(st.id)                as NodesVisited
+        from   user_sessions s
+               left join users u
+                      on u.id = s.user_id
+               left join user_sessiontraces st
+                      on (st.session_id = s.id and st.map_id = s.map_id)
+        where  s.map_id = {mapId}
+               and s.user_id > 0
+        group  by s.id").ToListAsync<SessionInfo>();
+
+      return sessions;
     }
 
     [HttpOptions]
