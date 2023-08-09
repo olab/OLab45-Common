@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using NuGet.Packaging.Signing;
 using OLabWebAPI.Common;
 using OLabWebAPI.Common.Exceptions;
 using OLabWebAPI.Data.Exceptions;
@@ -10,6 +11,7 @@ using OLabWebAPI.Model;
 using OLabWebAPI.Model.ReaderWriter;
 using OLabWebAPI.ObjectMapper;
 using OLabWebAPI.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -327,23 +329,48 @@ namespace OLabWebAPI.Endpoints.Player
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
-      IList<SessionInfo> sessions = await dbContext.SessionInfo.FromSqlInterpolated(@$"
-        select s.uuid,
-               cast(from_unixtime(s.start_time) as datetime) as `Timestamp`,
-               case
-                 when u.nickname is null or u.nickname = ''
-                  then u.username
-                 else u.nickname
-               end                         as User,
-               count(st.id)                as NodesVisited
-        from   user_sessions s
-               left join users u
-                      on u.id = s.user_id
-               left join user_sessiontraces st
-                      on (st.session_id = s.id and st.map_id = s.map_id)
-        where  s.map_id = {mapId}
-               and s.user_id > 0
-        group  by s.id").ToListAsync<SessionInfo>();
+      var query = from session in dbContext.UserSessions
+                  join user in dbContext.Users on session.UserId equals user.Id
+                    into u from user in u.DefaultIfEmpty()
+                  join sessionTrace in dbContext.UserSessionTraces on
+                    new
+                    {
+                      k1 = session.Id,
+                      k2 = session.MapId
+                    } equals new
+                    {
+                      k1 = sessionTrace.SessionId,
+                      k2 = sessionTrace.MapId
+                    }
+                    into st from sessionTrace in st.DefaultIfEmpty()
+                  where (session.MapId == mapId && session.UserId > 0)
+                  select new
+                  {
+                    user,
+                    session,
+                    sessionTrace
+                  } into joined
+                  group joined by new { joined.session.Id } into g
+                  select new
+                  {
+                    uuid = g.Select(j => j.session.Uuid).First(),
+                    nodesVisited = g.Select(j => j.sessionTrace).Where(n => n != null).ToList().Count,
+                    timestamp = g.Select(j => j.session.StartTime).First(),
+                    user = g.Select(j => j.user).First(),
+                  };
+
+      var sessions = new List<SessionInfo>();
+
+      foreach (var item in query)
+      {
+        sessions.Add(new SessionInfo
+        {
+          uuid = item.uuid,
+          Timestamp = DateTimeOffset.FromUnixTimeSeconds((long) item.timestamp).LocalDateTime,
+          User = String.IsNullOrEmpty(item.user.Nickname) ? item.user.Username : item.user.Nickname,
+          NodesVisited = uint.Parse(item.nodesVisited.ToString()),
+        });
+      }
 
       return sessions;
     }
@@ -353,6 +380,5 @@ namespace OLabWebAPI.Endpoints.Player
     {
 
     }
-
   }
 }

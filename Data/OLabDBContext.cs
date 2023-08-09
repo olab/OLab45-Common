@@ -142,7 +142,6 @@ namespace OLabWebAPI.Model
     public virtual DbSet<WebinarSteps> WebinarSteps { get; set; }
     public virtual DbSet<WebinarUsers> WebinarUsers { get; set; }
     public virtual DbSet<Webinars> Webinars { get; set; }
-    public virtual DbSet<SessionInfo> SessionInfo { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -1105,11 +1104,6 @@ namespace OLabWebAPI.Model
                   .WithMany(p => p.WebinarUsers)
                   .HasForeignKey(d => d.UserId)
                   .HasConstraintName("webinar_users_ibfk_1");
-      });
-
-      modelBuilder.Entity<SessionInfo>(entity =>
-      {
-        entity.HasNoKey();
       });
 
       OnModelCreatingPartial(modelBuilder);
