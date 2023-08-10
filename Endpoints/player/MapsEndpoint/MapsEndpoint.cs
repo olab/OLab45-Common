@@ -217,6 +217,11 @@ namespace OLabWebAPI.Endpoints.Player
       // set up default ACL for map author against map
       var acl = SecurityUsers.CreateDefaultMapACL(auth.GetUserContext(), map);
       dbContext.SecurityUsers.Add(acl);
+
+      // update map's author
+      map.AuthorId = acl.UserId;
+      dbContext.Entry(map).State = EntityState.Modified;
+
       await dbContext.SaveChangesAsync();
 
       MapsFullRelationsDto dto = new MapsFullRelationsMapper(logger).PhysicalToDto(map);
