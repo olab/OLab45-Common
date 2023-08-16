@@ -334,39 +334,22 @@ namespace OLabWebAPI.Endpoints.Player
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
-      var query = from session in dbContext.UserSessions
-                  join user in dbContext.Users on session.UserId equals user.Id
-                    into u from user in u.DefaultIfEmpty()
-                  join sessionTrace in dbContext.UserSessionTraces on
-                    new
-                    {
-                      k1 = session.Id,
-                      k2 = session.MapId
-                    } equals new
-                    {
-                      k1 = sessionTrace.SessionId,
-                      k2 = sessionTrace.MapId
-                    }
-                    into st from sessionTrace in st.DefaultIfEmpty()
-                  where (session.MapId == mapId && session.UserId > 0)
-                  select new
-                  {
-                    user,
-                    session,
-                    sessionTrace
-                  } into joined
-                  group joined by new { joined.session.Id } into g
-                  select new
-                  {
-                    uuid = g.Select(j => j.session.Uuid).First(),
-                    nodesVisited = g.Select(j => j.sessionTrace).Where(n => n != null).ToList().Count,
-                    timestamp = g.Select(j => j.session.StartTime).First(),
-                    user = g.Select(j => j.user).First(),
-                  };
+      var userSessions = await dbContext.UserSessions
+        .AsNoTracking()
+        .Include(x => x.UserSessionTraces)
+        .Where(x => x.MapId == mapId && x.UserId > 0)
+        .Select(x => new
+        {
+          uuid = x.Uuid,
+          nodesVisited = x.UserSessionTraces.Where(s => s.MapId == mapId).Count(),
+          timestamp = x.StartTime,
+          user = dbContext.Users.Where(u => u.Id == x.UserId).First(),
+        })
+        .ToListAsync();
 
       var sessions = new List<SessionInfo>();
 
-      foreach (var item in query)
+      foreach (var item in userSessions)
       {
         sessions.Add(new SessionInfo
         {
