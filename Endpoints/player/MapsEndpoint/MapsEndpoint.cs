@@ -337,13 +337,15 @@ namespace OLabWebAPI.Endpoints.Player
       var userSessions = await dbContext.UserSessions
         .AsNoTracking()
         .Include(x => x.UserSessionTraces)
-        .Where(x => x.MapId == mapId && x.UserId > 0)
+        .Where(x => x.MapId == mapId)
         .Select(x => new
         {
           uuid = x.Uuid,
           nodesVisited = x.UserSessionTraces.Where(s => s.MapId == mapId).Count(),
           timestamp = x.StartTime,
-          user = dbContext.Users.Where(u => u.Id == x.UserId).First(),
+          user = x.Iss == auth.GetUserContext().Issuer
+            ? dbContext.Users.Where(u => u.Id == x.UserId).First()
+            : null,
         })
         .ToListAsync();
 
@@ -355,7 +357,9 @@ namespace OLabWebAPI.Endpoints.Player
         {
           uuid = item.uuid,
           Timestamp = DateTimeOffset.FromUnixTimeSeconds((long) item.timestamp).LocalDateTime,
-          User = String.IsNullOrEmpty(item.user.Nickname) ? item.user.Username : item.user.Nickname,
+          User = item.user != null
+            ? (String.IsNullOrEmpty(item.user.Nickname) ? item.user.Username : item.user.Nickname)
+            : null,
           NodesVisited = uint.Parse(item.nodesVisited.ToString()),
         });
       }
