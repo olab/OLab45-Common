@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using NuGet.Packaging.Signing;
 using OLabWebAPI.Common;
 using OLabWebAPI.Common.Exceptions;
 using OLabWebAPI.Data.Exceptions;
@@ -10,6 +11,7 @@ using OLabWebAPI.Model;
 using OLabWebAPI.Model.ReaderWriter;
 using OLabWebAPI.ObjectMapper;
 using OLabWebAPI.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -224,7 +226,6 @@ namespace OLabWebAPI.Endpoints.Player
 
       MapsFullRelationsDto dto = new MapsFullRelationsMapper(logger).PhysicalToDto(map);
       return dto;
-
     }
 
     /// <summary>
@@ -313,11 +314,63 @@ namespace OLabWebAPI.Endpoints.Player
       return dtoList;
     }
 
+    /// <summary>
+    /// Retrieve all sessions for a given map
+    /// </summary>
+    /// <param name="mapId"></param>
+    /// <returns></returns>
+    public async Task<IList<SessionInfo>> GetSessionsAsync(
+      IOLabAuthentication auth,
+      uint mapId)
+    {
+      logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetSessionsAsync");
+
+      // test if user has access to map.
+      if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
+        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+
+      Maps map = GetSimple(dbContext, mapId);
+
+      if (map == null)
+        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
+
+      var userSessions = await dbContext.UserSessions
+        .AsNoTracking()
+        .Include(x => x.UserSessionTraces)
+        .Where(x => x.MapId == mapId)
+        .Select(x => new
+        {
+          uuid = x.Uuid,
+          nodesVisited = x.UserSessionTraces.Where(s => s.MapId == mapId).Count(),
+          timestamp = x.StartTime,
+          user = x.Iss == auth.GetUserContext().Issuer
+            ? dbContext.Users.Where(u => u.Id == x.UserId).First()
+            : null,
+        })
+        .ToListAsync();
+
+      var sessions = new List<SessionInfo>();
+
+      foreach (var item in userSessions)
+      {
+        sessions.Add(new SessionInfo
+        {
+          uuid = item.uuid,
+          Timestamp = DateTimeOffset.FromUnixTimeSeconds((long) item.timestamp).LocalDateTime,
+          User = item.user != null
+            ? (String.IsNullOrEmpty(item.user.Nickname) ? item.user.Username : item.user.Nickname)
+            : null,
+          NodesVisited = uint.Parse(item.nodesVisited.ToString()),
+        });
+      }
+
+      return sessions;
+    }
+
     [HttpOptions]
     public void Options()
     {
 
     }
-
   }
 }
