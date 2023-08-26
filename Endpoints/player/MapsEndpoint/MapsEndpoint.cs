@@ -90,12 +90,15 @@ namespace OLabWebAPI.Endpoints.Player
 
       total = items.Count;
 
-      logger.LogDebug(string.Format("found {0} maps", items.Count));
+      var dtoList = new MapsMapper(logger).PhysicalToDto(items);
 
-      IList<MapsDto> dtoList = new MapsMapper(logger).PhysicalToDto(items);
+      logger.LogDebug(string.Format("found {0} maps", dtoList.Count));
 
       // filter out any maps user does not have access to.
       dtoList = dtoList.Where(x => auth.HasAccess("R", Utils.Constants.ScopeLevelMap, x.Id)).ToList();
+
+      logger.LogDebug(string.Format("have access to {0} maps", dtoList.Count));
+
       return new OLabAPIPagedResponse<MapsDto> { Data = dtoList, Remaining = remaining, Count = total };
     }
 
