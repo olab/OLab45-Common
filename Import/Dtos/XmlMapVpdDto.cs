@@ -69,7 +69,7 @@ namespace OLabWebAPI.Importer
 
         }
 
-        GetLogger().LogDebug($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+        GetLogger().LogDebug($" loaded {xmlImportElementSets.Count()} {GetFileName()} objects");
 
       }
       catch (Exception ex)
@@ -107,6 +107,7 @@ namespace OLabWebAPI.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
+      GetLogger().LogDebug($" saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

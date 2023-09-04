@@ -14,20 +14,6 @@ namespace OLabWebAPI.Importer
     }
 
     /// <summary>
-    /// Loads the specific import file into a model object
-    /// </summary>
-    /// <param name="importDirectory">Directory where import file exists</param>
-    /// <returns></returns>
-    // public override bool Load(string importDirectory)
-    // {
-    //   var result = base.Load(importDirectory);
-    //   var elements = GetElements(GetXmlPhys());
-    //   xmlImportElementSets.Add(elements);
-
-    //   return result;
-    // }
-
-    /// <summary>
     /// Extract records from the xml document
     /// </summary>
     /// <param name="importDirectory">Dynamic Xml object</param>
@@ -53,7 +39,7 @@ namespace OLabWebAPI.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
-      GetLogger().LogDebug($"Saved {GetFileName()} id {oldId} -> {item.Id}");
+      GetLogger().LogDebug($" saved {GetFileName()} id {oldId} -> {item.Id}");
 
       GetModel().Data.Add(item);
 

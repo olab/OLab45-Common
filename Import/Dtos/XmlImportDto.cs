@@ -103,7 +103,7 @@ namespace OLabWebAPI.Importer
           _phys = DynamicXml.Load(filePath);
         else
         {
-          GetLogger().LogDebug($"File {GetFileName()} does not exist");
+          GetLogger().LogDebug($" file {GetFileName()} does not exist");
           return false;
         }
 
@@ -125,7 +125,7 @@ namespace OLabWebAPI.Importer
           }
         }
 
-        GetLogger().LogDebug($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+        GetLogger().LogDebug($" imported {xmlImportElementSets.Count()} {GetFileName()} objects");
 
       }
       catch (Exception ex)
@@ -156,7 +156,7 @@ namespace OLabWebAPI.Importer
         }
         catch (System.Exception ex)
         {
-          GetLogger().LogError($"Error {GetFileName()} record #{recordIndex}: {ex.Message}");
+          GetLogger().LogError($" error {GetFileName()} record #{recordIndex}: {ex.Message}");
         }
 
         recordIndex++;
