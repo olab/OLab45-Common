@@ -33,23 +33,35 @@ namespace OLabWebAPI.Importer
       var rc = false;
 
       // replace all VPD with CONST in node text
-      var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto) as XmlMapVpdDto;
+      var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto) as XmlMapVpdElementDto;
 
       var wiki = new VpdWikiTag(GetLogger());
-      while (wiki.HaveWikiTag(item.Text))
+      var wikiStrings = wiki.GetWikiTags(item.Text);
+
+      foreach (var wikiString in wikiStrings)
       {
+        wiki.SetWiki(wikiString);
+
         var id = Convert.ToUInt32(wiki.GetWikiArgument1());
-        var wikiTag = wiki.GetWikiType();
 
-        var newId = vpdDto.GetIdTranslation(GetFileName(), id);
+        try
+        {
+          var newId = vpdDto.GetIdTranslation(GetFileName(), id);
+          var newWikiTag = wikiString.Replace(id.ToString(), newId.ToString());
+          newWikiTag = newWikiTag.Replace(wiki.GetWikiType(), "CONST");
 
-        var newWikiTag = wikiTag.Replace(id.ToString(), newId.ToString());
-        newWikiTag = newWikiTag.Replace(wiki.GetWikiType(), "CONST");
+          GetLogger().LogDebug($" replacing '{wikiString}' -> '{newWikiTag}'");
+          item.Text = item.Text.Replace(wikiString, newWikiTag);
 
-        GetLogger().LogDebug($"Replacing '{wikiTag}' -> '{newWikiTag}'");
-        item.Text = item.Text.Replace(wikiTag, newWikiTag);
+          rc = true;
+        }
+        catch (KeyNotFoundException)
+        {
+          GetLogger().LogWarning($" unknown tag '{wikiString}' in node {item.Id}. replacement skipped");
+          var replacementWiki = wikiString.Replace('[', '*').Replace(']', '*');
+          item.Text = item.Text.Replace(wikiString, replacementWiki);
 
-        rc = true;
+        }
       }
 
       return rc;
@@ -162,8 +174,6 @@ namespace OLabWebAPI.Importer
       Model.MapNodes item = _mapper.ElementsToPhys(elements);
       var oldId = item.Id;
 
-      item.Id = 0;
-
       XmlDto mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto);
       item.MapId = mapDto.GetIdTranslation(GetFileName(), item.MapId).Value;
 
@@ -173,6 +183,7 @@ namespace OLabWebAPI.Importer
       ReplaceVpdWikiTags(item);
       ReplaceAvWikiTags(item);
 
+      item.Id = 0;
       item.Info = $"\nImported from map_node.xml. id = {oldId}";
 
       Context.MapNodes.Add(item);
@@ -182,7 +193,7 @@ namespace OLabWebAPI.Importer
 
       GetModel().Data.Add(item);
 
-      GetLogger().LogDebug($"Saved {GetFileName()} id {oldId} -> {item.Id}");
+      GetLogger().LogDebug($" saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

@@ -63,7 +63,7 @@ namespace OLabWebAPI.Importer
       Context.MapAvatars.Add(avItem);
       Context.SaveChanges();
 
-      GetLogger().LogDebug($"Saved {GetFileName()} id {avItem.Id}");
+      GetLogger().LogDebug($" saved {GetFileName()} id {avItem.Id}");
 
       SystemFiles fileItem = CreateAvatarSystemFile(elements, avItem);
 
@@ -79,7 +79,7 @@ namespace OLabWebAPI.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, fileItem.Id);
-      GetLogger().LogDebug($"Saved SystemFile {fileItem.Id}");
+      GetLogger().LogDebug($" saved SystemFile {fileItem.Id}");
 
       return true;
     }

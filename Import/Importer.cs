@@ -135,13 +135,10 @@ namespace OLabWebAPI.Importer
     private string Extract(string archiveFileName)
     {
       var tempDir = Path.GetTempPath();
-      // _logger.LogDebug($"Import temporary directory '{tempDir}'");
 
       _logFileDirectory = Path.GetDirectoryName(archiveFileName);
       _extractPath = Path.Combine(tempDir, Path.GetFileNameWithoutExtension(archiveFileName));
       _importFileName = Path.GetFileNameWithoutExtension(archiveFileName);
-
-      // _logger.LogDebug($"Import extract directory '{_extractPath}'");
 
       if (Directory.Exists(_extractPath))
       {
@@ -177,7 +174,7 @@ namespace OLabWebAPI.Importer
       }
       catch (Exception ex)
       {
-        _logger.LogError(ex, $"Load error: {ex.Message}");
+        _logger.LogError(ex, $" load error: {ex.Message}");
       }
 
       return importStatus;
@@ -191,6 +188,8 @@ namespace OLabWebAPI.Importer
       {
         try
         {
+          _logger.LogInformation($"");
+          _logger.LogInformation($"Saving data");
 
           foreach (XmlDto dto in _dtos.Values)
             dto.Save();
@@ -200,11 +199,12 @@ namespace OLabWebAPI.Importer
 
           var xmlMapDto = _dtos[DtoTypes.XmlMapDto] as XmlMapDto;
           var xmlMap = (XmlMap)xmlMapDto.GetDbPhys();
-          _logger.LogInformation($"Loaded map '{xmlMap.Data[0].Name}'. id = {xmlMap.Data[0].Id}");
+
+          _logger.LogInformation($" saved map '{xmlMap.Data[0].Name}'. id = {xmlMap.Data[0].Id}");
         }
         catch (Exception ex)
         {
-          _logger.LogError(ex, $"Error saving import. reason: {ex.Message} ");
+          _logger.LogError(ex, $" save error: {ex.Message}");
           transaction.Rollback();
         }
 

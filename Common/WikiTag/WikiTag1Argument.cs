@@ -37,6 +37,14 @@ namespace OLabWebAPI.Common
       return null;
     }
 
+    public override void SetWiki(string wikiString)
+    {
+      base.SetWiki(wikiString);
+
+      // extract/set argument1
+      GetWikiArgument1();
+    }
+
     public override bool HaveWikiTag(string source)
     {
       if (!base.HaveWikiTag(source)) return false;
