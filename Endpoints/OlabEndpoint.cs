@@ -177,7 +177,10 @@ namespace OLabWebAPI.Endpoints
         .FirstOrDefaultAsync(x => x.MapId == mapId && x.Id == nodeId);
 
       if (phys == null)
+      {
+        logger.LogError($"GetNodeSync unable to find map {mapId}, node {nodeId}");
         return new MapsNodesFullRelationsDto();
+      }
 
       // explicitly load the related objects.
       dbContext.Entry(phys).Collection(b => b.MapNodeLinksNodeId1Navigation).Load();
@@ -199,7 +202,10 @@ namespace OLabWebAPI.Endpoints
 
       // if asked for, remove any hidden links
       if (hideHidden)
+      {
+        logger.LogError($"GetNodeSync hiding hidden links");
         dto.MapNodeLinks = dto.MapNodeLinks.Where(x => !x.IsHidden).ToList();
+      }
 
       return dto;
     }

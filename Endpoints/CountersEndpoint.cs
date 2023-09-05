@@ -42,7 +42,10 @@ namespace OLabWebAPI.Endpoints
     /// <param name="take"></param>
     /// <param name="skip"></param>
     /// <returns></returns>
-    public async Task<OLabAPIPagedResponse<CountersDto>> GetAsync(int? take, int? skip)
+    public async Task<OLabAPIPagedResponse<CountersDto>> GetAsync(
+      IOLabAuthentication auth,
+      int? take, 
+      int? skip)
     {
       logger.LogDebug($"CountersController.GetAsync(int? take={take}, int? skip={skip})");
 
