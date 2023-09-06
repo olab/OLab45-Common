@@ -12,7 +12,7 @@ using System.Security.Claims;
 
 namespace OLabWebAPI.Data
 {
-  public class UserContext : IUserContext
+  public abstract class UserContext : IUserContext
   {
     public const string WildCardObjectType = "*";
     public const uint WildCardObjectId = 0;
@@ -20,23 +20,23 @@ namespace OLabWebAPI.Data
     public ClaimsPrincipal User;
     public Users OLabUser;
 
-    private readonly HttpContext _httpContext;
-    private readonly HttpRequest _httpRequest;
-    private IEnumerable<Claim> _claims;
-    private readonly OLabDBContext _dbContext;
+    //private readonly HttpContext _httpContext;
+    //private readonly HttpRequest _httpRequest;
+    protected IDictionary<string, string> _claims;
+    protected readonly OLabDBContext _dbContext;
     protected readonly OLabLogger _logger;
     protected IList<SecurityRoles> _roleAcls = new List<SecurityRoles>();
     protected IList<SecurityUsers> _userAcls = new List<SecurityUsers>();
 
-    private IOLabSession _session;
-    private string _role;
-    private IList<string> _roles;
-    private uint _userId;
-    private string _userName;
-    private string _ipAddress;
-    private string _issuer;
-    //private readonly string _courseName;
-    private string _accessToken;
+    protected IOLabSession _session;
+    protected string _role;
+    protected IList<string> _roles;
+    protected uint _userId;
+    protected string _userName;
+    protected string _ipAddress;
+    protected string _issuer;
+    protected string _referringCourse;
+    protected string _accessToken;
 
     public IOLabSession Session
     {
@@ -46,8 +46,8 @@ namespace OLabWebAPI.Data
 
     public string ReferringCourse
     {
-      get => _role;
-      set => _role = value;
+      get => _referringCourse;
+      set => _referringCourse = value;
     }
 
     public string Role
@@ -85,6 +85,8 @@ namespace OLabWebAPI.Data
     //public string CourseName { get { return _courseName; } }
     public string CourseName { get { return null; } }
 
+    protected abstract void LoadHostContext();
+
     // default ctor, needed for services Dependancy Injection
     public UserContext()
     {
@@ -98,142 +100,146 @@ namespace OLabWebAPI.Data
       Session = new OLabSession(_logger.GetLogger(), dbContext, this);
     }
 
-    public UserContext(OLabLogger logger, OLabDBContext context, HttpRequest request)
-    {
-      _dbContext = context;
-      _logger = logger;
-      _httpRequest = request;
+    //public UserContext(OLabLogger logger, OLabDBContext context, HttpRequest request)
+    //{
+    //  _dbContext = context;
+    //  _logger = logger;
+    //  _httpRequest = request;
 
-      Session = new OLabSession(_logger.GetLogger(), context, this);
+    //  Session = new OLabSession(_logger.GetLogger(), context, this);
 
-      LoadHttpRequest();
-    }
+    //  LoadHttpRequest();
+    //}
 
-    public UserContext(OLabLogger logger, OLabDBContext dbContext, HttpContext httpContext)
-    {
-      _dbContext = dbContext;
-      _logger = logger;
-      _httpContext = httpContext;
-      Session = new OLabSession(_logger.GetLogger(), dbContext, this);
+    //public UserContext(OLabLogger logger, OLabDBContext dbContext, HttpContext httpContext)
+    //{
+    //  _dbContext = dbContext;
+    //  _logger = logger;
+    //  _httpContext = httpContext;
+    //  Session = new OLabSession(_logger.GetLogger(), dbContext, this);
 
-      LoadHttpContext();
-    }
+    //  LoadHttpContext();
+    //}
 
     /// <summary>
     /// Extract claims from token
     /// </summary>
     /// <param name="token">Bearer token</param>
-    private static IEnumerable<Claim> ExtractTokenClaims(string token)
-    {
-      var tokenHandler = new JwtSecurityTokenHandler();
-      var securityToken = (JwtSecurityToken)tokenHandler.ReadToken(token);
-      return securityToken.Claims;
-    }
+    //private static IEnumerable<Claim> ExtractTokenClaims(string token)
+    //{
+    //  var tokenHandler = new JwtSecurityTokenHandler();
+    //  var securityToken = (JwtSecurityToken)tokenHandler.ReadToken(token);
+    //  return securityToken.Claims;
+    //}
 
     protected virtual void LoadHttpRequest()
     {
-      var sessionId = _httpRequest.Headers["OLabSessionId"].FirstOrDefault();
-      if (!string.IsNullOrEmpty(sessionId) && (sessionId != "null"))
-      {
-        Session.SetSessionId(sessionId);
-        if (!string.IsNullOrWhiteSpace(Session.GetSessionId()))
-          _logger.LogInformation($"Found ContextId {Session.GetSessionId()}.");
-      }
+      throw new NotImplementedException();
 
-      IPAddress = _httpRequest.Headers["X-Forwarded-Client-Ip"];
-      if (string.IsNullOrEmpty(IPAddress))
-        // request based requests need to get th eIPAddress using the context
-        IPAddress = _httpRequest.HttpContext.Connection.RemoteIpAddress.ToString();
+      //var sessionId = _httpRequest.Headers["OLabSessionId"].FirstOrDefault();
+      //if (!string.IsNullOrEmpty(sessionId) && (sessionId != "null"))
+      //{
+      //  Session.SetSessionId(sessionId);
+      //  if (!string.IsNullOrWhiteSpace(Session.GetSessionId()))
+      //    _logger.LogInformation($"Found ContextId {Session.GetSessionId()}.");
+      //}
 
-      _accessToken = AccessTokenUtils.ExtractAccessToken(_httpRequest);
-      _claims = ExtractTokenClaims(_accessToken);
+      //IPAddress = _httpRequest.Headers["X-Forwarded-Client-Ip"];
+      //if (string.IsNullOrEmpty(IPAddress))
+      //  // request based requests need to get th eIPAddress using the context
+      //  IPAddress = _httpRequest.HttpContext.Connection.RemoteIpAddress.ToString();
 
-      UserName = _claims.FirstOrDefault(c => c.Type == "name")?.Value;
-      Role = _claims.FirstOrDefault(c => c.Type == "role")?.Value;
-      ReferringCourse = _claims.FirstOrDefault(c => c.Type == ClaimTypes.UserData)?.Value;
+      //_accessToken = AccessTokenUtils.ExtractAccessToken(_httpRequest);
+      //_claims = ExtractTokenClaims(_accessToken);
 
-      // separate out multiple roles, make lower case, remove spaces, and sort
-      _roles = Role.Split(',')
-        .Select(x => x.Trim())
-        .Select(x => x.ToLower())
-        .OrderBy(x => x)
-        .ToList();
+      //UserName = _claims.FirstOrDefault(c => c.Type == "name")?.Value;
+      //Role = _claims.FirstOrDefault(c => c.Type == "role")?.Value;
+      //ReferringCourse = _claims.FirstOrDefault(c => c.Type == ClaimTypes.UserData)?.Value;
 
-      UserId = (uint)Convert.ToInt32(_claims.FirstOrDefault(c => c.Type == "id")?.Value);
-      Issuer = _claims.FirstOrDefault(c => c.Type == "iss")?.Value;
+      //// separate out multiple roles, make lower case, remove spaces, and sort
+      //_roles = Role.Split(',')
+      //  .Select(x => x.Trim())
+      //  .Select(x => x.ToLower())
+      //  .OrderBy(x => x)
+      //  .ToList();
 
-      _roleAcls = _dbContext.SecurityRoles.Where(x => _roles.Contains(x.Name.ToLower())).ToList();
+      //UserId = (uint)Convert.ToInt32(_claims.FirstOrDefault(c => c.Type == "id")?.Value);
+      //Issuer = _claims.FirstOrDefault(c => c.Type == "iss")?.Value;
+
+      //_roleAcls = _dbContext.SecurityRoles.Where(x => _roles.Contains(x.Name.ToLower())).ToList();
 
     }
 
     protected virtual void LoadHttpContext()
     {
-      var sessionId = _httpContext.Request.Headers["OLabSessionId"].FirstOrDefault();
-      if (!string.IsNullOrEmpty(sessionId) && (sessionId != "null"))
-      {
-        Session.SetSessionId(sessionId);
-        if (!string.IsNullOrWhiteSpace(Session.GetSessionId()))
-          _logger.LogInformation($"Found ContextId {Session.GetSessionId()}.");
-      }
+      throw new NotImplementedException();
 
-      IPAddress = _httpContext.Connection.RemoteIpAddress.ToString();
+      //var sessionId = _httpContext.Request.Headers["OLabSessionId"].FirstOrDefault();
+      //if (!string.IsNullOrEmpty(sessionId) && (sessionId != "null"))
+      //{
+      //  Session.SetSessionId(sessionId);
+      //  if (!string.IsNullOrWhiteSpace(Session.GetSessionId()))
+      //    _logger.LogInformation($"Found ContextId {Session.GetSessionId()}.");
+      //}
 
-      var identity = (ClaimsIdentity)_httpContext.User.Identity;
-      if (identity == null)
-        throw new Exception($"Unable to establish identity from token");
+      //IPAddress = _httpContext.Connection.RemoteIpAddress.ToString();
 
-      User = _httpContext.User;
-      _claims = identity.Claims;
+      //var identity = (ClaimsIdentity)_httpContext.User.Identity;
+      //if (identity == null)
+      //  throw new Exception($"Unable to establish identity from token");
 
-      UserName = User.FindFirst(ClaimTypes.Name).Value;
-      ReferringCourse = User.FindFirst(ClaimTypes.UserData).Value;
+      //User = _httpContext.User;
+      //_claims = identity.Claims;
 
-      Issuer = User.FindFirst("iss").Value;
-      UserId = (uint)Convert.ToInt32(User.FindFirst("id").Value);
+      //UserName = User.FindFirst(ClaimTypes.Name).Value;
+      //ReferringCourse = User.FindFirst(ClaimTypes.UserData).Value;
 
-      var Role = User.FindFirst(ClaimTypes.Role).Value;
-      // separate out multiple roles, make lower case, remove spaces, and sort
-      _roles = Role.Split(',')
-        .Select(x => x.Trim())
-        .Select(x => x.ToLower())
-        .OrderBy(x => x)
-        .ToList();
+      //Issuer = User.FindFirst("iss").Value;
+      //UserId = (uint)Convert.ToInt32(User.FindFirst("id").Value);
 
-      _roleAcls = _dbContext.SecurityRoles.Where(x => _roles.Contains(x.Name.ToLower())).ToList();
+      //var Role = User.FindFirst(ClaimTypes.Role).Value;
+      //// separate out multiple roles, make lower case, remove spaces, and sort
+      //_roles = Role.Split(',')
+      //  .Select(x => x.Trim())
+      //  .Select(x => x.ToLower())
+      //  .OrderBy(x => x)
+      //  .ToList();
 
-      var ipAddress = _httpContext.Request.Headers["x-forwarded-for"].ToString();
-      if (string.IsNullOrEmpty(ipAddress))
-        ipAddress = _httpContext.Connection.RemoteIpAddress.ToString();
-      _ipAddress = ipAddress;
+      //_roleAcls = _dbContext.SecurityRoles.Where(x => _roles.Contains(x.Name.ToLower())).ToList();
+
+      //var ipAddress = _httpContext.Request.Headers["x-forwarded-for"].ToString();
+      //if (string.IsNullOrEmpty(ipAddress))
+      //  ipAddress = _httpContext.Connection.RemoteIpAddress.ToString();
+      //_ipAddress = ipAddress;
 
 
-      // test for a local user
-      Users user = _dbContext.Users.FirstOrDefault(x => (x.Username == UserName) && (x.Id == UserId));
-      if (user != null)
-      {
+      //// test for a local user
+      //Users user = _dbContext.Users.FirstOrDefault(x => (x.Username == UserName) && (x.Id == UserId));
+      //if (user != null)
+      //{
 
-        _logger.LogInformation($"Local user '{UserName}' found");
+      //  _logger.LogInformation($"Local user '{UserName}' found");
 
-        OLabUser = user;
-        UserId = user.Id;
-        _userAcls = _dbContext.SecurityUsers.Where(x => x.UserId == UserId).ToList();
+      //  OLabUser = user;
+      //  UserId = user.Id;
+      //  _userAcls = _dbContext.SecurityUsers.Where(x => x.UserId == UserId).ToList();
 
-        // if user is anonymous user, add user access to anon-flagged maps
-        if (OLabUser.Group == "anonymous")
-        {
-          var anonymousMaps = _dbContext.Maps.Where(x => x.SecurityId == 1).ToList();
-          foreach (Maps item in anonymousMaps)
-          {
-            _userAcls.Add(new SecurityUsers
-            {
-              Id = item.Id,
-              ImageableId = item.Id,
-              ImageableType = Constants.ScopeLevelMap,
-              Acl = "RX"
-            });
-          }
-        }
-      }
+      //  // if user is anonymous user, add user access to anon-flagged maps
+      //  if (OLabUser.Group == "anonymous")
+      //  {
+      //    var anonymousMaps = _dbContext.Maps.Where(x => x.SecurityId == 1).ToList();
+      //    foreach (Maps item in anonymousMaps)
+      //    {
+      //      _userAcls.Add(new SecurityUsers
+      //      {
+      //        Id = item.Id,
+      //        ImageableId = item.Id,
+      //        ImageableType = Constants.ScopeLevelMap,
+      //        Acl = "RX"
+      //      });
+      //    }
+      //  }
+      //}
 
     }
 
