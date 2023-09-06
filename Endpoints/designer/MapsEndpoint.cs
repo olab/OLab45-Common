@@ -6,7 +6,6 @@ using OLabWebAPI.Data.Interface;
 using OLabWebAPI.Dto;
 using OLabWebAPI.Model;
 using OLabWebAPI.Model.ReaderWriter;
-using OLabWebAPI.ObjectMapper;
 using OLabWebAPI.Utils;
 using System;
 using System.Collections.Generic;
@@ -223,7 +222,7 @@ namespace OLabWebAPI.Endpoints.Designer
         if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, map.Id))
           throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, map.Id);
 
-        foreach ( PutNodeGridRequest nodeDto in body )
+        foreach (PutNodeGridRequest nodeDto in body)
         {
           var phys = dbContext.MapNodes.FirstOrDefault(x => x.Id == nodeDto.Id);
 
@@ -461,7 +460,7 @@ namespace OLabWebAPI.Endpoints.Designer
         || u.Email.ToLower() == body.Email.ToLower()).FirstOrDefault();
 
       // email and/or username taken
-      if ( null != existing )
+      if (null != existing)
         throw new OLabBadRequestException("Username and/or email already taken.");
 
       var phys = Users.CreateDefault(new AddUserRequest
@@ -474,7 +473,7 @@ namespace OLabWebAPI.Endpoints.Designer
       await dbContext.Users.AddAsync(phys);
       var id = await dbContext.SaveChangesAsync();
 
-      return (int) phys.Id;
+      return (int)phys.Id;
     }
 
     /// <summary>
@@ -525,7 +524,7 @@ namespace OLabWebAPI.Endpoints.Designer
         && x.UserId == body.UserId
       ));
 
-      if ( null == securityUser )
+      if (null == securityUser)
         securityUser = new SecurityUsers();
 
       securityUser.ImageableId = map.Id;
@@ -535,18 +534,20 @@ namespace OLabWebAPI.Endpoints.Designer
 
       try
       {
-        if ( securityUser.Id > 0 ) // update existing security user
+        if (securityUser.Id > 0) // update existing security user
         {
           dbContext.SecurityUsers.Update(securityUser);
           var id = await dbContext.SaveChangesAsync();
           return id > 0;
-        } else // insert security user
+        }
+        else // insert security user
         {
           await dbContext.SecurityUsers.AddAsync(securityUser);
           var id = await dbContext.SaveChangesAsync();
           return id > 0;
         }
-      } catch(Exception)
+      }
+      catch (Exception)
       {
         return false;
       }
@@ -582,7 +583,8 @@ namespace OLabWebAPI.Endpoints.Designer
         dbContext.SecurityUsers.Remove(securityUser);
         var changes = await dbContext.SaveChangesAsync();
         return changes > 0;
-      } catch(Exception)
+      }
+      catch (Exception)
       {
         return false;
       }

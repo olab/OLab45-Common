@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using NuGet.Packaging.Signing;
 using OLabWebAPI.Common;
 using OLabWebAPI.Common.Exceptions;
 using OLabWebAPI.Data.Exceptions;
@@ -359,7 +358,7 @@ namespace OLabWebAPI.Endpoints.Player
         sessions.Add(new SessionInfo
         {
           uuid = item.uuid,
-          Timestamp = DateTimeOffset.FromUnixTimeSeconds((long) item.timestamp).LocalDateTime,
+          Timestamp = DateTimeOffset.FromUnixTimeSeconds((long)item.timestamp).LocalDateTime,
           User = item.user != null
             ? (String.IsNullOrEmpty(item.user.Nickname) ? item.user.Username : item.user.Nickname)
             : null,

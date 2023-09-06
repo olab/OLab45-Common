@@ -16,7 +16,8 @@ namespace OLabWebAPI.Utils
         return Regex.IsMatch(username,
             @"^[a-zA-Z0-9_-]{2,}$",
             RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
-      } catch(Exception)
+      }
+      catch (Exception)
       {
         return false;
       }
