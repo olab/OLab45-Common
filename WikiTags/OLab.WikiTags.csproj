@@ -5,17 +5,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Data\Data.csproj" />
+    <ProjectReference Include="..\Common\OLab.Common.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\WikiTags\WikiTags.csproj" />
-  </ItemGroup>
+  <!-- <PropertyGroup>
+    <OutputPath>..\bin\$(Configuration)\$(TargetFramework)\PlugIns</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup> -->
 
   <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>

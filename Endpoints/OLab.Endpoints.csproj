@@ -14,9 +14,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />    
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\Data\Data.csproj" />
-    <ProjectReference Include="..\Import\Import.csproj" />
+    <ProjectReference Include="..\Common\OLab.Common.csproj" />
+    <ProjectReference Include="..\Data\OLab.Data.csproj" />
+    <ProjectReference Include="..\Import\OLab.Import.csproj" />
   </ItemGroup>  
   <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>

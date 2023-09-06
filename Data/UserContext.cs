@@ -24,7 +24,7 @@ namespace OLabWebAPI.Data
     private readonly HttpRequest _httpRequest;
     private IEnumerable<Claim> _claims;
     private readonly OLabDBContext _dbContext;
-    private readonly OLabLogger _logger;
+    protected readonly OLabLogger _logger;
     protected IList<SecurityRoles> _roleAcls = new List<SecurityRoles>();
     protected IList<SecurityUsers> _userAcls = new List<SecurityUsers>();
 

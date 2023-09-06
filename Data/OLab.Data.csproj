@@ -18,8 +18,8 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.32.2" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\WikiTags\WikiTags.csproj" />
+    <ProjectReference Include="..\Common\OLab.Common.csproj" />
+    <ProjectReference Include="..\WikiTags\OLab.WikiTags.csproj" />
   </ItemGroup>
   <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>
