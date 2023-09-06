@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace OLab.Model
+namespace OLab.Api.Model
 {
   public partial class ScopedObjects
   {

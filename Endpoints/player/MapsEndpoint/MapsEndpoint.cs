@@ -1,21 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using OLab.Common;
-using OLab.Common.Exceptions;
-using OLab.Data.Exceptions;
-using OLab.Data.Interface;
-using OLab.Dto;
-using OLab.Model;
-using OLab.Model.ReaderWriter;
-using OLab.ObjectMapper;
-using OLab.Utils;
+using OLab.Api.Common;
+using OLab.Api.Common.Exceptions;
+using OLab.Api.Data.Exceptions;
+using OLab.Api.Data.Interface;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.Model.ReaderWriter;
+using OLab.Api.ObjectMapper;
+using OLab.Api.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OLab.Endpoints.Player
+namespace OLab.Api.Endpoints.Player
 {
   public partial class MapsEndpoint : OlabEndpoint
   {

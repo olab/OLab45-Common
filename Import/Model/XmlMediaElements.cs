@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OLab.Importer
+namespace OLab.Api.Importer
 {
   public class XmlMediaElement
   {

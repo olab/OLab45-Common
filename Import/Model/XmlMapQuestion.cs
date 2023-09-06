@@ -1,6 +1,6 @@
-using OLab.Model;
+using OLab.Api.Model;
 
-namespace OLab.Importer
+namespace OLab.Api.Importer
 {
   public class XmlMapQuestions : XmlImportArray<SystemQuestions>
   {

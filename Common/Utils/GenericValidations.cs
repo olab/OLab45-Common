@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace OLab.Utils
+namespace OLab.Api.Utils
 {
   public class GenericValidations
   {

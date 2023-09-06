@@ -1,9 +1,9 @@
-using OLab.Data.Interface;
-using OLab.Utils;
+using OLab.Api.Data.Interface;
+using OLab.Api.Utils;
 
 #nullable disable
 
-namespace OLab.Model
+namespace OLab.Api.Model
 {
   public partial class SecurityUsers
   {

@@ -1,10 +1,10 @@
-using OLab.Common;
-using OLab.Dto;
-using OLab.Model;
-using OLab.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.Utils;
 using System.IO;
 
-namespace OLab.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class FilesFull : OLabMapper<SystemFiles, FilesFullDto>
   {

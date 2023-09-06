@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Model
+namespace OLab.Api.Model
 {
   [Table("user_notes")]
   [Index(nameof(SessionId), Name = "session_id", IsUnique = true)]

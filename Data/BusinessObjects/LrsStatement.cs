@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Model
+namespace OLab.Api.Model
 {
   [Table("lrs_statement")]
   [Index(nameof(LrsId), Name = "lrs_id")]

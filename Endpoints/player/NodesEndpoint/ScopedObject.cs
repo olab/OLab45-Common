@@ -1,27 +1,27 @@
-using OLab.Data.Exceptions;
-using OLab.Model;
+using OLab.Api.Data.Exceptions;
+using OLab.Api.Model;
 using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OLab.Endpoints.Player
+namespace OLab.Api.Endpoints.Player
 {
   public partial class NodesEndpoint : OlabEndpoint
   {
 
-    public async Task<OLab.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint nodeId)
+    public async Task<OLab.Api.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint nodeId)
     {
       logger.LogDebug($"NodesController.GetScopedObjectsRawAsync(uint nodeId={nodeId})");
       return await GetScopedObjectsAsync(nodeId, false);
     }
 
-    public async Task<OLab.Dto.ScopedObjectsDto> GetScopedObjectsAsync(uint nodeId)
+    public async Task<OLab.Api.Dto.ScopedObjectsDto> GetScopedObjectsAsync(uint nodeId)
     {
       logger.LogDebug($"NodesController.GetScopedObjectsAsync(uint nodeId={nodeId})");
       return await GetScopedObjectsAsync(nodeId, true);
     }
 
-    public async Task<OLab.Dto.ScopedObjectsDto> GetScopedObjectsAsync(
+    public async Task<OLab.Api.Dto.ScopedObjectsDto> GetScopedObjectsAsync(
       uint id,
       bool enableWikiTranslation)
     {

@@ -1,12 +1,12 @@
 using Microsoft.CSharp.RuntimeBinder;
-using OLab.Utils;
+using OLab.Api.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using static OLab.Importer.Importer;
+using static OLab.Api.Importer.Importer;
 
-namespace OLab.Importer
+namespace OLab.Api.Importer
 {
 
   public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>

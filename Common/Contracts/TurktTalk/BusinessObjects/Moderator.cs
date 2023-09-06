@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
 using System;
 
-namespace OLab.TurkTalk.BusinessObjects
+namespace OLab.Api.TurkTalk.BusinessObjects
 {
   public class Moderator : Participant
   {

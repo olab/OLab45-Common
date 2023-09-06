@@ -1,6 +1,6 @@
-using OLab.Model;
+using OLab.Api.Model;
 
-namespace OLab.Dto
+namespace OLab.Api.Dto
 {
   public class FileContentAccessDto
   {

@@ -1,6 +1,6 @@
 using System;
 
-namespace OLab.Common.Exceptions
+namespace OLab.Api.Common.Exceptions
 {
   public class OLabUnauthorizedException : Exception
   {

@@ -1,9 +1,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OLab.Common.Contracts;
-using OLab.TurkTalk.Methods;
+using OLab.Api.Common.Contracts;
+using OLab.Api.TurkTalk.Methods;
 
-namespace OLab.TurkTalk.Commands
+namespace OLab.Api.TurkTalk.Commands
 {
   /// <summary>
   /// Defines a Jump Node command method

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Model
+namespace OLab.Api.Model
 {
   [Table("lrs")]
   public partial class Lrs

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Model
+namespace OLab.Api.Model
 {
   [Table("h5p_contents_tags")]
   public partial class H5pContentsTags

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace OLab.Model
+namespace OLab.Api.Model
 {
   public partial class Maps
   {

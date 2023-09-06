@@ -1,8 +1,8 @@
-using OLab.Common;
-using OLab.Dto.Designer;
-using OLab.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto.Designer;
+using OLab.Api.Utils;
 
-namespace OLab.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class MapNodeTemplate : OLabMapper<Model.MapNodes, MapNodeTemplateDto>
   {

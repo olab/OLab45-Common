@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Model
+namespace OLab.Api.Model
 {
   [Table("map_question_responses")]
   [Index(nameof(ParentId), Name = "parent_id")]

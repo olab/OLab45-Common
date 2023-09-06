@@ -1,19 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using OLab.Common.Exceptions;
-using OLab.Data.Exceptions;
-using OLab.Data.Interface;
-using OLab.Dto;
-using OLab.Model;
-using OLab.Model.ReaderWriter;
-using OLab.Utils;
+using OLab.Api.Common.Exceptions;
+using OLab.Api.Data.Exceptions;
+using OLab.Api.Data.Interface;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.Model.ReaderWriter;
+using OLab.Api.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OLab.Endpoints.Designer
+namespace OLab.Api.Endpoints.Designer
 {
   public partial class MapsEndpoint : OlabEndpoint
   {
@@ -303,7 +303,7 @@ namespace OLab.Endpoints.Designer
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<OLab.Dto.Designer.ScopedObjectsDto> GetScopedObjectsRawAsync(
+    public async Task<Dto.Designer.ScopedObjectsDto> GetScopedObjectsRawAsync(
       IOLabAuthentication auth,
       uint id)
     {
@@ -321,7 +321,7 @@ namespace OLab.Endpoints.Designer
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<OLab.Dto.Designer.ScopedObjectsDto> GetScopedObjectsAsync(
+    public async Task<Dto.Designer.ScopedObjectsDto> GetScopedObjectsAsync(
       IOLabAuthentication auth,
       uint id)
     {
@@ -341,7 +341,7 @@ namespace OLab.Endpoints.Designer
     /// <param name="id"></param>
     /// <param name="enableWikiTranslation"></param>
     /// <returns></returns>
-    public async Task<OLab.Dto.Designer.ScopedObjectsDto> GetScopedObjectsAsync(
+    public async Task<Dto.Designer.ScopedObjectsDto> GetScopedObjectsAsync(
       uint id,
       bool enableWikiTranslation)
     {

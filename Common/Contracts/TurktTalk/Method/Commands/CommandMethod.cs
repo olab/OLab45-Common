@@ -2,7 +2,7 @@ using Dawn;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace OLab.TurkTalk.Methods
+namespace OLab.Api.TurkTalk.Methods
 {
   /// <summary>
   /// Defines a command method

@@ -1,4 +1,4 @@
-namespace OLab.Importer
+namespace OLab.Api.Importer
 {
   public class XmlMapVpdElements : XmlImportArray<XmlMapVpdElement>
   {

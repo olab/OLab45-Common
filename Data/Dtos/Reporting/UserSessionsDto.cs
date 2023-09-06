@@ -1,4 +1,4 @@
-namespace OLab.Dto.Reporting
+namespace OLab.Api.Dto.Reporting
 {
   internal class UserSessionsDto
   {

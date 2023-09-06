@@ -1,10 +1,10 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OLab.Common.Contracts;
-using OLab.TurkTalk.BusinessObjects;
-using OLab.TurkTalk.Methods;
+using OLab.Api.Common.Contracts;
+using OLab.Api.TurkTalk.BusinessObjects;
+using OLab.Api.TurkTalk.Methods;
 
-namespace OLab.TurkTalk.Commands
+namespace OLab.Api.TurkTalk.Commands
 {
   /// <summary>
   /// Defines a Room Assignment command method

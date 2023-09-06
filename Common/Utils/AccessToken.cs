@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
-using OLab.Common.Exceptions;
+using OLab.Api.Common.Exceptions;
 
-namespace OLab.Utils
+namespace OLab.Api.Utils
 {
   public static class AccessTokenUtils
   {

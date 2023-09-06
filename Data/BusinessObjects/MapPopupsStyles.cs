@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Model
+namespace OLab.Api.Model
 {
   [Table("map_popups_styles")]
   public partial class MapPopupsStyles

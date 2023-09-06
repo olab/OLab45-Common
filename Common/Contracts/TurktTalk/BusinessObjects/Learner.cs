@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OLab.Common.Contracts;
+using OLab.Api.Common.Contracts;
 using System;
 
-namespace OLab.TurkTalk.BusinessObjects
+namespace OLab.Api.TurkTalk.BusinessObjects
 {
   public class Learner : Participant
   {

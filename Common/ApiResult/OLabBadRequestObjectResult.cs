@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace OLab.Common
+namespace OLab.Api.Common
 {
   public class OLabBadRequestObjectResult
   {

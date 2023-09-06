@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using OLab.Common;
-using OLab.Model;
-using OLab.Utils;
+using OLab.Api.Common;
+using OLab.Api.Model;
+using OLab.Api.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OLab.Endpoints.Player
+namespace OLab.Api.Endpoints.Player
 {
   public partial class ServerEndpoint : OlabEndpoint
   {
@@ -57,7 +57,7 @@ namespace OLab.Endpoints.Player
     /// </summary>
     /// <param name="serverId"></param>
     /// <returns></returns>
-    public async Task<OLab.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint serverId)
+    public async Task<OLab.Api.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint serverId)
     {
       logger.LogDebug($"ServerEndpoint.GetScopedObjectsRawAsync(uint serverId={serverId})");
       Dto.ScopedObjectsDto dto = await GetScopedObjectsAsync(serverId, false);
@@ -69,7 +69,7 @@ namespace OLab.Endpoints.Player
     /// </summary>
     /// <param name="serverId"></param>
     /// <returns></returns>
-    public async Task<OLab.Dto.ScopedObjectsDto> GetScopedObjectsTranslatedAsync(uint serverId)
+    public async Task<OLab.Api.Dto.ScopedObjectsDto> GetScopedObjectsTranslatedAsync(uint serverId)
     {
       logger.LogDebug($"ServerEndpoint.GetScopedObjectsTranslatedAsync(uint serverId={serverId})");
       Dto.ScopedObjectsDto dto = await GetScopedObjectsAsync(serverId, true);
@@ -82,7 +82,7 @@ namespace OLab.Endpoints.Player
     /// <param name="serverId"></param>
     /// <param name="enableWikiTranslation"></param>
     /// <returns></returns>
-    public async Task<OLab.Dto.ScopedObjectsDto> GetScopedObjectsAsync(
+    public async Task<OLab.Api.Dto.ScopedObjectsDto> GetScopedObjectsAsync(
       uint serverId,
       bool enableWikiTranslation)
     {

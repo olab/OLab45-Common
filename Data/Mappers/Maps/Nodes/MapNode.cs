@@ -1,11 +1,11 @@
-using OLab.Common;
-using OLab.Dto;
-using OLab.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto;
+using OLab.Api.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLab.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class MapNodesMapper : OLabMapper<Model.MapNodes, MapNodesDto>
   {

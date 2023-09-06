@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using System;
 
-namespace OLab.Dto
+namespace OLab.Api.Dto
 {
   public class CountersDto : ScopedObjectDto
   {

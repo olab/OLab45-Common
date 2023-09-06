@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OLab.Model
+namespace OLab.Api.Model
 {
   public class LoginRequest
   {

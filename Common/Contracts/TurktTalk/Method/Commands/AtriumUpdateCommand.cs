@@ -1,11 +1,11 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OLab.TurkTalk.BusinessObjects;
-using OLab.TurkTalk.Methods;
+using OLab.Api.TurkTalk.BusinessObjects;
+using OLab.Api.TurkTalk.Methods;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLab.TurkTalk.Commands
+namespace OLab.Api.TurkTalk.Commands
 {
   /// <summary>
   /// Defines a Atrium Update command method

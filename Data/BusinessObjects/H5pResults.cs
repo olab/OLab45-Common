@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Model
+namespace OLab.Api.Model
 {
   [Table("h5p_results")]
   [Index(nameof(ContentId), nameof(UserId), Name = "content_user")]

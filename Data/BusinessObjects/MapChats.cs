@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Model
+namespace OLab.Api.Model
 {
   [Table("map_chats")]
   [Index(nameof(CounterId), Name = "counter_id")]

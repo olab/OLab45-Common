@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
-namespace OLab.Model
+namespace OLab.Api.Model
 {
   public class AddUserRequest
   {

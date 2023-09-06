@@ -1,8 +1,8 @@
-using OLab.Common;
-using OLab.Dto;
-using OLab.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto;
+using OLab.Api.Utils;
 
-namespace OLab.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class DynamicScopedObjects : ObjectMapper<Model.ScopedObjects, DynamicScopedObjectsDto>
   {

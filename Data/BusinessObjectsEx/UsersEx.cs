@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace OLab.Model
+namespace OLab.Api.Model
 {
   public partial class Users
   {

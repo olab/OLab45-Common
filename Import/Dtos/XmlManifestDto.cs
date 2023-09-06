@@ -1,8 +1,8 @@
-using OLab.Utils;
+using OLab.Api.Utils;
 using System;
 using System.Collections.Generic;
 
-namespace OLab.Importer
+namespace OLab.Api.Importer
 {
   /// <summary>
   /// Xml import Manifest object DTO

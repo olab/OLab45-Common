@@ -1,4 +1,4 @@
-namespace OLab.Utils
+namespace OLab.Api.Utils
 {
   public class AppSettings
   {

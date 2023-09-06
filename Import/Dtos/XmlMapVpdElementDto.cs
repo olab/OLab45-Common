@@ -1,10 +1,10 @@
-using OLab.Model;
+using OLab.Api.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OLab.Importer
+namespace OLab.Api.Importer
 {
 
   public class XmlMapVpdElementDto : XmlImportDto<XmlMapVpdElements>

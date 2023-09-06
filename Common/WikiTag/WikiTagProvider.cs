@@ -1,10 +1,10 @@
-using OLab.Utils;
+using OLab.Api.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
-namespace OLab.Common
+namespace OLab.Api.Common
 {
   public class WikiTagProvider
   {

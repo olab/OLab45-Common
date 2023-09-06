@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 
-namespace OLab.Utils
+namespace OLab.Api.Utils
 {
   public class QueryStringUtils
   {

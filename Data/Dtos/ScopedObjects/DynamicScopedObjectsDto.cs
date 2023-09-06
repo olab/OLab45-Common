@@ -1,11 +1,11 @@
 using Newtonsoft.Json;
-using OLab.Utils;
+using OLab.Api.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OLab.Dto
+namespace OLab.Api.Dto
 {
   public class DynamicScopedObject
   {

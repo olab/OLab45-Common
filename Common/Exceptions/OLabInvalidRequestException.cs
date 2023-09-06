@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace OLab.Common.Exceptions
+namespace OLab.Api.Common.Exceptions
 {
   [ExcludeFromCodeCoverage]
   public class OLabInvalidRequestException : Exception

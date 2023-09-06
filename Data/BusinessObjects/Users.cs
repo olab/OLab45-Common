@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Model
+namespace OLab.Api.Model
 {
   [Table("users")]
   [Index(nameof(LanguageId), Name = "fk_language_id")]

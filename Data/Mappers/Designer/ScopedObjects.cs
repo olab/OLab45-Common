@@ -1,9 +1,9 @@
-using OLab.Common;
-using OLab.Dto.Designer;
-using OLab.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto.Designer;
+using OLab.Api.Utils;
 using System;
 
-namespace OLab.ObjectMapper.Designer
+namespace OLab.Api.ObjectMapper.Designer
 {
   public class ScopedObjects : ObjectMapper<Model.ScopedObjects, ScopedObjectsDto>
   {

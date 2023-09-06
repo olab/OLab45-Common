@@ -1,5 +1,5 @@
-using OLab.Common;
-using OLab.Utils;
+using OLab.Api.Common;
+using OLab.Api.Utils;
 
 [WikiTagModule("QU")]
 public class QuestionWikiTag : WikiTag1Argument
