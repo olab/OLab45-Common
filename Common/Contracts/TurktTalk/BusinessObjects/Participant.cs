@@ -8,7 +8,7 @@ using System.Net;
 using System.Security.Claims;
 
 
-namespace OLabWebAPI.TurkTalk.BusinessObjects
+namespace OLab.TurkTalk.BusinessObjects
 {
   public class Participant
   {

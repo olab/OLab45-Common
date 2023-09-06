@@ -1,6 +1,6 @@
 using System;
 
-namespace OLabWebAPI.Common.Exceptions
+namespace OLab.Common.Exceptions
 {
   public class OLabBadRequestException : Exception
   {

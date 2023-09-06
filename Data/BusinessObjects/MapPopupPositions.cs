@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLabWebAPI.Model
+namespace OLab.Model
 {
   [Table("map_popup_positions")]
   public partial class MapPopupPositions

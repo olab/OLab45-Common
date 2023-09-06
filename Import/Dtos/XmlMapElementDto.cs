@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Importer
 {
 
   public class XmlMapElementDto : XmlImportDto<XmlMapElements>

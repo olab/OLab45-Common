@@ -1,8 +1,8 @@
-using OLabWebAPI.ObjectMapper;
+using OLab.ObjectMapper;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Importer
 {
 
   public class XmlMapNodeCounterDto : XmlImportDto<XmlMapNodeCounters>

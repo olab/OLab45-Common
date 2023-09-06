@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace OLabWebAPI.Model
+namespace OLab.Model
 {
   public class AssignSecurityUserRequest
   {

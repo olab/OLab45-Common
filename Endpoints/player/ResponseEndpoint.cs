@@ -1,12 +1,12 @@
 using Microsoft.Extensions.Options;
-using OLabWebAPI.Common.Exceptions;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Common.Exceptions;
+using OLab.Dto;
+using OLab.Model;
+using OLab.Utils;
 using System;
 using System.Threading.Tasks;
 
-namespace OLabWebAPI.Endpoints.Player
+namespace OLab.Endpoints.Player
 {
   public partial class ResponseEndpoint : OlabEndpoint
   {

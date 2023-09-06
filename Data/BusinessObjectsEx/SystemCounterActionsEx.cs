@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace OLabWebAPI.Model
+namespace OLab.Model
 {
   public partial class SystemCounterActions
   {

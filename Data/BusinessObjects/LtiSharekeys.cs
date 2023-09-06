@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLabWebAPI.Model
+namespace OLab.Model
 {
   [Table("lti_sharekeys")]
   public partial class LtiSharekeys

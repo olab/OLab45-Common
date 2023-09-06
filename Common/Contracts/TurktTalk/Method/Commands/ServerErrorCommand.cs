@@ -1,6 +1,6 @@
-using OLabWebAPI.TurkTalk.Methods;
+using OLab.TurkTalk.Methods;
 
-namespace OLabWebAPI.TurkTalk.Commands
+namespace OLab.TurkTalk.Commands
 {
   public class ServerErrorCommand : CommandMethod
   {

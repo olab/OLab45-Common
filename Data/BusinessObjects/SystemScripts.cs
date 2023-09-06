@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLabWebAPI.Model
+namespace OLab.Model
 {
   [Table("system_scripts")]
   public partial class SystemScripts

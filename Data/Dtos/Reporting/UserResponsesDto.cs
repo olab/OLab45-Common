@@ -1,4 +1,4 @@
-namespace OLabWebAPI.Dto.Reporting
+namespace OLab.Dto.Reporting
 {
   internal class UserResponsesDto
   {

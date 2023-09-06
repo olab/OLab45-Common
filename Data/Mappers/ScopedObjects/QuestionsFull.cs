@@ -1,11 +1,11 @@
 using AutoMapper;
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Common;
+using OLab.Dto;
+using OLab.Model;
+using OLab.Utils;
 using System.Linq;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.ObjectMapper
 {
   public class QuestionsFull : OLabMapper<SystemQuestions, QuestionsFullDto>
   {

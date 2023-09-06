@@ -1,14 +1,14 @@
 using AutoMapper;
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Common;
+using OLab.Dto;
+using OLab.Model;
+using OLab.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.ObjectMapper
 {
   public class CounterValueResolver : IValueResolver<SystemCounters, CountersDto, string>
   {

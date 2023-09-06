@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLabWebAPI.Model
+namespace OLab.Model
 {
   [Table("statements")]
   [Index(nameof(SessionId), Name = "session_id")]

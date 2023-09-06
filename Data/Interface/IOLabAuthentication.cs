@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using OLabWebAPI.Dto;
+using OLab.Dto;
 
-namespace OLabWebAPI.Data.Interface
+namespace OLab.Data.Interface
 {
   public interface IOLabAuthentication
   {

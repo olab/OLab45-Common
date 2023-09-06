@@ -1,5 +1,5 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Common;
+using OLab.Utils;
 
 [WikiTagModule("COUNTERS")]
 public class CountersWikiTag : WikiTag0Argument

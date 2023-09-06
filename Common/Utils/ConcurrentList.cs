@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace OLabWebAPI.Utils
+namespace OLab.Utils
 {
   public class ConcurrentList<T>
   {

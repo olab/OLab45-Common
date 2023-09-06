@@ -1,4 +1,4 @@
-namespace OLabWebAPI.Data.Interface
+namespace OLab.Data.Interface
 {
   public interface IUserContext
   {

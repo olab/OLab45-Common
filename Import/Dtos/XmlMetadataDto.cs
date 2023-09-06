@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Importer
 {
 
   public class XmlMetadataDto : XmlImportDto<XmlMetadata>

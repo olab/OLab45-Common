@@ -1,9 +1,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OLabWebAPI.Common.Contracts;
-using OLabWebAPI.TurkTalk.Methods;
+using OLab.Common.Contracts;
+using OLab.TurkTalk.Methods;
 
-namespace OLabWebAPI.TurkTalk.Commands
+namespace OLab.TurkTalk.Commands
 {
   /// <summary>
   /// Defines a Message command method

@@ -1,8 +1,8 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto.Designer;
-using OLabWebAPI.Utils;
+using OLab.Common;
+using OLab.Dto.Designer;
+using OLab.Utils;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.ObjectMapper
 {
   public class MapNodeLinkTemplate : OLabMapper<Model.MapNodeLinks, MapNodeLinkTemplateDto>
   {

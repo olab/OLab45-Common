@@ -1,13 +1,13 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Data.Interface;
+using OLab.Dto;
+using OLab.Model;
+using OLab.Utils;
 using System.Linq;
 using System.Text;
 
-namespace OLabWebAPI.Data
+namespace OLab.Data
 {
   public class OLabSession : IOLabSession
   {

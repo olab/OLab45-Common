@@ -1,10 +1,10 @@
 using AutoMapper;
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Common;
+using OLab.Utils;
 using System;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.ObjectMapper
 {
   public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   {

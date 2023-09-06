@@ -1,4 +1,4 @@
-namespace OLabWebAPI.Common.Contracts
+namespace OLab.Common.Contracts
 {
   public class MapNodeListItem
   {

@@ -1,7 +1,7 @@
 using Dawn;
 using System;
 
-namespace OLabWebAPI.TurkTalk.Methods
+namespace OLab.TurkTalk.Methods
 {
   public class Method
   {

@@ -1,8 +1,8 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Utils;
+using OLab.Common;
+using OLab.Dto;
+using OLab.Utils;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.ObjectMapper
 {
   public class DynamicScopedObjects : ObjectMapper<Model.ScopedObjects, DynamicScopedObjectsDto>
   {

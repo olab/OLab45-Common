@@ -1,6 +1,6 @@
 #nullable disable
 
-namespace OLabWebAPI.Model
+namespace OLab.Model
 {
   public partial class SystemFiles
   {

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 
-namespace OLabWebAPI.Model
+namespace OLab.Model
 {
   public partial class OLabDBContext : DbContext
   {

@@ -1,10 +1,10 @@
-using OLabWebAPI.Data.Exceptions;
-using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Model;
+using OLab.Data.Exceptions;
+using OLab.Data.Interface;
+using OLab.Model;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OLabWebAPI.Endpoints.Player
+namespace OLab.Endpoints.Player
 {
   public partial class MapsEndpoint : OlabEndpoint
   {
@@ -13,7 +13,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(IOLabAuthentication auth, uint id)
+    public async Task<OLab.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(IOLabAuthentication auth, uint id)
     {
       logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetScopedObjectsRawAsync");
 
@@ -29,7 +29,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsAsync(IOLabAuthentication auth, uint id)
+    public async Task<OLab.Dto.ScopedObjectsDto> GetScopedObjectsAsync(IOLabAuthentication auth, uint id)
     {
       logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetScopedObjectsAsync");
 
@@ -46,7 +46,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="id"></param>
     /// <param name="enableWikiTranslation"></param>
     /// <returns></returns>
-    private async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsAsync(
+    private async Task<OLab.Dto.ScopedObjectsDto> GetScopedObjectsAsync(
       uint id,
       bool enableWikiTranslation)
     {

@@ -1,11 +1,11 @@
 using AutoMapper;
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Common;
+using OLab.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.ObjectMapper
 {
   public class MapsMapper : OLabMapper<Model.Maps, Dto.MapsDto>
   {

@@ -1,7 +1,7 @@
-using OLabWebAPI.ObjectMapper;
+using OLab.ObjectMapper;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Importer
 {
 
   public class XmlMapNodeLinkDto : XmlImportDto<XmlMapNodeLinks>

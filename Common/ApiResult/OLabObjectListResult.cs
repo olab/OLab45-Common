@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.Common
+namespace OLab.Common
 {
   public class OLabObjectListResult<D>
   {

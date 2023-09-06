@@ -1,7 +1,7 @@
-using OLabWebAPI.Dto;
+using OLab.Dto;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.Model
+namespace OLab.Model
 {
   public class ExtendMapResponse
   {

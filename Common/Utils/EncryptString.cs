@@ -3,7 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace OLabWebAPI.Utils
+namespace OLab.Utils
 {
   public class StringUtils
   {

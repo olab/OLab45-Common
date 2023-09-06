@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLabWebAPI.Utils
+namespace OLab.Utils
 {
   public class OLabLogMessage
   {

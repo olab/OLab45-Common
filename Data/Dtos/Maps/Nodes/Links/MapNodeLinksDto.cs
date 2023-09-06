@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace OLabWebAPI.Dto
+namespace OLab.Dto
 {
   public class MapNodeLinksDto
   {

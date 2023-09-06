@@ -1,8 +1,8 @@
-using OLabWebAPI.Utils;
+using OLab.Utils;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace OLabWebAPI.Common
+namespace OLab.Common
 {
   public abstract class WikiTag0Argument : WikiTagModule
   {

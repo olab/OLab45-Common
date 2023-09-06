@@ -1,4 +1,4 @@
-namespace OLabWebAPI.Utils
+namespace OLab.Utils
 {
   public class IdName
   {

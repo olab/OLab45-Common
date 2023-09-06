@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace OLabWebAPI.Common
+namespace OLab.Common
 {
   public class OLabUnauthorizedObjectResult<D>
   {

@@ -1,10 +1,10 @@
 using AutoMapper;
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto.Designer;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Common;
+using OLab.Dto.Designer;
+using OLab.Model;
+using OLab.Utils;
 
-namespace OLabWebAPI.ObjectMapper.Designer
+namespace OLab.ObjectMapper.Designer
 {
   public class Constants : OLabMapper<SystemConstants, ScopedObjectDto>
   {

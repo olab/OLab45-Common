@@ -1,6 +1,6 @@
-using OLabWebAPI.TurkTalk.BusinessObjects;
+using OLab.TurkTalk.BusinessObjects;
 
-namespace OLabWebAPI.Common.Contracts
+namespace OLab.Common.Contracts
 {
   public class RoomAssignmentPayload
   {

@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace OLabWebAPI.Common.Contracts
+namespace OLab.Common.Contracts
 {
   public class RegisterAttendeePayload
   {

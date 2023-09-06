@@ -2,17 +2,17 @@ using Dawn;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Data.Interface;
+using OLab.Dto;
+using OLab.Model;
+using OLab.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OLabWebAPI.Endpoints
+namespace OLab.Endpoints
 {
   public class OlabEndpoint
   {

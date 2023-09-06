@@ -2,7 +2,7 @@ using Microsoft.CSharp.RuntimeBinder;
 using System;
 using System.Text;
 
-namespace OLabWebAPI.Utils
+namespace OLab.Utils
 {
   public static class Conversions
   {

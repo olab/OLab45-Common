@@ -1,17 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Dto.Designer;
-using OLabWebAPI.Model;
-using OLabWebAPI.ObjectMapper;
-using OLabWebAPI.Utils;
+using OLab.Common;
+using OLab.Dto;
+using OLab.Dto.Designer;
+using OLab.Model;
+using OLab.ObjectMapper;
+using OLab.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OLabWebAPI.Endpoints.Designer
+namespace OLab.Endpoints.Designer
 {
   public partial class TemplateEndpoint : OlabEndpoint
   {

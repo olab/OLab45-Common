@@ -1,13 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using OLabWebAPI.Utils;
+using OLab.Utils;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OLabWebAPI.Model.ReaderWriter
+namespace OLab.Model.ReaderWriter
 {
   public partial class MapsReaderWriter
   {

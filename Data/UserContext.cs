@@ -1,6 +1,6 @@
-using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Data.Interface;
+using OLab.Model;
+using OLab.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 #nullable disable
 
-namespace OLabWebAPI.Data
+namespace OLab.Data
 {
   public abstract class UserContext : IUserContext
   {

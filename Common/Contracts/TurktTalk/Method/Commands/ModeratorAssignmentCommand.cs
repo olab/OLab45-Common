@@ -1,9 +1,9 @@
-using OLabWebAPI.Common.Contracts;
-using OLabWebAPI.TurkTalk.BusinessObjects;
-using OLabWebAPI.TurkTalk.Methods;
+using OLab.Common.Contracts;
+using OLab.TurkTalk.BusinessObjects;
+using OLab.TurkTalk.Methods;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.TurkTalk.Commands
+namespace OLab.TurkTalk.Commands
 {
   public class ModeratorAssignmentCommand : CommandMethod
   {

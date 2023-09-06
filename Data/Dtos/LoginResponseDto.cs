@@ -1,6 +1,6 @@
-using OLabWebAPI.Model;
+using OLab.Model;
 
-namespace OLabWebAPI.Dto
+namespace OLab.Dto
 {
   public class LoginResponseDto
   {

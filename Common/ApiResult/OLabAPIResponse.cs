@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net;
 
-namespace OLabWebAPI.Common
+namespace OLab.Common
 {
   public class Diagnostics
   {

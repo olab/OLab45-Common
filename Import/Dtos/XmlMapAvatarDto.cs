@@ -1,10 +1,10 @@
-using OLabWebAPI.Model;
-using OLabWebAPI.ObjectMapper;
+using OLab.Model;
+using OLab.ObjectMapper;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Importer
 {
 
   public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>

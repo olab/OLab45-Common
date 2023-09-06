@@ -1,6 +1,6 @@
 using System;
 
-namespace OLabWebAPI.Common
+namespace OLab.Common
 {
   [AttributeUsage(AttributeTargets.Class)]
   public class WikiTagModuleAttribute : Attribute

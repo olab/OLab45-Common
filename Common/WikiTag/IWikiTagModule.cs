@@ -1,4 +1,4 @@
-namespace OLabWebAPI.Common
+namespace OLab.Common
 {
   public interface IWikiTagModule
   {

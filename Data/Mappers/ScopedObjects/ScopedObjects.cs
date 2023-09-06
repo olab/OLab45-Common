@@ -1,9 +1,9 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Utils;
+using OLab.Common;
+using OLab.Dto;
+using OLab.Utils;
 using System;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.ObjectMapper
 {
   public class ScopedObjects : ObjectMapper<Model.ScopedObjects, ScopedObjectsDto>
   {

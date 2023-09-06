@@ -1,7 +1,7 @@
-using OLabWebAPI.Utils;
+using OLab.Utils;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.Model
+namespace OLab.Model
 {
   public class ImportResponse
   {

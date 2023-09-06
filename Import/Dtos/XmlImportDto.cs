@@ -1,12 +1,12 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Common;
+using OLab.Model;
+using OLab.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Importer
 {
   /// <summary>
   /// Xml import base object

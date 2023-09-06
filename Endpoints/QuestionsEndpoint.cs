@@ -1,20 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using OLabWebAPI.Common;
-using OLabWebAPI.Common.Exceptions;
-using OLabWebAPI.Data.Exceptions;
-using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.ObjectMapper;
-using OLabWebAPI.Utils;
+using OLab.Common;
+using OLab.Common.Exceptions;
+using OLab.Data.Exceptions;
+using OLab.Data.Interface;
+using OLab.Dto;
+using OLab.Model;
+using OLab.ObjectMapper;
+using OLab.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OLabWebAPI.Endpoints
+namespace OLab.Endpoints
 {
   public partial class QuestionsEndpoint : OlabEndpoint
   {

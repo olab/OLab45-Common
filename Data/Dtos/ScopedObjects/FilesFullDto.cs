@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using System;
 
-namespace OLabWebAPI.Dto
+namespace OLab.Dto
 {
 
   public class FilesFullDto : FilesDto
