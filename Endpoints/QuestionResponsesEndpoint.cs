@@ -47,19 +47,19 @@ namespace OLab.Api.Endpoints
     {
       logger.LogDebug($"PutAsync(uint id={id})");
 
-      SystemQuestions physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
+      var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
       var builder = new QuestionsFull(logger);
-      QuestionsFullDto dtoQuestionTemp = builder.PhysicalToDto(physQuestionTemp);
+      var dtoQuestionTemp = builder.PhysicalToDto(physQuestionTemp);
 
       // test if user has access to object
-      IActionResult accessResult = auth.HasAccess("W", dtoQuestionTemp);
+      var accessResult = auth.HasAccess("W", dtoQuestionTemp);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("QuestionResponses", id);
 
       try
       {
         var responsebuilder = new QuestionResponses(logger, dtoQuestionTemp);
-        SystemQuestionResponses physResponse = responsebuilder.DtoToPhysical(dto);
+        var physResponse = responsebuilder.DtoToPhysical(dto);
 
         physResponse.UpdatedAt = DateTime.Now;
 
@@ -68,7 +68,7 @@ namespace OLab.Api.Endpoints
       }
       catch (DbUpdateConcurrencyException)
       {
-        SystemConstants existingObject = await GetConstantAsync(id);
+        var existingObject = await GetConstantAsync(id);
         if (existingObject == null)
           throw new OLabObjectNotFoundException("QuestionResponses", id);
       }
@@ -86,17 +86,17 @@ namespace OLab.Api.Endpoints
     {
       logger.LogDebug($"QuestionResponsesController.PostAsync({dto.Response})");
 
-      SystemQuestions physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
+      var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
       var questionBuilder = new QuestionsFull(logger);
-      QuestionsFullDto dtoQuestionTemp = questionBuilder.PhysicalToDto(physQuestionTemp);
+      var dtoQuestionTemp = questionBuilder.PhysicalToDto(physQuestionTemp);
 
       // test if user has access to object
-      IActionResult accessResult = auth.HasAccess("W", dtoQuestionTemp);
+      var accessResult = auth.HasAccess("W", dtoQuestionTemp);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("QuestionResponses", 0);
 
       var responsebuilder = new QuestionResponses(logger, dtoQuestionTemp);
-      SystemQuestionResponses physResponse = responsebuilder.DtoToPhysical(dto);
+      var physResponse = responsebuilder.DtoToPhysical(dto);
 
       dbContext.SystemQuestionResponses.Add(physResponse);
       await dbContext.SaveChangesAsync();
@@ -122,13 +122,13 @@ namespace OLab.Api.Endpoints
 
       try
       {
-        SystemQuestionResponses physResponse = await GetQuestionResponseAsync(id);
-        SystemQuestions physQuestion = await GetQuestionAsync(physResponse.QuestionId.Value);
+        var physResponse = await GetQuestionResponseAsync(id);
+        var physQuestion = await GetQuestionAsync(physResponse.QuestionId.Value);
         var questionBuilder = new QuestionsFull(logger);
-        QuestionsFullDto dtoQuestion = questionBuilder.PhysicalToDto(physQuestion);
+        var dtoQuestion = questionBuilder.PhysicalToDto(physQuestion);
 
         // test if user has access to objectdtoQuestion
-        IActionResult accessResult = auth.HasAccess("W", dtoQuestion);
+        var accessResult = auth.HasAccess("W", dtoQuestion);
         if (accessResult is UnauthorizedResult)
           return accessResult;
 

@@ -20,7 +20,7 @@ namespace OLab.Api.Endpoints.Player
     /// <returns></returns>
     public Model.MapNodeLinks GetLinkSimple(OLabDBContext context, uint id)
     {
-      MapNodeLinks phys = context.MapNodeLinks.FirstOrDefault(x => x.Id == id);
+      var phys = context.MapNodeLinks.FirstOrDefault(x => x.Id == id);
       return phys;
     }
 
@@ -47,14 +47,14 @@ namespace OLab.Api.Endpoints.Player
       try
       {
         var builder = new MapNodeLinksFullMapper(logger);
-        MapNodeLinks phys = builder.DtoToPhysical(linkdto);
+        var phys = builder.DtoToPhysical(linkdto);
 
         dbContext.Entry(phys).State = EntityState.Modified;
         await dbContext.SaveChangesAsync();
       }
       catch (DbUpdateConcurrencyException)
       {
-        MapNodeLinks existingMap = GetLinkSimple(dbContext, linkId);
+        var existingMap = GetLinkSimple(dbContext, linkId);
         if (existingMap == null)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
       }

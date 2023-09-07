@@ -41,7 +41,7 @@ namespace OLab.Api.Endpoints.Player
     /// <returns></returns>
     public async Task<Model.Maps> GetSimpleAnonymousAsync(uint id)
     {
-      Maps phys = await dbContext.Maps.Include(x => x.SystemCounterActions).FirstOrDefaultAsync(x => x.Id == id);
+      var phys = await dbContext.Maps.Include(x => x.SystemCounterActions).FirstOrDefaultAsync(x => x.Id == id);
       return phys;
     }
 
@@ -53,7 +53,7 @@ namespace OLab.Api.Endpoints.Player
     /// <returns></returns>
     public Model.Maps GetSimple(OLabDBContext context, uint id)
     {
-      Maps phys = context.Maps.Include(x => x.SystemCounterActions).FirstOrDefault(x => x.Id == id);
+      var phys = context.Maps.Include(x => x.SystemCounterActions).FirstOrDefault(x => x.Id == id);
       return phys;
     }
 
@@ -112,7 +112,7 @@ namespace OLab.Api.Endpoints.Player
     {
       logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetAsync");
 
-      Maps map = await GetMapAsync(id);
+      var map = await GetMapAsync(id);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 
@@ -124,7 +124,7 @@ namespace OLab.Api.Endpoints.Player
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, id);
       //}
 
-      MapsFullDto dto = new MapsFullMapper(logger).PhysicalToDto(map);
+      var dto = new MapsFullMapper(logger).PhysicalToDto(map);
 
       return dto;
     }
@@ -146,14 +146,14 @@ namespace OLab.Api.Endpoints.Player
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      Maps map = await dbContext.Maps
+      var map = await dbContext.Maps
   .AsNoTracking()
   .Include(x => x.MapNodes)
   .FirstOrDefaultAsync(x => x.Id == mapId);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
-      Maps template = await dbContext.Maps
+      var template = await dbContext.Maps
   .AsNoTracking()
   .Include(x => x.MapNodes)
   .FirstOrDefaultAsync(x => x.Id == body.TemplateId);
@@ -164,10 +164,10 @@ namespace OLab.Api.Endpoints.Player
         .CreateMapWithTemplateAsync(map, template);
 
       var mapLinks = dbContext.MapNodeLinks.AsNoTracking().Where(x => x.MapId == map.Id).ToList();
-      IList<MapNodeLinksDto> linksDto = new MapNodeLinksMapper(logger).PhysicalToDto(mapLinks);
+      var linksDto = new MapNodeLinksMapper(logger).PhysicalToDto(mapLinks);
 
       var mapNodes = dbContext.MapNodes.AsNoTracking().Where(x => x.MapId == map.Id).ToList();
-      IList<MapNodesFullDto> nodesDto = new MapNodesFullMapper(logger).PhysicalToDto(mapNodes);
+      var nodesDto = new MapNodesFullMapper(logger).PhysicalToDto(mapNodes);
 
       var dto = new ExtendMapResponse
       {
@@ -204,7 +204,7 @@ namespace OLab.Api.Endpoints.Player
       }
       else
       {
-        Maps templateMap = await dbContext.Maps
+        var templateMap = await dbContext.Maps
           .AsNoTracking()
           .Include(x => x.MapNodes)
           .FirstOrDefaultAsync(x => x.Id == body.TemplateId);
@@ -226,7 +226,7 @@ namespace OLab.Api.Endpoints.Player
 
       await dbContext.SaveChangesAsync();
 
-      MapsFullRelationsDto dto = new MapsFullRelationsMapper(logger).PhysicalToDto(map);
+      var dto = new MapsFullRelationsMapper(logger).PhysicalToDto(map);
       return dto;
     }
 
@@ -243,7 +243,7 @@ namespace OLab.Api.Endpoints.Player
     {
       logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.PutAsync");
 
-      Maps map = new MapsFullMapper(logger).DtoToPhysical(mapdto);
+      var map = new MapsFullMapper(logger).DtoToPhysical(mapdto);
 
       // test if user has access to map.
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, map.Id))
@@ -260,7 +260,7 @@ namespace OLab.Api.Endpoints.Player
       }
       catch (DbUpdateConcurrencyException)
       {
-        Maps existingMap = GetSimple(dbContext, id);
+        var existingMap = GetSimple(dbContext, id);
         if (existingMap == null)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
       }
@@ -282,7 +282,7 @@ namespace OLab.Api.Endpoints.Player
       if (!auth.HasAccess("D", Utils.Constants.ScopeLevelMap, id))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, id);
 
-      Maps map = GetSimple(dbContext, id);
+      var map = GetSimple(dbContext, id);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 
@@ -305,14 +305,14 @@ namespace OLab.Api.Endpoints.Player
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      Maps map = GetSimple(dbContext, mapId);
+      var map = GetSimple(dbContext, mapId);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
-      List<MapNodeLinks> items = await dbContext.MapNodeLinks.Where(x => x.MapId == mapId).ToListAsync();
+      var items = await dbContext.MapNodeLinks.Where(x => x.MapId == mapId).ToListAsync();
       logger.LogDebug(string.Format("found {0} MapNodeLinks", items.Count));
 
-      IList<MapNodeLinksFullDto> dtoList = new MapNodeLinksFullMapper(logger).PhysicalToDto(items);
+      var dtoList = new MapNodeLinksFullMapper(logger).PhysicalToDto(items);
       return dtoList;
     }
 
@@ -331,7 +331,7 @@ namespace OLab.Api.Endpoints.Player
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      Maps map = GetSimple(dbContext, mapId);
+      var map = GetSimple(dbContext, mapId);
 
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);

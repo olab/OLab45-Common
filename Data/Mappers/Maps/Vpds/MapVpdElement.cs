@@ -16,7 +16,7 @@ namespace OLab.Api.ObjectMapper
 
     public override MapVpdElements ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
     {
-      MapVpdElements phys = GetPhys(source);
+      var phys = GetPhys(source);
 
       phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
       CreateIdTranslation(phys.Id);

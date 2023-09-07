@@ -40,21 +40,21 @@ namespace OLab.Api.Importer
     {
       result = null;
 
-      XAttribute att = _root.Attribute(binder.Name);
+      var att = _root.Attribute(binder.Name);
       if (att != null)
       {
         result = att.Value;
         return true;
       }
 
-      IEnumerable<XElement> nodes = _root.Elements(binder.Name);
+      var nodes = _root.Elements(binder.Name);
       if (nodes.Count() > 1)
       {
         result = nodes.Select(n => n.HasElements ? (object)new DynamicXml(n) : n.Value).ToList();
         return true;
       }
 
-      XElement node = _root.Element(binder.Name);
+      var node = _root.Element(binder.Name);
       if (node != null)
       {
         result = node.HasElements || node.HasAttributes ? new DynamicXml(node) : node.Value;

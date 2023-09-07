@@ -32,7 +32,7 @@ namespace OLab.Api.Importer
     /// <returns>Success/failure</returns>
     public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
     {
-      Model.SystemCounterActions item = _mapper.ElementsToPhys(elements);
+      var item = _mapper.ElementsToPhys(elements);
       var oldId = item.Id;
 
       // test for empty value/expression.  if so, igmore this save
@@ -50,8 +50,8 @@ namespace OLab.Api.Importer
       var counterDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapCounterDto) as XmlMapCounterDto;
       item.CounterId = counterDto.GetIdTranslation(GetFileName(), item.CounterId).Value;
 
-      XmlDto mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto);
-      Model.MapNodes node = nodeDto.GetModel().Data.Where(x => x.Id == item.ImageableId).FirstOrDefault();
+      var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto);
+      var node = nodeDto.GetModel().Data.Where(x => x.Id == item.ImageableId).FirstOrDefault();
       item.MapId = node.MapId;
 
       Context.SystemCounterActions.Add(item);

@@ -67,13 +67,13 @@ namespace OLab.Api.Endpoints
 
       logger.LogDebug(string.Format("found {0} Constants", Constants.Count));
 
-      IList<ConstantsDto> dtoList = new ObjectMapper.Constants(logger).PhysicalToDto(Constants);
+      var dtoList = new ObjectMapper.Constants(logger).PhysicalToDto(Constants);
 
       var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
       var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
       var servers = dbContext.Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
 
-      foreach (ConstantsDto dto in dtoList)
+      foreach (var dto in dtoList)
         dto.ParentInfo = FindParentInfo(dto.ImageableType, dto.ImageableId, maps, nodes, servers);
 
       return new OLabAPIPagedResponse<ConstantsDto> { Data = dtoList, Remaining = remaining, Count = total };
@@ -93,11 +93,11 @@ namespace OLab.Api.Endpoints
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Constants", id);
 
-      SystemConstants phys = await dbContext.SystemConstants.FirstAsync(x => x.Id == id);
-      ConstantsDto dto = new ObjectMapper.Constants(logger).PhysicalToDto(phys);
+      var phys = await dbContext.SystemConstants.FirstAsync(x => x.Id == id);
+      var dto = new ObjectMapper.Constants(logger).PhysicalToDto(phys);
 
       // test if user has access to object
-      IActionResult accessResult = auth.HasAccess("R", dto);
+      var accessResult = auth.HasAccess("R", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Constants", id);
 
@@ -121,14 +121,14 @@ namespace OLab.Api.Endpoints
       dto.ImageableId = dto.ParentInfo.Id;
 
       // test if user has access to object
-      IActionResult accessResult = auth.HasAccess("W", dto);
+      var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Constants", id);
 
       try
       {
         var builder = new ConstantsFull(logger);
-        SystemConstants phys = builder.DtoToPhysical(dto);
+        var phys = builder.DtoToPhysical(dto);
 
         phys.UpdatedAt = DateTime.Now;
 
@@ -137,7 +137,7 @@ namespace OLab.Api.Endpoints
       }
       catch (DbUpdateConcurrencyException)
       {
-        SystemConstants existingObject = await GetConstantAsync(id);
+        var existingObject = await GetConstantAsync(id);
         if (existingObject == null)
           throw new OLabObjectNotFoundException("Constants", id);
       }
@@ -158,12 +158,12 @@ namespace OLab.Api.Endpoints
       dto.ImageableId = dto.ParentInfo.Id;
 
       // test if user has access to object
-      IActionResult accessResult = auth.HasAccess("W", dto);
+      var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Constants", 0);
 
       var builder = new ConstantsFull(logger);
-      SystemConstants phys = builder.DtoToPhysical(dto);
+      var phys = builder.DtoToPhysical(dto);
 
       phys.CreatedAt = DateTime.Now;
 
@@ -190,11 +190,11 @@ namespace OLab.Api.Endpoints
 
       try
       {
-        SystemConstants phys = await GetConstantAsync(id);
-        ConstantsDto dto = new ConstantsFull(logger).PhysicalToDto(phys);
+        var phys = await GetConstantAsync(id);
+        var dto = new ConstantsFull(logger).PhysicalToDto(phys);
 
         // test if user has access to object
-        IActionResult accessResult = auth.HasAccess("W", dto);
+        var accessResult = auth.HasAccess("W", dto);
         if (accessResult is UnauthorizedResult)
           throw new OLabUnauthorizedException("Constants", id);
 
@@ -204,7 +204,7 @@ namespace OLab.Api.Endpoints
       }
       catch (DbUpdateConcurrencyException)
       {
-        SystemConstants existingObject = await GetConstantAsync(id);
+        var existingObject = await GetConstantAsync(id);
         if (existingObject == null)
           throw new OLabObjectNotFoundException("Constants", id);
       }

@@ -19,33 +19,33 @@ namespace OLab.Api.ObjectMapper
 
     public override ScopedObjectsDto PhysicalToDto(Model.ScopedObjects phys, object source = null)
     {
-      ScopedObjectsDto dto = GetDto(source);
+      var dto = GetDto(source);
 
-      System.Collections.Generic.IList<QuestionsFullDto> dtoQuestionsList
+      var dtoQuestionsList
         = new ObjectMapper.QuestionsFull(logger, GetWikiProvider()).PhysicalToDto(phys.Questions);
       dto.Questions.AddRange(dtoQuestionsList);
 
-      System.Collections.Generic.IList<CountersDto> dtCountersList
+      var dtCountersList
         = new ObjectMapper.Counters(logger, GetWikiProvider()).PhysicalToDto(phys.Counters);
       dto.Counters.AddRange(dtCountersList);
 
-      System.Collections.Generic.IList<ConstantsDto> dtConstantsList
+      var dtConstantsList
         = new ObjectMapper.Constants(logger, GetWikiProvider()).PhysicalToDto(phys.Constants);
       dto.Constants.AddRange(dtConstantsList);
 
-      System.Collections.Generic.IList<FilesFullDto> dtFilesList
+      var dtFilesList
         = new ObjectMapper.FilesFull(logger, GetWikiProvider()).PhysicalToDto(phys.Files);
       dto.Files.AddRange(dtFilesList);
 
-      System.Collections.Generic.IList<ScriptsDto> dtScriptsList
+      var dtScriptsList
         = new ObjectMapper.Scripts(logger, GetWikiProvider()).PhysicalToDto(phys.Scripts);
       dto.Scripts.AddRange(dtScriptsList);
 
-      System.Collections.Generic.IList<ThemesFullDto> dtThemesList
+      var dtThemesList
         = new ThemesFull(logger, GetWikiProvider(), enableWikiTranslation).PhysicalToDto(phys.Themes);
       dto.Themes.AddRange(dtThemesList);
 
-      System.Collections.Generic.IList<CounterActionsDto> dtCounterActionsList
+      var dtCounterActionsList
         = new CounterActionsMapper(logger, GetWikiProvider()).PhysicalToDto(phys.CounterActions);
       dto.CounterActions.AddRange(dtCounterActionsList);
 

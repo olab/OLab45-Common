@@ -4,7 +4,6 @@ using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
-using OLab.Api.Model;
 using OLab.Api.Model.ReaderWriter;
 using System;
 using System.Collections.Generic;
@@ -61,7 +60,7 @@ namespace OLab.Api.Endpoints.Player
     {
       logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetMapNodeAsync");
 
-      MapsNodesFullRelationsDto dto = await GetRawNodeAsync(mapId, nodeId, hideHidden);
+      var dto = await GetRawNodeAsync(mapId, nodeId, hideHidden);
 
       // now that we had a real node id, test if user has explicit no access to node.
       if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, nodeId))
@@ -70,7 +69,7 @@ namespace OLab.Api.Endpoints.Player
       // filter out any destination links the user
       // does not have access to 
       var filteredLinks = new List<MapNodeLinksDto>();
-      foreach (MapNodeLinksDto mapNodeLink in dto.MapNodeLinks)
+      foreach (var mapNodeLink in dto.MapNodeLinks)
       {
         if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
           continue;
@@ -110,11 +109,11 @@ namespace OLab.Api.Endpoints.Player
       if (!body.IsValid())
         throw new OLabUnauthorizedException("Object validity check failed");
 
-      Maps map = await MapsReaderWriter.Instance(logger.GetLogger(), dbContext).GetSingleAsync(mapId);
+      var map = await MapsReaderWriter.Instance(logger.GetLogger(), dbContext).GetSingleAsync(mapId);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
-      MapsNodesFullRelationsDto dto = await GetRawNodeAsync(mapId, nodeId, true);
+      var dto = await GetRawNodeAsync(mapId, nodeId, true);
 
       // now that we had a real node id, test if user has explicit no access to node.
       if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, dto.Id.Value))
@@ -123,7 +122,7 @@ namespace OLab.Api.Endpoints.Player
       // filter out any destination links the user
       // does not have access to 
       var filteredLinks = new List<MapNodeLinksDto>();
-      foreach (MapNodeLinksDto mapNodeLink in dto.MapNodeLinks)
+      foreach (var mapNodeLink in dto.MapNodeLinks)
       {
         if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
           continue;
@@ -193,15 +192,15 @@ namespace OLab.Api.Endpoints.Player
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = dbContext.Database.BeginTransaction();
+      using var transaction = dbContext.Database.BeginTransaction();
 
       try
       {
-        MapNodeLinks[] links = dbContext.MapNodeLinks.Where(x => (x.NodeId1 == nodeId) || (x.NodeId2 == nodeId)).ToArray();
+        var links = dbContext.MapNodeLinks.Where(x => (x.NodeId1 == nodeId) || (x.NodeId2 == nodeId)).ToArray();
         logger.LogDebug($"deleting {links.Count()} links");
         dbContext.MapNodeLinks.RemoveRange(links);
 
-        MapNodes node = await dbContext.MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
+        var node = await dbContext.MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
         dbContext.MapNodes.Remove(node);
         logger.LogDebug($"deleting node id: {node.Id}");
 
@@ -244,12 +243,12 @@ namespace OLab.Api.Endpoints.Player
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = dbContext.Database.BeginTransaction();
+      using var transaction = dbContext.Database.BeginTransaction();
 
       try
       {
         var builder = new ObjectMapper.MapNodesFullMapper(logger);
-        MapNodes phys = builder.DtoToPhysical(dto);
+        var phys = builder.DtoToPhysical(dto);
 
         // patch up node size, just in case it's not set properly
         if (phys.Height == 0) phys.Height = 440;
@@ -283,7 +282,7 @@ namespace OLab.Api.Endpoints.Player
     /// <returns>MapsNodesFullRelationsDto</returns>
     private async Task<MapsNodesFullRelationsDto> GetRootNodeAsync(uint mapId, bool hideHidden)
     {
-      MapNodes phys = await dbContext.MapNodes
+      var phys = await dbContext.MapNodes
         .FirstOrDefaultAsync(x => x.MapId == mapId && x.TypeId.Value == (int)Model.MapNodes.NodeType.RootNode);
 
       if (phys == null)
@@ -301,7 +300,7 @@ namespace OLab.Api.Endpoints.Player
     /// </summary>
     public void UpdateNodeCounter()
     {
-      SystemCounters counter = dbContext.SystemCounters.Where(x => x.Name == "nodeCounter").FirstOrDefault();
+      var counter = dbContext.SystemCounters.Where(x => x.Name == "nodeCounter").FirstOrDefault();
 
       var value = counter.ValueAsNumber();
 

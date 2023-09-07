@@ -31,7 +31,7 @@ namespace OLab.Api.Importer
     /// <returns>Success/failure</returns>
     public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
     {
-      Model.MapNodeLinks item = _mapper.ElementsToPhys(elements);
+      var item = _mapper.ElementsToPhys(elements);
       var oldId = item.Id;
 
       item.Id = 0;

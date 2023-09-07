@@ -49,9 +49,9 @@ namespace OLab.Api.ObjectMapper
     public virtual IList<D> PhysicalToDto(IList<P> physList)
     {
       var dtoList = new List<D>();
-      foreach (P phys in physList)
+      foreach (var phys in physList)
       {
-        D dto = PhysicalToDto(phys);
+        var dto = PhysicalToDto(phys);
         dtoList.Add(dto);
       }
 

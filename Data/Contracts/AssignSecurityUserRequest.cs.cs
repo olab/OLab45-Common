@@ -13,7 +13,7 @@ namespace OLab.Api.Model
 
     public void CheckAcl()
     {
-      foreach (char part in Acl)
+      foreach (var part in Acl)
       {
         if (!AllowedAcls.Any(val => part.ToString() == val))
           throw new System.Exception("Bad ACL value");

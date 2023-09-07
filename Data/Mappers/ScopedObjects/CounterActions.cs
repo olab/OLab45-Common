@@ -35,7 +35,7 @@ namespace OLab.Api.ObjectMapper
 
     public override SystemCounterActions ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
     {
-      SystemCounterActions phys = GetPhys(source);
+      var phys = GetPhys(source);
 
       phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
       phys.OperationType = "open";

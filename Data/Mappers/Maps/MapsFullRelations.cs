@@ -50,7 +50,7 @@ namespace OLab.Api.ObjectMapper
       };
 
       var links = new List<MapNodeLinks>();
-      foreach (MapNodes node in map.MapNodes)
+      foreach (var node in map.MapNodes)
         links.AddRange(node.MapNodeLinksNodeId1Navigation);
 
       dto.MapNodeLinks = new MapNodeLinksMapper(logger).PhysicalToDto(links);

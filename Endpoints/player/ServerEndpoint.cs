@@ -60,7 +60,7 @@ namespace OLab.Api.Endpoints.Player
     public async Task<OLab.Api.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint serverId)
     {
       logger.LogDebug($"ServerEndpoint.GetScopedObjectsRawAsync(uint serverId={serverId})");
-      Dto.ScopedObjectsDto dto = await GetScopedObjectsAsync(serverId, false);
+      var dto = await GetScopedObjectsAsync(serverId, false);
       return dto;
     }
 
@@ -72,7 +72,7 @@ namespace OLab.Api.Endpoints.Player
     public async Task<OLab.Api.Dto.ScopedObjectsDto> GetScopedObjectsTranslatedAsync(uint serverId)
     {
       logger.LogDebug($"ServerEndpoint.GetScopedObjectsTranslatedAsync(uint serverId={serverId})");
-      Dto.ScopedObjectsDto dto = await GetScopedObjectsAsync(serverId, true);
+      var dto = await GetScopedObjectsAsync(serverId, true);
       return dto;
     }
 
@@ -88,9 +88,9 @@ namespace OLab.Api.Endpoints.Player
     {
       logger.LogDebug($"ServerEndpoint.GetScopedObjectsAsync(uint serverId={serverId})");
 
-      Model.ScopedObjects phys = await GetScopedObjectsAllAsync(serverId, Utils.Constants.ScopeLevelServer);
+      var phys = await GetScopedObjectsAllAsync(serverId, Utils.Constants.ScopeLevelServer);
       var builder = new ObjectMapper.ScopedObjects(logger, enableWikiTranslation);
-      Dto.ScopedObjectsDto dto = builder.PhysicalToDto(phys);
+      var dto = builder.PhysicalToDto(phys);
 
       return dto;
     }

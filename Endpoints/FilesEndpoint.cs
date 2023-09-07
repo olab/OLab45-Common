@@ -59,13 +59,13 @@ namespace OLab.Api.Endpoints
 
       logger.LogDebug(string.Format("found {0} Files", Files.Count));
 
-      IList<FilesDto> dtoList = new ObjectMapper.Files(logger).PhysicalToDto(Files);
+      var dtoList = new ObjectMapper.Files(logger).PhysicalToDto(Files);
 
-      IList<IdName> maps = GetMapIdNames();
-      IList<IdName> nodes = GetNodeIdNames();
-      IList<IdName> servers = GetServerIdNames();
+      var maps = GetMapIdNames();
+      var nodes = GetNodeIdNames();
+      var servers = GetServerIdNames();
 
-      foreach (FilesDto dto in dtoList)
+      foreach (var dto in dtoList)
         dto.ParentInfo = FindParentInfo(dto.ImageableType, dto.ImageableId, maps, nodes, servers);
 
       return new OLabAPIPagedResponse<FilesDto> { Data = dtoList, Remaining = remaining, Count = total };
@@ -86,11 +86,11 @@ namespace OLab.Api.Endpoints
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Files", id);
 
-      SystemFiles phys = await dbContext.SystemFiles.FirstAsync(x => x.Id == id);
-      FilesFullDto dto = new ObjectMapper.FilesFull(logger).PhysicalToDto(phys);
+      var phys = await dbContext.SystemFiles.FirstAsync(x => x.Id == id);
+      var dto = new ObjectMapper.FilesFull(logger).PhysicalToDto(phys);
 
       // test if user has access to object
-      IActionResult accessResult = auth.HasAccess("R", dto);
+      var accessResult = auth.HasAccess("R", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Files", id);
 
@@ -114,14 +114,14 @@ namespace OLab.Api.Endpoints
       dto.ImageableId = dto.ParentInfo.Id;
 
       // test if user has access to object
-      IActionResult accessResult = auth.HasAccess("W", dto);
+      var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Files", id);
 
       try
       {
         var builder = new FilesFull(logger);
-        SystemFiles phys = builder.DtoToPhysical(dto);
+        var phys = builder.DtoToPhysical(dto);
 
         phys.UpdatedAt = DateTime.Now;
 
@@ -130,7 +130,7 @@ namespace OLab.Api.Endpoints
       }
       catch (DbUpdateConcurrencyException)
       {
-        SystemConstants existingObject = await GetConstantAsync(id);
+        var existingObject = await GetConstantAsync(id);
         if (existingObject == null)
           throw new OLabObjectNotFoundException("Files", id);
       }
@@ -148,10 +148,10 @@ namespace OLab.Api.Endpoints
     {
       logger.LogDebug($"FilesController.PostAsync()");
       var builder = new FilesFull(logger);
-      FilesFullDto dto = builder.PhysicalToDto(phys);
+      var dto = builder.PhysicalToDto(phys);
 
       // test if user has access to object
-      IActionResult accessResult = auth.HasAccess("W", dto);
+      var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Files", 0);
 
@@ -181,11 +181,11 @@ namespace OLab.Api.Endpoints
 
       try
       {
-        SystemFiles phys = await GetFileAsync(id);
-        FilesFullDto dto = new FilesFull(logger).PhysicalToDto(phys);
+        var phys = await GetFileAsync(id);
+        var dto = new FilesFull(logger).PhysicalToDto(phys);
 
         // test if user has access to object
-        IActionResult accessResult = auth.HasAccess("W", dto);
+        var accessResult = auth.HasAccess("W", dto);
         if (accessResult is UnauthorizedResult)
           throw new OLabUnauthorizedException("Constants", id);
 
@@ -195,7 +195,7 @@ namespace OLab.Api.Endpoints
       }
       catch (DbUpdateConcurrencyException)
       {
-        SystemFiles existingObject = await GetFileAsync(id);
+        var existingObject = await GetFileAsync(id);
         if (existingObject == null)
           throw new OLabObjectNotFoundException("Files", id);
       }

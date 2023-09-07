@@ -27,7 +27,7 @@ namespace OLab.Api.Utils
         aes.Key = Encoding.UTF8.GetBytes(key);
         aes.IV = iv;
 
-        ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+        var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
         using (var memoryStream = new MemoryStream())
         {
@@ -55,7 +55,7 @@ namespace OLab.Api.Utils
       {
         aes.Key = Encoding.UTF8.GetBytes(key);
         aes.IV = iv;
-        ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+        var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
         using (var memoryStream = new MemoryStream(buffer))
         {

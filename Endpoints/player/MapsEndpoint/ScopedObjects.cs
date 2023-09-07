@@ -50,11 +50,11 @@ namespace OLab.Api.Endpoints.Player
       uint id,
       bool enableWikiTranslation)
     {
-      Maps map = GetSimple(dbContext, id);
+      var map = GetSimple(dbContext, id);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 
-      ScopedObjects phys = await GetScopedObjectsAllAsync(map.Id, Utils.Constants.ScopeLevelMap);
+      var phys = await GetScopedObjectsAllAsync(map.Id, Utils.Constants.ScopeLevelMap);
 
       phys.Constants.Add(new SystemConstants
       {
@@ -78,7 +78,7 @@ namespace OLab.Api.Endpoints.Player
 
       var builder = new ObjectMapper.ScopedObjects(logger, enableWikiTranslation);
 
-      Dto.ScopedObjectsDto dto = builder.PhysicalToDto(phys);
+      var dto = builder.PhysicalToDto(phys);
       return dto;
     }
 

@@ -62,7 +62,7 @@ namespace OLab.Api.Data
     {
       _logger.LogInformation($"OnExtendSession: session {GetSessionId()} Map: {mapId} Node: {nodeId}");
 
-      UserSessions session = GetSession(GetSessionId());
+      var session = GetSession(GetSessionId());
       if (session == null)
         return;
 
@@ -76,7 +76,7 @@ namespace OLab.Api.Data
     {
       _logger.LogInformation($"OnPlayNode: session {GetSessionId()} Map: {mapId} Node: {nodeId}");
 
-      UserSessions session = GetSession(GetSessionId());
+      var session = GetSession(GetSessionId());
       if (session == null)
         return;
 
@@ -98,7 +98,7 @@ namespace OLab.Api.Data
     {
       _logger.LogInformation($"OnQuestionResponse: session {GetSessionId()} Map: {mapId} Node: {nodeId} Question: {questionId} = {value} ");
 
-      UserSessions session = GetSession(GetSessionId());
+      var session = GetSession(GetSessionId());
       if (session == null)
         return;
 
@@ -135,7 +135,7 @@ namespace OLab.Api.Data
 
     private UserSessions GetSession(string sessionId)
     {
-      UserSessions session = _context.UserSessions.Where(x => x.Uuid == sessionId).FirstOrDefault();
+      var session = _context.UserSessions.Where(x => x.Uuid == sessionId).FirstOrDefault();
       if (session == null)
       {
         _logger.LogError($"Unable to get session, sessionId '{sessionId}' not found");

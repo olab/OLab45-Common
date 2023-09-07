@@ -39,7 +39,7 @@ namespace OLab.Api.ObjectMapper
     /// <returns>Physical object</returns>
     public override SystemConstants ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
     {
-      SystemConstants phys = GetPhys(source);
+      var phys = GetPhys(source);
 
       phys.Id = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
       CreateIdTranslation(phys.Id);

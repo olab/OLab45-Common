@@ -52,7 +52,7 @@ namespace OLab.Api.Importer
     /// <returns>Success/failure</returns>
     public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
     {
-      MapAvatars avItem = _avMapper.ElementsToPhys(elements);
+      var avItem = _avMapper.ElementsToPhys(elements);
       var oldId = avItem.Id;
 
       avItem.Id = 0;
@@ -65,7 +65,7 @@ namespace OLab.Api.Importer
 
       GetLogger().LogDebug($"Saved {GetFileName()} id {avItem.Id}");
 
-      SystemFiles fileItem = CreateAvatarSystemFile(elements, avItem);
+      var fileItem = CreateAvatarSystemFile(elements, avItem);
 
       fileItem.ImageableId = avItem.MapId;
       fileItem.ImageableType = "Maps";

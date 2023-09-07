@@ -290,7 +290,7 @@ namespace OLab.Api.Data
     private bool HasRoleLevelAccess(char requestedPerm, string objectType, uint? objectId)
     {
       // test for explicit non-access to specific object type and id
-      SecurityRoles acl = _roleAcls.Where(x =>
+      var acl = _roleAcls.Where(x =>
        (x.ImageableType == objectType) &&
        (x.ImageableId == objectId.Value) &&
        (x.Acl == NonAccessAcl)).FirstOrDefault();
@@ -339,7 +339,7 @@ namespace OLab.Api.Data
     {
 
       // test for explicit non-access to specific object type and id
-      SecurityUsers acl = _userAcls.Where(x =>
+      var acl = _userAcls.Where(x =>
        (x.ImageableType == objectType) &&
        (x.ImageableId == objectId.Value) &&
        (x.Acl == NonAccessAcl)).FirstOrDefault();

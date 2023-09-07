@@ -61,7 +61,7 @@ namespace OLab.Api.ObjectMapper
 
     public override SystemCounters ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
     {
-      SystemCounters phys = GetPhys(source);
+      var phys = GetPhys(source);
 
       phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
       phys.Name = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "name"));

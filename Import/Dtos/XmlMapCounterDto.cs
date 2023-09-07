@@ -32,7 +32,7 @@ namespace OLab.Api.Importer
     /// <returns>Success/failure</returns>
     public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
     {
-      Model.SystemCounters item = _mapper.ElementsToPhys(elements);
+      var item = _mapper.ElementsToPhys(elements);
       item.ImageableId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "map_id").Value);
 
       var oldId = item.Id;

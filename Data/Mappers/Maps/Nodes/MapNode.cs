@@ -22,7 +22,7 @@ namespace OLab.Api.ObjectMapper
 
     public override Model.MapNodes ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
     {
-      Model.MapNodes phys = GetPhys(source);
+      var phys = GetPhys(source);
 
       phys.Annotation = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "annotation"));
       phys.Conditional = elements.FirstOrDefault(x => x.Name == "conditional").Value;

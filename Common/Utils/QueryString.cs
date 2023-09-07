@@ -10,7 +10,7 @@ namespace OLab.Api.Utils
 
     public QueryStringUtils(HttpRequest req)
     {
-      foreach (KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues> item in req.Query)
+      foreach (var item in req.Query)
       {
         _values.Add(item.Key, item.Value);
       }

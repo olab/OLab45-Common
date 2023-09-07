@@ -31,16 +31,16 @@ namespace OLab.Api.Endpoints.Player
     /// <returns>MapNodes</returns>
     private static Model.MapNodes GetSimple(OLabDBContext context, uint id)
     {
-      MapNodes phys = context.MapNodes.FirstOrDefault(x => x.Id == id);
+      var phys = context.MapNodes.FirstOrDefault(x => x.Id == id);
       return phys;
     }
 
     private async Task<MapsNodesFullRelationsDto> GetNodeAsync(uint id, bool enableWikiTranslation)
     {
-      MapNodes phys = await GetMapNodeAsync(id);
+      var phys = await GetMapNodeAsync(id);
 
       var builder = new ObjectMapper.MapsNodesFullRelationsMapper(logger, enableWikiTranslation);
-      MapsNodesFullRelationsDto dto = builder.PhysicalToDto(phys);
+      var dto = builder.PhysicalToDto(phys);
 
       return dto;
     }
@@ -66,7 +66,7 @@ namespace OLab.Api.Endpoints.Player
     {
       logger.LogDebug($"{auth.GetUserContext().UserId}: NodesEndpoint.PutNodeAsync");
 
-      MapNodes phys = await GetMapNodeAsync(id);
+      var phys = await GetMapNodeAsync(id);
       if (phys == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
 
@@ -97,7 +97,7 @@ namespace OLab.Api.Endpoints.Player
     {
       logger.LogDebug($"{auth.GetUserContext().UserId}: NodesEndpoint.PostLinkAsync");
 
-      MapNodes node = GetSimple(dbContext, nodeId);
+      var node = GetSimple(dbContext, nodeId);
       if (node == null)
         throw new OLabObjectNotFoundException(Constants.ScopeLevelNode, nodeId);
 
@@ -132,7 +132,7 @@ namespace OLab.Api.Endpoints.Player
     {
       logger.LogDebug($"{auth.GetUserContext().UserId}: NodesEndpoint.PostNodeAsync");
 
-      using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = dbContext.Database.BeginTransaction();
+      using var transaction = dbContext.Database.BeginTransaction();
 
       try
       {

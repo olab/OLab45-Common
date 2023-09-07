@@ -21,18 +21,18 @@ namespace OLab.Api.ObjectMapper.Designer
       Model.ScopedObjects phys,
       object source = null)
     {
-      ScopedObjectsDto dto = GetDto(source);
+      var dto = GetDto(source);
 
-      System.Collections.Generic.IList<ScopedObjectDto> dtConstantsList = new Constants(logger, GetWikiProvider()).PhysicalToDto(phys.Constants);
+      var dtConstantsList = new Constants(logger, GetWikiProvider()).PhysicalToDto(phys.Constants);
       dto.Constants.AddRange(dtConstantsList);
 
-      System.Collections.Generic.IList<ScopedObjectDto> dtoQuestionsList = new Questions(logger, GetWikiProvider()).PhysicalToDto(phys.Questions);
+      var dtoQuestionsList = new Questions(logger, GetWikiProvider()).PhysicalToDto(phys.Questions);
       dto.Questions.AddRange(dtoQuestionsList);
 
-      System.Collections.Generic.IList<ScopedObjectDto> dtCountersList = new Counters(logger, GetWikiProvider()).PhysicalToDto(phys.Counters);
+      var dtCountersList = new Counters(logger, GetWikiProvider()).PhysicalToDto(phys.Counters);
       dto.Counters.AddRange(dtCountersList);
 
-      System.Collections.Generic.IList<ScopedObjectDto> dtFilesList = new Files(logger, GetWikiProvider()).PhysicalToDto(phys.Files);
+      var dtFilesList = new Files(logger, GetWikiProvider()).PhysicalToDto(phys.Files);
       dto.Files.AddRange(dtFilesList);
 
       return dto;

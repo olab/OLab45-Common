@@ -70,7 +70,7 @@ namespace OLab.Api.ObjectMapper
     /// <returns>Dto object</returns>
     public virtual D PhysicalToDto(P phys)
     {
-      D dto = _mapper.Map<D>(phys);
+      var dto = _mapper.Map<D>(phys);
       dto = PhysicalToDto(phys, dto);
       return dto;
     }
@@ -83,9 +83,9 @@ namespace OLab.Api.ObjectMapper
     public virtual IList<D> PhysicalToDto(IList<P> physList)
     {
       var dtoList = new List<D>();
-      foreach (P phys in physList)
+      foreach (var phys in physList)
       {
-        D dto = PhysicalToDto(phys);
+        var dto = PhysicalToDto(phys);
         dtoList.Add(dto);
       }
 
@@ -133,9 +133,9 @@ namespace OLab.Api.ObjectMapper
     public virtual IList<P> DtoToPhysical(IList<D> dtoList)
     {
       var physList = new List<P>();
-      foreach (D dto in dtoList)
+      foreach (var dto in dtoList)
       {
-        P phys = DtoToPhysical(dto);
+        var phys = DtoToPhysical(dto);
         physList.Add(phys);
       }
 

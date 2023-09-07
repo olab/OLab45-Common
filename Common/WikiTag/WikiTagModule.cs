@@ -18,7 +18,7 @@ namespace OLab.Api.Common
 
     public WikiTagModule(OLabLogger logger, string htmlElementName)
     {
-      Type t = GetType();
+      var t = GetType();
       var attribute =
           (WikiTagModuleAttribute)Attribute.GetCustomAttribute(t, typeof(WikiTagModuleAttribute));
       _wikiType = attribute.WikiTag;
@@ -58,7 +58,7 @@ namespace OLab.Api.Common
       foreach (var pattern in wikiTagPatterns)
       {
         var regex = new Regex(pattern);
-        Match match = regex.Match(source);
+        var match = regex.Match(source);
         if (match.Success)
         {
           wikiStart = match.Index;

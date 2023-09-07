@@ -19,7 +19,7 @@ namespace OLab.Api.ObjectMapper
 
     public override FilesFullDto PhysicalToDto(SystemFiles phys, FilesFullDto source)
     {
-      FilesFullDto dto = base.PhysicalToDto(phys, source);
+      var dto = base.PhysicalToDto(phys, source);
       dto.FileName = Path.GetFileName(phys.Path);
       return dto;
     }

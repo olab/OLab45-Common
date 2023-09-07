@@ -130,13 +130,13 @@ namespace OLab.Api.Dto
     {
       var counterValues = UpdatedAt.ToString() + "/";
 
-      foreach (CountersDto counter in Server.Counters.OrderBy(x => x.Id))
+      foreach (var counter in Server.Counters.OrderBy(x => x.Id))
         counterValues += counter.Value + "/";
 
-      foreach (CountersDto counter in Node.Counters.OrderBy(x => x.Id))
+      foreach (var counter in Node.Counters.OrderBy(x => x.Id))
         counterValues += counter.Value + "/";
 
-      foreach (CountersDto counter in Map.Counters.OrderBy(x => x.Id))
+      foreach (var counter in Map.Counters.OrderBy(x => x.Id))
         counterValues += counter.Value + "/";
 
       return counterValues;
@@ -180,13 +180,13 @@ namespace OLab.Api.Dto
       message += $"Text:   {plainText}{Environment.NewLine}";
       message += $"Bytes:  {GetPlainTextBytes(plainText)}{Environment.NewLine}";
 
-      foreach (CountersDto counter in Server.Counters)
+      foreach (var counter in Server.Counters)
         message += $"Server: {counter}{Environment.NewLine}";
 
-      foreach (CountersDto counter in Node.Counters)
+      foreach (var counter in Node.Counters)
         message += $"Node:   {counter}{Environment.NewLine}";
 
-      foreach (CountersDto counter in Map.Counters)
+      foreach (var counter in Map.Counters)
         message += $"Map:    {counter}{Environment.NewLine}";
 
       message += $"Update  {UpdatedAt.ToString()}{Environment.NewLine}";

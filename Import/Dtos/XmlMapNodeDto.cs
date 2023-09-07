@@ -92,7 +92,7 @@ namespace OLab.Api.Importer
       var rc = true;
 
       // remap all MR with new id's in node text
-      XmlDto mapElementDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapElementDto);
+      var mapElementDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapElementDto);
       var mappedWikiTags = new Dictionary<string, string>();
 
       var wiki = new MediaResourceWikiTag(GetLogger());
@@ -124,7 +124,7 @@ namespace OLab.Api.Importer
       var rc = true;
 
       // remap all MR with new id's in node text
-      XmlDto questionDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapQuestionDto);
+      var questionDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapQuestionDto);
       var mappedWikiTags = new Dictionary<string, string>();
 
       var wiki = new QuestionWikiTag(GetLogger());
@@ -159,12 +159,12 @@ namespace OLab.Api.Importer
     /// <returns>Success/failure</returns>
     public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
     {
-      Model.MapNodes item = _mapper.ElementsToPhys(elements);
+      var item = _mapper.ElementsToPhys(elements);
       var oldId = item.Id;
 
       item.Id = 0;
 
-      XmlDto mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto);
+      var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto);
       item.MapId = mapDto.GetIdTranslation(GetFileName(), item.MapId).Value;
 
       // remap 'true' MR's before Avatars since Avatars are rendered as MR's.

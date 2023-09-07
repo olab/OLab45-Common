@@ -18,7 +18,7 @@ namespace OLab.Api.Model
 
     public static Users CreateDefault(AddUserRequest model)
     {
-      Users newUser = CreateDefault();
+      var newUser = CreateDefault();
 
       if (!string.IsNullOrEmpty(model.Password))
         newUser.Password = model.Password;

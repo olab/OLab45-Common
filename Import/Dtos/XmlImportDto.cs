@@ -111,7 +111,7 @@ namespace OLab.Api.Importer
 
         var record = 0;
 
-        foreach (dynamic innerElements in outerElements)
+        foreach (var innerElements in outerElements)
         {
           try
           {
@@ -148,7 +148,7 @@ namespace OLab.Api.Importer
       GetLogger().LogDebug($"Saving {xmlImportElementSets.Count()} {GetFileName()} objects");
 
       var recordIndex = 1;
-      foreach (IEnumerable<dynamic> elements in xmlImportElementSets)
+      foreach (var elements in xmlImportElementSets)
       {
         try
         {

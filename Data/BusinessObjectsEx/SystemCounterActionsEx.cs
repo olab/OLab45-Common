@@ -16,7 +16,7 @@ namespace OLab.Api.Model
     {
       // test for numeric constant function expression
       var regex = new Regex("=[-,+]?[0-9]+");
-      Match match = regex.Match(Expression);
+      var match = regex.Match(Expression);
       if (match.Success)
       {
         if (!decimal.TryParse(match.Value[1..], out var newValue))
@@ -66,7 +66,7 @@ namespace OLab.Api.Model
       {
         // test string literal function expression
         var regex = new Regex("=[a-z,A-Z,0-9,\\ ]+");
-        Match match = regex.Match(Expression);
+        var match = regex.Match(Expression);
 
         if (match.Success)
         {

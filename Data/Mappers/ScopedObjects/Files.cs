@@ -20,7 +20,7 @@ namespace OLab.Api.ObjectMapper
 
     public override SystemFiles ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
     {
-      SystemFiles phys = GetPhys(source);
+      var phys = GetPhys(source);
 
       phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
       if (uint.TryParse(elements.FirstOrDefault(x => x.Name == "map_id").Value, out uint id))

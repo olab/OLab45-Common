@@ -32,7 +32,7 @@ namespace OLab.Api.ObjectMapper
 
     public override Model.Maps ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
     {
-      Model.Maps phys = base.GetPhys(source);
+      var phys = base.GetPhys(source);
 
       phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
       phys.Name = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "name"));

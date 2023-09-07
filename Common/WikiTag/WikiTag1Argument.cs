@@ -26,7 +26,7 @@ namespace OLab.Api.Common
       foreach (var pattern in wikiTagNamePatterns)
       {
         var regex = new Regex(pattern);
-        Match match = regex.Match(source);
+        var match = regex.Match(source);
         if (match.Success)
         {
           wikiTagIdPart = match.Value.Replace("\"", "");

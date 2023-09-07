@@ -43,7 +43,7 @@ namespace OLab.Api.ObjectMapper
       Model.ScopedObjects node,
       DynamicScopedObjectsDto dto)
     {
-      System.Collections.Generic.IList<CountersDto> dtoCountersList = new ObjectMapper.Counters(logger, GetWikiProvider()).PhysicalToDto(server.Counters);
+      var dtoCountersList = new ObjectMapper.Counters(logger, GetWikiProvider()).PhysicalToDto(server.Counters);
       dto.Server.Counters.AddRange(dtoCountersList);
 
       dtoCountersList = new ObjectMapper.Counters(logger, GetWikiProvider()).PhysicalToDto(map.Counters);

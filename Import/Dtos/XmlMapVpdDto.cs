@@ -42,7 +42,7 @@ namespace OLab.Api.Importer
         dynamic outerElements = GetElements(GetXmlPhys());
         var record = 0;
 
-        foreach (dynamic innerElements in outerElements)
+        foreach (var innerElements in outerElements)
         {
           try
           {
@@ -50,7 +50,7 @@ namespace OLab.Api.Importer
             var elements = (IEnumerable<dynamic>)innerElements.Elements();
             xmlImportElementSets.Add(elements);
 
-            Model.MapVpds item = _mapper.ElementsToPhys(elements);
+            var item = _mapper.ElementsToPhys(elements);
 
             var phys = new XmlMapVpd
             {
@@ -99,7 +99,7 @@ namespace OLab.Api.Importer
     /// <returns>Success/failure</returns>
     public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
     {
-      Model.MapVpds item = _mapper.ElementsToPhys(elements);
+      var item = _mapper.ElementsToPhys(elements);
       var oldId = item.Id;
       item.Id = 0;
 

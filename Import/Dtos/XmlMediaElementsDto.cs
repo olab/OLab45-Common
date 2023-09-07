@@ -29,7 +29,7 @@ namespace OLab.Api.Importer
         {
           var outerElements = (IEnumerable<dynamic>)GetXmlPhys().media_elements.media_elements_files.Elements();
 
-          foreach (dynamic element in outerElements)
+          foreach (var element in outerElements)
           {
             try
             {
@@ -55,7 +55,7 @@ namespace OLab.Api.Importer
         {
           var outerElements = (IEnumerable<dynamic>)GetXmlPhys().media_elements.media_elements_avatars.Elements();
 
-          foreach (dynamic element in outerElements)
+          foreach (var element in outerElements)
           {
             try
             {
@@ -109,12 +109,12 @@ namespace OLab.Api.Importer
         var sourceDirectory = Path.Combine(GetImportPackageDirectory(), "media");
 
         var mapDto = GetImporter().GetDto(DtoTypes.XmlMapDto) as XmlMapDto;
-        Model.Maps map = mapDto.GetModel().Data.FirstOrDefault();
+        var map = mapDto.GetModel().Data.FirstOrDefault();
 
         var targetDirectory = GetPublicFileDirectory("Maps", map.Id);
         Directory.CreateDirectory(targetDirectory);
 
-        foreach (dynamic element in elements)
+        foreach (var element in elements)
         {
           try
           {

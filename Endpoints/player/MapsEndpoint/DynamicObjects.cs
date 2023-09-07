@@ -31,7 +31,7 @@ namespace OLab.Api.Endpoints.Player
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      MapNodes node = await GetMapRootNode(mapId, nodeId);
+      var node = await GetMapRootNode(mapId, nodeId);
       return await GetDynamicScopedObjectsAsync(1, node, sinceTime, false);
     }
 
@@ -54,7 +54,7 @@ namespace OLab.Api.Endpoints.Player
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      MapNodes node = await GetMapRootNode(mapId, nodeId);
+      var node = await GetMapRootNode(mapId, nodeId);
       return await GetDynamicScopedObjectsAsync(1, node, sinceTime, true);
     }
 
@@ -83,7 +83,7 @@ namespace OLab.Api.Endpoints.Player
       await ProcessNodeCounters(node, physMap.Counters);
 
       var builder = new ObjectMapper.DynamicScopedObjects(logger, enableWikiTranslation);
-      DynamicScopedObjectsDto dto = builder.PhysicalToDto(physServer, physMap, physNode);
+      var dto = builder.PhysicalToDto(physServer, physMap, physNode);
 
       return dto;
     }
@@ -91,25 +91,25 @@ namespace OLab.Api.Endpoints.Player
     private async Task<IList<CountersDto>> ProcessNodeOpenCountersAsync(uint nodeId, IList<CountersDto> orgDtoList)
     {
       var newDtoList = new List<CountersDto>();
-      MapNodes node = await dbContext.MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
+      var node = await dbContext.MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
 
-      List<SystemCounterActions> counterActions = await dbContext.SystemCounterActions.Where(x =>
+      var counterActions = await dbContext.SystemCounterActions.Where(x =>
         (x.ImageableId == node.Id) &&
         (x.ImageableType == Utils.Constants.ScopeLevelNode) &&
         (x.OperationType == "open")).ToListAsync();
 
       logger.LogDebug($"Found {counterActions.Count} counterActions records for node {node.Id} ");
 
-      foreach (SystemCounterActions counterAction in counterActions)
+      foreach (var counterAction in counterActions)
       {
-        CountersDto dto = orgDtoList.FirstOrDefault(x => x.Id == counterAction.CounterId);
+        var dto = orgDtoList.FirstOrDefault(x => x.Id == counterAction.CounterId);
         if (dto == null)
           logger.LogError($"Enable to lookup counter {counterAction.CounterId} in action {counterAction.Id}");
 
         else
         {
           // convert to physical object so we can use the counterActions code
-          SystemCounters phys = new ObjectMapper.Counters(logger).DtoToPhysical(dto);
+          var phys = new ObjectMapper.Counters(logger).DtoToPhysical(dto);
 
           // test if there's a counter action to apply
           if (counterAction.ApplyFunctionToCounter(phys))
@@ -141,16 +141,16 @@ namespace OLab.Api.Endpoints.Player
     /// <returns>void</returns>
     private async Task<IList<SystemCounters>> ProcessNodeCounters(Model.MapNodes node, IList<SystemCounters> physList)
     {
-      List<SystemCounterActions> counterActions = await dbContext.SystemCounterActions.Where(x =>
+      var counterActions = await dbContext.SystemCounterActions.Where(x =>
         (x.ImageableId == node.Id) &&
         (x.ImageableType == Utils.Constants.ScopeLevelNode) &&
         (x.OperationType == "open")).ToListAsync();
 
       logger.LogDebug($"Found {counterActions.Count} counterActions records for node {node.Id} ");
 
-      foreach (SystemCounterActions counterAction in counterActions)
+      foreach (var counterAction in counterActions)
       {
-        SystemCounters phys = physList.FirstOrDefault(x => x.Id == counterAction.CounterId);
+        var phys = physList.FirstOrDefault(x => x.Id == counterAction.CounterId);
         if (phys == null)
           logger.LogError($"Enable to lookup counter {counterAction.CounterId} in action {counterAction.Id}");
 

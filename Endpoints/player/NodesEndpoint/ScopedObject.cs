@@ -27,11 +27,11 @@ namespace OLab.Api.Endpoints.Player
     {
       logger.LogDebug($"NodesController.GetScopedObjectsAsync(uint nodeId={id})");
 
-      MapNodes node = GetSimple(dbContext, id);
+      var node = GetSimple(dbContext, id);
       if (node == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
 
-      Model.ScopedObjects phys = await GetScopedObjectsAllAsync(node.Id, Utils.Constants.ScopeLevelNode);
+      var phys = await GetScopedObjectsAllAsync(node.Id, Utils.Constants.ScopeLevelNode);
 
       phys.Constants.Add(new SystemConstants
       {
@@ -65,7 +65,7 @@ namespace OLab.Api.Endpoints.Player
 
       var builder = new ObjectMapper.ScopedObjects(logger, enableWikiTranslation);
 
-      Dto.ScopedObjectsDto dto = builder.PhysicalToDto(phys);
+      var dto = builder.PhysicalToDto(phys);
       return dto;
     }
   }

@@ -171,7 +171,7 @@ namespace OLab.Api.Importer
       {
         var extractPath = Extract(archiveFileName);
 
-        foreach (XmlDto dto in _dtos.Values)
+        foreach (var dto in _dtos.Values)
           dto.Load(extractPath);
 
       }
@@ -187,12 +187,12 @@ namespace OLab.Api.Importer
     {
       var rc = true;
 
-      using (Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = _context.Database.BeginTransaction())
+      using (var transaction = _context.Database.BeginTransaction())
       {
         try
         {
 
-          foreach (XmlDto dto in _dtos.Values)
+          foreach (var dto in _dtos.Values)
             dto.Save();
 
           transaction.Commit();

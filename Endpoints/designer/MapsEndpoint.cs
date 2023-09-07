@@ -33,7 +33,7 @@ namespace OLab.Api.Endpoints.Designer
     /// <returns></returns>
     private static Model.Maps GetSimple(OLabDBContext context, uint id)
     {
-      Maps phys = context.Maps.Include(x => x.SystemCounterActions).FirstOrDefault(x => x.Id == id);
+      var phys = context.Maps.Include(x => x.SystemCounterActions).FirstOrDefault(x => x.Id == id);
       return phys;
     }
 
@@ -51,7 +51,7 @@ namespace OLab.Api.Endpoints.Designer
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      Maps map = await MapsReaderWriter.Instance(logger.GetLogger(), dbContext).GetSingleAsync(mapId);
+      var map = await MapsReaderWriter.Instance(logger.GetLogger(), dbContext).GetSingleAsync(mapId);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
@@ -80,12 +80,12 @@ namespace OLab.Api.Endpoints.Designer
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      Maps map = await MapsReaderWriter.Instance(logger.GetLogger(), dbContext).GetSingleAsync(mapId);
+      var map = await MapsReaderWriter.Instance(logger.GetLogger(), dbContext).GetSingleAsync(mapId);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
       // get node with no wikitag translation
-      IList<MapNodesFullDto> dtoList = await GetNodesAsync(map, false);
+      var dtoList = await GetNodesAsync(map, false);
       return dtoList;
     }
 
@@ -107,11 +107,11 @@ namespace OLab.Api.Endpoints.Designer
         if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
           throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-        MapNodes sourceNode = await GetMapNodeAsync(nodeId);
+        var sourceNode = await GetMapNodeAsync(nodeId);
         if (sourceNode == null)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, nodeId);
 
-        MapNodes destinationNode = await GetMapNodeAsync(body.DestinationId);
+        var destinationNode = await GetMapNodeAsync(body.DestinationId);
         if (destinationNode == null)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, body.DestinationId);
 
@@ -147,11 +147,11 @@ namespace OLab.Api.Endpoints.Designer
     {
       logger.LogDebug($"PostMapNodesAsync(x = {body.X}, y = {body.Y}, sourceId = {body.SourceId})");
 
-      using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = dbContext.Database.BeginTransaction();
+      using var transaction = dbContext.Database.BeginTransaction();
 
       try
       {
-        MapNodes sourceNode = await GetMapNodeAsync(body.SourceId);
+        var sourceNode = await GetMapNodeAsync(body.SourceId);
         if (sourceNode == null)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, body.SourceId);
 
@@ -209,11 +209,11 @@ namespace OLab.Api.Endpoints.Designer
       if (0 == body.Length)
         return true;
 
-      using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = dbContext.Database.BeginTransaction();
+      using var transaction = dbContext.Database.BeginTransaction();
 
       try
       {
-        Maps map = GetSimple(dbContext, mapId);
+        var map = GetSimple(dbContext, mapId);
 
         if (map == null)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
@@ -222,7 +222,7 @@ namespace OLab.Api.Endpoints.Designer
         if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, map.Id))
           throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, map.Id);
 
-        foreach (PutNodeGridRequest nodeDto in body)
+        foreach (var nodeDto in body)
         {
           var phys = dbContext.MapNodes.FirstOrDefault(x => x.Id == nodeDto.Id);
 
@@ -260,7 +260,7 @@ namespace OLab.Api.Endpoints.Designer
     /// <returns></returns>
     public Model.MapNodeLinks GetLinkSimple(OLabDBContext context, uint id)
     {
-      MapNodeLinks phys = context.MapNodeLinks.FirstOrDefault(x => x.Id == id);
+      var phys = context.MapNodeLinks.FirstOrDefault(x => x.Id == id);
       return phys;
     }
 
@@ -281,7 +281,7 @@ namespace OLab.Api.Endpoints.Designer
         if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
           throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-        MapNodeLinks link = GetLinkSimple(dbContext, linkId);
+        var link = GetLinkSimple(dbContext, linkId);
 
         if (link == null)
           throw new OLabObjectNotFoundException("Links", linkId);
@@ -345,12 +345,12 @@ namespace OLab.Api.Endpoints.Designer
       uint id,
       bool enableWikiTranslation)
     {
-      Maps map = GetSimple(dbContext, id);
+      var map = GetSimple(dbContext, id);
       if (map == null)
         return null;
 
-      Model.ScopedObjects phys = await GetScopedObjectsAllAsync(map.Id, Utils.Constants.ScopeLevelMap);
-      Model.ScopedObjects physServer = await GetScopedObjectsAllAsync(1, Utils.Constants.ScopeLevelServer);
+      var phys = await GetScopedObjectsAllAsync(map.Id, Utils.Constants.ScopeLevelMap);
+      var physServer = await GetScopedObjectsAllAsync(1, Utils.Constants.ScopeLevelServer);
 
       phys.Combine(physServer);
 
@@ -385,25 +385,25 @@ namespace OLab.Api.Endpoints.Designer
       });
 
       var builder = new ObjectMapper.Designer.ScopedObjects(logger, enableWikiTranslation);
-      Dto.Designer.ScopedObjectsDto dto = builder.PhysicalToDto(phys);
+      var dto = builder.PhysicalToDto(phys);
 
       var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
       var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
       var servers = dbContext.Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
 
-      foreach (Dto.Designer.ScopedObjectDto question in dto.Questions)
+      foreach (var question in dto.Questions)
         question.ParentInfo = FindParentInfo(question.ScopeLevel, question.ParentId, maps, nodes, servers);
 
-      foreach (Dto.Designer.ScopedObjectDto constant in dto.Constants)
+      foreach (var constant in dto.Constants)
         constant.ParentInfo = FindParentInfo(constant.ScopeLevel, constant.ParentId, maps, nodes, servers);
 
-      foreach (Dto.Designer.ScopedObjectDto counter in dto.Counters)
+      foreach (var counter in dto.Counters)
         counter.ParentInfo = FindParentInfo(counter.ScopeLevel, counter.ParentId, maps, nodes, servers);
 
-      foreach (Dto.Designer.ScopedObjectDto file in dto.Files)
+      foreach (var file in dto.Files)
         file.ParentInfo = FindParentInfo(file.ScopeLevel, file.ParentId, maps, nodes, servers);
 
-      foreach (Dto.Designer.ScopedObjectDto script in dto.Scripts)
+      foreach (var script in dto.Scripts)
         script.ParentInfo = FindParentInfo(script.ScopeLevel, script.ParentId, maps, nodes, servers);
 
       return dto;
@@ -516,7 +516,7 @@ namespace OLab.Api.Endpoints.Designer
       if (null == user)
         throw new OLabBadRequestException("User not found.");
 
-      SecurityUsers securityUser = dbContext.SecurityUsers.SingleOrDefault(x => x.ImageableId == map.Id
+      var securityUser = dbContext.SecurityUsers.SingleOrDefault(x => x.ImageableId == map.Id
       && (
         // note: this excludes `ImageableType == "*"` entries, allowing authors
         // to manipulate those rows may lead to unwanted side-effects
@@ -567,7 +567,7 @@ namespace OLab.Api.Endpoints.Designer
       if (map == null)
         return false;
 
-      SecurityUsers securityUser = dbContext.SecurityUsers.SingleOrDefault(x => x.ImageableId == map.Id
+      var securityUser = dbContext.SecurityUsers.SingleOrDefault(x => x.ImageableId == map.Id
       && (
         // note: this excludes `ImageableType == "*"` entries, allowing authors
         // to manipulate those rows may lead to unwanted side-effects

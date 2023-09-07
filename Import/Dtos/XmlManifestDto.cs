@@ -25,7 +25,7 @@ namespace OLab.Api.Importer
         dynamic elements = GetElements(GetXmlPhys());
 
         var record = 0;
-        foreach (dynamic element in elements)
+        foreach (var element in elements)
         {
           try
           {

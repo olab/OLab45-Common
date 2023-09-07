@@ -65,13 +65,13 @@ namespace OLab.Api.Endpoints
 
       logger.LogDebug(string.Format("found {0} questions", physList.Count));
 
-      IList<QuestionsDto> dtoList = new ObjectMapper.Questions(logger, new WikiTagProvider(logger)).PhysicalToDto(physList);
+      var dtoList = new ObjectMapper.Questions(logger, new WikiTagProvider(logger)).PhysicalToDto(physList);
 
       var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
       var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
       var servers = dbContext.Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
 
-      foreach (QuestionsDto dto in dtoList)
+      foreach (var dto in dtoList)
         dto.ParentInfo = FindParentInfo(dto.ImageableType, dto.ImageableId, maps, nodes, servers);
 
       return new OLabAPIPagedResponse<QuestionsDto> { Data = dtoList, Remaining = remaining, Count = total };
@@ -93,12 +93,12 @@ namespace OLab.Api.Endpoints
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Questions", id);
 
-      SystemQuestions phys = await dbContext.SystemQuestions.Include("SystemQuestionResponses").FirstAsync(x => x.Id == id);
+      var phys = await dbContext.SystemQuestions.Include("SystemQuestionResponses").FirstAsync(x => x.Id == id);
       var builder = new QuestionsFull(logger);
-      QuestionsFullDto dto = builder.PhysicalToDto(phys);
+      var dto = builder.PhysicalToDto(phys);
 
       // test if user has access to object
-      IActionResult accessResult = auth.HasAccess("R", dto);
+      var accessResult = auth.HasAccess("R", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Questions", id);
 
@@ -123,14 +123,14 @@ namespace OLab.Api.Endpoints
       dto.ImageableId = dto.ParentInfo.Id;
 
       // test if user has access to object
-      IActionResult accessResult = auth.HasAccess("W", dto);
+      var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Questions", id);
 
       try
       {
         var builder = new QuestionsFull(logger);
-        SystemQuestions phys = builder.DtoToPhysical(dto);
+        var phys = builder.DtoToPhysical(dto);
 
         phys.UpdatedAt = DateTime.Now;
 
@@ -139,7 +139,7 @@ namespace OLab.Api.Endpoints
       }
       catch (DbUpdateConcurrencyException)
       {
-        SystemQuestions existingObject = await GetQuestionAsync(id);
+        var existingObject = await GetQuestionAsync(id);
         if (existingObject == null)
           throw new OLabObjectNotFoundException("Questions", id);
       }
@@ -161,12 +161,12 @@ namespace OLab.Api.Endpoints
       dto.Prompt = !string.IsNullOrEmpty(dto.Prompt) ? dto.Prompt : "";
 
       // test if user has access to object
-      IActionResult accessResult = auth.HasAccess("W", dto);
+      var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Questions", 0);
 
       var builder = new QuestionsFull(logger);
-      SystemQuestions phys = builder.DtoToPhysical(dto);
+      var phys = builder.DtoToPhysical(dto);
 
       phys.CreatedAt = DateTime.Now;
 

@@ -27,7 +27,7 @@ namespace OLab.Api.Model.ReaderWriter
 
     public async Task<Maps> GetSingleAsync(uint id)
     {
-      Maps phys = await _context.Maps.FirstOrDefaultAsync(x => x.Id == id);
+      var phys = await _context.Maps.FirstOrDefaultAsync(x => x.Id == id);
       if (phys.Id == 0)
         return null;
       return phys;
@@ -35,7 +35,7 @@ namespace OLab.Api.Model.ReaderWriter
 
     public async Task<Maps> GetSingleWithNodesAsync(uint id)
     {
-      Maps phys = await GetSingleAsync(id);
+      var phys = await GetSingleAsync(id);
       if (phys != null)
         _context.Entry(phys).Collection(b => b.MapNodes).Load();
 
@@ -44,7 +44,7 @@ namespace OLab.Api.Model.ReaderWriter
 
     public async Task<IList<Maps>> GetMultipleAsync(int skip = 0, int take = 0)
     {
-      List<Maps> items = await _context.Maps.Skip(skip).Take(take).OrderBy(x => x.Name).ToListAsync();
+      var items = await _context.Maps.Skip(skip).Take(take).OrderBy(x => x.Name).ToListAsync();
       return items;
     }
 
@@ -69,7 +69,7 @@ namespace OLab.Api.Model.ReaderWriter
     /// <returns>Ammended map</returns>
     public async Task<Maps> CreateMapWithTemplateAsync(Maps map, Maps template)
     {
-      using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = _context.Database.BeginTransaction();
+      using var transaction = _context.Database.BeginTransaction();
 
       try
       {
@@ -126,14 +126,14 @@ namespace OLab.Api.Model.ReaderWriter
 
       // calculate the positional differences between the template
       // and the original map
-      SizeF transformVector = templateBoundingBox.CalculateTransformTo(mapBoundingBox);
+      var transformVector = templateBoundingBox.CalculateTransformTo(mapBoundingBox);
 
       _logger.LogDebug($"map BB: {mapBoundingBox.Rect}");
       _logger.LogDebug($"template BB: {templateBoundingBox.Rect}");
       _logger.LogDebug($"transform vector: {transformVector}");
 
       // reassign nodes to target map and add to target map
-      foreach (MapNodes node in template.MapNodes)
+      foreach (var node in template.MapNodes)
       {
         var oldNodeId = node.Id;
         MapNodes.Reassign(map, node);
@@ -145,7 +145,7 @@ namespace OLab.Api.Model.ReaderWriter
 
         // transform position of node using the transform vector
         var nodeCoord = new PointF((float)node.X.Value, (float)node.Y.Value);
-        PointF newCoord = nodeCoord + transformVector;
+        var newCoord = nodeCoord + transformVector;
 
         _logger.LogDebug($"transforming: {nodeCoord} -> {newCoord}");
 
@@ -165,7 +165,7 @@ namespace OLab.Api.Model.ReaderWriter
 
       var templateLinks = _context.MapNodeLinks.AsNoTracking().Where(x => x.MapId == template.Id).ToList();
 
-      foreach (MapNodeLinks templateLink in templateLinks)
+      foreach (var templateLink in templateLinks)
       {
         var oldNodeLinkId = templateLink.Id;
         MapNodeLinks.Reassign(reverseNodeIdMap, map.Id, templateLink);

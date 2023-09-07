@@ -45,7 +45,7 @@ namespace OLab.Api.Model
       var score = 0;
       foreach (var id in ids)
       {
-        SystemQuestionResponses response = GetResponse(id);
+        var response = GetResponse(id);
         if (response != null)
         {
           if (response.Score.HasValue)
@@ -58,7 +58,7 @@ namespace OLab.Api.Model
 
     public SystemQuestionResponses GetResponse(uint id)
     {
-      foreach (SystemQuestionResponses item in SystemQuestionResponses)
+      foreach (var item in SystemQuestionResponses)
       {
         if (item.Id == id)
           return item;

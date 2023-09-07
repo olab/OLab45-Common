@@ -34,7 +34,7 @@ namespace OLab.Api.Importer
     /// <returns>Success/failure</returns>
     public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
     {
-      MapVpdElements phys = _mapper.ElementsToPhys(elements);
+      var phys = _mapper.ElementsToPhys(elements);
 
       // only support the VPDText type at this time
       if (phys.Key == "VPDText")
@@ -51,7 +51,7 @@ namespace OLab.Api.Importer
       item.Description = $"Imported from {GetFileName()} id = {phys.Id}.";
 
       var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdDto) as XmlMapVpdDto;
-      XmlMapVpd vpd = vpdDto.GetModel().Data.First(x => x.Id == phys.VpdId);
+      var vpd = vpdDto.GetModel().Data.First(x => x.Id == phys.VpdId);
 
       var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
       item.ImageableId = mapDto.GetIdTranslation(GetFileName(), vpd.MapId).Value;

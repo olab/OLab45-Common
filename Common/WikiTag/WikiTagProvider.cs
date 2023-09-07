@@ -20,7 +20,7 @@ namespace OLab.Api.Common
 
     public string Translate(string source)
     {
-      foreach (IWikiTagModule module in m_WikiTagModules.Values)
+      foreach (var module in m_WikiTagModules.Values)
         source = module.Translate(source);
 
       return source;
@@ -37,7 +37,7 @@ namespace OLab.Api.Common
       else
         m_WikiTagModules.Clear();
 
-      List<Assembly> plugInAssemblies = LoadPlugInAssemblies();
+      var plugInAssemblies = LoadPlugInAssemblies();
       m_WikiTagModules = GetPlugIns(plugInAssemblies);
     }
 
@@ -97,12 +97,12 @@ namespace OLab.Api.Common
     {
       var availableTypes = new List<Type>();
 
-      foreach (Assembly currentAssembly in assemblies)
+      foreach (var currentAssembly in assemblies)
         availableTypes.AddRange(currentAssembly.GetTypes());
 
       // get a list of objects that implement the IWikiTagModule interface AND 
       // have the WikiTagModuleAttribute
-      List<Type> wikiTagList = availableTypes.FindAll(delegate (Type t)
+      var wikiTagList = availableTypes.FindAll(delegate (Type t)
       {
         var interfaceTypes = new List<Type>(t.GetInterfaces());
         var arr = t.GetCustomAttributes(typeof(WikiTagModuleAttribute), true);
@@ -110,9 +110,9 @@ namespace OLab.Api.Common
       });
 
       var dict = new Dictionary<string, IWikiTagModule>();
-      foreach (Type item in wikiTagList)
+      foreach (var item in wikiTagList)
       {
-        WikiTagModuleAttribute t = item.GetCustomAttribute<WikiTagModuleAttribute>();
+        var t = item.GetCustomAttribute<WikiTagModuleAttribute>();
         dict.Add(t.WikiTag, (IWikiTagModule)Activator.CreateInstance(item, logger));
       }
       return dict;

@@ -66,7 +66,7 @@ namespace OLab.Api.ObjectMapper
 
     public override SystemQuestionResponses ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
     {
-      SystemQuestionResponses phys = GetPhys(source);
+      var phys = GetPhys(source);
 
       phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
       CreateIdTranslation(phys.Id);
