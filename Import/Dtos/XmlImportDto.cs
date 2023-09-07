@@ -51,7 +51,7 @@ namespace OLab.Api.Importer
       _tagProvider = GetImporter().GetWikiProvider();
       _olabLogger = GetImporter().GetLogger();
       Context = GetImporter().GetContext();
-      _websitePublicFilesDirectory = GetImporter().Settings.WebsitePublicFilesDirectory;
+      _websitePublicFilesDirectory = GetImporter().Settings.PublicFileFolder;
     }
 
     /// <summary>
