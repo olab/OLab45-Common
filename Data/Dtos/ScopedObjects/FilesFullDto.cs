@@ -1,3 +1,4 @@
+using HttpMultipartParser;
 using Microsoft.AspNetCore.Http;
 using System;
 
@@ -11,6 +12,7 @@ namespace OLab.Api.Dto
 
 
     }
+
     public FilesFullDto(IFormCollection form)
     {
       Id = Convert.ToUInt32(form["id"]);
@@ -23,6 +25,12 @@ namespace OLab.Api.Dto
       SelectedFileName = form["selectedFileName"];
       FileSize = Convert.ToInt32(form["fileSize"]);
       CreatedAt = DateTime.UtcNow;
+    }
+
+    public FilesFullDto(MultipartFormDataParser parser)
+    {
+      Id = Convert.ToUInt32(parser.GetParameterValue("id"));
+      // TODO: complete the rest of the properties
     }
 
     public IFormFile FileContents { get; set; }
