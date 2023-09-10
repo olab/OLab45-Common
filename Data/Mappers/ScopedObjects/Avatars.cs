@@ -10,7 +10,10 @@ namespace OLab.Api.ObjectMapper
 {
   public class AvatarsMapper : OLabMapper<MapAvatars, AvatarsDto>
   {
-    public AvatarsMapper(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public AvatarsMapper(
+      OLabLogger logger,
+      WikiTagProvider tagProvider,
+      bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 
@@ -44,7 +47,7 @@ namespace OLab.Api.ObjectMapper
 
       phys.IsPrivate = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "is_private").Value);
 
-      // logger.LogInformation($"loaded MapAvatars {phys.Id}");
+      // Logger.LogInformation($"loaded MapAvatars {phys.Id}");
 
       return phys;
     }

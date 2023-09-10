@@ -1,4 +1,6 @@
 using OLab.Api.Utils;
+using OLab.Common.Attributes;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -14,17 +16,17 @@ namespace OLab.Api.Common
 
     protected int wikiStart = 0;
     protected int wikiEnd = 0;
-    protected OLabLogger _logger;
+    protected OLabLogger Logger;
 
     public WikiTagModule(OLabLogger logger, string htmlElementName)
     {
       var t = GetType();
       var attribute =
-          (WikiTagModuleAttribute)Attribute.GetCustomAttribute(t, typeof(WikiTagModuleAttribute));
-      _wikiType = attribute.WikiTag;
+          (OLabModuleAttribute)Attribute.GetCustomAttribute(t, typeof(OLabModuleAttribute));
+      _wikiType = attribute.Name;
       _htmlElementName = htmlElementName;
 
-      _logger = logger;
+      Logger = logger;
     }
 
     public string GetWikiType() { return _wikiType; }

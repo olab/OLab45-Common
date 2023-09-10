@@ -14,7 +14,10 @@ namespace OLab.Api.ObjectMapper
     public static int DefaultWidth = 400;
     public static int DefaultHeight = 300;
 
-    public CounterActionsMapper(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public CounterActionsMapper(
+      OLabLogger logger,
+      WikiTagProvider tagProvider,
+      bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

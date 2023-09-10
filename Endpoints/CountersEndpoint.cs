@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
 {
-  public partial class CountersEndpoint : OlabEndpoint
+  public partial class CountersEndpoint : OLabEndpoint
   {
 
     public CountersEndpoint(
@@ -47,7 +47,7 @@ namespace OLab.Api.Endpoints
       int? take,
       int? skip)
     {
-      logger.LogDebug($"CountersController.GetAsync(int? take={take}, int? skip={skip})");
+      Logger.LogDebug($"CountersController.GetAsync(int? take={take}, int? skip={skip})");
 
       var Counters = new List<SystemCounters>();
       var total = 0;
@@ -65,7 +65,7 @@ namespace OLab.Api.Endpoints
         remaining = total - take.Value - skip.Value;
       }
 
-      var dtoList = new ObjectMapper.Counters(logger).PhysicalToDto(Counters);
+      var dtoList = new ObjectMapper.Counters(Logger).PhysicalToDto(Counters);
 
       var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
       var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
@@ -84,13 +84,13 @@ namespace OLab.Api.Endpoints
     /// <returns></returns>
     public async Task<CountersDto> GetAsync(IOLabAuthentication auth, uint id)
     {
-      logger.LogDebug($"CountersController.GetAsync(uint id={id})");
+      Logger.LogDebug($"CountersController.GetAsync(uint id={id})");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Counters", id);
 
       var phys = await GetCounterAsync(id);
-      var dto = new CountersFull(logger).PhysicalToDto(phys);
+      var dto = new CountersFull(Logger).PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = auth.HasAccess("R", dto);
@@ -111,7 +111,7 @@ namespace OLab.Api.Endpoints
       uint id,
       CountersFullDto dto)
     {
-      logger.LogDebug($"PutAsync(uint id={id})");
+      Logger.LogDebug($"PutAsync(uint id={id})");
 
       dto.ImageableId = dto.ParentInfo.Id;
 
@@ -122,7 +122,7 @@ namespace OLab.Api.Endpoints
 
       try
       {
-        var builder = new CountersFull(logger);
+        var builder = new CountersFull(Logger);
         var phys = builder.DtoToPhysical(dto);
 
         phys.UpdatedAt = DateTime.Now;
@@ -148,7 +148,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthentication auth,
       CountersFullDto dto)
     {
-      logger.LogDebug($"CountersController.PostAsync({dto.Name})");
+      Logger.LogDebug($"CountersController.PostAsync({dto.Name})");
 
       dto.ImageableId = dto.ParentInfo.Id;
       dto.Value = dto.StartValue;
@@ -158,7 +158,7 @@ namespace OLab.Api.Endpoints
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Counters", 0);
 
-      var builder = new CountersFull(logger);
+      var builder = new CountersFull(Logger);
       var phys = builder.DtoToPhysical(dto);
 
       phys.CreatedAt = DateTime.Now;
@@ -181,7 +181,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthentication auth,
       uint id)
     {
-      logger.LogDebug($"CountersController.DeleteAsync(uint id={id})");
+      Logger.LogDebug($"CountersController.DeleteAsync(uint id={id})");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Counters", id);
@@ -189,7 +189,7 @@ namespace OLab.Api.Endpoints
       try
       {
         var phys = await GetCounterAsync(id);
-        var dto = new CountersFull(logger).PhysicalToDto(phys);
+        var dto = new CountersFull(Logger).PhysicalToDto(phys);
 
         // test if user has access to object
         var accessResult = auth.HasAccess("W", dto);

@@ -22,31 +22,31 @@ namespace OLab.Api.ObjectMapper
       var dto = GetDto(source);
 
       var dtoQuestionsList
-        = new ObjectMapper.QuestionsFull(logger, GetWikiProvider()).PhysicalToDto(phys.Questions);
+        = new ObjectMapper.QuestionsFull(Logger, GetWikiProvider()).PhysicalToDto(phys.Questions);
       dto.Questions.AddRange(dtoQuestionsList);
 
       var dtCountersList
-        = new ObjectMapper.Counters(logger, GetWikiProvider()).PhysicalToDto(phys.Counters);
+        = new ObjectMapper.Counters(Logger, GetWikiProvider()).PhysicalToDto(phys.Counters);
       dto.Counters.AddRange(dtCountersList);
 
       var dtConstantsList
-        = new ObjectMapper.Constants(logger, GetWikiProvider()).PhysicalToDto(phys.Constants);
+        = new ObjectMapper.Constants(Logger, GetWikiProvider()).PhysicalToDto(phys.Constants);
       dto.Constants.AddRange(dtConstantsList);
 
       var dtFilesList
-        = new ObjectMapper.FilesFull(logger, GetWikiProvider()).PhysicalToDto(phys.Files);
+        = new ObjectMapper.FilesFull(Logger, GetWikiProvider()).PhysicalToDto(phys.Files);
       dto.Files.AddRange(dtFilesList);
 
       var dtScriptsList
-        = new ObjectMapper.Scripts(logger, GetWikiProvider()).PhysicalToDto(phys.Scripts);
+        = new ObjectMapper.Scripts(Logger, GetWikiProvider()).PhysicalToDto(phys.Scripts);
       dto.Scripts.AddRange(dtScriptsList);
 
       var dtThemesList
-        = new ThemesFull(logger, GetWikiProvider(), enableWikiTranslation).PhysicalToDto(phys.Themes);
+        = new ThemesFull(Logger, GetWikiProvider(), enableWikiTranslation).PhysicalToDto(phys.Themes);
       dto.Themes.AddRange(dtThemesList);
 
       var dtCounterActionsList
-        = new CounterActionsMapper(logger, GetWikiProvider()).PhysicalToDto(phys.CounterActions);
+        = new CounterActionsMapper(Logger, GetWikiProvider()).PhysicalToDto(phys.CounterActions);
       dto.CounterActions.AddRange(dtCounterActionsList);
 
       return dto;

@@ -86,13 +86,13 @@ namespace OLab.Api.Common
         if (string.IsNullOrEmpty(name))
         {
           var str = $"**Invalid wiki tag {GetWiki()}**";
-          _logger.LogDebug($"replacing {GetWiki()} <= {str}");
+          Logger.LogDebug($"replacing {GetWiki()} <= {str}");
           source = ReplaceWikiTag(source, str);
         }
         else
         {
           var element = BuildWikiTagHTMLElement();
-          _logger.LogDebug($"replacing {GetWiki()} <= {element}");
+          Logger.LogDebug($"replacing {GetWiki()} <= {element}");
           source = ReplaceWikiTag(source, element);
         }
       }

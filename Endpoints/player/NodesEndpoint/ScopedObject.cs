@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints.Player
 {
-  public partial class NodesEndpoint : OlabEndpoint
+  public partial class NodesEndpoint : OLabEndpoint
   {
 
     public async Task<OLab.Api.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint nodeId)
     {
-      logger.LogDebug($"NodesController.GetScopedObjectsRawAsync(uint nodeId={nodeId})");
+      Logger.LogDebug($"NodesController.GetScopedObjectsRawAsync(uint nodeId={nodeId})");
       return await GetScopedObjectsAsync(nodeId, false);
     }
 
     public async Task<OLab.Api.Dto.ScopedObjectsDto> GetScopedObjectsAsync(uint nodeId)
     {
-      logger.LogDebug($"NodesController.GetScopedObjectsAsync(uint nodeId={nodeId})");
+      Logger.LogDebug($"NodesController.GetScopedObjectsAsync(uint nodeId={nodeId})");
       return await GetScopedObjectsAsync(nodeId, true);
     }
 
@@ -25,7 +25,7 @@ namespace OLab.Api.Endpoints.Player
       uint id,
       bool enableWikiTranslation)
     {
-      logger.LogDebug($"NodesController.GetScopedObjectsAsync(uint nodeId={id})");
+      Logger.LogDebug($"NodesController.GetScopedObjectsAsync(uint nodeId={id})");
 
       var node = GetSimple(dbContext, id);
       if (node == null)
@@ -63,7 +63,7 @@ namespace OLab.Api.Endpoints.Player
         Value = Encoding.ASCII.GetBytes(DateTime.UtcNow.ToString() + " UTC")
       });
 
-      var builder = new ObjectMapper.ScopedObjects(logger, enableWikiTranslation);
+      var builder = new ObjectMapper.ScopedObjects(Logger, enableWikiTranslation);
 
       var dto = builder.PhysicalToDto(phys);
       return dto;

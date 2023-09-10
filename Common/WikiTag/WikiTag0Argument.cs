@@ -41,7 +41,7 @@ namespace OLab.Api.Common
       while (HaveWikiTag(source))
       {
         var element = BuildWikiTagHTMLElement();
-        _logger.LogDebug($"replacing {GetWiki()} <= {element}");
+        Logger.LogDebug($"replacing {GetWiki()} <= {element}");
         source = ReplaceWikiTag(source, element);
       }
 

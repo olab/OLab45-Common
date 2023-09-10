@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints.Designer
 {
-  public partial class TemplateEndpoint : OlabEndpoint
+  public partial class TemplateEndpoint : OLabEndpoint
   {
 
     public TemplateEndpoint(
@@ -31,7 +31,7 @@ namespace OLab.Api.Endpoints.Designer
     /// <returns></returns>
     public async Task<OLabAPIPagedResponse<MapsDto>> GetAsync([FromQuery] int? take, [FromQuery] int? skip)
     {
-      logger.LogDebug($"TemplatesController.GetAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
+      Logger.LogDebug($"TemplatesController.GetAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
 
       var items = new List<Model.Maps>();
       var total = 0;
@@ -72,9 +72,9 @@ namespace OLab.Api.Endpoints.Designer
         remaining = total - take.Value - skip.Value;
       }
 
-      logger.LogDebug(string.Format("found {0} templates", items.Count));
+      Logger.LogDebug(string.Format("found {0} templates", items.Count));
 
-      var dtoList = new MapsMapper(logger).PhysicalToDto(items);
+      var dtoList = new MapsMapper(Logger).PhysicalToDto(items);
       return new OLabAPIPagedResponse<MapsDto> { Data = dtoList, Remaining = remaining, Count = total };
     }
 
@@ -84,11 +84,11 @@ namespace OLab.Api.Endpoints.Designer
     /// <returns></returns>
     public MapNodeLinkTemplateDto Links()
     {
-      logger.LogDebug($"TemplatesController.Links()");
+      Logger.LogDebug($"TemplatesController.Links()");
 
       var phys = MapNodeLinks.CreateDefault();
 
-      var dto = new ObjectMapper.MapNodeLinkTemplate(logger).PhysicalToDto(phys);
+      var dto = new ObjectMapper.MapNodeLinkTemplate(Logger).PhysicalToDto(phys);
       return dto;
     }
 
@@ -98,10 +98,10 @@ namespace OLab.Api.Endpoints.Designer
     /// <returns></returns>
     public MapNodeTemplateDto Nodes()
     {
-      logger.LogDebug($"TemplatesController.Nodes()");
+      Logger.LogDebug($"TemplatesController.Nodes()");
 
       var phys = Model.MapNodes.CreateDefault();
-      var dto = new ObjectMapper.MapNodeTemplate(logger).PhysicalToDto(phys);
+      var dto = new ObjectMapper.MapNodeTemplate(Logger).PhysicalToDto(phys);
       return dto;
     }
   }

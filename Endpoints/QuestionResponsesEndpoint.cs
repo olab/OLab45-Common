@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
 {
-  public partial class QuestionResponsesEndpoint : OlabEndpoint
+  public partial class QuestionResponsesEndpoint : OLabEndpoint
   {
 
     public QuestionResponsesEndpoint(
@@ -45,10 +45,10 @@ namespace OLab.Api.Endpoints
       uint id,
       QuestionResponsesDto dto)
     {
-      logger.LogDebug($"PutAsync(uint id={id})");
+      Logger.LogDebug($"PutAsync(uint id={id})");
 
       var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
-      var builder = new QuestionsFull(logger);
+      var builder = new QuestionsFull(Logger);
       var dtoQuestionTemp = builder.PhysicalToDto(physQuestionTemp);
 
       // test if user has access to object
@@ -58,7 +58,7 @@ namespace OLab.Api.Endpoints
 
       try
       {
-        var responsebuilder = new QuestionResponses(logger, dtoQuestionTemp);
+        var responsebuilder = new QuestionResponses(Logger, dtoQuestionTemp);
         var physResponse = responsebuilder.DtoToPhysical(dto);
 
         physResponse.UpdatedAt = DateTime.Now;
@@ -84,10 +84,10 @@ namespace OLab.Api.Endpoints
       IOLabAuthentication auth,
       QuestionResponsesDto dto)
     {
-      logger.LogDebug($"QuestionResponsesController.PostAsync({dto.Response})");
+      Logger.LogDebug($"QuestionResponsesController.PostAsync({dto.Response})");
 
       var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
-      var questionBuilder = new QuestionsFull(logger);
+      var questionBuilder = new QuestionsFull(Logger);
       var dtoQuestionTemp = questionBuilder.PhysicalToDto(physQuestionTemp);
 
       // test if user has access to object
@@ -95,7 +95,7 @@ namespace OLab.Api.Endpoints
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("QuestionResponses", 0);
 
-      var responsebuilder = new QuestionResponses(logger, dtoQuestionTemp);
+      var responsebuilder = new QuestionResponses(Logger, dtoQuestionTemp);
       var physResponse = responsebuilder.DtoToPhysical(dto);
 
       dbContext.SystemQuestionResponses.Add(physResponse);
@@ -115,7 +115,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthentication auth,
       uint id)
     {
-      logger.LogDebug($"QuestionResponsesController.DeleteAsync(uint id={id})");
+      Logger.LogDebug($"QuestionResponsesController.DeleteAsync(uint id={id})");
 
       if (!Exists(id))
         return OLabNotFoundResult<uint>.Result(id);
@@ -124,7 +124,7 @@ namespace OLab.Api.Endpoints
       {
         var physResponse = await GetQuestionResponseAsync(id);
         var physQuestion = await GetQuestionAsync(physResponse.QuestionId.Value);
-        var questionBuilder = new QuestionsFull(logger);
+        var questionBuilder = new QuestionsFull(Logger);
         var dtoQuestion = questionBuilder.PhysicalToDto(physQuestion);
 
         // test if user has access to objectdtoQuestion

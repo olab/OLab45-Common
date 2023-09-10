@@ -23,7 +23,7 @@ namespace OLab.Api.ObjectMapper
       phys.MapId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "map_id").Value);
       phys.VpdTypeId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "vpd_type_id").Value);
 
-      // logger.LogInformation($"loaded MapVpd {phys.Id}");
+      // Logger.LogInformation($"loaded MapVpd {phys.Id}");
 
       return phys;
     }

@@ -12,11 +12,16 @@ namespace OLab.Api.ObjectMapper
   {
     private static Random random = null;
 
-    public MapNodeLinksMapper(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public MapNodeLinksMapper(
+      OLabLogger logger,
+      bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public MapNodeLinksMapper(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public MapNodeLinksMapper(
+      OLabLogger logger,
+      WikiTagProvider tagProvider,
+      bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
       if (random == null)
         random = new Random((int)DateTime.Now.Ticks);
@@ -113,7 +118,7 @@ namespace OLab.Api.ObjectMapper
         phys.Hidden = (nTemp == 1);
       phys.CreatedAt = DateTime.Now;
 
-      // logger.LogInformation($"loaded MapNodeLinks {phys.Id}");
+      // Logger.LogInformation($"loaded MapNodeLinks {phys.Id}");
 
       return phys;
     }

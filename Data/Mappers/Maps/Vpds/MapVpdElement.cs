@@ -24,7 +24,7 @@ namespace OLab.Api.ObjectMapper
       phys.Key = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "key"));
       phys.Value = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "value"));
 
-      // logger.LogInformation($"loaded MapVpdElement {phys.Id}");
+      // Logger.LogInformation($"loaded MapVpdElement {phys.Id}");
 
       return phys;
     }

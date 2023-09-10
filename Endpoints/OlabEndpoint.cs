@@ -14,32 +14,27 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
 {
-  public class OlabEndpoint
+  public class OLabEndpoint
   {
     protected readonly OLabDBContext dbContext;
-    protected OLabLogger logger;
+    protected OLabLogger Logger;
     protected string token;
     protected IUserContext _userContext;
     readonly AppSettings appSettings;
 
-    public OlabEndpoint(OLabLogger logger, OLabDBContext context)
-    {
-      Guard.Argument(logger).NotNull(nameof(logger));
-      Guard.Argument(context).NotNull(nameof(context));
-
-      this.dbContext = context;
-      this.logger = logger;
-    }
-
-    public OlabEndpoint(OLabLogger logger, IOptions<AppSettings> appSettings, OLabDBContext context)
+    public OLabEndpoint(
+      OLabLogger logger,
+      IOptions<AppSettings> appSettings,
+      OLabDBContext context)
     {
       Guard.Argument(logger).NotNull(nameof(logger));
       Guard.Argument(appSettings).NotNull(nameof(appSettings));
       Guard.Argument(context).NotNull(nameof(context));
 
-      this.dbContext = context;
+      dbContext = context;
       this.appSettings = appSettings.Value;
-      this.logger = logger;
+
+      Logger = logger;
     }
 
     public void SetUserContext(IUserContext userContext)
@@ -108,17 +103,20 @@ namespace OLab.Api.Endpoints
 
     protected IList<IdName> GetMapIdNames()
     {
-      return dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
+      return dbContext.Maps
+        .Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
     }
 
     protected IList<IdName> GetNodeIdNames()
     {
-      return dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
+      return dbContext.MapNodes
+        .Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
     }
 
     protected IList<IdName> GetServerIdNames()
     {
-      return dbContext.Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
+      return dbContext.Servers
+        .Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
     }
 
     protected IdName FindParentInfo(
@@ -141,13 +139,13 @@ namespace OLab.Api.Endpoints
     /// Get nodes for map
     /// </summary>
     /// <param name="map">Parent map to query for</param>
-    /// <param name="enableWikiTanslation">PErform WikiTag translation</param>
+    /// <param name="enableWikiTanslation">PErform Name translation</param>
     /// <returns>List of mapnode dto's</returns>
     [NonAction]
     protected async Task<IList<MapNodesFullDto>> GetNodesAsync(Maps map, bool enableWikiTanslation = true)
     {
       var physList = await dbContext.MapNodes.Where(x => x.MapId == map.Id).ToListAsync();
-      logger.LogDebug(string.Format("found {0} mapNodes", physList.Count));
+      Logger.LogDebug(string.Format("found {0} mapNodes", physList.Count));
 
       // patch up any malformed nodes that have 0/0 sizes, 
       // whic prevent them from being displayed
@@ -158,7 +156,9 @@ namespace OLab.Api.Endpoints
         physNode.Width = 300;
       }
 
-      var dtoList = new ObjectMapper.MapNodesFullMapper(logger, enableWikiTanslation).PhysicalToDto(physList);
+      var dtoList = new ObjectMapper.MapNodesFullMapper(
+        Logger,
+        enableWikiTanslation).PhysicalToDto(physList);
       return dtoList;
     }
 
@@ -168,24 +168,30 @@ namespace OLab.Api.Endpoints
     /// <param name="map">Map object</param>
     /// <param name="nodeId">Node id</param>
     /// <param name="hideHidden">flag to hide hidden links</param>
-    /// <param name="enableWikiTanslation">PErform WikiTag translation</param>
+    /// <param name="enableWikiTanslation">PErform Name translation</param>
     /// <returns>MapsNodesFullRelationsDto</returns>
     [NonAction]
-    protected async Task<MapsNodesFullRelationsDto> GetNodeAsync(uint mapId, uint nodeId, bool hideHidden, bool enableWikiTanslation)
+    protected async Task<MapsNodesFullRelationsDto> GetNodeAsync(
+      uint mapId,
+      uint nodeId,
+      bool hideHidden,
+      bool enableWikiTanslation)
     {
       var phys = await dbContext.MapNodes
         .FirstOrDefaultAsync(x => x.MapId == mapId && x.Id == nodeId);
 
       if (phys == null)
       {
-        logger.LogError($"GetNodeSync unable to find map {mapId}, node {nodeId}");
+        Logger.LogError($"GetNodeSync unable to find map {mapId}, node {nodeId}");
         return new MapsNodesFullRelationsDto();
       }
 
       // explicitly load the related objects.
       dbContext.Entry(phys).Collection(b => b.MapNodeLinksNodeId1Navigation).Load();
 
-      var builder = new ObjectMapper.MapsNodesFullRelationsMapper(logger, enableWikiTanslation);
+      var builder = new ObjectMapper.MapsNodesFullRelationsMapper(
+        Logger,
+        enableWikiTanslation);
       var dto = builder.PhysicalToDto(phys);
 
       var linkedIds = phys.MapNodeLinksNodeId1Navigation.Select(x => x.NodeId2).Distinct().ToList();
@@ -195,7 +201,9 @@ namespace OLab.Api.Endpoints
       foreach (var item in dto.MapNodeLinks)
       {
         var link = linkedNodes.Where(x => x.Id == item.DestinationId).FirstOrDefault();
-        item.DestinationTitle = linkedNodes.Where(x => x.Id == item.DestinationId).Select(x => x.Title).FirstOrDefault();
+        item.DestinationTitle = linkedNodes
+          .Where(x => x.Id == item.DestinationId)
+          .Select(x => x.Title).FirstOrDefault();
         if (string.IsNullOrEmpty(item.LinkText))
           item.LinkText = item.DestinationTitle;
       }
@@ -203,7 +211,7 @@ namespace OLab.Api.Endpoints
       // if asked for, remove any hidden links
       if (hideHidden)
       {
-        logger.LogError($"GetNodeSync hiding hidden links");
+        Logger.LogError($"GetNodeSync hiding hidden links");
         dto.MapNodeLinks = dto.MapNodeLinks.Where(x => !x.IsHidden).ToList();
       }
 
@@ -380,10 +388,10 @@ namespace OLab.Api.Endpoints
       foreach (var item in items)
       {
         var subPath = $"{scopeLevel}/{parentId}/{item.Path}";
-        var physicalPath = Path.Combine(appSettings.PublicFileFolder, subPath.Replace('/', Path.DirectorySeparatorChar));
+        var physicalPath = Path.Combine(appSettings.FileStorageFolder, subPath.Replace('/', Path.DirectorySeparatorChar));
 
         if (File.Exists(physicalPath))
-          item.OriginUrl = $"/{Path.GetFileName(appSettings.PublicFileFolder)}/{subPath}";
+          item.OriginUrl = $"/{Path.GetFileName(appSettings.FileStorageFolder)}/{subPath}";
         else
           item.OriginUrl = null;
       }

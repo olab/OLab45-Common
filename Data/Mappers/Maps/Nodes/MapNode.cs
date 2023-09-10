@@ -12,11 +12,16 @@ namespace OLab.Api.ObjectMapper
     public static int DefaultWidth = 400;
     public static int DefaultHeight = 300;
 
-    public MapNodesMapper(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public MapNodesMapper(
+      OLabLogger logger,
+      WikiTagProvider tagProvider,
+      bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 
-    public MapNodesMapper(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public MapNodesMapper(
+      OLabLogger logger,
+      bool enableWikiTranslation = true) : base(logger)
     {
     }
 
@@ -48,7 +53,7 @@ namespace OLab.Api.ObjectMapper
       phys.Y = Convert.ToDouble(elements.FirstOrDefault(x => x.Name == "y").Value);
       phys.CreatedAt = DateTime.Now;
 
-      // logger.LogInformation($"loaded MapNodes {phys.Id}");
+      // Logger.LogInformation($"loaded MapNodes {phys.Id}");
 
       return phys;
     }

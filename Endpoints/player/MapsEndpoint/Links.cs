@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints.Player
 {
-  public partial class MapsEndpoint : OlabEndpoint
+  public partial class MapsEndpoint : OLabEndpoint
   {
     /// <summary>
     /// 
@@ -38,7 +38,7 @@ namespace OLab.Api.Endpoints.Player
       uint linkId,
       MapNodeLinksFullDto linkdto)
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.PutMapNodeLinksAsync");
+      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.PutMapNodeLinksAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
@@ -46,7 +46,7 @@ namespace OLab.Api.Endpoints.Player
 
       try
       {
-        var builder = new MapNodeLinksFullMapper(logger);
+        var builder = new MapNodeLinksFullMapper(Logger);
         var phys = builder.DtoToPhysical(linkdto);
 
         dbContext.Entry(phys).State = EntityState.Modified;

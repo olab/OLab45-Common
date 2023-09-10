@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
 {
-  public partial class FilesEndpoint : OlabEndpoint
+  public partial class FilesEndpoint : OLabEndpoint
   {
 
     public FilesEndpoint(
@@ -39,7 +39,7 @@ namespace OLab.Api.Endpoints
     /// <returns></returns>
     public async Task<OLabAPIPagedResponse<FilesDto>> GetAsync(int? take, int? skip)
     {
-      logger.LogDebug($"FilesController.GetAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
+      Logger.LogDebug($"FilesController.GetAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
 
       var Files = new List<SystemFiles>();
       var total = 0;
@@ -57,9 +57,9 @@ namespace OLab.Api.Endpoints
         remaining = total - take.Value - skip.Value;
       }
 
-      logger.LogDebug(string.Format("found {0} Files", Files.Count));
+      Logger.LogDebug(string.Format("found {0} Files", Files.Count));
 
-      var dtoList = new ObjectMapper.Files(logger).PhysicalToDto(Files);
+      var dtoList = new Files(Logger).PhysicalToDto(Files);
 
       var maps = GetMapIdNames();
       var nodes = GetNodeIdNames();
@@ -81,13 +81,13 @@ namespace OLab.Api.Endpoints
       uint id)
     {
 
-      logger.LogDebug($"FilesController.GetAsync(uint id={id})");
+      Logger.LogDebug($"FilesController.GetAsync(uint id={id})");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Files", id);
 
       var phys = await dbContext.SystemFiles.FirstAsync(x => x.Id == id);
-      var dto = new ObjectMapper.FilesFull(logger).PhysicalToDto(phys);
+      var dto = new ObjectMapper.FilesFull(Logger).PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = auth.HasAccess("R", dto);
@@ -109,7 +109,7 @@ namespace OLab.Api.Endpoints
       uint id, FilesFullDto dto)
     {
 
-      logger.LogDebug($"PutAsync(uint id={id})");
+      Logger.LogDebug($"PutAsync(uint id={id})");
 
       dto.ImageableId = dto.ParentInfo.Id;
 
@@ -120,7 +120,7 @@ namespace OLab.Api.Endpoints
 
       try
       {
-        var builder = new FilesFull(logger);
+        var builder = new FilesFull(Logger);
         var phys = builder.DtoToPhysical(dto);
 
         phys.UpdatedAt = DateTime.Now;
@@ -146,8 +146,8 @@ namespace OLab.Api.Endpoints
       IOLabAuthentication auth,
       SystemFiles phys)
     {
-      logger.LogDebug($"FilesController.PostAsync()");
-      var builder = new FilesFull(logger);
+      Logger.LogDebug($"FilesController.PostAsync()");
+      var builder = new FilesFull(Logger);
       var dto = builder.PhysicalToDto(phys);
 
       // test if user has access to object
@@ -174,7 +174,7 @@ namespace OLab.Api.Endpoints
       uint id)
     {
 
-      logger.LogDebug($"ConstantsEndpoint.DeleteAsync(uint id={id})");
+      Logger.LogDebug($"ConstantsEndpoint.DeleteAsync(uint id={id})");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Files", id);
@@ -182,7 +182,7 @@ namespace OLab.Api.Endpoints
       try
       {
         var phys = await GetFileAsync(id);
-        var dto = new FilesFull(logger).PhysicalToDto(phys);
+        var dto = new FilesFull(Logger).PhysicalToDto(phys);
 
         // test if user has access to object
         var accessResult = auth.HasAccess("W", dto);

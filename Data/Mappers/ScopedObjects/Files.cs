@@ -43,8 +43,6 @@ namespace OLab.Api.ObjectMapper
       phys.IsPrivate = Convert.ToSByte(elements.FirstOrDefault(x => x.Name == "is_private").Value);
       phys.CreatedAt = DateTime.Now;
 
-      // logger.LogInformation($"loaded SystemFiles {phys.Id}");
-
       return phys;
     }
 

@@ -1,6 +1,8 @@
+using Microsoft.Extensions.Options;
 using OLab.Api.Common;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Import.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,25 +36,29 @@ namespace OLab.Api.Importer
     private readonly OLabDBContext _context;
     public readonly AppSettings Settings;
     private readonly IDictionary<DtoTypes, XmlDto> _dtos = new Dictionary<DtoTypes, XmlDto>();
-    private readonly OLabLogger _logger;
+    private readonly OLabLogger Logger;
     private readonly WikiTagProvider _tagProvider;
 
     public WikiTagProvider GetWikiProvider() { return _tagProvider; }
     public XmlDto GetDto(DtoTypes type) { return _dtos[type]; }
     public OLabDBContext GetContext() { return _context; }
-    public OLabLogger GetLogger() { return _logger; }
+    public OLabLogger GetLogger() { return Logger; }
 
     private string _logFileDirectory;
     private string _extractPath;
     private string _importFileName;
 
-    public Importer(AppSettings settings, OLabLogger logger, OLabDBContext context)
+    public Importer(
+      OLabLogger logger, 
+      IOptions<AppSettings> appSettings,
+      OLabDBContext context)
     {
-      Settings = settings;
+      Settings = appSettings.Value;
       _context = context;
-      this._logger = logger;
 
-      _tagProvider = new WikiTagProvider(logger);
+      Logger = logger;
+
+      _tagProvider = new WikiTagProvider(Logger);
 
       XmlDto dto = new XmlMapDto(this);
       _dtos.Add(DtoTypes.XmlMapDto, dto);
@@ -109,43 +115,43 @@ namespace OLab.Api.Importer
 
     public void LogInformation(string message)
     {
-      _logger.LogInformation(message);
+      Logger.LogInformation(message);
     }
 
     public void LogDebug(string message)
     {
-      _logger.LogDebug(message);
+      Logger.LogDebug(message);
     }
 
     public void LogWarning(string message)
     {
-      _logger.LogWarning(message);
+      Logger.LogWarning(message);
     }
 
     public void LogError(Exception ex, string message)
     {
-      _logger.LogError(ex, message);
+      Logger.LogError(ex, message);
     }
 
     public void LogError(string message)
     {
-      _logger.LogError(message);
+      Logger.LogError(message);
     }
 
     private string Extract(string archiveFileName)
     {
       var tempDir = Path.GetTempPath();
-      // _logger.LogDebug($"Import temporary directory '{tempDir}'");
+      // Logger.LogDebug($"Import temporary directory '{tempDir}'");
 
       _logFileDirectory = Path.GetDirectoryName(archiveFileName);
       _extractPath = Path.Combine(tempDir, Path.GetFileNameWithoutExtension(archiveFileName));
       _importFileName = Path.GetFileNameWithoutExtension(archiveFileName);
 
-      // _logger.LogDebug($"Import extract directory '{_extractPath}'");
+      // Logger.LogDebug($"Import extract directory '{_extractPath}'");
 
       if (Directory.Exists(_extractPath))
       {
-        _logger.LogDebug($"Deleting existing extract directory");
+        Logger.LogDebug($"Deleting existing extract directory");
         Directory.Delete(_extractPath, true);
       }
       else
@@ -177,7 +183,7 @@ namespace OLab.Api.Importer
       }
       catch (Exception ex)
       {
-        _logger.LogError(ex, $"Load error: {ex.Message}");
+        Logger.LogError(ex, $"Load error: {ex.Message}");
       }
 
       return importStatus;
@@ -200,11 +206,11 @@ namespace OLab.Api.Importer
 
           var xmlMapDto = _dtos[DtoTypes.XmlMapDto] as XmlMapDto;
           var xmlMap = (XmlMap)xmlMapDto.GetDbPhys();
-          _logger.LogInformation($"Loaded map '{xmlMap.Data[0].Name}'. id = {xmlMap.Data[0].Id}");
+          Logger.LogInformation($"Loaded map '{xmlMap.Data[0].Name}'. id = {xmlMap.Data[0].Id}");
         }
         catch (Exception ex)
         {
-          _logger.LogError(ex, $"Error saving import. reason: {ex.Message} ");
+          Logger.LogError(ex, $"Error saving import. reason: {ex.Message} ");
           transaction.Rollback();
         }
 

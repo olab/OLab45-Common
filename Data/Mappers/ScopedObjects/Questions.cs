@@ -54,7 +54,7 @@ namespace OLab.Api.ObjectMapper
         phys.ExternalSourceId = id5.ToString();
       phys.CreatedAt = DateTime.Now;
 
-      // logger.LogInformation($"loaded SystemQuestions {phys.Id}");
+      // Logger.LogInformation($"loaded SystemQuestions {phys.Id}");
 
       return phys;
     }

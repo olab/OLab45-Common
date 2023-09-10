@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
 {
-  public partial class QuestionsEndpoint : OlabEndpoint
+  public partial class QuestionsEndpoint : OLabEndpoint
   {
 
     public QuestionsEndpoint(
@@ -45,7 +45,7 @@ namespace OLab.Api.Endpoints
     public async Task<OLabAPIPagedResponse<QuestionsDto>> GetAsync([FromQuery] int? take, [FromQuery] int? skip)
     {
 
-      logger.LogDebug($"QuestionsController.GetAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
+      Logger.LogDebug($"QuestionsController.GetAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
 
       var physList = new List<SystemQuestions>();
       var total = 0;
@@ -63,9 +63,9 @@ namespace OLab.Api.Endpoints
         remaining = total - take.Value - skip.Value;
       }
 
-      logger.LogDebug(string.Format("found {0} questions", physList.Count));
+      Logger.LogDebug(string.Format("found {0} questions", physList.Count));
 
-      var dtoList = new ObjectMapper.Questions(logger, new WikiTagProvider(logger)).PhysicalToDto(physList);
+      var dtoList = new Questions(Logger, new WikiTagProvider(Logger)).PhysicalToDto(physList);
 
       var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
       var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
@@ -88,13 +88,13 @@ namespace OLab.Api.Endpoints
       uint id)
     {
 
-      logger.LogDebug($"QuestionsController.GetAsync(uint id={id})");
+      Logger.LogDebug($"QuestionsController.GetAsync(uint id={id})");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Questions", id);
 
       var phys = await dbContext.SystemQuestions.Include("SystemQuestionResponses").FirstAsync(x => x.Id == id);
-      var builder = new QuestionsFull(logger);
+      var builder = new QuestionsFull(Logger);
       var dto = builder.PhysicalToDto(phys);
 
       // test if user has access to object
@@ -118,7 +118,7 @@ namespace OLab.Api.Endpoints
       uint id,
       QuestionsFullDto dto)
     {
-      logger.LogDebug($"PutAsync(uint id={id})");
+      Logger.LogDebug($"PutAsync(uint id={id})");
 
       dto.ImageableId = dto.ParentInfo.Id;
 
@@ -129,7 +129,7 @@ namespace OLab.Api.Endpoints
 
       try
       {
-        var builder = new QuestionsFull(logger);
+        var builder = new QuestionsFull(Logger);
         var phys = builder.DtoToPhysical(dto);
 
         phys.UpdatedAt = DateTime.Now;
@@ -155,7 +155,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthentication auth,
       QuestionsFullDto dto)
     {
-      logger.LogDebug($"QuestionsController.PostAsync({dto.Stem})");
+      Logger.LogDebug($"QuestionsController.PostAsync({dto.Stem})");
 
       dto.ImageableId = dto.ParentInfo.Id;
       dto.Prompt = !string.IsNullOrEmpty(dto.Prompt) ? dto.Prompt : "";
@@ -165,7 +165,7 @@ namespace OLab.Api.Endpoints
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Questions", 0);
 
-      var builder = new QuestionsFull(logger);
+      var builder = new QuestionsFull(Logger);
       var phys = builder.DtoToPhysical(dto);
 
       phys.CreatedAt = DateTime.Now;

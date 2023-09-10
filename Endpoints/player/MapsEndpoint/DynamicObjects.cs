@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints.Player
 {
-  public partial class MapsEndpoint : OlabEndpoint
+  public partial class MapsEndpoint : OLabEndpoint
   {
 
     /// <summary>
@@ -25,7 +25,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId,
       uint sinceTime = 0)
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetDynamicScopedObjectsRawAsync");
+      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetDynamicScopedObjectsRawAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -48,7 +48,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId,
       uint sinceTime = 0)
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetDynamicScopedObjectsTranslatedAsync");
+      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetDynamicScopedObjectsTranslatedAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -82,7 +82,7 @@ namespace OLab.Api.Endpoints.Player
 
       await ProcessNodeCounters(node, physMap.Counters);
 
-      var builder = new ObjectMapper.DynamicScopedObjects(logger, enableWikiTranslation);
+      var builder = new ObjectMapper.DynamicScopedObjects(Logger, enableWikiTranslation);
       var dto = builder.PhysicalToDto(physServer, physMap, physNode);
 
       return dto;
@@ -98,18 +98,18 @@ namespace OLab.Api.Endpoints.Player
         (x.ImageableType == Utils.Constants.ScopeLevelNode) &&
         (x.OperationType == "open")).ToListAsync();
 
-      logger.LogDebug($"Found {counterActions.Count} counterActions records for node {node.Id} ");
+      Logger.LogDebug($"Found {counterActions.Count} counterActions records for node {node.Id} ");
 
       foreach (var counterAction in counterActions)
       {
         var dto = orgDtoList.FirstOrDefault(x => x.Id == counterAction.CounterId);
         if (dto == null)
-          logger.LogError($"Enable to lookup counter {counterAction.CounterId} in action {counterAction.Id}");
+          Logger.LogError($"Enable to lookup counter {counterAction.CounterId} in action {counterAction.Id}");
 
         else
         {
           // convert to physical object so we can use the counterActions code
-          var phys = new ObjectMapper.Counters(logger).DtoToPhysical(dto);
+          var phys = new ObjectMapper.Counters(Logger).DtoToPhysical(dto);
 
           // test if there's a counter action to apply
           if (counterAction.ApplyFunctionToCounter(phys))
@@ -117,8 +117,8 @@ namespace OLab.Api.Endpoints.Player
             // remove original counter from list
             orgDtoList.Remove(dto);
 
-            dto = new ObjectMapper.Counters(logger).PhysicalToDto(phys);
-            logger.LogDebug($"Updated counter '{dto.Name}' ({dto.Id}) with function '{counterAction.Expression}'. now = {dto.Value}");
+            dto = new ObjectMapper.Counters(Logger).PhysicalToDto(phys);
+            Logger.LogDebug($"Updated counter '{dto.Name}' ({dto.Id}) with function '{counterAction.Expression}'. now = {dto.Value}");
 
             // add updated counter back to list
             orgDtoList.Add(dto);
@@ -146,16 +146,16 @@ namespace OLab.Api.Endpoints.Player
         (x.ImageableType == Utils.Constants.ScopeLevelNode) &&
         (x.OperationType == "open")).ToListAsync();
 
-      logger.LogDebug($"Found {counterActions.Count} counterActions records for node {node.Id} ");
+      Logger.LogDebug($"Found {counterActions.Count} counterActions records for node {node.Id} ");
 
       foreach (var counterAction in counterActions)
       {
         var phys = physList.FirstOrDefault(x => x.Id == counterAction.CounterId);
         if (phys == null)
-          logger.LogError($"Enable to lookup counter {counterAction.CounterId} in action {counterAction.Id}");
+          Logger.LogError($"Enable to lookup counter {counterAction.CounterId} in action {counterAction.Id}");
 
         else if (counterAction.ApplyFunctionToCounter(phys))
-          logger.LogDebug($"Updated counter '{phys.Name}' ({phys.Id}) with function '{counterAction.Expression}'. now = {phys.Value}");
+          Logger.LogDebug($"Updated counter '{phys.Name}' ({phys.Id}) with function '{counterAction.Expression}'. now = {phys.Value}");
       }
 
       return physList;

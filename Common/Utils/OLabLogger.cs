@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,21 +34,28 @@ namespace OLab.Api.Utils
   {
     private readonly IList<OLabLogMessage> _messages = new List<OLabLogMessage>();
     private readonly ILogger _logger;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly bool _keepMessages;
 
     public ILogger GetLogger() { return _logger; }
+    public ILoggerFactory GetLoggerFactory() { return _loggerFactory; }
 
     // for cases where we don't have/need an actual ILogger
     public OLabLogger(bool keepMessages = false)
+      : this(NullLoggerFactory.Instance, NullLoggerFactory.Instance.CreateLogger("default"))
     {
-      _keepMessages = keepMessages;
     }
 
-    public OLabLogger(ILogger logger, bool keepMessages = true)
+    public OLabLogger(ILoggerFactory loggerFactory, bool keepMessages = false)
+      : this(loggerFactory, loggerFactory.CreateLogger("default"))
     {
+    }
+
+    public OLabLogger(ILoggerFactory loggerFactory, ILogger logger, bool keepMessages = false)
+    {
+      _loggerFactory = loggerFactory;
       _logger = logger;
       _keepMessages = keepMessages;
-
     }
 
     public bool HaveFatalError => _messages.Any(x => x.Level == OLabLogMessage.MessageLevel.Fatal);

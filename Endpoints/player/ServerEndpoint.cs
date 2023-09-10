@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints.Player
 {
-  public partial class ServerEndpoint : OlabEndpoint
+  public partial class ServerEndpoint : OLabEndpoint
   {
 
     public ServerEndpoint(
@@ -47,7 +47,7 @@ namespace OLab.Api.Endpoints.Player
 
       total = items.Count;
 
-      logger.LogDebug(string.Format("found {0} servers", items.Count));
+      Logger.LogDebug(string.Format("found {0} servers", items.Count));
 
       return new OLabAPIPagedResponse<Servers> { Data = items, Remaining = remaining, Count = total };
     }
@@ -59,7 +59,7 @@ namespace OLab.Api.Endpoints.Player
     /// <returns></returns>
     public async Task<OLab.Api.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint serverId)
     {
-      logger.LogDebug($"ServerEndpoint.GetScopedObjectsRawAsync(uint serverId={serverId})");
+      Logger.LogDebug($"ServerEndpoint.GetScopedObjectsRawAsync(uint serverId={serverId})");
       var dto = await GetScopedObjectsAsync(serverId, false);
       return dto;
     }
@@ -71,7 +71,7 @@ namespace OLab.Api.Endpoints.Player
     /// <returns></returns>
     public async Task<OLab.Api.Dto.ScopedObjectsDto> GetScopedObjectsTranslatedAsync(uint serverId)
     {
-      logger.LogDebug($"ServerEndpoint.GetScopedObjectsTranslatedAsync(uint serverId={serverId})");
+      Logger.LogDebug($"ServerEndpoint.GetScopedObjectsTranslatedAsync(uint serverId={serverId})");
       var dto = await GetScopedObjectsAsync(serverId, true);
       return dto;
     }
@@ -86,10 +86,10 @@ namespace OLab.Api.Endpoints.Player
       uint serverId,
       bool enableWikiTranslation)
     {
-      logger.LogDebug($"ServerEndpoint.GetScopedObjectsAsync(uint serverId={serverId})");
+      Logger.LogDebug($"ServerEndpoint.GetScopedObjectsAsync(uint serverId={serverId})");
 
       var phys = await GetScopedObjectsAllAsync(serverId, Utils.Constants.ScopeLevelServer);
-      var builder = new ObjectMapper.ScopedObjects(logger, enableWikiTranslation);
+      var builder = new ObjectMapper.ScopedObjects(Logger, enableWikiTranslation);
       var dto = builder.PhysicalToDto(phys);
 
       return dto;

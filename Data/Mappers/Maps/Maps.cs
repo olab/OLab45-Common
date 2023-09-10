@@ -9,11 +9,16 @@ namespace OLab.Api.ObjectMapper
 {
   public class MapsMapper : OLabMapper<Model.Maps, Dto.MapsDto>
   {
-    public MapsMapper(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public MapsMapper(
+      OLabLogger logger,
+      bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public MapsMapper(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public MapsMapper(
+      OLabLogger logger,
+      WikiTagProvider tagProvider,
+      bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 
@@ -66,7 +71,7 @@ namespace OLab.Api.ObjectMapper
       phys.CreatedAt = DateTime.Now;
       phys.ReportNodeId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "report_node_id").Value);
 
-      // logger.LogInformation($"loaded Map {phys.Id}");
+      // Logger.LogInformation($"loaded Map {phys.Id}");
 
       return phys;
     }

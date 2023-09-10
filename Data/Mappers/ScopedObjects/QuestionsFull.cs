@@ -39,7 +39,7 @@ namespace OLab.Api.ObjectMapper
       dto.Wiki = phys.GetWikiTag();
       dto.Value = null;
 
-      var builder = new ObjectMapper.QuestionResponses(logger, GetWikiProvider(), dto);
+      var builder = new QuestionResponses(Logger, GetWikiProvider(), dto);
       dto.Responses.AddRange(builder.PhysicalToDto(phys.SystemQuestionResponses.ToList()));
 
       return dto;

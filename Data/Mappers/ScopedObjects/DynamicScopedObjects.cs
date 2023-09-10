@@ -43,16 +43,16 @@ namespace OLab.Api.ObjectMapper
       Model.ScopedObjects node,
       DynamicScopedObjectsDto dto)
     {
-      var dtoCountersList = new ObjectMapper.Counters(logger, GetWikiProvider()).PhysicalToDto(server.Counters);
+      var dtoCountersList = new ObjectMapper.Counters(Logger, GetWikiProvider()).PhysicalToDto(server.Counters);
       dto.Server.Counters.AddRange(dtoCountersList);
 
-      dtoCountersList = new ObjectMapper.Counters(logger, GetWikiProvider()).PhysicalToDto(map.Counters);
+      dtoCountersList = new ObjectMapper.Counters(Logger, GetWikiProvider()).PhysicalToDto(map.Counters);
       dto.Map.Counters.AddRange(dtoCountersList);
 
-      dtoCountersList = new ObjectMapper.Counters(logger, GetWikiProvider()).PhysicalToDto(node.Counters);
+      dtoCountersList = new ObjectMapper.Counters(Logger, GetWikiProvider()).PhysicalToDto(node.Counters);
       dto.Node.Counters.AddRange(dtoCountersList);
 
-      // var dtoConstantsList = new ConstantsObjectMapper(logger, GetWikiProvider()).PhysicalToDto( server.Constants );
+      // var dtoConstantsList = new ConstantsObjectMapper(Logger, GetWikiProvider()).PhysicalToDto( server.Constants );
       // dto.Server.Constants.AddRange(dtoConstantsList);
 
       // calculate validation

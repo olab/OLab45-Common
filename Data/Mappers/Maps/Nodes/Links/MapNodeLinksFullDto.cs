@@ -7,11 +7,16 @@ namespace OLab.Api.ObjectMapper
 {
   public class MapNodeLinksFullMapper : OLabMapper<Model.MapNodeLinks, MapNodeLinksFullDto>
   {
-    public MapNodeLinksFullMapper(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public MapNodeLinksFullMapper(
+      OLabLogger logger,
+      bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public MapNodeLinksFullMapper(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public MapNodeLinksFullMapper(
+      OLabLogger logger,
+      WikiTagProvider tagProvider,
+      bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

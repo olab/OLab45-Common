@@ -19,8 +19,8 @@ namespace OLab.Api.ObjectMapper
     {
       if (enableWikiTranslation)
       {
-        dto.HeaderText = _tagProvider.Translate(phys.HeaderText);
-        dto.FooterText = _tagProvider.Translate(phys.FooterText);
+        dto.HeaderText = GetWikiProvider().Translate(phys.HeaderText);
+        dto.FooterText = GetWikiProvider().Translate(phys.FooterText);
       }
       else
       {
