@@ -38,17 +38,20 @@ namespace OLabWebAPI.Importer
 
       // only support the VPDText type at this time
       if (phys.Key == "VPDText")
+      {
+        GetLogger().LogDebug($" skipping {GetFileName()} id {phys.Id}, type '{phys.Key}'");
         return true;
+      }
 
       var item = new SystemConstants();
-      var oldId = phys.VpdId;
+      var oldId = phys.Id;
 
       item.Id = 0;
       item.ImageableType = "Maps";
       item.Name = phys.Key;
       item.Value = Encoding.ASCII.GetBytes(phys.Value);
       item.CreatedAt = DateTime.Now;
-      item.Description = $"Imported from {GetFileName()} id = {phys.Id}.";
+      item.Description = $" saved {GetFileName()} id = {phys.Id}.";
 
       var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdDto) as XmlMapVpdDto;
       XmlMapVpd vpd = vpdDto.GetModel().Data.First(x => x.Id == phys.VpdId);
@@ -64,7 +67,7 @@ namespace OLabWebAPI.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
-      GetLogger().LogDebug($"Saved {GetFileName()} id {oldId} -> {item.Id}");
+      GetLogger().LogDebug($" saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

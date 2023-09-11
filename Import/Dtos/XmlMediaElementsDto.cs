@@ -76,8 +76,8 @@ namespace OLabWebAPI.Importer
           GetLogger().LogWarning($"No media_elements_avatars records in {GetFileName()}");
         }
 
-        GetLogger().LogDebug($"loaded {GetModel().MediaElementsFiles.Count()} {GetFileName()} MediaElementsFiles objects");
-        GetLogger().LogDebug($"loaded {GetModel().MediaElementsAvatars.Count()} {GetFileName()} MediaElementsAvatars objects");
+        GetLogger().LogDebug($" loaded {GetModel().MediaElementsFiles.Count()} {GetFileName()} MediaElementsFiles objects");
+        GetLogger().LogDebug($" loaded {GetModel().MediaElementsAvatars.Count()} {GetFileName()} MediaElementsAvatars objects");
 
       }
 
@@ -124,12 +124,12 @@ namespace OLabWebAPI.Importer
             dynamic targetFileName = Path.Combine(targetDirectory, fileName);
             File.Copy(sourceFileName, targetFileName, true);
 
-            GetLogger().LogDebug($"Copied {GetFileName()} '{fileName}' -> '{targetDirectory}'");
+            GetLogger().LogDebug($" copied {GetFileName()} '{fileName}' -> '{targetDirectory}'");
 
           }
           catch (System.Exception ex)
           {
-            GetLogger().LogError($"Error importing {GetFileName()} '{element.Name}' = '{element.Value}': reason : {ex.Message}");
+            GetLogger().LogError($" error importing {GetFileName()} '{element.Name}' = '{element.Value}': reason : {ex.Message}");
             rc = false;
           }
 
@@ -138,7 +138,7 @@ namespace OLabWebAPI.Importer
       }
       catch (System.Exception ex)
       {
-        GetLogger().LogError($"Error importing {GetFileName()}: reason : {ex.Message}");
+        GetLogger().LogError($" error importing {GetFileName()}: reason : {ex.Message}");
         rc = false;
       }
 

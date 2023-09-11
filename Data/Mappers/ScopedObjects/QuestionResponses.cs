@@ -29,7 +29,7 @@ namespace OLabWebAPI.ObjectMapper
     public override SystemQuestionResponses DtoToPhysical(QuestionResponsesDto dto, SystemQuestionResponses phys)
     {
       if (!dto.IsCorrect.HasValue)
-        phys.IsCorrect = 0;
+        phys.IsCorrect = -1;
       else
         phys.IsCorrect = dto.IsCorrect.Value;
 

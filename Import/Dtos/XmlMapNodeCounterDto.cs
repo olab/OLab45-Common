@@ -57,7 +57,7 @@ namespace OLabWebAPI.Importer
       Context.SystemCounterActions.Add(item);
       Context.SaveChanges();
 
-      GetLogger().LogDebug($"Saved {GetFileName()} id {oldId} -> {item.Id}");
+      GetLogger().LogDebug($" saved {GetFileName()} id {oldId} -> {item.Id}");
       CreateIdTranslation(oldId, item.Id);
 
       return true;

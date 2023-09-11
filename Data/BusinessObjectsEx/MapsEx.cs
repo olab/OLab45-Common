@@ -57,7 +57,8 @@ namespace OLabWebAPI.Model
         TypeId = 11,
         Units = "",
         Verification = "{}",
-        MapNodes = new List<MapNodes>()
+        MapNodes = new List<MapNodes>(),
+        ReportNodeId = 0
       };
 
       map.MapNodes.Add(new MapNodes { Title = "New Node", TypeId = 1, Text = "Sample Text" });

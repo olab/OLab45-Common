@@ -39,7 +39,7 @@ namespace OLabWebAPI.Importer
 
       var questionDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapQuestionDto) as XmlMapQuestionDto;
       item.QuestionId = questionDto.GetIdTranslation(GetFileName(), item.QuestionId.Value);
-      item.Description = $"Imported from {GetFileName()} id = {oldId}";
+      item.Description = $" saved {GetFileName()} id = {oldId}";
 
       Context.SystemQuestionResponses.Add(item);
       Context.SaveChanges();
