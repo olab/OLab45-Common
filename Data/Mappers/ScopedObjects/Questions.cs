@@ -11,9 +11,19 @@ namespace OLab.Api.ObjectMapper
 {
   public class Questions : OLabMapper<SystemQuestions, QuestionsDto>
   {
-    public Questions(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public Questions(
+      IOLabLogger logger, 
+      IOLabModuleProvider<IWikiTagModule> wikiTagModules, 
+      bool enableWikiTranslation = true) : base(logger, wikiTagModules)
     {
     }
+
+    //public Questions(
+    //  IOLabLogger logger, 
+    //  WikiTagProvider tagProvider, 
+    //  bool enableWikiTranslation = true) : base(logger, tagProvider)
+    //{
+    //}
 
     public override SystemQuestions ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
     {
@@ -36,11 +46,14 @@ namespace OLab.Api.ObjectMapper
       phys.ShowAnswer = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "show_answer").Value) == 1 ? true : false;
       if (uint.TryParse(elements.FirstOrDefault(x => x.Name == "counter_id").Value, out uint id1))
         phys.CounterId = id1;
+
       if (int.TryParse(elements.FirstOrDefault(x => x.Name == "num_tries").Value, out int id2))
         phys.NumTries = id2;
+
       phys.ShowSubmit = Convert.ToSByte(elements.FirstOrDefault(x => x.Name == "show_submit").Value);
       if (uint.TryParse(elements.FirstOrDefault(x => x.Name == "redirect_node_id").Value, out uint id3))
         phys.RedirectNodeId = id3;
+
       phys.SubmitText = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "submit_text"));
 
       phys.TypeDisplay = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "type_display").Value);

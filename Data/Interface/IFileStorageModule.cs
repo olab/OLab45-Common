@@ -1,11 +1,18 @@
 ﻿using OLab.Api.Model;
 using OLab.Api.Utils;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OLab.Data.Interface
 {
   public interface IFileStorageModule
   {
-    void AttachUrls(AppSettings appSettings, IList<SystemFiles> items);
+    void AttachUrls(IList<SystemFiles> items);
+    public void MoveFile(string sourcePath, string destinationPath);
+    Task<string> UploadFile(Stream file,
+      string fileName,
+      CancellationToken token);
   }
 }

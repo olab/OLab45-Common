@@ -53,14 +53,16 @@ namespace OLab.Api.Importer
     public Importer(
       IOLabLogger logger,
       IOptions<AppSettings> appSettings,
-      OLabDBContext context)
+      OLabDBContext context,
+      IOLabModuleProvider<IWikiTagModule> wikiTagModules)
     {
       _settings = appSettings.Value;
       _context = context;
 
       Logger = OLabLogger.CreateNew<Importer>(logger);
 
-      _tagProvider = new WikiTagProvider(Logger);
+      //_tagProvider = new WikiTagProvider(Logger);
+      _tagProvider = wikiTagModules as WikiTagProvider;
 
       XmlDto dto = new XmlMapDto(this);
       _dtos.Add(DtoTypes.XmlMapDto, dto);

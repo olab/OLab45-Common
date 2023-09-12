@@ -20,7 +20,6 @@ namespace OLab.Api.Endpoints.Player
 {
   public partial class MapsEndpoint : OLabEndpoint
   {
-
     public MapsEndpoint(
       IOLabLogger logger,
       IOptions<AppSettings> appSettings,
