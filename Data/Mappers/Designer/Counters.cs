@@ -1,14 +1,12 @@
 using AutoMapper;
-using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Dto.Designer;
 using OLab.Api.Model;
-using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper.Designer
 {
-    public class Counters : OLabMapper<SystemCounters, ScopedObjectDto>
+  public class Counters : OLabMapper<SystemCounters, ScopedObjectDto>
   {
     public Counters(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {

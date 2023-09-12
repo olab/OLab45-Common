@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
 {
-    public partial class ConstantsEndpoint : OLabEndpoint
+  public partial class ConstantsEndpoint : OLabEndpoint
   {
 
     public ConstantsEndpoint(

@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OLab.Api.Common;
 using OLab.Api.Model;
@@ -11,7 +10,7 @@ using System.IO;
 
 namespace OLab.Api.Importer
 {
-    public class Importer : IImporter
+  public class Importer : IImporter
   {
 
     public enum DtoTypes

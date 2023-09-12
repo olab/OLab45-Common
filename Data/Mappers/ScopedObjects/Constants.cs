@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -11,7 +10,7 @@ using System.Text;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class Constants : OLabMapper<SystemConstants, ConstantsDto>
+  public class Constants : OLabMapper<SystemConstants, ConstantsDto>
   {
     public Constants(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {

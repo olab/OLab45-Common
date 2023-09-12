@@ -2,14 +2,13 @@ using AutoMapper;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
-using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
-using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
+  public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
   {
     public MapsFullRelationsMapper(
       IOLabLogger logger,

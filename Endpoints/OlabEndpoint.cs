@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
 {
-    public class OLabEndpoint
+  public class OLabEndpoint
   {
     protected readonly OLabDBContext dbContext;
     protected IOLabLogger Logger;

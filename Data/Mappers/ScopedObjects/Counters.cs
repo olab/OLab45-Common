@@ -1,5 +1,4 @@
 using AutoMapper;
-using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -12,7 +11,7 @@ using System.Text;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class CounterValueResolver : IValueResolver<SystemCounters, CountersDto, string>
+  public class CounterValueResolver : IValueResolver<SystemCounters, CountersDto, string>
   {
     public string Resolve(SystemCounters source, CountersDto destination, string destMember, ResolutionContext context)
     {

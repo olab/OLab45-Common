@@ -1,11 +1,10 @@
-using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
 namespace OLab.Api.Common
 {
-    public abstract class WikiTag0Argument : WikiTagModule
+  public abstract class WikiTag0Argument : WikiTagModule
   {
     public WikiTag0Argument(IOLabLogger logger, string htmlElementName) : base(logger, htmlElementName)
     {

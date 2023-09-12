@@ -1,16 +1,15 @@
-using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
+  public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
   {
     private static Random random = null;
 

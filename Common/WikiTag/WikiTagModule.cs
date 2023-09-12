@@ -1,4 +1,3 @@
-using OLab.Api.Utils;
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 using System;
@@ -7,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace OLab.Api.Common
 {
-    public abstract class WikiTagModule : IWikiTagModule
+  public abstract class WikiTagModule : IWikiTagModule
   {
     protected List<string> wikiTagPatterns = new List<string>();
     private string _wikiType;

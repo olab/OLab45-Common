@@ -1,20 +1,18 @@
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
-using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class ThemesFull : OLabMapper<SystemThemes, ThemesFullDto>
+  public class ThemesFull : OLabMapper<SystemThemes, ThemesFullDto>
   {
     protected readonly bool enableWikiTranslation;
 
     public ThemesFull(
-      IOLabLogger logger, 
-      WikiTagProvider tagProvider, 
+      IOLabLogger logger,
+      WikiTagProvider tagProvider,
       bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
       this.enableWikiTranslation = enableWikiTranslation;

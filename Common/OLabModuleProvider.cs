@@ -1,5 +1,4 @@
 ﻿using Dawn;
-using Microsoft.Extensions.Logging;
 using OLab.Api.Utils;
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
@@ -10,7 +9,7 @@ using System.Reflection;
 
 namespace OLab.Api.Common
 {
-    public class OLabModuleProvider<T> : IOLabModuleProvider<T> where T : class
+  public class OLabModuleProvider<T> : IOLabModuleProvider<T> where T : class
   {
     protected Dictionary<string, T> Modules = new Dictionary<string, T>();
     protected readonly IOLabLogger Logger;

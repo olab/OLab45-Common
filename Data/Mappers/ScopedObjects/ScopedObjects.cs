@@ -1,12 +1,11 @@
 using OLab.Api.Common;
 using OLab.Api.Dto;
-using OLab.Api.Utils;
-using System;
 using OLab.Common.Interfaces;
+using System;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class ScopedObjects : ObjectMapper<Model.ScopedObjects, ScopedObjectsDto>
+  public class ScopedObjects : ObjectMapper<Model.ScopedObjects, ScopedObjectsDto>
   {
     protected readonly bool enableWikiTranslation = true;
 

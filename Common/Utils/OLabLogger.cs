@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace OLab.Api.Utils
 {
-    public class OLabLogMessage
+  public class OLabLogMessage
   {
     public enum MessageLevel
     {

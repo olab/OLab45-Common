@@ -7,7 +7,7 @@ using System;
 
 namespace OLab.Import.Interfaces
 {
-    public interface IImporter
+  public interface IImporter
   {
     OLabDBContext GetContext();
     XmlDto GetDto(Importer.DtoTypes type);

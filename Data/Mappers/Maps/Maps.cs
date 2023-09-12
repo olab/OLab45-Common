@@ -1,14 +1,14 @@
 using AutoMapper;
 using OLab.Api.Common;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class MapsMapper : OLabMapper<Model.Maps, Dto.MapsDto>
+  public class MapsMapper : OLabMapper<Model.Maps, Dto.MapsDto>
   {
     public MapsMapper(
       IOLabLogger logger,

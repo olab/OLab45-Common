@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
@@ -7,7 +6,7 @@ using System.Collections.Generic;
 
 namespace OLab.Api.ObjectMapper
 {
-    public abstract class ObjectMapper<P, D> : object where P : new() where D : new()
+  public abstract class ObjectMapper<P, D> : object where P : new() where D : new()
   {
     protected IOLabLogger Logger;
     protected WikiTagProvider _tagProvider = null;

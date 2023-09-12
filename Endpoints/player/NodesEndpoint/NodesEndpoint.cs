@@ -7,14 +7,14 @@ using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using OLab.Common.Interfaces;
 
 namespace OLab.Api.Endpoints.Player
 {
-    public partial class NodesEndpoint : OLabEndpoint
+  public partial class NodesEndpoint : OLabEndpoint
   {
 
     public NodesEndpoint(

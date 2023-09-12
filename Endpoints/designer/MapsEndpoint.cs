@@ -7,16 +7,16 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Model.ReaderWriter;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OLab.Common.Interfaces;
 
 namespace OLab.Api.Endpoints.Designer
 {
-    public partial class MapsEndpoint : OLabEndpoint
+  public partial class MapsEndpoint : OLabEndpoint
   {
 
     public MapsEndpoint(

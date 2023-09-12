@@ -3,13 +3,13 @@ using OLab.Api.Common.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Threading.Tasks;
-using OLab.Common.Interfaces;
 
 namespace OLab.Api.Endpoints.Player
 {
-    public partial class ResponseEndpoint : OLabEndpoint
+  public partial class ResponseEndpoint : OLabEndpoint
   {
 
     public ResponseEndpoint(

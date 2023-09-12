@@ -1,12 +1,11 @@
 using AutoMapper;
 using OLab.Api.Common;
 using OLab.Api.Dto;
-using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class MapsFullMapper : OLabMapper<Model.Maps, MapsFullDto>
+  public class MapsFullMapper : OLabMapper<Model.Maps, MapsFullDto>
   {
     public MapsFullMapper(
       IOLabLogger logger,

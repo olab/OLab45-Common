@@ -1,11 +1,10 @@
 using OLab.Api.Common;
 using OLab.Api.Dto.Designer;
-using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class MapNodeTemplate : OLabMapper<Model.MapNodes, MapNodeTemplateDto>
+  public class MapNodeTemplate : OLabMapper<Model.MapNodes, MapNodeTemplateDto>
   {
     protected readonly bool enableWikiTranslation = false;
 

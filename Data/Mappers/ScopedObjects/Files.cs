@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -10,7 +9,7 @@ using System.Linq;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class Files : OLabMapper<SystemFiles, FilesDto>
+  public class Files : OLabMapper<SystemFiles, FilesDto>
   {
     public Files(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {

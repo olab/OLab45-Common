@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace OLab.Api.Utils
 {
-    public class ConcurrentList<T>
+  public class ConcurrentList<T>
   {
     private readonly IList<T> _items = new List<T>();
     private readonly IOLabLogger _logger;

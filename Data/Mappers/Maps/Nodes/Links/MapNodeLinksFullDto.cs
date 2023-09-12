@@ -1,13 +1,11 @@
 using AutoMapper;
-using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Dto;
-using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class MapNodeLinksFullMapper : OLabMapper<Model.MapNodeLinks, MapNodeLinksFullDto>
+  public class MapNodeLinksFullMapper : OLabMapper<Model.MapNodeLinks, MapNodeLinksFullDto>
   {
     public MapNodeLinksFullMapper(
       IOLabLogger logger,

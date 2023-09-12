@@ -1,14 +1,12 @@
-using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
-using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System.IO;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class FilesFull : OLabMapper<SystemFiles, FilesFullDto>
+  public class FilesFull : OLabMapper<SystemFiles, FilesFullDto>
   {
 
     public FilesFull(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)

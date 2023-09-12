@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -10,7 +9,7 @@ using System.Linq;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class AvatarsMapper : OLabMapper<MapAvatars, AvatarsDto>
+  public class AvatarsMapper : OLabMapper<MapAvatars, AvatarsDto>
   {
     public AvatarsMapper(
       IOLabLogger logger,

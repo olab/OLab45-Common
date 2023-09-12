@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
 {
-    public partial class FilesEndpoint : OLabEndpoint
+  public partial class FilesEndpoint : OLabEndpoint
   {
 
     public FilesEndpoint(

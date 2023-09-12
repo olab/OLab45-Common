@@ -2,14 +2,14 @@ using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class QuestionResponses : OLabMapper<SystemQuestionResponses, QuestionResponsesDto>
+  public class QuestionResponses : OLabMapper<SystemQuestionResponses, QuestionResponsesDto>
   {
     protected readonly QuestionsFullDto ParentQuestion;
 

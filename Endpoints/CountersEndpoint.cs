@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
 {
-    public partial class CountersEndpoint : OLabEndpoint
+  public partial class CountersEndpoint : OLabEndpoint
   {
 
     public CountersEndpoint(

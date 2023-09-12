@@ -1,15 +1,14 @@
-using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class MapNodesMapper : OLabMapper<Model.MapNodes, MapNodesDto>
+  public class MapNodesMapper : OLabMapper<Model.MapNodes, MapNodesDto>
   {
     public static int DefaultWidth = 400;
     public static int DefaultHeight = 300;

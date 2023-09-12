@@ -9,14 +9,14 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using OLab.Common.Interfaces;
 
 namespace OLab.Api.Endpoints
 {
-    public partial class QuestionResponsesEndpoint : OLabEndpoint
+  public partial class QuestionResponsesEndpoint : OLabEndpoint
   {
 
     public QuestionResponsesEndpoint(

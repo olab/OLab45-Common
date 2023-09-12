@@ -7,14 +7,14 @@ using OLab.Api.Dto.Designer;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OLab.Common.Interfaces;
 
 namespace OLab.Api.Endpoints.Designer
 {
-    public partial class TemplateEndpoint : OLabEndpoint
+  public partial class TemplateEndpoint : OLabEndpoint
   {
 
     public TemplateEndpoint(

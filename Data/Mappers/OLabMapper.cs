@@ -1,5 +1,4 @@
 using AutoMapper;
-using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
@@ -8,7 +7,7 @@ using System.Collections.Generic;
 
 namespace OLab.Api.ObjectMapper
 {
-    public abstract class OLabMapper<P, D> : object where P : new() where D : new()
+  public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   {
     protected readonly Mapper _mapper;
 

@@ -6,15 +6,15 @@ using OLab.Api.Data.Interface;
 using OLab.Api.Endpoints;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OLab.Common.Interfaces;
 
 namespace Endpoints.player.ReportEndpoint
 {
-    public partial class ReportEndpoint : OLabEndpoint
+  public partial class ReportEndpoint : OLabEndpoint
   {
     private IList<UserSessionTraces> _sessionTraces;
     private IList<UserResponses> _sessionResponses;

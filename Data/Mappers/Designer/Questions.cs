@@ -2,12 +2,11 @@ using AutoMapper;
 using OLab.Api.Common;
 using OLab.Api.Dto.Designer;
 using OLab.Api.Model;
-using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper.Designer
 {
-    public class Questions : OLabMapper<SystemQuestions, ScopedObjectDto>
+  public class Questions : OLabMapper<SystemQuestions, ScopedObjectDto>
   {
     public Questions(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
