@@ -2,18 +2,19 @@ using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Utils;
 using System;
+using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class ScopedObjects : ObjectMapper<Model.ScopedObjects, ScopedObjectsDto>
+    public class ScopedObjects : ObjectMapper<Model.ScopedObjects, ScopedObjectsDto>
   {
     protected readonly bool enableWikiTranslation = true;
 
-    public ScopedObjects(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public ScopedObjects(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public ScopedObjects(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public ScopedObjects(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

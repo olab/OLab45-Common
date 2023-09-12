@@ -1,5 +1,8 @@
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +10,7 @@ using System.Text;
 
 namespace OLab.Api.Dto
 {
-  public class DynamicScopedObject
+    public class DynamicScopedObject
   {
     [JsonProperty("counters")]
     public List<CountersDto> Counters { get; set; }
@@ -166,7 +169,7 @@ namespace OLab.Api.Dto
       return dto;
     }
 
-    public void Dump(OLabLogger logger, string prefix)
+    public void Dump(IOLabLogger logger, string prefix)
     {
       var message = $"{prefix}{Environment.NewLine}";
 

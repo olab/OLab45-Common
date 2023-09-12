@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -5,21 +6,22 @@ using OLab.Api.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
+    public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
   {
     private static Random random = null;
 
     public MapNodeLinksMapper(
-      OLabLogger logger,
+      IOLabLogger logger,
       bool enableWikiTranslation = true) : base(logger)
     {
     }
 
     public MapNodeLinksMapper(
-      OLabLogger logger,
+      IOLabLogger logger,
       WikiTagProvider tagProvider,
       bool enableWikiTranslation = true) : base(logger, tagProvider)
     {

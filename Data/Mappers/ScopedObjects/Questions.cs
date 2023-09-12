@@ -5,12 +5,13 @@ using OLab.Api.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class Questions : OLabMapper<SystemQuestions, QuestionsDto>
+    public class Questions : OLabMapper<SystemQuestions, QuestionsDto>
   {
-    public Questions(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public Questions(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

@@ -12,14 +12,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OLab.Common.Interfaces;
 
 namespace OLab.Api.Endpoints.Designer
 {
-  public partial class MapsEndpoint : OLabEndpoint
+    public partial class MapsEndpoint : OLabEndpoint
   {
 
     public MapsEndpoint(
-      OLabLogger logger,
+      IOLabLogger logger,
       IOptions<AppSettings> appSettings,
       OLabDBContext context) : base(logger, appSettings, context)
     {

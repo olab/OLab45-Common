@@ -1,16 +1,17 @@
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace OLab.Api.Common
 {
-  public abstract class WikiTag1Argument : WikiTagModule
+    public abstract class WikiTag1Argument : WikiTagModule
   {
     protected string wikiTagIdPart;
     protected List<string> wikiTagNamePatterns = new List<string>();
 
-    public WikiTag1Argument(OLabLogger logger, string htmlElementName) : base(logger, htmlElementName)
+    public WikiTag1Argument(IOLabLogger logger, string htmlElementName) : base(logger, htmlElementName)
     {
       wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:[0-9]*\\]\\]");
       wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:\"[.A-Za-z0-9\\- ]*\"\\]\\]");

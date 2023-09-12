@@ -1,15 +1,16 @@
 using OLab.Api.Utils;
+using OLab.Import.Interfaces;
 using System;
 using System.Collections.Generic;
 
 namespace OLab.Api.Importer
 {
-  /// <summary>
-  /// Xml import Manifest object DTO
-  /// </summary>
-  public class XmlManifestDto : XmlImportDto<XmlManifest>
+    /// <summary>
+    /// Xml import Manifest object DTO
+    /// </summary>
+    public class XmlManifestDto : XmlImportDto<XmlManifest>
   {
-    public XmlManifestDto(Importer importer) : base(importer, "manifest.xml") { }
+    public XmlManifestDto(IImporter importer) : base(importer, "manifest.xml") { }
 
     /// <summary>
     /// Loads the specific import file into a model object

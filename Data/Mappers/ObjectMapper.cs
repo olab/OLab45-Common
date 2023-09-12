@@ -1,14 +1,15 @@
 using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 
 namespace OLab.Api.ObjectMapper
 {
-  public abstract class ObjectMapper<P, D> : object where P : new() where D : new()
+    public abstract class ObjectMapper<P, D> : object where P : new() where D : new()
   {
-    protected OLabLogger Logger;
+    protected IOLabLogger Logger;
     protected WikiTagProvider _tagProvider = null;
     public WikiTagProvider GetWikiProvider() { return _tagProvider; }
 
@@ -19,14 +20,13 @@ namespace OLab.Api.ObjectMapper
     public abstract P DtoToPhysical(D dto, Object source = null);
     public virtual P ElementsToPhys(IEnumerable<dynamic> elements, Object source = null) { return default; }
 
-    public ObjectMapper(OLabLogger logger) : this(logger, new WikiTagProvider(logger))
+    public ObjectMapper(IOLabLogger logger) : this(logger, new WikiTagProvider(logger))
     {
     }
 
-    public ObjectMapper(OLabLogger logger, WikiTagProvider tagProvider)
+    public ObjectMapper(IOLabLogger logger, WikiTagProvider tagProvider)
     {
-      var newLogger = logger.GetLoggerFactory().CreateLogger<ObjectMapper<P, D>>();
-      Logger = new OLabLogger(logger.GetLoggerFactory(), newLogger);
+      Logger = OLabLogger.CreateNew<ObjectMapper<P, D>>(logger);
       _tagProvider = new WikiTagProvider(Logger);
     }
 

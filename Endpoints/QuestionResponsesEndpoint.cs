@@ -12,14 +12,15 @@ using OLab.Api.Utils;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using OLab.Common.Interfaces;
 
 namespace OLab.Api.Endpoints
 {
-  public partial class QuestionResponsesEndpoint : OLabEndpoint
+    public partial class QuestionResponsesEndpoint : OLabEndpoint
   {
 
     public QuestionResponsesEndpoint(
-      OLabLogger logger,
+      IOLabLogger logger,
       IOptions<AppSettings> appSettings,
       OLabDBContext context) : base(logger, appSettings, context)
     {

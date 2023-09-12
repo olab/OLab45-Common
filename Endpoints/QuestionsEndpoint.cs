@@ -13,14 +13,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OLab.Common.Interfaces;
 
 namespace OLab.Api.Endpoints
 {
-  public partial class QuestionsEndpoint : OLabEndpoint
+    public partial class QuestionsEndpoint : OLabEndpoint
   {
 
     public QuestionsEndpoint(
-      OLabLogger logger,
+      IOLabLogger logger,
       IOptions<AppSettings> appSettings,
       OLabDBContext context) : base(logger, appSettings, context)
     {

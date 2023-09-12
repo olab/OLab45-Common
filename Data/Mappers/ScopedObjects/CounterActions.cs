@@ -1,21 +1,23 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class CounterActionsMapper : OLabMapper<SystemCounterActions, CounterActionsDto>
+    public class CounterActionsMapper : OLabMapper<SystemCounterActions, CounterActionsDto>
   {
     public static int DefaultWidth = 400;
     public static int DefaultHeight = 300;
 
     public CounterActionsMapper(
-      OLabLogger logger,
+      IOLabLogger logger,
       WikiTagProvider tagProvider,
       bool enableWikiTranslation = true) : base(logger, tagProvider)
     {

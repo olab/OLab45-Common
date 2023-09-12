@@ -1,20 +1,22 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System.Text;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class ConstantsFull : OLabMapper<SystemConstants, ConstantsDto>
+    public class ConstantsFull : OLabMapper<SystemConstants, ConstantsDto>
   {
 
-    public ConstantsFull(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public ConstantsFull(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public ConstantsFull(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public ConstantsFull(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

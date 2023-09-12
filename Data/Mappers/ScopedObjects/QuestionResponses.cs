@@ -5,24 +5,25 @@ using OLab.Api.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class QuestionResponses : OLabMapper<SystemQuestionResponses, QuestionResponsesDto>
+    public class QuestionResponses : OLabMapper<SystemQuestionResponses, QuestionResponsesDto>
   {
     protected readonly QuestionsFullDto ParentQuestion;
 
-    public QuestionResponses(OLabLogger logger, QuestionsFullDto parentQuestion) : base(logger)
+    public QuestionResponses(IOLabLogger logger, QuestionsFullDto parentQuestion) : base(logger)
     {
       ParentQuestion = parentQuestion;
     }
 
-    public QuestionResponses(OLabLogger logger, WikiTagProvider tagProvider, QuestionsFullDto parentQuestion) : base(logger, tagProvider)
+    public QuestionResponses(IOLabLogger logger, WikiTagProvider tagProvider, QuestionsFullDto parentQuestion) : base(logger, tagProvider)
     {
       ParentQuestion = parentQuestion;
     }
 
-    public QuestionResponses(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public QuestionResponses(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

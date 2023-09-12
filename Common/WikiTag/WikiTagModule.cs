@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace OLab.Api.Common
 {
-  public abstract class WikiTagModule : IWikiTagModule
+    public abstract class WikiTagModule : IWikiTagModule
   {
     protected List<string> wikiTagPatterns = new List<string>();
     private string _wikiType;
@@ -16,9 +16,9 @@ namespace OLab.Api.Common
 
     protected int wikiStart = 0;
     protected int wikiEnd = 0;
-    protected OLabLogger Logger;
+    protected IOLabLogger Logger;
 
-    public WikiTagModule(OLabLogger logger, string htmlElementName)
+    public WikiTagModule(IOLabLogger logger, string htmlElementName)
     {
       var t = GetType();
       var attribute =

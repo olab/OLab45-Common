@@ -1,7 +1,9 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OLab.Api.Common;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using OLab.Import.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ using System.IO;
 
 namespace OLab.Api.Importer
 {
-  public class Importer : IImporter
+    public class Importer : IImporter
   {
 
     public enum DtoTypes
@@ -34,29 +36,30 @@ namespace OLab.Api.Importer
     };
 
     private readonly OLabDBContext _context;
-    public readonly AppSettings Settings;
+    public readonly AppSettings _settings;
     private readonly IDictionary<DtoTypes, XmlDto> _dtos = new Dictionary<DtoTypes, XmlDto>();
-    private readonly OLabLogger Logger;
+    private readonly IOLabLogger Logger;
     private readonly WikiTagProvider _tagProvider;
 
     public WikiTagProvider GetWikiProvider() { return _tagProvider; }
     public XmlDto GetDto(DtoTypes type) { return _dtos[type]; }
     public OLabDBContext GetContext() { return _context; }
-    public OLabLogger GetLogger() { return Logger; }
+    public IOLabLogger GetLogger() { return Logger; }
+    public AppSettings Settings() { return _settings; }
 
     private string _logFileDirectory;
     private string _extractPath;
     private string _importFileName;
 
     public Importer(
-      OLabLogger logger, 
+      IOLabLogger logger,
       IOptions<AppSettings> appSettings,
       OLabDBContext context)
     {
-      Settings = appSettings.Value;
+      _settings = appSettings.Value;
       _context = context;
 
-      Logger = logger;
+      Logger = OLabLogger.CreateNew<Importer>(logger);
 
       _tagProvider = new WikiTagProvider(Logger);
 

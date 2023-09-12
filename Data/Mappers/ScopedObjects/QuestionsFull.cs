@@ -4,16 +4,17 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using System.Linq;
+using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class QuestionsFull : OLabMapper<SystemQuestions, QuestionsFullDto>
+    public class QuestionsFull : OLabMapper<SystemQuestions, QuestionsFullDto>
   {
-    public QuestionsFull(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public QuestionsFull(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public QuestionsFull(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public QuestionsFull(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

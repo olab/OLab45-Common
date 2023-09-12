@@ -9,6 +9,7 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,11 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
 {
-  public partial class ConstantsEndpoint : OLabEndpoint
+    public partial class ConstantsEndpoint : OLabEndpoint
   {
 
     public ConstantsEndpoint(
-      OLabLogger logger,
+      IOLabLogger logger,
       IOptions<AppSettings> appSettings,
       OLabDBContext context) : base(logger, appSettings, context)
     {

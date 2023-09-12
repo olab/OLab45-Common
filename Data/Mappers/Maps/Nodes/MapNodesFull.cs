@@ -2,22 +2,23 @@ using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class MapNodesFullMapper : OLabMapper<Model.MapNodes, MapNodesFullDto>
+    public class MapNodesFullMapper : OLabMapper<MapNodes, MapNodesFullDto>
   {
     protected readonly bool enableWikiTranslation = false;
 
     public MapNodesFullMapper(
-      OLabLogger logger,
+      IOLabLogger logger,
       bool enableWikiTranslation = true) : base(logger)
     {
       this.enableWikiTranslation = enableWikiTranslation;
     }
 
     public MapNodesFullMapper(
-      OLabLogger logger,
+      IOLabLogger logger,
       WikiTagProvider tagProvider,
       bool enableWikiTranslation = true) : base(logger, tagProvider)
     {

@@ -1,12 +1,13 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace OLab.Api.Utils
 {
-  public class OLabLogMessage
+    public class OLabLogMessage
   {
     public enum MessageLevel
     {
@@ -30,7 +31,7 @@ namespace OLab.Api.Utils
     }
   }
 
-  public class OLabLogger
+  public class OLabLogger : IOLabLogger
   {
     private readonly IList<OLabLogMessage> _messages = new List<OLabLogMessage>();
     private readonly ILogger _logger;
@@ -42,20 +43,34 @@ namespace OLab.Api.Utils
 
     // for cases where we don't have/need an actual ILogger
     public OLabLogger(bool keepMessages = false)
-      : this(NullLoggerFactory.Instance, NullLoggerFactory.Instance.CreateLogger("default"))
+      : this(NullLoggerFactory.Instance, keepMessages)
     {
     }
 
     public OLabLogger(ILoggerFactory loggerFactory, bool keepMessages = false)
-      : this(loggerFactory, loggerFactory.CreateLogger("default"))
     {
+      _loggerFactory = loggerFactory;
+      _keepMessages = keepMessages;
+      _logger = _loggerFactory.CreateLogger("default");
     }
 
-    public OLabLogger(ILoggerFactory loggerFactory, ILogger logger, bool keepMessages = false)
+    private OLabLogger(ILoggerFactory loggerFactory, ILogger logger, bool keepMessages = false)
     {
       _loggerFactory = loggerFactory;
       _logger = logger;
       _keepMessages = keepMessages;
+    }
+
+    public static IOLabLogger CreateNew<T>(IOLabLogger source)
+    {
+      var logger = new OLabLogger(source.GetLoggerFactory(), source.GetLoggerFactory().CreateLogger<T>());
+      return logger;
+    }
+
+    public static IOLabLogger CreateNew<T>(ILoggerFactory loggerFactory, bool keepMessages = false)
+    {
+      var logger = new OLabLogger(loggerFactory, loggerFactory.CreateLogger<T>());
+      return logger;
     }
 
     public bool HaveFatalError => _messages.Any(x => x.Level == OLabLogMessage.MessageLevel.Fatal);

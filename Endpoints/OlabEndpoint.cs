@@ -6,6 +6,7 @@ using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,16 +15,16 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
 {
-  public class OLabEndpoint
+    public class OLabEndpoint
   {
     protected readonly OLabDBContext dbContext;
-    protected OLabLogger Logger;
+    protected IOLabLogger Logger;
     protected string token;
     protected IUserContext _userContext;
     readonly AppSettings appSettings;
 
     public OLabEndpoint(
-      OLabLogger logger,
+      IOLabLogger logger,
       IOptions<AppSettings> appSettings,
       OLabDBContext context)
     {

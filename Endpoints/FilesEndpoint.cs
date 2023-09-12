@@ -9,6 +9,7 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,11 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
 {
-  public partial class FilesEndpoint : OLabEndpoint
+    public partial class FilesEndpoint : OLabEndpoint
   {
 
     public FilesEndpoint(
-      OLabLogger logger,
+      IOLabLogger logger,
       IOptions<AppSettings> appSettings,
       OLabDBContext context) : base(logger, appSettings, context)
     {
@@ -87,7 +88,7 @@ namespace OLab.Api.Endpoints
         throw new OLabObjectNotFoundException("Files", id);
 
       var phys = await dbContext.SystemFiles.FirstAsync(x => x.Id == id);
-      var dto = new ObjectMapper.FilesFull(Logger).PhysicalToDto(phys);
+      var dto = new FilesFull(Logger).PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = auth.HasAccess("R", dto);

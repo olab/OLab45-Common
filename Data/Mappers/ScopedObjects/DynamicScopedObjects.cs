@@ -1,18 +1,20 @@
+using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class DynamicScopedObjects : ObjectMapper<Model.ScopedObjects, DynamicScopedObjectsDto>
+    public class DynamicScopedObjects : ObjectMapper<Model.ScopedObjects, DynamicScopedObjectsDto>
   {
     protected readonly bool enableWikiTranslation = true;
 
-    public DynamicScopedObjects(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public DynamicScopedObjects(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public DynamicScopedObjects(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public DynamicScopedObjects(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 
@@ -43,13 +45,13 @@ namespace OLab.Api.ObjectMapper
       Model.ScopedObjects node,
       DynamicScopedObjectsDto dto)
     {
-      var dtoCountersList = new ObjectMapper.Counters(Logger, GetWikiProvider()).PhysicalToDto(server.Counters);
+      var dtoCountersList = new Counters(Logger, GetWikiProvider()).PhysicalToDto(server.Counters);
       dto.Server.Counters.AddRange(dtoCountersList);
 
-      dtoCountersList = new ObjectMapper.Counters(Logger, GetWikiProvider()).PhysicalToDto(map.Counters);
+      dtoCountersList = new Counters(Logger, GetWikiProvider()).PhysicalToDto(map.Counters);
       dto.Map.Counters.AddRange(dtoCountersList);
 
-      dtoCountersList = new ObjectMapper.Counters(Logger, GetWikiProvider()).PhysicalToDto(node.Counters);
+      dtoCountersList = new Counters(Logger, GetWikiProvider()).PhysicalToDto(node.Counters);
       dto.Node.Counters.AddRange(dtoCountersList);
 
       // var dtoConstantsList = new ConstantsObjectMapper(Logger, GetWikiProvider()).PhysicalToDto( server.Constants );

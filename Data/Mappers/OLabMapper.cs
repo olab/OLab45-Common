@@ -1,16 +1,18 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 
 namespace OLab.Api.ObjectMapper
 {
-  public abstract class OLabMapper<P, D> : object where P : new() where D : new()
+    public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   {
     protected readonly Mapper _mapper;
 
-    protected OLabLogger Logger;
+    protected IOLabLogger Logger;
     protected WikiTagProvider _tagProvider = null;
     // used to hold on to id translation between origin system and new one
     protected IDictionary<uint, uint?> _idTranslation = new Dictionary<uint, uint?>();
@@ -18,13 +20,14 @@ namespace OLab.Api.ObjectMapper
     public virtual P ElementsToPhys(IEnumerable<dynamic> elements, Object source = null) { return default; }
     public WikiTagProvider GetWikiProvider() { return _tagProvider; }
 
-    public OLabMapper(OLabLogger logger) : this(logger, new WikiTagProvider(logger))
+    public OLabMapper(IOLabLogger logger) : this(logger, new WikiTagProvider(logger))
     {
     }
 
-    public OLabMapper(OLabLogger logger, WikiTagProvider tagProvider)
+    public OLabMapper(IOLabLogger logger, WikiTagProvider tagProvider)
     {
-      Logger = logger;
+      Logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
+
       _tagProvider = tagProvider;
       _mapper = new Mapper(GetConfiguration());
     }

@@ -5,19 +5,20 @@ using OLab.Api.Model;
 using OLab.Api.Utils;
 using System.Collections.Generic;
 using System.Linq;
+using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
+    public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
   {
     public MapsFullRelationsMapper(
-      OLabLogger logger,
+      IOLabLogger logger,
       bool enableWikiTranslation = true) : base(logger)
     {
     }
 
     public MapsFullRelationsMapper(
-      OLabLogger logger,
+      IOLabLogger logger,
       WikiTagProvider tagProvider,
       bool enableWikiTranslation = true) : base(logger, tagProvider)
     {

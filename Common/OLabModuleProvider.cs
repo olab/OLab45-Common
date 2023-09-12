@@ -10,18 +10,17 @@ using System.Reflection;
 
 namespace OLab.Api.Common
 {
-  public class OLabModuleProvider<T> : IOLabModuleProvider<T> where T : class
+    public class OLabModuleProvider<T> : IOLabModuleProvider<T> where T : class
   {
     protected Dictionary<string, T> Modules = new Dictionary<string, T>();
-    protected readonly OLabLogger Logger;
+    protected readonly IOLabLogger Logger;
 
-    public OLabModuleProvider(OLabLogger logger)
+    public OLabModuleProvider(IOLabLogger logger)
     {
       Guard.Argument(logger).NotNull(nameof(logger));
 
-      Logger = new OLabLogger(logger.GetLoggerFactory(), logger.GetLoggerFactory().CreateLogger<OLabModuleProvider<T>>());
+      Logger = OLabLogger.CreateNew<OLabModuleProvider<T>>(logger);
       Logger.LogInformation($"{GetType().Name} ctor");
-
     }
 
     /// <summary>

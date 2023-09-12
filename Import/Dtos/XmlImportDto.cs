@@ -1,6 +1,8 @@
 using OLab.Api.Common;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
+using OLab.Import.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,16 +10,16 @@ using System.Linq;
 
 namespace OLab.Api.Importer
 {
-  /// <summary>
-  /// Xml import base object
-  /// </summary>
-  /// <typeparam name="P">Model (physical) class</typeparam>
-  public abstract class XmlImportDto<P> : XmlDto where P : new()
+    /// <summary>
+    /// Xml import base object
+    /// </summary>
+    /// <typeparam name="P">Model (physical) class</typeparam>
+    public abstract class XmlImportDto<P> : XmlDto where P : new()
   {
     protected dynamic _phys;
     private readonly string _fileName;
-    private readonly OLabLogger _olabLogger;
-    private readonly Importer _importer;
+    private readonly IOLabLogger _olabLogger;
+    private readonly IImporter _importer;
     protected OLabDBContext Context;
     private readonly string _websitePublicFilesDirectory;
     private string _importDirectory;
@@ -28,9 +30,9 @@ namespace OLab.Api.Importer
     protected readonly P _modelObject = new P();
 
     public override bool PostProcess(IDictionary<Importer.DtoTypes, XmlDto> dtos) { return true; }
-    public Importer GetImporter() { return _importer; }
+    public IImporter GetImporter() { return _importer; }
     public string GetFileName() { return _fileName; }
-    public OLabLogger GetLogger() { return _olabLogger; }
+    public IOLabLogger GetLogger() { return _olabLogger; }
     public P GetModel() { return _modelObject; }
     public dynamic GetXmlPhys() { return _phys; }
     public override Object GetDbPhys() { return _modelObject; }
@@ -44,14 +46,14 @@ namespace OLab.Api.Importer
     /// </summary>
     /// <param name="importer">Importer object</param>
     /// <param name="fileName">File name to import</param>
-    public XmlImportDto(Importer importer, string fileName)
+    public XmlImportDto(IImporter importer, string fileName)
     {
       _importer = importer;
       _fileName = fileName;
       _tagProvider = GetImporter().GetWikiProvider();
       _olabLogger = GetImporter().GetLogger();
       Context = GetImporter().GetContext();
-      _websitePublicFilesDirectory = GetImporter().Settings.FileStorageFolder;
+      _websitePublicFilesDirectory = GetImporter().Settings().FileStorageFolder;
     }
 
     /// <summary>

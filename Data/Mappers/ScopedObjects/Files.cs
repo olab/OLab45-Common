@@ -1,20 +1,22 @@
+using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class Files : OLabMapper<SystemFiles, FilesDto>
+    public class Files : OLabMapper<SystemFiles, FilesDto>
   {
-    public Files(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public Files(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public Files(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public Files(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

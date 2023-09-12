@@ -1,15 +1,16 @@
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.Threading;
 
 namespace OLab.Api.Utils
 {
-  public class ConcurrentList<T>
+    public class ConcurrentList<T>
   {
     private readonly IList<T> _items = new List<T>();
-    private readonly OLabLogger _logger;
+    private readonly IOLabLogger _logger;
     private static readonly Mutex mutex = new Mutex();
 
-    public ConcurrentList(OLabLogger logger)
+    public ConcurrentList(IOLabLogger logger)
     {
       _logger = logger;
     }

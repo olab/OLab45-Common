@@ -10,14 +10,15 @@ using OLab.Api.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OLab.Common.Interfaces;
 
 namespace OLab.Api.Endpoints.Designer
 {
-  public partial class TemplateEndpoint : OLabEndpoint
+    public partial class TemplateEndpoint : OLabEndpoint
   {
 
     public TemplateEndpoint(
-      OLabLogger logger,
+      IOLabLogger logger,
       IOptions<AppSettings> appSettings,
       OLabDBContext context) : base(logger, appSettings, context)
     {

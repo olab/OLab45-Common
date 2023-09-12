@@ -10,10 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OLab.Common.Interfaces;
 
 namespace Endpoints.player.ReportEndpoint
 {
-  public partial class ReportEndpoint : OLabEndpoint
+    public partial class ReportEndpoint : OLabEndpoint
   {
     private IList<UserSessionTraces> _sessionTraces;
     private IList<UserResponses> _sessionResponses;
@@ -26,7 +27,7 @@ namespace Endpoints.player.ReportEndpoint
     private IList<UserState> _userStates;
 
     public ReportEndpoint(
-      OLabLogger logger,
+      IOLabLogger logger,
       IOptions<AppSettings> appSettings,
       OLabDBContext context) : base(logger, appSettings, context)
     {

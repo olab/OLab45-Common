@@ -1,8 +1,10 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +12,7 @@ using System.Text;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class CounterValueResolver : IValueResolver<SystemCounters, CountersDto, string>
+    public class CounterValueResolver : IValueResolver<SystemCounters, CountersDto, string>
   {
     public string Resolve(SystemCounters source, CountersDto destination, string destMember, ResolutionContext context)
     {
@@ -20,11 +22,16 @@ namespace OLab.Api.ObjectMapper
 
   public class Counters : OLabMapper<SystemCounters, CountersDto>
   {
-    public Counters(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public Counters(IOLabLogger logger, WikiTagProvider tagProvider) : base(logger, tagProvider)
+    {
+
+    }
+
+    public Counters(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public Counters(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public Counters(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

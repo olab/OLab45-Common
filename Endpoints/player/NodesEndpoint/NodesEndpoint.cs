@@ -10,14 +10,15 @@ using OLab.Api.Utils;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using OLab.Common.Interfaces;
 
 namespace OLab.Api.Endpoints.Player
 {
-  public partial class NodesEndpoint : OLabEndpoint
+    public partial class NodesEndpoint : OLabEndpoint
   {
 
     public NodesEndpoint(
-      OLabLogger logger,
+      IOLabLogger logger,
       IOptions<AppSettings> appSettings,
       OLabDBContext context) : base(logger, appSettings, context)
     {

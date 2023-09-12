@@ -1,11 +1,12 @@
 using OLab.Api.Common;
 using OLab.Api.Utils;
 using OLab.Common.Attributes;
+using OLab.Common.Interfaces;
 
 [OLabModule("REPORT")]
 public class ReportWikiTag : WikiTag0Argument
 {
-  public ReportWikiTag(OLabLogger logger) : base(logger, "OlabReportTag")
+  public ReportWikiTag(IOLabLogger logger) : base(logger, "OlabReportTag")
   {
   }
 }

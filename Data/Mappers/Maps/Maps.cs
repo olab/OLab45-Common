@@ -4,19 +4,20 @@ using OLab.Api.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class MapsMapper : OLabMapper<Model.Maps, Dto.MapsDto>
+    public class MapsMapper : OLabMapper<Model.Maps, Dto.MapsDto>
   {
     public MapsMapper(
-      OLabLogger logger,
+      IOLabLogger logger,
       bool enableWikiTranslation = true) : base(logger)
     {
     }
 
     public MapsMapper(
-      OLabLogger logger,
+      IOLabLogger logger,
       WikiTagProvider tagProvider,
       bool enableWikiTranslation = true) : base(logger, tagProvider)
     {

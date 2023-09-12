@@ -5,12 +5,13 @@ using OLab.Api.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class MapVpdElement : OLabMapper<MapVpdElements, MapVpdElementsDto>
+    public class MapVpdElement : OLabMapper<MapVpdElements, MapVpdElementsDto>
   {
-    public MapVpdElement(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public MapVpdElement(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

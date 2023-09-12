@@ -1,17 +1,19 @@
+using Microsoft.Extensions.Logging;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class AvatarsMapper : OLabMapper<MapAvatars, AvatarsDto>
+    public class AvatarsMapper : OLabMapper<MapAvatars, AvatarsDto>
   {
     public AvatarsMapper(
-      OLabLogger logger,
+      IOLabLogger logger,
       WikiTagProvider tagProvider,
       bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
