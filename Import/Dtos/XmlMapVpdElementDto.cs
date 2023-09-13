@@ -13,7 +13,7 @@ namespace OLab.Api.Importer
 
     public XmlMapVpdElementDto(Importer importer) : base(importer, "map_vpd_element.xml")
     {
-      _mapper = new ObjectMapper.MapVpdElement(GetLogger(), GetWikiProvider());
+      _mapper = new ObjectMapper.MapVpdElement(GetLogger());
     }
 
     /// <summary>

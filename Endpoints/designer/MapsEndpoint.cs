@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
@@ -18,12 +19,15 @@ namespace OLab.Api.Endpoints.Designer
 {
   public partial class MapsEndpoint : OLabEndpoint
   {
+    private readonly IOLabModuleProvider<IWikiTagModule> _wikiTagModules;
 
     public MapsEndpoint(
       IOLabLogger logger,
-      IOptions<AppSettings> appSettings,
-      OLabDBContext context) : base(logger, appSettings, context)
+      IConfiguration configuration,
+      OLabDBContext context,
+      IOLabModuleProvider<IWikiTagModule> wikiTagModules) : base(logger, configuration, context)
     {
+      _wikiTagModules = wikiTagModules;
     }
 
     /// <summary>

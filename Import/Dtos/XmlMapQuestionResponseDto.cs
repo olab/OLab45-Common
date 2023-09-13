@@ -9,7 +9,7 @@ namespace OLab.Api.Importer
 
     public XmlMapQuestionResponseDto(Importer importer) : base(importer, "map_question_response.xml")
     {
-      _mapper = new ObjectMapper.QuestionResponses(GetLogger(), GetWikiProvider());
+      _mapper = new ObjectMapper.QuestionResponses(GetLogger());
     }
 
     /// <summary>

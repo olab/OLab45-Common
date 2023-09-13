@@ -9,7 +9,10 @@ namespace OLab.Api.ObjectMapper.Designer
   {
     protected readonly bool enableWikiTranslation = true;
 
-    public ScopedObjects(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public ScopedObjects(
+      IOLabLogger logger,
+      IOLabModuleProvider<IWikiTagModule> wikiTagModules,
+      bool enableWikiTranslation = true) : base(logger, wikiTagModules)
     {
     }
 
@@ -23,16 +26,16 @@ namespace OLab.Api.ObjectMapper.Designer
     {
       var dto = GetDto(source);
 
-      var dtConstantsList = new Constants(Logger, GetWikiProvider()).PhysicalToDto(phys.Constants);
+      var dtConstantsList = new Constants(Logger).PhysicalToDto(phys.Constants);
       dto.Constants.AddRange(dtConstantsList);
 
-      var dtoQuestionsList = new Questions(Logger, GetWikiProvider()).PhysicalToDto(phys.Questions);
+      var dtoQuestionsList = new Questions(Logger).PhysicalToDto(phys.Questions);
       dto.Questions.AddRange(dtoQuestionsList);
 
-      var dtCountersList = new Counters(Logger, GetWikiProvider()).PhysicalToDto(phys.Counters);
+      var dtCountersList = new Counters(Logger).PhysicalToDto(phys.Counters);
       dto.Counters.AddRange(dtCountersList);
 
-      var dtFilesList = new Files(Logger, GetWikiProvider()).PhysicalToDto(phys.Files);
+      var dtFilesList = new Files(Logger).PhysicalToDto(phys.Files);
       dto.Files.AddRange(dtFilesList);
 
       return dto;

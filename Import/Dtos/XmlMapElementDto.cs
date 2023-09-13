@@ -10,7 +10,7 @@ namespace OLab.Api.Importer
 
     public XmlMapElementDto(Importer importer) : base(importer, "map_element.xml")
     {
-      _mapper = new ObjectMapper.Files(GetLogger(), GetWikiProvider());
+      _mapper = new ObjectMapper.Files(GetLogger());
     }
 
     /// <summary>

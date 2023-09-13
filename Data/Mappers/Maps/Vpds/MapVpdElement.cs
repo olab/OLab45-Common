@@ -11,7 +11,7 @@ namespace OLab.Api.ObjectMapper
 {
   public class MapVpdElement : OLabMapper<MapVpdElements, MapVpdElementsDto>
   {
-    public MapVpdElement(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public MapVpdElement(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 

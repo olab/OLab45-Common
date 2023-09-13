@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OLab.Api.Common;
 using OLab.Api.Dto;
@@ -16,11 +17,13 @@ namespace OLab.Api.Endpoints.Designer
 {
   public partial class TemplateEndpoint : OLabEndpoint
   {
+    private readonly IOLabModuleProvider<IWikiTagModule> _wikiTagModules;
 
     public TemplateEndpoint(
       IOLabLogger logger,
-      IOptions<AppSettings> appSettings,
-      OLabDBContext context) : base(logger, appSettings, context)
+      IConfiguration configuration,
+      OLabDBContext context,
+      IOLabModuleProvider<IWikiTagModule> wikiTagModules) : base(logger, configuration, context)
     {
     }
 
@@ -75,7 +78,7 @@ namespace OLab.Api.Endpoints.Designer
 
       Logger.LogDebug(string.Format("found {0} templates", items.Count));
 
-      var dtoList = new MapsMapper(Logger).PhysicalToDto(items);
+      var dtoList = new MapsMapper(Logger, _configuration.GetConfiguration(), _wikiTagModules).PhysicalToDto(items);
       return new OLabAPIPagedResponse<MapsDto> { Data = dtoList, Remaining = remaining, Count = total };
     }
 

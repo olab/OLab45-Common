@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using OLab.Api.Common;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
@@ -13,13 +14,6 @@ namespace OLab.Api.ObjectMapper
     public MapsMapper(
       IOLabLogger logger,
       bool enableWikiTranslation = true) : base(logger)
-    {
-    }
-
-    public MapsMapper(
-      IOLabLogger logger,
-      WikiTagProvider tagProvider,
-      bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
@@ -20,11 +21,15 @@ namespace OLab.Api.Endpoints.Player
 {
   public partial class MapsEndpoint : OLabEndpoint
   {
+    private readonly IOLabModuleProvider<IWikiTagModule> _wikiTagModules;
+
     public MapsEndpoint(
       IOLabLogger logger,
-      IOptions<AppSettings> appSettings,
-      OLabDBContext context) : base(logger, appSettings, context)
+      IConfiguration configuration,
+      OLabDBContext context,
+      IOLabModuleProvider<IWikiTagModule> wikiTagModules) : base(logger, configuration, context)
     {
+      _wikiTagModules = wikiTagModules;
     }
 
     /// <summary>
@@ -83,7 +88,7 @@ namespace OLab.Api.Endpoints.Player
 
       total = items.Count;
 
-      var dtoList = new MapsMapper(Logger).PhysicalToDto(items);
+      var dtoList = new MapsMapper(Logger, _configuration.GetConfiguration(), _wikiTagModules).PhysicalToDto(items);
 
       Logger.LogDebug(string.Format("found {0} maps", dtoList.Count));
 

@@ -23,8 +23,8 @@ namespace OLab.Api.Importer
     private readonly string _websitePublicFilesDirectory;
     private string _importDirectory;
 
-    private readonly WikiTagProvider _tagProvider;
-    public WikiTagProvider GetWikiProvider() { return _tagProvider; }
+    private readonly IOLabModuleProvider<IWikiTagModule> _tagProvider;
+    public IOLabModuleProvider<IWikiTagModule> GetWikiProvider() { return _tagProvider; }
 
     protected readonly P _modelObject = new P();
 

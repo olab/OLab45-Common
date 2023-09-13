@@ -11,7 +11,7 @@ namespace OLab.Api.Importer
 
     public XmlMapCounterDto(Importer importer) : base(importer, "map_counter.xml")
     {
-      _mapper = new ObjectMapper.Counters(GetLogger(), GetWikiProvider());
+      _mapper = new ObjectMapper.Counters(GetLogger());
     }
 
     /// <summary>

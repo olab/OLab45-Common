@@ -9,8 +9,7 @@ namespace OLab.Api.ObjectMapper
   public abstract class ObjectMapper<P, D> : object where P : new() where D : new()
   {
     protected IOLabLogger Logger;
-    protected WikiTagProvider _tagProvider = null;
-    public WikiTagProvider GetWikiProvider() { return _tagProvider; }
+    protected IOLabModuleProvider<IWikiTagModule> _wikiTagModules = null;
 
     // used to hold on to id translation between origin system and new one
     protected IDictionary<uint, uint?> _idTranslation = new Dictionary<uint, uint?>();
@@ -19,14 +18,18 @@ namespace OLab.Api.ObjectMapper
     public abstract P DtoToPhysical(D dto, Object source = null);
     public virtual P ElementsToPhys(IEnumerable<dynamic> elements, Object source = null) { return default; }
 
-    public ObjectMapper(IOLabLogger logger) : this(logger, new WikiTagProvider(logger))
-    {
-    }
-
-    public ObjectMapper(IOLabLogger logger, WikiTagProvider tagProvider)
+    public ObjectMapper(
+      IOLabLogger logger)
     {
       Logger = OLabLogger.CreateNew<ObjectMapper<P, D>>(logger);
-      _tagProvider = new WikiTagProvider(Logger);
+    }
+
+    public ObjectMapper(
+      IOLabLogger logger, 
+      IOLabModuleProvider<IWikiTagModule> wikiTagModules)
+    {
+      Logger = OLabLogger.CreateNew<ObjectMapper<P, D>>(logger);
+      _wikiTagModules = wikiTagModules;
     }
 
     public virtual D GetDto(Object source = null)

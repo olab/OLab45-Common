@@ -1,9 +1,12 @@
 ﻿using Dawn;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using OLab.Api.Utils;
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Reflection;
 
@@ -13,13 +16,16 @@ namespace OLab.Api.Common
   {
     protected Dictionary<string, T> Modules = new Dictionary<string, T>();
     protected readonly IOLabLogger Logger;
+    protected readonly OLab.Common.Utils.Configuration _configuration;
 
-    public OLabModuleProvider(IOLabLogger logger)
+    public OLabModuleProvider(IOLabLogger logger, IConfiguration configuration)
     {
       Guard.Argument(logger).NotNull(nameof(logger));
 
       Logger = OLabLogger.CreateNew<OLabModuleProvider<T>>(logger);
       Logger.LogInformation($"{GetType().Name} ctor");
+
+      _configuration = new OLab.Common.Utils.Configuration(configuration);
     }
 
     /// <summary>
@@ -62,7 +68,7 @@ namespace OLab.Api.Common
 
       foreach (var file in files)
       {
-        Logger.LogInformation($"Loading file '{file}'");
+        Logger.LogInformation($"Loading file '{Path.GetFileName(file)}'");
         plugInAssemblyList.Add(Assembly.LoadFile(file));
       }
 
@@ -81,13 +87,13 @@ namespace OLab.Api.Common
       foreach (var currentAssembly in assemblies)
         availableTypes.AddRange(currentAssembly.GetTypes());
 
-      // get a list of objects that implement the IWikiTagModule interface AND 
+      // get a list of objects that implement the desired interface AND 
       // have the WikiTagModuleAttribute
       var typeList = availableTypes.FindAll(delegate (Type t)
       {
         var interfaceTypes = new List<Type>(t.GetInterfaces());
         var arr = t.GetCustomAttributes(typeof(OLabModuleAttribute), true);
-        return !(arr == null || arr.Length == 0) && interfaceTypes.Contains(typeof(IWikiTagModule));
+        return !(arr == null || arr.Length == 0) && interfaceTypes.Contains(typeof(T));
       });
 
       var dict = new Dictionary<string, T>();

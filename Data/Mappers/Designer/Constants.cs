@@ -12,13 +12,6 @@ namespace OLab.Api.ObjectMapper.Designer
     {
     }
 
-    public Constants(
-      IOLabLogger logger,
-      WikiTagProvider tagProvider,
-      bool enableWikiTranslation = true) : base(logger, tagProvider)
-    {
-    }
-
     /// <summary>
     /// Convert a physical object to a specific dto. 
     /// </summary>

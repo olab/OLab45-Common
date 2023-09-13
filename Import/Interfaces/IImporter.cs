@@ -12,7 +12,7 @@ namespace OLab.Import.Interfaces
     OLabDBContext GetContext();
     XmlDto GetDto(Importer.DtoTypes type);
     IOLabLogger GetLogger();
-    WikiTagProvider GetWikiProvider();
+    IOLabModuleProvider<IWikiTagModule> GetWikiProvider();
     bool LoadAll(string archiveFileName);
     void LogDebug(string message);
     void LogError(Exception ex, string message);

@@ -13,8 +13,7 @@ namespace OLab.Api.ObjectMapper
   {
     public AvatarsMapper(
       IOLabLogger logger,
-      WikiTagProvider tagProvider,
-      bool enableWikiTranslation = true) : base(logger, tagProvider)
+      bool enableWikiTranslation = true) : base(logger)
     {
     }
 

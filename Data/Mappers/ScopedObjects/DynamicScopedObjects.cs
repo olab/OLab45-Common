@@ -43,13 +43,13 @@ namespace OLab.Api.ObjectMapper
       Model.ScopedObjects node,
       DynamicScopedObjectsDto dto)
     {
-      var dtoCountersList = new Counters(Logger, GetWikiProvider()).PhysicalToDto(server.Counters);
+      var dtoCountersList = new Counters(Logger).PhysicalToDto(server.Counters);
       dto.Server.Counters.AddRange(dtoCountersList);
 
-      dtoCountersList = new Counters(Logger, GetWikiProvider()).PhysicalToDto(map.Counters);
+      dtoCountersList = new Counters(Logger).PhysicalToDto(map.Counters);
       dto.Map.Counters.AddRange(dtoCountersList);
 
-      dtoCountersList = new Counters(Logger, GetWikiProvider()).PhysicalToDto(node.Counters);
+      dtoCountersList = new Counters(Logger).PhysicalToDto(node.Counters);
       dto.Node.Counters.AddRange(dtoCountersList);
 
       // var dtoConstantsList = new ConstantsObjectMapper(Logger, GetWikiProvider()).PhysicalToDto( server.Constants );

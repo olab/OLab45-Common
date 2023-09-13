@@ -19,17 +19,13 @@ namespace OLab.Api.ObjectMapper
     public virtual P ElementsToPhys(IEnumerable<dynamic> elements, Object source = null) { return default; }
     public WikiTagProvider GetWikiProvider() { return _tagProvider; }
 
-    public OLabMapper(IOLabLogger logger) : this(logger, new WikiTagProvider(logger))
+
+    public OLabMapper(
+      IOLabLogger logger)
     {
+      Logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
+      _mapper = new Mapper(GetConfiguration());
     }
-
-    //public OLabMapper(IOLabLogger logger, WikiTagProvider tagProvider)
-    //{
-    //  Logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
-
-    //  _tagProvider = tagProvider;
-    //  _mapper = new Mapper(GetConfiguration());
-    //}
 
     public OLabMapper(
       IOLabLogger logger, 

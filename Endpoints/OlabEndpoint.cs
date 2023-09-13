@@ -1,12 +1,14 @@
 using Dawn;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,19 +23,19 @@ namespace OLab.Api.Endpoints
     protected IOLabLogger Logger;
     protected string token;
     protected IUserContext _userContext;
-    readonly AppSettings appSettings;
+    protected readonly Configuration _configuration;
 
     public OLabEndpoint(
       IOLabLogger logger,
-      IOptions<AppSettings> appSettings,
+      IConfiguration configuration,
       OLabDBContext context)
     {
       Guard.Argument(logger).NotNull(nameof(logger));
-      Guard.Argument(appSettings).NotNull(nameof(appSettings));
+      Guard.Argument(configuration).NotNull(nameof(configuration));
       Guard.Argument(context).NotNull(nameof(context));
 
       dbContext = context;
-      this.appSettings = appSettings.Value;
+      _configuration = new Configuration(configuration);
 
       Logger = logger;
     }
@@ -389,10 +391,10 @@ namespace OLab.Api.Endpoints
       foreach (var item in items)
       {
         var subPath = $"{scopeLevel}/{parentId}/{item.Path}";
-        var physicalPath = Path.Combine(appSettings.FileStorageFolder, subPath.Replace('/', Path.DirectorySeparatorChar));
+        var physicalPath = Path.Combine(_appSettings.Value.FileStorageFolder, subPath.Replace('/', Path.DirectorySeparatorChar));
 
         if (File.Exists(physicalPath))
-          item.OriginUrl = $"/{Path.GetFileName(appSettings.FileStorageFolder)}/{subPath}";
+          item.OriginUrl = $"/{Path.GetFileName(_appSettings.Value.FileStorageFolder)}/{subPath}";
         else
           item.OriginUrl = null;
       }

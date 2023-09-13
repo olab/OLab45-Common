@@ -11,7 +11,7 @@ namespace OLab.Api.Importer
 
     public XmlMapNodeCounterDto(Importer importer) : base(importer, "map_node_counter.xml")
     {
-      _mapper = new CounterActionsMapper(GetLogger(), GetWikiProvider());
+      _mapper = new CounterActionsMapper(GetLogger());
     }
 
     /// <summary>

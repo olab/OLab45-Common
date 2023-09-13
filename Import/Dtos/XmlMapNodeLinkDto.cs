@@ -10,7 +10,7 @@ namespace OLab.Api.Importer
 
     public XmlMapNodeLinkDto(Importer importer) : base(importer, "map_node_link.xml")
     {
-      _mapper = new MapNodeLinksMapper(GetLogger(), GetWikiProvider());
+      _mapper = new MapNodeLinksMapper(GetLogger());
     }
 
     /// <summary>

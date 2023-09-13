@@ -1,10 +1,12 @@
+using Microsoft.Extensions.Configuration;
+using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 
 namespace OLab.Api.Common
 {
   public class WikiTagProvider : OLabModuleProvider<IWikiTagModule>
   {
-    public WikiTagProvider(IOLabLogger logger) : base(logger)
+    public WikiTagProvider(IOLabLogger logger, IConfiguration configuration) : base(logger, configuration)
     {
       Load("OLab.WikiTags*.dll");
     }

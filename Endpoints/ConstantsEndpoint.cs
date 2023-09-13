@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
@@ -22,8 +23,8 @@ namespace OLab.Api.Endpoints
 
     public ConstantsEndpoint(
       IOLabLogger logger,
-      IOptions<AppSettings> appSettings,
-      OLabDBContext context) : base(logger, appSettings, context)
+      IConfiguration configuration,
+      OLabDBContext context) : base(logger, configuration, context)
     {
     }
 

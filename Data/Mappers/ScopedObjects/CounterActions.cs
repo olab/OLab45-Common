@@ -16,8 +16,7 @@ namespace OLab.Api.ObjectMapper
 
     public CounterActionsMapper(
       IOLabLogger logger,
-      WikiTagProvider tagProvider,
-      bool enableWikiTranslation = true) : base(logger, tagProvider)
+      bool enableWikiTranslation = true) : base(logger)
     {
     }
 

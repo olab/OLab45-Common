@@ -19,7 +19,7 @@ namespace OLab.Api.Data
 
     public OLabSession(ILogger logger, OLabDBContext context, IUserContext userContext)
     {
-      // _appSettings = appSettings.Value;
+      // _appSettings = _appSettings.Value;
       _context = context;
       _userContext = userContext;
       _logger = logger;

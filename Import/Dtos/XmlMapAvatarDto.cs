@@ -14,8 +14,8 @@ namespace OLab.Api.Importer
 
     public XmlMapAvatarDto(Importer importer) : base(importer, "map_avatar.xml")
     {
-      _avMapper = new AvatarsMapper(GetLogger(), GetWikiProvider());
-      _fileMapper = new ObjectMapper.Files(GetLogger(), GetWikiProvider());
+      _avMapper = new AvatarsMapper(GetLogger());
+      _fileMapper = new Files(GetLogger());
     }
 
     /// <summary>
