@@ -1,7 +1,5 @@
 using Data.Contracts;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Endpoints;
@@ -29,7 +27,7 @@ namespace Endpoints.player.ReportEndpoint
 
     public ReportEndpoint(
       IOLabLogger logger,
-      IConfiguration configuration,
+      IOLabConfiguration configuration,
       OLabDBContext context) : base(logger, configuration, context)
     {
     }

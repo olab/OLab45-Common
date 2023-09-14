@@ -1,28 +1,38 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Dawn;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Reflection;
 
 namespace OLab.Common.Utils;
 
-public class Configuration
+public class OLabConfiguration : IOLabConfiguration
 {
   public const string AppSettingPrefix = "AppSettings";
 
   private readonly IConfiguration _configuration;
-  private IOptions<AppSettings> _appSettings;
+  private readonly IOptions<AppSettings> _appSettings;
 
-  public Configuration(IConfiguration configuration)
+  public OLabConfiguration(
+    IOLabLogger logger,
+    IConfiguration configuration)
   {
+    Guard.Argument(logger).NotNull(nameof(logger));
+    Guard.Argument(configuration).NotNull(nameof(configuration));
+
     _configuration = configuration;
 
     var appSettings = CreateAppSettings();
     _appSettings = Options.Create(appSettings);
 
+    foreach (var item in configuration.AsEnumerable())
+      logger.LogDebug($"{item.Key} -> {item.Value}");
+
   }
 
-  public IConfiguration GetConfiguration() { return _configuration; }
+  //public IConfiguration GetConfiguration() { return _configuration; }
   public IOptions<AppSettings> GetAppSettings() { return _appSettings; }
 
   private AppSettings CreateAppSettings()
@@ -37,7 +47,7 @@ public class Configuration
       var prop = appSettings.GetType().GetProperty(property.Name, BindingFlags.Public | BindingFlags.Instance);
       if (null != prop && prop.CanWrite)
       {
-        if ( prop.PropertyType == typeof(string))
+        if (prop.PropertyType == typeof(string))
           prop.SetValue(appSettings, value, null);
         else if (prop.PropertyType == typeof(int))
           prop.SetValue(appSettings, Convert.ToInt32(value), null);

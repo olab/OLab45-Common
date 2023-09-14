@@ -1,13 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Dto.Designer;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
-using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +18,7 @@ namespace OLab.Api.Endpoints.Designer
 
     public TemplateEndpoint(
       IOLabLogger logger,
-      IConfiguration configuration,
+      IOLabConfiguration configuration,
       OLabDBContext context,
       IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context)
     {

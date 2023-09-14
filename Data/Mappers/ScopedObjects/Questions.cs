@@ -1,4 +1,3 @@
-using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
@@ -12,8 +11,8 @@ namespace OLab.Api.ObjectMapper
   public class Questions : OLabMapper<SystemQuestions, QuestionsDto>
   {
     public Questions(
-      IOLabLogger logger, 
-      IOLabModuleProvider<IWikiTagModule> wikiTagProvider, 
+      IOLabLogger logger,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
       bool enableWikiTranslation = true) : base(logger, wikiTagProvider)
     {
     }

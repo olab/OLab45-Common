@@ -1,12 +1,9 @@
 ﻿using Dawn;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using OLab.Api.Utils;
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Reflection;
 
@@ -14,35 +11,39 @@ namespace OLab.Api.Common
 {
   public class OLabModuleProvider<T> : IOLabModuleProvider<T> where T : class
   {
-    protected Dictionary<string, T> Modules = new Dictionary<string, T>();
+    protected Dictionary<string, T> Modules = new();
     protected readonly IOLabLogger Logger;
-    protected readonly OLab.Common.Utils.Configuration _configuration;
+    protected readonly IOLabConfiguration _configuration;
 
-    public OLabModuleProvider(IOLabLogger logger, IConfiguration configuration)
+    public OLabModuleProvider(
+      IOLabLogger logger,
+      IOLabConfiguration configuration)
     {
       Guard.Argument(logger).NotNull(nameof(logger));
+      Guard.Argument(configuration).NotNull(nameof(configuration));
 
       Logger = OLabLogger.CreateNew<OLabModuleProvider<T>>(logger);
       Logger.LogInformation($"{GetType().Name} ctor");
 
-      _configuration = new OLab.Common.Utils.Configuration(configuration);
+      _configuration = configuration;
     }
 
     /// <summary>
-    /// Reloads the plug-in assemblies
+    /// Loads assemblies that implement module interface
     /// </summary>
-    protected void Load(string sourceFiles)
+    /// <param name="sourceFileWildcard">Source files wildcard</param>
+    protected void Load(string sourceFileWildcard)
     {
-      Guard.Argument(sourceFiles).NotEmpty(nameof(sourceFiles));
+      Guard.Argument(sourceFileWildcard).NotEmpty(nameof(sourceFileWildcard));
 
-      Logger.LogInformation($"{GetType().Name} loading {sourceFiles}");
+      Logger.LogInformation($"{GetType().Name} loading '{sourceFileWildcard}'");
 
       if (null == Modules)
         Modules = new Dictionary<string, T>();
       else
         Modules.Clear();
 
-      var plugInAssemblies = LoadPlugInAssemblies(sourceFiles);
+      var plugInAssemblies = LoadPlugInAssemblies(sourceFileWildcard);
       Modules = GetPlugIns(plugInAssemblies);
     }
 
@@ -63,7 +64,6 @@ namespace OLab.Api.Common
         throw new DirectoryNotFoundException($"Unable to load plugin path. '{rootPath}'");
 
       var files = Directory.GetFiles(rootPath, sourceFiles);
-
       var plugInAssemblyList = new List<Assembly>();
 
       foreach (var file in files)
@@ -101,7 +101,7 @@ namespace OLab.Api.Common
       {
         Logger.LogInformation($"Loading type '{item.Name}'");
         var t = item.GetCustomAttribute<OLabModuleAttribute>();
-        dict.Add(t.Name, (T)Activator.CreateInstance(item, Logger, _configuration.GetConfiguration()));
+        dict.Add(t.Name, (T)Activator.CreateInstance(item, Logger, _configuration));
       }
       return dict;
     }

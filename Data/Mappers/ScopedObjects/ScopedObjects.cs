@@ -1,4 +1,3 @@
-using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Common.Interfaces;
 using System;
@@ -14,8 +13,8 @@ namespace OLab.Api.ObjectMapper
     //}
 
     public ScopedObjects(
-      IOLabLogger logger, 
-      IOLabModuleProvider<IWikiTagModule> wikiTagProvider, 
+      IOLabLogger logger,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
       bool enableWikiTranslation = true) : base(logger, wikiTagProvider)
     {
     }

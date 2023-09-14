@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
@@ -23,7 +21,7 @@ namespace OLab.Api.Endpoints
 
     public CountersEndpoint(
       IOLabLogger logger,
-      IConfiguration configuration,
+      IOLabConfiguration configuration,
       OLabDBContext context) : base(logger, configuration, context)
     {
     }

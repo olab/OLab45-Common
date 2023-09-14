@@ -12,7 +12,7 @@ namespace OLab.Api.Utils
     public string Issuer { get; set; }
     public string Secret { get; set; }
     public string SignalREndpoint { get; set; }
-    public int TokenExpiryMinutes{ get; set; }
+    public int TokenExpiryMinutes { get; set; }
 
   }
 }

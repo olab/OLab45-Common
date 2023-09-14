@@ -1,14 +1,11 @@
 using Dawn;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,11 +20,11 @@ namespace OLab.Api.Endpoints
     protected IOLabLogger Logger;
     protected string token;
     protected IUserContext _userContext;
-    protected readonly Configuration _configuration;
+    protected readonly IOLabConfiguration _configuration;
 
     public OLabEndpoint(
       IOLabLogger logger,
-      IConfiguration configuration,
+      IOLabConfiguration configuration,
       OLabDBContext context)
     {
       Guard.Argument(logger).NotNull(nameof(logger));
@@ -35,7 +32,7 @@ namespace OLab.Api.Endpoints
       Guard.Argument(context).NotNull(nameof(context));
 
       dbContext = context;
-      _configuration = new Configuration(configuration);
+      _configuration = configuration;
 
       Logger = logger;
     }

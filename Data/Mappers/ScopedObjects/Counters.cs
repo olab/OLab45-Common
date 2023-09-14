@@ -54,8 +54,7 @@ namespace OLab.Api.ObjectMapper
     {
       if (phys.Value != null)
         dto.Value = Encoding.ASCII.GetString(phys.Value);
-      if (dto.Value == null)
-        dto.Value = "";
+      dto.Value ??= "";
       return dto;
     }
 

@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using OLab.Api.Common;
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
@@ -7,8 +6,8 @@ using OLab.Common.Interfaces;
 public class DownloadWikiTag : WikiTag1Argument
 {
   public DownloadWikiTag(
-    IOLabLogger logger, 
-    IConfiguration configuration) : base(logger, configuration, "OlabDownloadTag")
+    IOLabLogger logger,
+    IOLabConfiguration configuration) : base(logger, configuration, "OlabDownloadTag")
   {
   }
 }

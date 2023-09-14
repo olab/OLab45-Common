@@ -1,4 +1,3 @@
-using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
@@ -14,29 +13,29 @@ namespace OLab.Api.ObjectMapper
     protected readonly QuestionsFullDto ParentQuestion;
 
     public QuestionResponses(
-      IOLabLogger logger, 
+      IOLabLogger logger,
       QuestionsFullDto parentQuestion) : base(logger)
     {
       ParentQuestion = parentQuestion;
     }
 
     public QuestionResponses(
-      IOLabLogger logger, 
-      IOLabModuleProvider<IWikiTagModule> tagProvider, 
+      IOLabLogger logger,
+      IOLabModuleProvider<IWikiTagModule> tagProvider,
       QuestionsFullDto parentQuestion) : base(logger, tagProvider)
     {
       ParentQuestion = parentQuestion;
     }
 
     public QuestionResponses(
-      IOLabLogger logger, 
-      IOLabModuleProvider<IWikiTagModule> tagProvider, 
+      IOLabLogger logger,
+      IOLabModuleProvider<IWikiTagModule> tagProvider,
       bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 
     public override SystemQuestionResponses DtoToPhysical(
-      QuestionResponsesDto dto, 
+      QuestionResponsesDto dto,
       SystemQuestionResponses phys)
     {
       if (!dto.IsCorrect.HasValue)
@@ -48,7 +47,7 @@ namespace OLab.Api.ObjectMapper
     }
 
     public override QuestionResponsesDto PhysicalToDto(
-      SystemQuestionResponses phys, 
+      SystemQuestionResponses phys,
       QuestionResponsesDto dto)
     {
       if (ParentQuestion != null)
@@ -78,7 +77,7 @@ namespace OLab.Api.ObjectMapper
     }
 
     public override SystemQuestionResponses ElementsToPhys(
-      IEnumerable<dynamic> elements, 
+      IEnumerable<dynamic> elements,
       Object source = null)
     {
       var phys = GetPhys(source);

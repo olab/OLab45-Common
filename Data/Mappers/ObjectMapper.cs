@@ -1,4 +1,3 @@
-using OLab.Api.Common;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System;
@@ -25,7 +24,7 @@ namespace OLab.Api.ObjectMapper
     }
 
     public ObjectMapper(
-      IOLabLogger logger, 
+      IOLabLogger logger,
       IOLabModuleProvider<IWikiTagModule> wikiTagProvider)
     {
       Logger = OLabLogger.CreateNew<ObjectMapper<P, D>>(logger);

@@ -69,7 +69,7 @@ namespace OLab.Api.Utils
 
     public static IOLabLogger CreateNew<T>(ILoggerFactory loggerFactory, bool keepMessages = false)
     {
-      var logger = new OLabLogger(loggerFactory, loggerFactory.CreateLogger<T>());
+      var logger = new OLabLogger(loggerFactory, loggerFactory.CreateLogger<T>(), keepMessages);
       return logger;
     }
 
@@ -109,85 +109,73 @@ namespace OLab.Api.Utils
 
     public void LogDebug(string message)
     {
-      if (_logger != null)
-        _logger.LogDebug(message);
+      _logger?.LogDebug(message);
       Log(OLabLogMessage.MessageLevel.Debug, message);
     }
 
     public void LogDebug(string type, int index, string message)
     {
-      if (_logger != null)
-        _logger.LogDebug(message);
+      _logger?.LogDebug(message);
       Log(OLabLogMessage.MessageLevel.Debug, type, index, message);
     }
 
     public void LogFatal(string message)
     {
-      if (_logger != null)
-        _logger.LogCritical(message);
+      _logger?.LogCritical(message);
       Log(OLabLogMessage.MessageLevel.Fatal, message);
     }
 
     public void LogFatal(string type, int index, string message)
     {
-      if (_logger != null)
-        _logger.LogCritical(message);
+      _logger?.LogCritical(message);
       Log(OLabLogMessage.MessageLevel.Fatal, type, index, message);
     }
 
     public void LogError(Exception ex, string message)
     {
-      if (_logger != null)
-        _logger.LogError(ex, message);
+      _logger?.LogError(ex, message);
       Log(OLabLogMessage.MessageLevel.Error, message);
     }
 
     public void LogError(string type, int index, Exception ex, string message)
     {
-      if (_logger != null)
-        _logger.LogError(ex, message);
+      _logger?.LogError(ex, message);
       Log(OLabLogMessage.MessageLevel.Error, type, index, message);
     }
 
     public void LogError(string message)
     {
-      if (_logger != null)
-        _logger.LogError(message);
+      _logger?.LogError(message);
       Log(OLabLogMessage.MessageLevel.Error, message);
     }
 
     public void LogError(string type, int index, string message)
     {
-      if (_logger != null)
-        _logger.LogError(message);
+      _logger?.LogError(message);
       Log(OLabLogMessage.MessageLevel.Error, type, index, message);
     }
 
     public void LogInformation(string message)
     {
-      if (_logger != null)
-        _logger.LogInformation(message);
+      _logger?.LogInformation(message);
       Log(OLabLogMessage.MessageLevel.Info, message);
     }
 
     public void LogWarning(string message)
     {
-      if (_logger != null)
-        _logger.LogWarning(message);
+      _logger?.LogWarning(message);
       Log(OLabLogMessage.MessageLevel.Warn, message);
     }
 
     public void LogInformation(string type, int index, string message)
     {
-      if (_logger != null)
-        _logger.LogInformation(message);
+      _logger?.LogInformation(message);
       Log(OLabLogMessage.MessageLevel.Info, type, index, message);
     }
 
     public void LogWarning(string type, int index, string message)
     {
-      if (_logger != null)
-        _logger.LogWarning(message);
+      _logger?.LogWarning(message);
       Log(OLabLogMessage.MessageLevel.Warn, type, index, message);
     }
 

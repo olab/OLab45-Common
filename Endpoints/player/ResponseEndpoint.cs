@@ -1,9 +1,6 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
-using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System;
 using System.Threading.Tasks;
@@ -15,7 +12,7 @@ namespace OLab.Api.Endpoints.Player
 
     public ResponseEndpoint(
       IOLabLogger logger,
-      IConfiguration configuration, 
+      IOLabConfiguration configuration,
       OLabDBContext context) : base(logger, configuration, context)
     {
     }

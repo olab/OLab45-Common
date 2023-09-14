@@ -8,7 +8,7 @@ namespace OLab.Api.Utils
   {
     private readonly IList<T> _items = new List<T>();
     private readonly IOLabLogger _logger;
-    private static readonly Mutex mutex = new Mutex();
+    private static readonly Mutex mutex = new();
 
     public ConcurrentList(IOLabLogger logger)
     {
@@ -131,10 +131,9 @@ namespace OLab.Api.Utils
     /// <returns>Index of item just added</returns>
     public int Add(T item)
     {
-      var count = 0;
       _items.Add(item);
 
-      count = _items.Count;
+      var count = _items.Count;
       return count - 1;
 
     }

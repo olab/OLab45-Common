@@ -1,6 +1,4 @@
-﻿using OLab.Api.Common;
-
-namespace OLab.Common.Interfaces
+﻿namespace OLab.Common.Interfaces
 {
   public interface IOLabModuleProvider<T> where T : class
   {

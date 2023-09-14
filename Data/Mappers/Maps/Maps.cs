@@ -1,6 +1,4 @@
 using AutoMapper;
-using Microsoft.Extensions.Configuration;
-using OLab.Api.Common;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System;

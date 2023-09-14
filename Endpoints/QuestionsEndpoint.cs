@@ -1,8 +1,6 @@
 using Dawn;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
@@ -21,11 +19,11 @@ namespace OLab.Api.Endpoints
 {
   public partial class QuestionsEndpoint : OLabEndpoint
   {
-    private IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
+    private readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
 
     public QuestionsEndpoint(
       IOLabLogger logger,
-      IConfiguration configuration,
+      IOLabConfiguration configuration,
       OLabDBContext context,
       IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context)
     {

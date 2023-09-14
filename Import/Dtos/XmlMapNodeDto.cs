@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Configuration;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 
@@ -8,7 +8,7 @@ namespace OLab.Api.Importer
   public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
   {
     private readonly ObjectMapper.MapNodesMapper _mapper;
-    private IConfiguration _configuration;
+    private readonly IOLabConfiguration _configuration;
 
     public XmlMapNodeDto(Importer importer) : base(importer, "map_node.xml")
     {

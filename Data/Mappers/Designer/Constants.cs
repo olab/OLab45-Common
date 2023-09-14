@@ -1,5 +1,4 @@
 using AutoMapper;
-using OLab.Api.Common;
 using OLab.Api.Dto.Designer;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
