@@ -101,7 +101,7 @@ namespace OLab.Api.Common
       {
         Logger.LogInformation($"Loading type '{item.Name}'");
         var t = item.GetCustomAttribute<OLabModuleAttribute>();
-        dict.Add(t.Name, (T)Activator.CreateInstance(item, Logger));
+        dict.Add(t.Name, (T)Activator.CreateInstance(item, Logger, _configuration.GetConfiguration()));
       }
       return dict;
     }

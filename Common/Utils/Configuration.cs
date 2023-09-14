@@ -36,7 +36,12 @@ public class Configuration
 
       var prop = appSettings.GetType().GetProperty(property.Name, BindingFlags.Public | BindingFlags.Instance);
       if (null != prop && prop.CanWrite)
-        prop.SetValue(appSettings, value, null);
+      {
+        if ( prop.PropertyType == typeof(string))
+          prop.SetValue(appSettings, value, null);
+        else if (prop.PropertyType == typeof(int))
+          prop.SetValue(appSettings, Convert.ToInt32(value), null);
+      }
     }
 
     return appSettings;
