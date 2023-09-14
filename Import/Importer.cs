@@ -8,6 +8,7 @@ using OLab.Common.Utils;
 using OLab.Import.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 
 namespace OLab.Api.Importer
@@ -38,6 +39,7 @@ namespace OLab.Api.Importer
 
     private readonly OLabDBContext _context;
     public readonly AppSettings _appSettings;
+    private readonly IConfiguration _configuration;
     private readonly IDictionary<DtoTypes, XmlDto> _dtos = new Dictionary<DtoTypes, XmlDto>();
     private readonly IOLabLogger Logger;
     private readonly IOLabModuleProvider<IWikiTagModule> _tagProvider;
@@ -45,6 +47,7 @@ namespace OLab.Api.Importer
     public IOLabModuleProvider<IWikiTagModule> GetWikiProvider() { return _tagProvider; }
     public XmlDto GetDto(DtoTypes type) { return _dtos[type]; }
     public OLabDBContext GetContext() { return _context; }
+    public IConfiguration GetConfiguration() { return _configuration; }
     public IOLabLogger GetLogger() { return Logger; }
     public AppSettings Settings() { return _appSettings; }
 
@@ -58,8 +61,9 @@ namespace OLab.Api.Importer
       OLabDBContext context,
       IOLabModuleProvider<IWikiTagModule> wikiTagModules)
     {
-      _appSettings = new Configuration(configuration).GetAppSettings().Value;
+      _appSettings = new OLab.Common.Utils.Configuration(configuration).GetAppSettings().Value;
       _context = context;
+      _configuration = configuration;
 
       Logger = OLabLogger.CreateNew<Importer>(logger);
 

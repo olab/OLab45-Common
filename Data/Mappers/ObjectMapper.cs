@@ -26,10 +26,10 @@ namespace OLab.Api.ObjectMapper
 
     public ObjectMapper(
       IOLabLogger logger, 
-      IOLabModuleProvider<IWikiTagModule> wikiTagModules)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider)
     {
       Logger = OLabLogger.CreateNew<ObjectMapper<P, D>>(logger);
-      _wikiTagModules = wikiTagModules;
+      _wikiTagModules = wikiTagProvider;
     }
 
     public virtual D GetDto(Object source = null)

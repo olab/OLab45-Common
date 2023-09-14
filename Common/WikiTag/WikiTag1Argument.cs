@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -10,7 +11,7 @@ namespace OLab.Api.Common
     protected string wikiTagIdPart;
     protected List<string> wikiTagNamePatterns = new List<string>();
 
-    public WikiTag1Argument(IOLabLogger logger, string htmlElementName) : base(logger, htmlElementName)
+    public WikiTag1Argument(IOLabLogger logger, IConfiguration configuration, string htmlElementName) : base(logger, configuration, htmlElementName)
     {
       wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:[0-9]*\\]\\]");
       wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:\"[.A-Za-z0-9\\- ]*\"\\]\\]");

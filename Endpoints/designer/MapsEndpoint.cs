@@ -389,7 +389,7 @@ namespace OLab.Api.Endpoints.Designer
         Value = Encoding.ASCII.GetBytes(DateTime.UtcNow.ToString() + " UTC")
       });
 
-      var builder = new ObjectMapper.Designer.ScopedObjects(Logger, enableWikiTranslation);
+      var builder = new ObjectMapper.Designer.ScopedObjects(Logger, _wikiTagModules, enableWikiTranslation);
       var dto = builder.PhysicalToDto(phys);
 
       var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();

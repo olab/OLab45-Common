@@ -391,10 +391,10 @@ namespace OLab.Api.Endpoints
       foreach (var item in items)
       {
         var subPath = $"{scopeLevel}/{parentId}/{item.Path}";
-        var physicalPath = Path.Combine(_appSettings.Value.FileStorageFolder, subPath.Replace('/', Path.DirectorySeparatorChar));
+        var physicalPath = Path.Combine(_configuration.GetAppSettings().Value.FileStorageFolder, subPath.Replace('/', Path.DirectorySeparatorChar));
 
         if (File.Exists(physicalPath))
-          item.OriginUrl = $"/{Path.GetFileName(_appSettings.Value.FileStorageFolder)}/{subPath}";
+          item.OriginUrl = $"/{Path.GetFileName(_configuration.GetAppSettings().Value.FileStorageFolder)}/{subPath}";
         else
           item.OriginUrl = null;
       }

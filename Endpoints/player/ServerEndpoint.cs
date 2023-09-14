@@ -1,3 +1,4 @@
+using Dawn;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,11 +16,17 @@ namespace OLab.Api.Endpoints.Player
   public partial class ServerEndpoint : OLabEndpoint
   {
 
+    IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
+
     public ServerEndpoint(
       IOLabLogger logger,
       IConfiguration configuration,
-      OLabDBContext context) : base(logger, configuration, context)
+      OLabDBContext context,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context)
     {
+      Guard.Argument(wikiTagProvider).NotNull(nameof(wikiTagProvider));
+
+      _wikiTagProvider = wikiTagProvider;
     }
 
     /// <summary>
@@ -91,7 +98,7 @@ namespace OLab.Api.Endpoints.Player
       Logger.LogDebug($"ServerEndpoint.GetScopedObjectsAsync(uint serverId={serverId})");
 
       var phys = await GetScopedObjectsAllAsync(serverId, Utils.Constants.ScopeLevelServer);
-      var builder = new ObjectMapper.ScopedObjects(Logger, enableWikiTranslation);
+      var builder = new ObjectMapper.ScopedObjects(Logger, _wikiTagProvider, enableWikiTranslation);
       var dto = builder.PhysicalToDto(phys);
 
       return dto;

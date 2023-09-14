@@ -1,6 +1,7 @@
 using Dawn;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
@@ -20,16 +21,17 @@ namespace OLab.Api.Endpoints
 {
   public partial class QuestionsEndpoint : OLabEndpoint
   {
-    private IOLabModuleProvider<IWikiTagModule> _wikiTagModules;
+    private IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
 
     public QuestionsEndpoint(
       IOLabLogger logger,
-      IOptions<AppSettings> appSettings,
+      IConfiguration configuration,
       OLabDBContext context,
-      IOLabModuleProvider<IWikiTagModule> wikiTagModules) : base(logger, appSettings, context)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context)
     {
-      Guard.Argument(wikiTagModules).NotNull(nameof(wikiTagModules));
-      _wikiTagModules = wikiTagModules;
+      Guard.Argument(wikiTagProvider).NotNull(nameof(wikiTagProvider));
+
+      _wikiTagProvider = wikiTagProvider;
     }
 
     /// <summary>
@@ -72,7 +74,7 @@ namespace OLab.Api.Endpoints
       Logger.LogDebug(string.Format("found {0} questions", physList.Count));
 
       //var dtoList = new Questions(Logger, new WikiTagProvider(Logger)).PhysicalToDto(physList);
-      var dtoList = new Questions(Logger, _wikiTagModules).PhysicalToDto(physList);
+      var dtoList = new Questions(Logger, _wikiTagProvider).PhysicalToDto(physList);
 
       var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
       var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();

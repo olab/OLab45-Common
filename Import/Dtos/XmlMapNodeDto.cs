@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 
@@ -7,10 +8,12 @@ namespace OLab.Api.Importer
   public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
   {
     private readonly ObjectMapper.MapNodesMapper _mapper;
+    private IConfiguration _configuration;
 
     public XmlMapNodeDto(Importer importer) : base(importer, "map_node.xml")
     {
       _mapper = new ObjectMapper.MapNodesMapper(GetLogger());
+      _configuration = importer.GetConfiguration();
     }
 
     /// <summary>
@@ -35,7 +38,7 @@ namespace OLab.Api.Importer
       // replace all VPD with CONST in node text
       var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto) as XmlMapVpdDto;
 
-      var wiki = new VpdWikiTag(GetLogger());
+      var wiki = new VpdWikiTag(GetLogger(), _configuration);
       while (wiki.HaveWikiTag(item.Text))
       {
         var id = Convert.ToUInt32(wiki.GetWikiArgument1());
@@ -67,7 +70,7 @@ namespace OLab.Api.Importer
       // replace all VPD with CONST in node text
       var avDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapAvatarDto) as XmlMapAvatarDto;
 
-      var wiki = new AvatarWikiTag(GetLogger());
+      var wiki = new AvatarWikiTag(GetLogger(), _configuration);
       while (wiki.HaveWikiTag(item.Text))
       {
         var id = Convert.ToUInt16(wiki.GetWikiArgument1());
@@ -95,7 +98,7 @@ namespace OLab.Api.Importer
       var mapElementDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapElementDto);
       var mappedWikiTags = new Dictionary<string, string>();
 
-      var wiki = new MediaResourceWikiTag(GetLogger());
+      var wiki = new MediaResourceWikiTag(GetLogger(), _configuration);
       while (wiki.HaveWikiTag(item.Text))
       {
         var id = Convert.ToUInt32(wiki.GetWikiArgument1());
@@ -127,7 +130,7 @@ namespace OLab.Api.Importer
       var questionDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapQuestionDto);
       var mappedWikiTags = new Dictionary<string, string>();
 
-      var wiki = new QuestionWikiTag(GetLogger());
+      var wiki = new QuestionWikiTag(GetLogger(), _configuration);
       while (wiki.HaveWikiTag(item.Text))
       {
         var id = Convert.ToUInt32(wiki.GetWikiArgument1());

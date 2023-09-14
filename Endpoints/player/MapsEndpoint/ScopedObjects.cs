@@ -76,7 +76,7 @@ namespace OLab.Api.Endpoints.Player
         Value = Encoding.ASCII.GetBytes(map.Name)
       });
 
-      var builder = new ObjectMapper.ScopedObjects(Logger, enableWikiTranslation);
+      var builder = new ObjectMapper.ScopedObjects(Logger, _wikiTagProvider, enableWikiTranslation);
 
       var dto = builder.PhysicalToDto(phys);
       return dto;

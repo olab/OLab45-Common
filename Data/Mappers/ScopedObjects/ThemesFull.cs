@@ -12,8 +12,8 @@ namespace OLab.Api.ObjectMapper
 
     public ThemesFull(
       IOLabLogger logger,
-      IOLabModuleProvider<IWikiTagModule> wikiTagModules,
-      bool enableWikiTranslation = true) : base(logger, wikiTagModules)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      bool enableWikiTranslation = true) : base(logger, wikiTagProvider)
     {
       this.enableWikiTranslation = enableWikiTranslation;
     }

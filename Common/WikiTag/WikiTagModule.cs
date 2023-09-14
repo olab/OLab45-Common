@@ -1,5 +1,7 @@
+using Microsoft.Extensions.Configuration;
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -12,12 +14,13 @@ namespace OLab.Api.Common
     private string _wikiType;
     private string _wiki;
     private readonly string _htmlElementName;
+    protected readonly Configuration _configuration;
 
     protected int wikiStart = 0;
     protected int wikiEnd = 0;
     protected IOLabLogger Logger;
 
-    public WikiTagModule(IOLabLogger logger, string htmlElementName)
+    public WikiTagModule(IOLabLogger logger, IConfiguration configuration, string htmlElementName)
     {
       var t = GetType();
       var attribute =
@@ -26,6 +29,7 @@ namespace OLab.Api.Common
       _htmlElementName = htmlElementName;
 
       Logger = logger;
+      _configuration = new Configuration(configuration);
     }
 
     public string GetWikiType() { return _wikiType; }

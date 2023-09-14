@@ -13,21 +13,31 @@ namespace OLab.Api.ObjectMapper
   {
     protected readonly QuestionsFullDto ParentQuestion;
 
-    public QuestionResponses(IOLabLogger logger, QuestionsFullDto parentQuestion) : base(logger)
+    public QuestionResponses(
+      IOLabLogger logger, 
+      QuestionsFullDto parentQuestion) : base(logger)
     {
       ParentQuestion = parentQuestion;
     }
 
-    public QuestionResponses(IOLabLogger logger, WikiTagProvider tagProvider, QuestionsFullDto parentQuestion) : base(logger, tagProvider)
+    public QuestionResponses(
+      IOLabLogger logger, 
+      IOLabModuleProvider<IWikiTagModule> tagProvider, 
+      QuestionsFullDto parentQuestion) : base(logger, tagProvider)
     {
       ParentQuestion = parentQuestion;
     }
 
-    public QuestionResponses(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public QuestionResponses(
+      IOLabLogger logger, 
+      IOLabModuleProvider<IWikiTagModule> tagProvider, 
+      bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 
-    public override SystemQuestionResponses DtoToPhysical(QuestionResponsesDto dto, SystemQuestionResponses phys)
+    public override SystemQuestionResponses DtoToPhysical(
+      QuestionResponsesDto dto, 
+      SystemQuestionResponses phys)
     {
       if (!dto.IsCorrect.HasValue)
         phys.IsCorrect = -1;
@@ -37,7 +47,9 @@ namespace OLab.Api.ObjectMapper
       return phys;
     }
 
-    public override QuestionResponsesDto PhysicalToDto(SystemQuestionResponses phys, QuestionResponsesDto dto)
+    public override QuestionResponsesDto PhysicalToDto(
+      SystemQuestionResponses phys, 
+      QuestionResponsesDto dto)
     {
       if (ParentQuestion != null)
       {
@@ -65,7 +77,9 @@ namespace OLab.Api.ObjectMapper
       return dto;
     }
 
-    public override SystemQuestionResponses ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
+    public override SystemQuestionResponses ElementsToPhys(
+      IEnumerable<dynamic> elements, 
+      Object source = null)
     {
       var phys = GetPhys(source);
 

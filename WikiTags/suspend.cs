@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using OLab.Api.Common;
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
@@ -5,7 +6,9 @@ using OLab.Common.Interfaces;
 [OLabModule("SUSPEND")]
 public class SuspendWikiTag : WikiTag0Argument
 {
-  public SuspendWikiTag(IOLabLogger logger) : base(logger, "OlabSuspendTag")
+  public SuspendWikiTag(
+    IOLabLogger logger, 
+    IConfiguration configuration) : base(logger, configuration, "OlabSuspendTag")
   {
   }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using OLab.Api.Common;
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
@@ -5,7 +6,9 @@ using OLab.Common.Interfaces;
 [OLabModule("CONST")]
 public class ConstantWikiTag : WikiTag1Argument
 {
-  public ConstantWikiTag(IOLabLogger logger) : base(logger, "OlabConstantTag")
+  public ConstantWikiTag(
+    IOLabLogger logger, 
+    IConfiguration configuration) : base(logger, configuration, "OlabConstantTag")
   {
   }
 }

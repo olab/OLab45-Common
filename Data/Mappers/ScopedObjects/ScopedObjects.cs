@@ -15,8 +15,8 @@ namespace OLab.Api.ObjectMapper
 
     public ScopedObjects(
       IOLabLogger logger, 
-      IOLabModuleProvider<IWikiTagModule> wikiTagModules, 
-      bool enableWikiTranslation = true) : base(logger, wikiTagModules)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider, 
+      bool enableWikiTranslation = true) : base(logger, wikiTagProvider)
     {
     }
 

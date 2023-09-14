@@ -21,15 +21,15 @@ namespace OLab.Api.Endpoints.Player
 {
   public partial class MapsEndpoint : OLabEndpoint
   {
-    private readonly IOLabModuleProvider<IWikiTagModule> _wikiTagModules;
+    private readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
 
     public MapsEndpoint(
       IOLabLogger logger,
       IConfiguration configuration,
       OLabDBContext context,
-      IOLabModuleProvider<IWikiTagModule> wikiTagModules) : base(logger, configuration, context)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context)
     {
-      _wikiTagModules = wikiTagModules;
+      _wikiTagProvider = wikiTagProvider;
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ namespace OLab.Api.Endpoints.Player
 
       total = items.Count;
 
-      var dtoList = new MapsMapper(Logger, _configuration.GetConfiguration(), _wikiTagModules).PhysicalToDto(items);
+      var dtoList = new MapsMapper(Logger).PhysicalToDto(items);
 
       Logger.LogDebug(string.Format("found {0} maps", dtoList.Count));
 

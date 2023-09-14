@@ -9,19 +9,19 @@ namespace OLab.Api.Endpoints.Player
   public partial class NodesEndpoint : OLabEndpoint
   {
 
-    public async Task<OLab.Api.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint nodeId)
+    public async Task<Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint nodeId)
     {
       Logger.LogDebug($"NodesController.GetScopedObjectsRawAsync(uint nodeId={nodeId})");
       return await GetScopedObjectsAsync(nodeId, false);
     }
 
-    public async Task<OLab.Api.Dto.ScopedObjectsDto> GetScopedObjectsAsync(uint nodeId)
+    public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(uint nodeId)
     {
       Logger.LogDebug($"NodesController.GetScopedObjectsAsync(uint nodeId={nodeId})");
       return await GetScopedObjectsAsync(nodeId, true);
     }
 
-    public async Task<OLab.Api.Dto.ScopedObjectsDto> GetScopedObjectsAsync(
+    public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(
       uint id,
       bool enableWikiTranslation)
     {
@@ -63,7 +63,7 @@ namespace OLab.Api.Endpoints.Player
         Value = Encoding.ASCII.GetBytes(DateTime.UtcNow.ToString() + " UTC")
       });
 
-      var builder = new ObjectMapper.ScopedObjects(Logger, enableWikiTranslation);
+      var builder = new ObjectMapper.ScopedObjects(Logger, _wikiTagProvider, enableWikiTranslation);
 
       var dto = builder.PhysicalToDto(phys);
       return dto;

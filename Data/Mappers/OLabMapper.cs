@@ -29,11 +29,11 @@ namespace OLab.Api.ObjectMapper
 
     public OLabMapper(
       IOLabLogger logger, 
-      IOLabModuleProvider<IWikiTagModule> wikiTagModules)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider)
     {
       Logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
 
-      _tagProvider = wikiTagModules as WikiTagProvider;
+      _tagProvider = wikiTagProvider as WikiTagProvider;
       _mapper = new Mapper(GetConfiguration());
     }
 
