@@ -14,15 +14,12 @@ namespace OLab.Api.Endpoints.Designer
 {
   public partial class TemplateEndpoint : OLabEndpoint
   {
-    private readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
-
     public TemplateEndpoint(
       IOLabLogger logger,
       IOLabConfiguration configuration,
       OLabDBContext context,
-      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context, wikiTagProvider)
     {
-      _wikiTagProvider = wikiTagProvider;
     }
 
     /// <summary>

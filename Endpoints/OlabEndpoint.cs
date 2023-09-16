@@ -1,6 +1,7 @@
 using Dawn;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OLab.Api.Common;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -11,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Constants = OLab.Api.Utils.Constants;
 
 namespace OLab.Api.Endpoints
 {
@@ -21,6 +23,7 @@ namespace OLab.Api.Endpoints
     protected string token;
     protected IUserContext _userContext;
     protected readonly IOLabConfiguration _configuration;
+    protected readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
 
     public OLabEndpoint(
       IOLabLogger logger,
@@ -35,6 +38,16 @@ namespace OLab.Api.Endpoints
       _configuration = configuration;
 
       Logger = logger;
+    }
+
+    public OLabEndpoint(
+      IOLabLogger logger,
+      IOLabConfiguration configuration,
+      OLabDBContext context,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : this(logger, configuration, context)
+    {
+      Guard.Argument(wikiTagProvider).NotNull(nameof(wikiTagProvider));
+      _wikiTagProvider = wikiTagProvider;
     }
 
     public void SetUserContext(IUserContext userContext)
@@ -128,10 +141,13 @@ namespace OLab.Api.Endpoints
     {
       if (scopeLevel == Utils.Constants.ScopeLevelServer)
         return servers.FirstOrDefault(x => x.Id == parentId);
+
       if (scopeLevel == Utils.Constants.ScopeLevelMap)
         return maps.FirstOrDefault(x => x.Id == parentId);
+
       if (scopeLevel == Utils.Constants.ScopeLevelNode)
         return nodes.FirstOrDefault(x => x.Id == parentId);
+
       return null;
     }
 
@@ -191,11 +207,15 @@ namespace OLab.Api.Endpoints
 
       var builder = new ObjectMapper.MapsNodesFullRelationsMapper(
         Logger,
+        _wikiTagProvider as WikiTagProvider,
         enableWikiTanslation);
       var dto = builder.PhysicalToDto(phys);
 
-      var linkedIds = phys.MapNodeLinksNodeId1Navigation.Select(x => x.NodeId2).Distinct().ToList();
-      var linkedNodes = dbContext.MapNodes.Where(x => linkedIds.Contains(x.Id)).ToList();
+      var linkedIds =
+        phys.MapNodeLinksNodeId1Navigation.Select(x => x.NodeId2).Distinct().ToList();
+
+      var linkedNodes =
+        dbContext.MapNodes.Where(x => linkedIds.Contains(x.Id)).ToList();
 
       // add destination node title to link information
       foreach (var item in dto.MapNodeLinks)
@@ -204,6 +224,7 @@ namespace OLab.Api.Endpoints
         item.DestinationTitle = linkedNodes
           .Where(x => x.Id == item.DestinationId)
           .Select(x => x.Title).FirstOrDefault();
+
         if (string.IsNullOrEmpty(item.LinkText))
           item.LinkText = item.DestinationTitle;
       }
@@ -308,12 +329,12 @@ namespace OLab.Api.Endpoints
     /// <param name="scopeLevel"></param>
     /// <returns></returns>
     [NonAction]
-    protected async ValueTask<ScopedObjects> GetScopedObjectsDynamicAsync(
+    protected async ValueTask<Model.ScopedObjects> GetScopedObjectsDynamicAsync(
       uint parentId,
       uint sinceTime,
       string scopeLevel)
     {
-      var phys = new ScopedObjects
+      var phys = new Model.ScopedObjects
       {
         Counters = await GetScopedCountersAsync(scopeLevel, parentId, sinceTime)
       };
@@ -328,11 +349,11 @@ namespace OLab.Api.Endpoints
     /// <param name="scopeLevel"></param>
     /// <returns></returns>
     [NonAction]
-    protected async ValueTask<ScopedObjects> GetScopedObjectsAllAsync(
+    protected async ValueTask<Model.ScopedObjects> GetScopedObjectsAllAsync(
       uint parentId,
       string scopeLevel)
     {
-      var phys = new ScopedObjects
+      var phys = new Model.ScopedObjects
       {
         Constants = await GetScopedConstantsAsync(parentId, scopeLevel),
         Questions = await GetScopedQuestionsAsync(parentId, scopeLevel),

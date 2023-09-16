@@ -1,3 +1,4 @@
+using Dawn;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
@@ -18,15 +19,12 @@ namespace OLab.Api.Endpoints.Player
 {
   public partial class MapsEndpoint : OLabEndpoint
   {
-    private readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
-
     public MapsEndpoint(
       IOLabLogger logger,
       IOLabConfiguration configuration,
       OLabDBContext context,
-      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context, wikiTagProvider)
     {
-      _wikiTagProvider = wikiTagProvider;
     }
 
     /// <summary>
@@ -37,7 +35,8 @@ namespace OLab.Api.Endpoints.Player
     /// <returns></returns>
     public async Task<Model.Maps> GetSimpleAnonymousAsync(uint id)
     {
-      var phys = await dbContext.Maps.Include(x => x.SystemCounterActions).FirstOrDefaultAsync(x => x.Id == id);
+      var phys = await dbContext.Maps
+        .Include(x => x.SystemCounterActions).FirstOrDefaultAsync(x => x.Id == id);
       return phys;
     }
 
@@ -47,9 +46,10 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="context"></param>
     /// <param name="id"></param>
     /// <returns></returns>
-    public Model.Maps GetSimple(OLabDBContext context, uint id)
+    public Maps GetSimple(OLabDBContext context, uint id)
     {
-      var phys = context.Maps.Include(x => x.SystemCounterActions).FirstOrDefault(x => x.Id == id);
+      var phys = context.Maps
+        .Include(x => x.SystemCounterActions).FirstOrDefault(x => x.Id == id);
       return phys;
     }
 
@@ -75,7 +75,10 @@ namespace OLab.Api.Endpoints.Player
 
       if (take.HasValue && skip.HasValue)
       {
-        items = await dbContext.Maps.Skip(skip.Value).Take(take.Value).OrderBy(x => x.Name).ToListAsync();
+        items = await dbContext.Maps
+          .Skip(skip.Value)
+          .Take(take.Value)
+          .OrderBy(x => x.Name).ToListAsync();
         remaining = total - take.Value - skip.Value;
       }
       else

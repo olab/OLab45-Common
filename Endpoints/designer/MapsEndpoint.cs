@@ -17,15 +17,13 @@ namespace OLab.Api.Endpoints.Designer
 {
   public partial class MapsEndpoint : OLabEndpoint
   {
-    private readonly IOLabModuleProvider<IWikiTagModule> _wikiTagModules;
 
     public MapsEndpoint(
       IOLabLogger logger,
       IOLabConfiguration configuration,
       OLabDBContext context,
-      IOLabModuleProvider<IWikiTagModule> wikiTagModules) : base(logger, configuration, context)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context, wikiTagProvider)
     {
-      _wikiTagModules = wikiTagModules;
     }
 
     /// <summary>
@@ -54,7 +52,7 @@ namespace OLab.Api.Endpoints.Designer
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).GetSingleAsync(mapId) 
+      var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).GetSingleAsync(mapId)
         ?? throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
       MapsNodesFullRelationsDto dto;
@@ -386,7 +384,7 @@ namespace OLab.Api.Endpoints.Designer
         Value = Encoding.ASCII.GetBytes(DateTime.UtcNow.ToString() + " UTC")
       });
 
-      var builder = new ObjectMapper.Designer.ScopedObjects(Logger, _wikiTagModules, enableWikiTranslation);
+      var builder = new ObjectMapper.Designer.ScopedObjects(Logger, _wikiTagProvider, enableWikiTranslation);
       var dto = builder.PhysicalToDto(phys);
 
       var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();

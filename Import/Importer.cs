@@ -55,7 +55,7 @@ public class Importer : IImporter
     IOLabLogger logger,
     IOLabConfiguration configuration,
     OLabDBContext context,
-    IOLabModuleProvider<IWikiTagModule> wikiTagModules)
+    IOLabModuleProvider<IWikiTagModule> wikiTagProvider)
   {
     _appSettings = configuration.GetAppSettings().Value;
     _context = context;
@@ -63,8 +63,7 @@ public class Importer : IImporter
 
     Logger = OLabLogger.CreateNew<Importer>(logger);
 
-    //_wikiTagModules = new WikiTagProvider(Logger);
-    _tagProvider = wikiTagModules as WikiTagProvider;
+    _tagProvider = wikiTagProvider as WikiTagProvider;
 
     XmlDto dto = new XmlMapDto(this);
     _dtos.Add(DtoTypes.XmlMapDto, dto);

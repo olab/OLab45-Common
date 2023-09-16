@@ -1,4 +1,3 @@
-using Dawn;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
@@ -13,17 +12,12 @@ namespace OLab.Api.Endpoints.Player
   public partial class ServerEndpoint : OLabEndpoint
   {
 
-    readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
-
     public ServerEndpoint(
       IOLabLogger logger,
       IOLabConfiguration configuration,
       OLabDBContext context,
-      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context, wikiTagProvider)
     {
-      Guard.Argument(wikiTagProvider).NotNull(nameof(wikiTagProvider));
-
-      _wikiTagProvider = wikiTagProvider;
     }
 
     /// <summary>

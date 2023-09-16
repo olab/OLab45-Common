@@ -21,16 +21,16 @@ namespace OLab.Api.ObjectMapper
 
     public QuestionResponses(
       IOLabLogger logger,
-      IOLabModuleProvider<IWikiTagModule> tagProvider,
-      QuestionsFullDto parentQuestion) : base(logger, tagProvider)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      QuestionsFullDto parentQuestion) : base(logger, wikiTagProvider)
     {
       ParentQuestion = parentQuestion;
     }
 
     public QuestionResponses(
       IOLabLogger logger,
-      IOLabModuleProvider<IWikiTagModule> tagProvider,
-      bool enableWikiTranslation = true) : base(logger, tagProvider)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      bool enableWikiTranslation = true) : base(logger, wikiTagProvider)
     {
     }
 

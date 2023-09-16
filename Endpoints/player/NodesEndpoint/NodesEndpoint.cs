@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
@@ -15,15 +16,12 @@ namespace OLab.Api.Endpoints.Player
 {
   public partial class NodesEndpoint : OLabEndpoint
   {
-    readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
-
     public NodesEndpoint(
       IOLabLogger logger,
       IOLabConfiguration configuration,
       OLabDBContext context,
-      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context, wikiTagProvider)
     {
-      _wikiTagProvider = wikiTagProvider;
     }
 
     /// <summary>
@@ -42,7 +40,10 @@ namespace OLab.Api.Endpoints.Player
     {
       var phys = await GetMapNodeAsync(id);
 
-      var builder = new ObjectMapper.MapsNodesFullRelationsMapper(Logger, enableWikiTranslation);
+      var builder = new ObjectMapper.MapsNodesFullRelationsMapper(
+        Logger,
+        _wikiTagProvider as WikiTagProvider,
+        enableWikiTranslation);
       var dto = builder.PhysicalToDto(phys);
 
       return dto;
