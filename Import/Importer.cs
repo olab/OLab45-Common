@@ -57,7 +57,7 @@ public class Importer : IImporter
     OLabDBContext context,
     IOLabModuleProvider<IWikiTagModule> wikiTagProvider)
   {
-    _appSettings = configuration.GetAppSettings().Value;
+    _appSettings = configuration.GetAppSettings();
     _context = context;
     _configuration = configuration;
 

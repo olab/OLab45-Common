@@ -33,7 +33,7 @@ public class OLabConfiguration : IOLabConfiguration
   }
 
   //public IConfiguration GetConfiguration() { return _configuration; }
-  public IOptions<AppSettings> GetAppSettings() { return _appSettings; }
+  public AppSettings GetAppSettings() { return _appSettings.Value; }
 
   private AppSettings CreateAppSettings()
   {

@@ -53,7 +53,7 @@ namespace OLab.Api.Endpoints
       Guard.Argument(wikiTagProvider).NotNull(nameof(wikiTagProvider));
       Guard.Argument(fileStorageProvider).NotNull(nameof(fileStorageProvider));
 
-      var fileSystemModuleName = _configuration.GetAppSettings().Value.FileStorageType;
+      var fileSystemModuleName = _configuration.GetAppSettings().FileStorageType;
       if (string.IsNullOrEmpty(fileSystemModuleName))
         throw new ConfigurationErrorsException($"missing FileStorageType");
 

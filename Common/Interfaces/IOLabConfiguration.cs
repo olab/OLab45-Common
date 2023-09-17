@@ -4,7 +4,7 @@ using OLab.Api.Utils;
 namespace OLab.Common.Interfaces;
 public interface IOLabConfiguration
 {
-  IOptions<AppSettings> GetAppSettings();
+  AppSettings GetAppSettings();
   //IConfiguration GetConfiguration();
 #nullable enable
   T? GetValue<T>(string key, bool optional = false);
