@@ -7,6 +7,7 @@ using OLab.Api.Model;
 using OLab.Api.Model.ReaderWriter;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,12 +18,18 @@ namespace OLab.Api.Endpoints.Designer
 {
   public partial class MapsEndpoint : OLabEndpoint
   {
-
     public MapsEndpoint(
       IOLabLogger logger,
       IOLabConfiguration configuration,
       OLabDBContext context,
-      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context, wikiTagProvider)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      IOLabModuleProvider<IFileStorageModule> fileStorageProvider) 
+      : base(
+          logger, 
+          configuration, 
+          context, 
+          wikiTagProvider, 
+          fileStorageProvider)
     {
     }
 
@@ -349,8 +356,15 @@ namespace OLab.Api.Endpoints.Designer
       if (map == null)
         return null;
 
-      var phys = await GetScopedObjectsAllAsync(map.Id, Utils.Constants.ScopeLevelMap);
-      var physServer = await GetScopedObjectsAllAsync(1, Utils.Constants.ScopeLevelServer);
+      var phys = await GetScopedObjectsAllAsync(
+        map.Id, 
+        Utils.Constants.ScopeLevelMap, 
+        _fileStorageModule);
+
+      var physServer = await GetScopedObjectsAllAsync(
+        1, 
+        Utils.Constants.ScopeLevelServer, 
+        _fileStorageModule);
 
       phys.Combine(physServer);
 

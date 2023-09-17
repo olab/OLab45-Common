@@ -6,6 +6,7 @@ using OLab.Api.Dto.Designer;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +19,14 @@ namespace OLab.Api.Endpoints.Designer
       IOLabLogger logger,
       IOLabConfiguration configuration,
       OLabDBContext context,
-      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context, wikiTagProvider)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      IOLabModuleProvider<IFileStorageModule> fileStorageProvider) 
+      : base(
+          logger, 
+          configuration, 
+          context, 
+          wikiTagProvider, 
+          fileStorageProvider)
     {
     }
 

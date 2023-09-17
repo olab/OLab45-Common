@@ -12,12 +12,13 @@ namespace OLab.Api.ObjectMapper
     protected readonly Mapper _mapper;
 
     protected IOLabLogger Logger;
-    protected WikiTagProvider _tagProvider = null;
+    protected WikiTagProvider _wikiTagModules = null;
+
     // used to hold on to id translation between origin system and new one
     protected IDictionary<uint, uint?> _idTranslation = new Dictionary<uint, uint?>();
 
     public virtual P ElementsToPhys(IEnumerable<dynamic> elements, Object source = null) { return default; }
-    public WikiTagProvider GetWikiProvider() { return _tagProvider; }
+    public WikiTagProvider GetWikiProvider() { return _wikiTagModules; }
 
 
     public OLabMapper(
@@ -33,7 +34,7 @@ namespace OLab.Api.ObjectMapper
     {
       Logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
 
-      _tagProvider = wikiTagProvider as WikiTagProvider;
+      _wikiTagModules = wikiTagProvider as WikiTagProvider;
       _mapper = new Mapper(GetConfiguration());
     }
 

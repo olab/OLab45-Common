@@ -38,9 +38,9 @@ public class Importer : IImporter
   private readonly IOLabConfiguration _configuration;
   private readonly IDictionary<DtoTypes, XmlDto> _dtos = new Dictionary<DtoTypes, XmlDto>();
   private readonly IOLabLogger Logger;
-  private readonly IOLabModuleProvider<IWikiTagModule> _tagProvider;
+  private readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
 
-  public IOLabModuleProvider<IWikiTagModule> GetWikiProvider() { return _tagProvider; }
+  public IOLabModuleProvider<IWikiTagModule> GetWikiProvider() { return _wikiTagProvider; }
   public XmlDto GetDto(DtoTypes type) { return _dtos[type]; }
   public OLabDBContext GetContext() { return _context; }
   public IOLabConfiguration GetConfiguration() { return _configuration; }
@@ -63,7 +63,7 @@ public class Importer : IImporter
 
     Logger = OLabLogger.CreateNew<Importer>(logger);
 
-    _tagProvider = wikiTagProvider as WikiTagProvider;
+    _wikiTagProvider = wikiTagProvider;
 
     XmlDto dto = new XmlMapDto(this);
     _dtos.Add(DtoTypes.XmlMapDto, dto);

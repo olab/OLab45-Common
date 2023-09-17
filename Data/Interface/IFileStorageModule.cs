@@ -13,5 +13,6 @@ namespace OLab.Data.Interface
     Task<string> UploadFile(Stream file,
       string fileName,
       CancellationToken token);
+    bool FileExists(string physicalPath);
   }
 }

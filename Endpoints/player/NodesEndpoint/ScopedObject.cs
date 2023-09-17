@@ -31,7 +31,7 @@ namespace OLab.Api.Endpoints.Player
       if (node == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
 
-      var phys = await GetScopedObjectsAllAsync(node.Id, Utils.Constants.ScopeLevelNode);
+      var phys = await GetScopedObjectsAllAsync(node.Id, Utils.Constants.ScopeLevelNode, _fileStorageModule);
 
       phys.Constants.Add(new SystemConstants
       {

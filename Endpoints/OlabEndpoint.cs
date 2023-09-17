@@ -7,8 +7,10 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,6 +26,7 @@ namespace OLab.Api.Endpoints
     protected IUserContext _userContext;
     protected readonly IOLabConfiguration _configuration;
     protected readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
+    protected readonly IFileStorageModule _fileStorageModule;
 
     public OLabEndpoint(
       IOLabLogger logger,
@@ -44,9 +47,17 @@ namespace OLab.Api.Endpoints
       IOLabLogger logger,
       IOLabConfiguration configuration,
       OLabDBContext context,
-      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : this(logger, configuration, context)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      IOLabModuleProvider<IFileStorageModule> fileStorageProvider) : this(logger, configuration, context)
     {
       Guard.Argument(wikiTagProvider).NotNull(nameof(wikiTagProvider));
+      Guard.Argument(fileStorageProvider).NotNull(nameof(fileStorageProvider));
+
+      var fileSystemModuleName = _configuration.GetAppSettings().Value.FileStorageType;
+      if (string.IsNullOrEmpty(fileSystemModuleName))
+        throw new ConfigurationErrorsException($"missing FileStorageType");
+
+      _fileStorageModule = fileStorageProvider.GetModule(fileSystemModuleName);
       _wikiTagProvider = wikiTagProvider;
     }
 
@@ -343,21 +354,23 @@ namespace OLab.Api.Endpoints
     }
 
     /// <summary>
-    /// 
+    /// Get scoped objects for a olab parent 
     /// </summary>
-    /// <param name="parentId"></param>
-    /// <param name="scopeLevel"></param>
-    /// <returns></returns>
+    /// <param name="parentId">Id pf parent object</param>
+    /// <param name="scopeLevel">Type of parent object</param>
+    /// <param name="fileStorageModule">File storage module that provides URL</param>
+    /// <returns>ScopedObject dto</returns>
     [NonAction]
     protected async ValueTask<Model.ScopedObjects> GetScopedObjectsAllAsync(
       uint parentId,
-      string scopeLevel)
+      string scopeLevel,
+      IFileStorageModule fileStorageModule)
     {
       var phys = new Model.ScopedObjects
       {
         Constants = await GetScopedConstantsAsync(parentId, scopeLevel),
         Questions = await GetScopedQuestionsAsync(parentId, scopeLevel),
-        Files = await GetScopedFilesAsync(parentId, scopeLevel),
+        Files = await GetScopedFilesAsync(parentId, scopeLevel, fileStorageModule),
         Scripts = await GetScopedScriptsAsync(parentId, scopeLevel),
         Themes = await GetScopedThemesAsync(parentId, scopeLevel),
         Counters = await GetScopedCountersAsync(scopeLevel, parentId, 0)
@@ -393,29 +406,23 @@ namespace OLab.Api.Endpoints
     }
 
     /// <summary>
-    /// 
+    /// Gets scoped object for an olab object
     /// </summary>
-    /// <param name="parentId"></param>
-    /// <param name="scopeLevel"></param>
+    /// <param name="parentId">Id pf parent object</param>
+    /// <param name="scopeLevel">Type of parent object</param>
+    /// <param name="fileStorageModule">File storage module that provides URL</param>
     /// <returns></returns>
     [NonAction]
-    protected async Task<List<SystemFiles>> GetScopedFilesAsync(uint parentId, string scopeLevel)
+    protected async Task<List<SystemFiles>> GetScopedFilesAsync(
+      uint parentId,
+      string scopeLevel,
+      IFileStorageModule fileStorageModule)
     {
-      var items = new List<SystemFiles>();
+      var items = await dbContext.SystemFiles.Where(x =>
+        x.ImageableType == scopeLevel && x.ImageableId == parentId).ToListAsync();
 
-      items.AddRange(await dbContext.SystemFiles.Where(x =>
-        x.ImageableType == scopeLevel && x.ImageableId == parentId).ToListAsync());
-
-      foreach (var item in items)
-      {
-        var subPath = $"{scopeLevel}/{parentId}/{item.Path}";
-        var physicalPath = Path.Combine(_configuration.GetAppSettings().Value.FileStorageFolder, subPath.Replace('/', Path.DirectorySeparatorChar));
-
-        if (File.Exists(physicalPath))
-          item.OriginUrl = $"/{Path.GetFileName(_configuration.GetAppSettings().Value.FileStorageFolder)}/{subPath}";
-        else
-          item.OriginUrl = null;
-      }
+      // ask the module to add appropriate URLs to files
+      fileStorageModule.AttachUrls(items);
 
       return items;
     }

@@ -10,8 +10,10 @@ using OLab.Api.Model;
 using OLab.Api.Model.ReaderWriter;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,7 +25,14 @@ namespace OLab.Api.Endpoints.Player
       IOLabLogger logger,
       IOLabConfiguration configuration,
       OLabDBContext context,
-      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context, wikiTagProvider)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      IOLabModuleProvider<IFileStorageModule> fileStorageProvider) 
+      : base(
+          logger, 
+          configuration, 
+          context, 
+          wikiTagProvider, 
+          fileStorageProvider)
     {
     }
 

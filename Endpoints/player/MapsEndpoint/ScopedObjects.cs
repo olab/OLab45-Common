@@ -25,10 +25,10 @@ namespace OLab.Api.Endpoints.Player
     }
 
     /// <summary>
-    /// 
+    /// Gets scoped objects for a given map
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
+    /// <param name="id">Map Id</param>
+    /// <returns>ScopedObjects dto</returns>
     public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(IOLabAuthentication auth, uint id)
     {
       Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetScopedObjectsAsync");
@@ -54,8 +54,12 @@ namespace OLab.Api.Endpoints.Player
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 
-      var phys = await GetScopedObjectsAllAsync(map.Id, Utils.Constants.ScopeLevelMap);
+      var phys = await GetScopedObjectsAllAsync(
+        map.Id, 
+        Utils.Constants.ScopeLevelMap, 
+        _fileStorageModule);
 
+      // add map-level derived constants
       phys.Constants.Add(new SystemConstants
       {
         Id = 0,

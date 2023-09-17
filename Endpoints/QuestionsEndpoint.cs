@@ -9,6 +9,7 @@ using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,14 @@ namespace OLab.Api.Endpoints
       IOLabLogger logger,
       IOLabConfiguration configuration,
       OLabDBContext context,
-      IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, configuration, context, wikiTagProvider)
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      IOLabModuleProvider<IFileStorageModule> fileStorageProvider) 
+      : base(
+          logger, 
+          configuration, 
+          context, 
+          wikiTagProvider, 
+          fileStorageProvider)
     {
     }
 
@@ -65,7 +73,6 @@ namespace OLab.Api.Endpoints
 
       Logger.LogDebug(string.Format("found {0} questions", physList.Count));
 
-      //var dtoList = new Questions(Logger, new WikiTagProvider(Logger)).PhysicalToDto(physList);
       var dtoList = new Questions(Logger, _wikiTagProvider).PhysicalToDto(physList);
 
       var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();

@@ -107,7 +107,7 @@ namespace OLab.Api.Common
     }
 
     /// <summary>
-    /// Get module
+    /// Get module from provider
     /// </summary>
     /// <param name="moduleName">Module name</param>
     /// <returns>Module</returns>
@@ -115,7 +115,7 @@ namespace OLab.Api.Common
     public T GetModule(string moduleName)
     {
       if (!Modules.ContainsKey(moduleName))
-        throw new KeyNotFoundException($"{moduleName} not implemented");
+        throw new KeyNotFoundException($"'{moduleName}' not implemented");
 
       return Modules[moduleName];
     }
