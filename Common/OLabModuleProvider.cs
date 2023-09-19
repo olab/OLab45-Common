@@ -99,7 +99,7 @@ namespace OLab.Api.Common
       var dict = new Dictionary<string, T>();
       foreach (var item in typeList)
       {
-        Logger.LogInformation($"Loading type '{item.Name}'");
+        Logger.LogInformation($"  loading type '{item.Name}'");
         var t = item.GetCustomAttribute<OLabModuleAttribute>();
         dict.Add(t.Name, (T)Activator.CreateInstance(item, Logger, _configuration));
       }

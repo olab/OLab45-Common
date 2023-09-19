@@ -1,4 +1,7 @@
+using Microsoft.Build.Framework;
 using Newtonsoft.Json;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 
 namespace OLab.Api.Dto
@@ -30,6 +33,18 @@ namespace OLab.Api.Dto
     public List<ThemesFullDto> Themes { get; set; }
     [JsonProperty("counteractions")]
     public List<CounterActionsDto> CounterActions { get; set; }
+
+    public void Dump(IOLabLogger logger)
+    {
+      logger.LogInformation("Result:");
+      logger.LogInformation($" Constants {Constants.Count}");
+      logger.LogInformation($" Questions {Questions.Count}");
+      logger.LogInformation($" Counters {Counters.Count}");
+      logger.LogInformation($" Files {Files.Count}");
+      logger.LogInformation($" Scripts {Scripts.Count}");
+      logger.LogInformation($" Themes {Themes.Count}");
+      logger.LogInformation($" CounterActions {CounterActions.Count}");
+    }
 
   }
 }
