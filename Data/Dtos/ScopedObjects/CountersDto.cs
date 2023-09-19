@@ -30,7 +30,7 @@ namespace OLab.Api.Dto
     }
     public override string ToString()
     {
-      return $"'{Name}({Id})' = {Value}";
+      return $" '{Name}({Id})' = {Value}";
     }
   }
 }

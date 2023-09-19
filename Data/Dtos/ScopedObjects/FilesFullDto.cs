@@ -1,5 +1,6 @@
 using HttpMultipartParser;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Linq;
 using System;
 
 namespace OLab.Api.Dto
@@ -7,31 +8,6 @@ namespace OLab.Api.Dto
 
   public class FilesFullDto : FilesDto
   {
-    public FilesFullDto()
-    {
-
-
-    }
-
-    public FilesFullDto(IFormCollection form)
-    {
-      Id = Convert.ToUInt32(form["id"]);
-      Name = form["name"];
-      Description = form["description"];
-      Copyright = form["copyright"];
-      ImageableId = Convert.ToUInt32(form["parentId"]);
-      ImageableType = form["scopeLevel"];
-      IsMediaResource = Convert.ToBoolean(form["isMediaResource"]);
-      SelectedFileName = form["selectedFileName"];
-      FileSize = Convert.ToInt32(form["fileSize"]);
-      CreatedAt = DateTime.UtcNow;
-    }
-
-    public FilesFullDto(MultipartFormDataParser parser)
-    {
-      Id = Convert.ToUInt32(parser.GetParameterValue("id"));
-      // TODO: complete the rest of the properties
-    }
 
     public IFormFile FileContents { get; set; }
     public int? FileSize { get; set; }
@@ -54,5 +30,36 @@ namespace OLab.Api.Dto
     public string WidthType { get; set; }
     public string SelectedFileName { get; set; }
     public bool IsMediaResource { get; set; }
+
+    public FilesFullDto()
+    {
+    }
+
+    public override string ToString()
+    {
+      return $" '{Name}({Id})' = {OriginUrl}";
+    }
+
+    public FilesFullDto(IFormCollection form)
+    {
+      Id = Convert.ToUInt32(form["id"]);
+      Name = form["name"];
+      Description = form["description"];
+      Copyright = form["copyright"];
+      ImageableId = Convert.ToUInt32(form["parentId"]);
+      ImageableType = form["scopeLevel"];
+      IsMediaResource = Convert.ToBoolean(form["isMediaResource"]);
+      SelectedFileName = form["selectedFileName"];
+      FileSize = Convert.ToInt32(form["fileSize"]);
+      CreatedAt = DateTime.UtcNow;
+    }
+
+    public FilesFullDto(MultipartFormDataParser parser)
+    {
+      Id = Convert.ToUInt32(parser.GetParameterValue("id"));
+      // TODO: complete the rest of the properties
+    }
+
   }
+
 }

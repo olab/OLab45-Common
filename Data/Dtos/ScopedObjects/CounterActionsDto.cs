@@ -14,5 +14,10 @@ namespace OLab.Api.Dto
     public string Function { get; set; }
     [JsonProperty("display")]
     public int Display { get; set; }
+
+    public override string ToString()
+    {
+      return $" '{Function}({Id})'";
+    }
   }
 }

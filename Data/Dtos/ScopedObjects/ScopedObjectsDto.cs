@@ -37,6 +37,7 @@ namespace OLab.Api.Dto
     public void Dump(IOLabLogger logger)
     {
       logger.LogInformation("Result:");
+
       logger.LogInformation($" Constants {Constants.Count}");
       logger.LogInformation($" Questions {Questions.Count}");
       logger.LogInformation($" Counters {Counters.Count}");
@@ -44,6 +45,27 @@ namespace OLab.Api.Dto
       logger.LogInformation($" Scripts {Scripts.Count}");
       logger.LogInformation($" Themes {Themes.Count}");
       logger.LogInformation($" CounterActions {CounterActions.Count}");
+
+      foreach (var item in Constants)
+        logger.LogInformation($" Constant {item}");
+
+      foreach (var item in Questions)
+        logger.LogInformation($" Question {item}");
+
+      foreach (var item in Counters)
+        logger.LogInformation($" Counter {item}");
+
+      foreach (var item in Files)
+        logger.LogInformation($" File {item}");
+
+      foreach (var item in Scripts)
+        logger.LogInformation($" Script {item}");
+
+      foreach (var item in Themes)
+        logger.LogInformation($" Theme {item}");
+
+      foreach (var item in CounterActions)
+        logger.LogInformation($" CounterAction {item}");
     }
 
   }

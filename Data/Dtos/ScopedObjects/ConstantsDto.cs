@@ -8,5 +8,10 @@ namespace OLab.Api.Dto
     public string Value { get; set; }
     [JsonProperty("isSystem")]
     public int? IsSystem { get; set; }
+
+    public override string ToString()
+    {
+      return $" '{Name}({Id})' = {Value}";
+    }
   }
 }
