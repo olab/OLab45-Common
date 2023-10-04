@@ -24,6 +24,17 @@ namespace OLab.Api.Endpoints.Player
     public MapsEndpoint(
       IOLabLogger logger,
       IOLabConfiguration configuration,
+      OLabDBContext context) 
+      : base(
+          logger, 
+          configuration, 
+          context)
+    {
+    }
+
+    public MapsEndpoint(
+      IOLabLogger logger,
+      IOLabConfiguration configuration,
       OLabDBContext context,
       IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
       IOLabModuleProvider<IFileStorageModule> fileStorageProvider) 
