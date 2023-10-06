@@ -1,4 +1,5 @@
 using OLab.Api.Model;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,15 @@ namespace OLab.Api.Importer
   {
     private readonly ObjectMapper.MapVpdElement _mapper;
 
-    public XmlMapVpdElementDto(Importer importer) : base(importer, "map_vpd_element.xml")
+    public XmlMapVpdElementDto(
+      IOLabLogger logger, 
+      Importer importer) : base(
+        logger, 
+        importer, 
+        Importer.DtoTypes.XmlMapVpdElementDto, 
+        "map_vpd_element.xml")
     {
-      _mapper = new ObjectMapper.MapVpdElement(GetLogger());
+      _mapper = new ObjectMapper.MapVpdElement(logger);
     }
 
     /// <summary>
@@ -64,7 +71,7 @@ namespace OLab.Api.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
-      GetLogger().LogDebug($"Saved {GetFileName()} id {oldId} -> {item.Id}");
+      Logger.LogInformation($"Saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

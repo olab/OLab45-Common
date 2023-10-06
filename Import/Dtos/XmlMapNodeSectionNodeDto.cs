@@ -1,10 +1,17 @@
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 
 namespace OLab.Api.Importer
 {
   public class XmlMapNodeSectionNodeDto : XmlImportDto<XmlMapNodeSectionNode>
   {
-    public XmlMapNodeSectionNodeDto(Importer importer) : base(importer, "map_node_section_node.xml")
+    public XmlMapNodeSectionNodeDto(
+      IOLabLogger logger, 
+      Importer importer) : base(
+        logger, 
+        importer, 
+        Importer.DtoTypes.XmlMapNodeSectionNodeDto, 
+        "map_node_section_node.xml")
     {
 
     }

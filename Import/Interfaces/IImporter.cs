@@ -2,7 +2,10 @@
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OLab.Import.Interfaces
 {
@@ -10,15 +13,15 @@ namespace OLab.Import.Interfaces
   {
     OLabDBContext GetContext();
     XmlDto GetDto(Importer.DtoTypes type);
-    IOLabLogger GetLogger();
     IOLabModuleProvider<IWikiTagModule> GetWikiProvider();
-    bool LoadAll(string archiveFileName);
+    IFileStorageModule GetFileStorageModule();
+    Task<bool> ProcessImportFileAsync(string archiveFileName, CancellationToken token);
     void LogDebug(string message);
     void LogError(Exception ex, string message);
     void LogError(string message);
     void LogInformation(string message);
     void LogWarning(string message);
-    bool SaveAll();
+    bool WriteImportToDatabase();
     AppSettings Settings();
   }
 }

@@ -1,3 +1,4 @@
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,15 @@ namespace OLab.Api.Importer
   {
     private readonly ObjectMapper.Counters _mapper;
 
-    public XmlMapCounterDto(Importer importer) : base(importer, "map_counter.xml")
+    public XmlMapCounterDto(
+      IOLabLogger logger, 
+      Importer importer) : base(
+        logger, 
+        importer, 
+        Importer.DtoTypes.XmlMapCounterDto, 
+        "map_counter.xml")
     {
-      _mapper = new ObjectMapper.Counters(GetLogger());
+      _mapper = new ObjectMapper.Counters(logger);
     }
 
     /// <summary>
@@ -47,7 +54,7 @@ namespace OLab.Api.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
-      GetLogger().LogDebug($"Saved {GetFileName()} id {oldId} -> {item.Id}");
+      Logger.LogInformation($"Saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

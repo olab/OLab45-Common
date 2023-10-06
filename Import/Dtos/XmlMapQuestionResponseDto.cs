@@ -1,3 +1,4 @@
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 
 namespace OLab.Api.Importer
@@ -7,9 +8,15 @@ namespace OLab.Api.Importer
   {
     private readonly ObjectMapper.QuestionResponses _mapper;
 
-    public XmlMapQuestionResponseDto(Importer importer) : base(importer, "map_question_response.xml")
+    public XmlMapQuestionResponseDto(
+      IOLabLogger logger, 
+      Importer importer) : base(
+        logger, 
+        importer, 
+        Importer.DtoTypes.XmlMapQuestionResponseDto, 
+        "map_question_response.xml")
     {
-      _mapper = new ObjectMapper.QuestionResponses(GetLogger(), GetWikiProvider());
+      _mapper = new ObjectMapper.QuestionResponses(logger, GetWikiProvider());
     }
 
     /// <summary>
@@ -33,7 +40,7 @@ namespace OLab.Api.Importer
       var item = _mapper.ElementsToPhys(elements);
       var oldId = item.Id;
 
-      GetLogger().LogDebug($"Saving {GetFileName()} id {oldId}");
+      Logger.LogInformation($"Saving {GetFileName()} id {oldId}");
 
       item.Id = 0;
 
@@ -49,7 +56,7 @@ namespace OLab.Api.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
-      GetLogger().LogDebug($"Saved {GetFileName()} id {oldId} -> {item.Id}");
+      Logger.LogInformation($"Saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

@@ -34,6 +34,11 @@ namespace OLab.Api.Importer
       throw new FileNotFoundException("File not found", filename);
     }
 
+    public static DynamicXml Load(Stream stream)
+    {
+      return new DynamicXml(XDocument.Load(stream).Root);
+    }
+
     public IEnumerable<XElement> Elements() { return _root.Elements(); }
 
     public override bool TryGetMember(GetMemberBinder binder, out object result)

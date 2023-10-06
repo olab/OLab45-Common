@@ -1,3 +1,4 @@
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 
 namespace OLab.Api.Importer
@@ -5,7 +6,13 @@ namespace OLab.Api.Importer
 
   public class XmlMapCounterRuleDto : XmlImportDto<XmlMapCounterRule>
   {
-    public XmlMapCounterRuleDto(Importer importer) : base(importer, "map_counter_rule.xml")
+    public XmlMapCounterRuleDto(
+      IOLabLogger logger, 
+      Importer importer) : base(
+        logger, 
+        importer, 
+        Importer.DtoTypes.XmlMapCounterRuleDto, 
+        "map_counter_rule.xml")
     {
 
     }

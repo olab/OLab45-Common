@@ -1,4 +1,5 @@
 using OLab.Api.ObjectMapper;
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,9 +10,15 @@ namespace OLab.Api.Importer
   {
     private readonly CounterActionsMapper _mapper;
 
-    public XmlMapNodeCounterDto(Importer importer) : base(importer, "map_node_counter.xml")
+    public XmlMapNodeCounterDto(
+      IOLabLogger logger, 
+      Importer importer) : base(
+        logger, 
+        importer, 
+        Importer.DtoTypes.XmlMapNodeCounterDto, 
+        "map_node_counter.xml")
     {
-      _mapper = new CounterActionsMapper(GetLogger());
+      _mapper = new CounterActionsMapper(logger);
     }
 
     /// <summary>
@@ -38,7 +45,7 @@ namespace OLab.Api.Importer
       // test for empty value/expression.  if so, igmore this save
       if (string.IsNullOrEmpty(item.Expression))
       {
-        GetLogger().LogDebug($"Empty {GetFileName()} id = {oldId} value.  Skipping");
+        Logger.LogInformation($"Empty {GetFileName()} id = {oldId} value.  Skipping");
         return true;
       }
 
@@ -57,7 +64,7 @@ namespace OLab.Api.Importer
       Context.SystemCounterActions.Add(item);
       Context.SaveChanges();
 
-      GetLogger().LogDebug($"Saved {GetFileName()} id {oldId} -> {item.Id}");
+      Logger.LogInformation($"Saved {GetFileName()} id {oldId} -> {item.Id}");
       CreateIdTranslation(oldId, item.Id);
 
       return true;

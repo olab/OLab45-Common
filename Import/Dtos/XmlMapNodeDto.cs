@@ -10,9 +10,9 @@ namespace OLab.Api.Importer
     private readonly ObjectMapper.MapNodesMapper _mapper;
     private readonly IOLabConfiguration _configuration;
 
-    public XmlMapNodeDto(Importer importer) : base(importer, "map_node.xml")
+    public XmlMapNodeDto(IOLabLogger logger, Importer importer) : base(logger, importer, Importer.DtoTypes.XmlMapNodeDto, "map_node.xml")
     {
-      _mapper = new ObjectMapper.MapNodesMapper(GetLogger());
+      _mapper = new ObjectMapper.MapNodesMapper(logger);
       _configuration = importer.GetConfiguration();
     }
 
@@ -38,7 +38,7 @@ namespace OLab.Api.Importer
       // replace all VPD with CONST in node text
       var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto) as XmlMapVpdDto;
 
-      var wiki = new VpdWikiTag(GetLogger(), _configuration);
+      var wiki = new VpdWikiTag(Logger, _configuration);
       while (wiki.HaveWikiTag(item.Text))
       {
         var id = Convert.ToUInt32(wiki.GetWikiArgument1());
@@ -49,7 +49,7 @@ namespace OLab.Api.Importer
         var newWikiTag = wikiTag.Replace(id.ToString(), newId.ToString());
         newWikiTag = newWikiTag.Replace(wiki.GetWikiType(), "CONST");
 
-        GetLogger().LogDebug($"Replacing '{wikiTag}' -> '{newWikiTag}'");
+        Logger.LogInformation($"Replacing '{wikiTag}' -> '{newWikiTag}'");
         item.Text = item.Text.Replace(wikiTag, newWikiTag);
 
         rc = true;
@@ -70,7 +70,7 @@ namespace OLab.Api.Importer
       // replace all VPD with CONST in node text
       var avDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapAvatarDto) as XmlMapAvatarDto;
 
-      var wiki = new AvatarWikiTag(GetLogger(), _configuration);
+      var wiki = new AvatarWikiTag(Logger, _configuration);
       while (wiki.HaveWikiTag(item.Text))
       {
         var id = Convert.ToUInt16(wiki.GetWikiArgument1());
@@ -81,7 +81,7 @@ namespace OLab.Api.Importer
         var newWikiTag = wikiTag.Replace(id.ToString(), newId.ToString());
         newWikiTag = newWikiTag.Replace(wiki.GetWikiType(), "MR");
 
-        GetLogger().LogDebug($"Replacing '{wikiTag}' -> '{newWikiTag}'");
+        Logger.LogInformation($"Replacing '{wikiTag}' -> '{newWikiTag}'");
         item.Text = item.Text.Replace(wikiTag, newWikiTag);
 
         rc = true;
@@ -98,7 +98,7 @@ namespace OLab.Api.Importer
       var mapElementDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapElementDto);
       var mappedWikiTags = new Dictionary<string, string>();
 
-      var wiki = new MediaResourceWikiTag(GetLogger(), _configuration);
+      var wiki = new MediaResourceWikiTag(Logger, _configuration);
       while (wiki.HaveWikiTag(item.Text))
       {
         var id = Convert.ToUInt32(wiki.GetWikiArgument1());
@@ -115,7 +115,7 @@ namespace OLab.Api.Importer
 
       foreach (var key in mappedWikiTags.Keys)
       {
-        GetLogger().LogDebug($"Remapping '{key}' -> '{mappedWikiTags[key]}'");
+        Logger.LogInformation($"Remapping '{key}' -> '{mappedWikiTags[key]}'");
         item.Text = item.Text.Replace(key, mappedWikiTags[key]);
       }
 
@@ -130,7 +130,7 @@ namespace OLab.Api.Importer
       var questionDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapQuestionDto);
       var mappedWikiTags = new Dictionary<string, string>();
 
-      var wiki = new QuestionWikiTag(GetLogger(), _configuration);
+      var wiki = new QuestionWikiTag(Logger, _configuration);
       while (wiki.HaveWikiTag(item.Text))
       {
         var id = Convert.ToUInt32(wiki.GetWikiArgument1());
@@ -147,7 +147,7 @@ namespace OLab.Api.Importer
 
       foreach (var key in mappedWikiTags.Keys)
       {
-        GetLogger().LogDebug($"Remapping '{key}' -> '{mappedWikiTags[key]}'");
+        Logger.LogInformation($"Remapping '{key}' -> '{mappedWikiTags[key]}'");
         item.Text = item.Text.Replace(key, mappedWikiTags[key]);
       }
 
@@ -185,7 +185,7 @@ namespace OLab.Api.Importer
 
       GetModel().Data.Add(item);
 
-      GetLogger().LogDebug($"Saved {GetFileName()} id {oldId} -> {item.Id}");
+      Logger.LogInformation($"Saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

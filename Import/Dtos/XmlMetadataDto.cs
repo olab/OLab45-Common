@@ -1,3 +1,4 @@
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 
 namespace OLab.Api.Importer
@@ -5,7 +6,13 @@ namespace OLab.Api.Importer
 
   public class XmlMetadataDto : XmlImportDto<XmlMetadata>
   {
-    public XmlMetadataDto(Importer importer) : base(importer, "metadata.xml")
+    public XmlMetadataDto(
+      IOLabLogger logger, 
+      Importer importer) : base(
+        logger, 
+        importer, 
+        Importer.DtoTypes.XmlMetadataDto, 
+        "metadata.xml")
     {
 
     }

@@ -1,4 +1,5 @@
 using OLab.Api.ObjectMapper;
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 
 namespace OLab.Api.Importer
@@ -8,9 +9,9 @@ namespace OLab.Api.Importer
   {
     private readonly MapsMapper _mapper;
 
-    public XmlMapDto(Importer importer) : base(importer, "map.xml")
+    public XmlMapDto(IOLabLogger logger, Importer importer) : base(logger, importer, Importer.DtoTypes.XmlMapDto, "map.xml")
     {
-      _mapper = new MapsMapper(GetLogger());
+      _mapper = new MapsMapper(logger);
     }
 
     /// <summary>
@@ -53,7 +54,7 @@ namespace OLab.Api.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
-      GetLogger().LogDebug($"Saved {GetFileName()} id {oldId} -> {item.Id}");
+      Logger.LogInformation($"Saved {GetFileName()} id {oldId} -> {item.Id}");
 
       GetModel().Data.Add(item);
 

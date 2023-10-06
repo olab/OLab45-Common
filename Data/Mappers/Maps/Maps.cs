@@ -62,7 +62,8 @@ namespace OLab.Api.ObjectMapper
       phys.RevisableAnswers = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "revisable_answers").Value) == 1;
       phys.SendXapiStatements = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "send_xapi_statements").Value) == 1;
       phys.CreatedAt = DateTime.Now;
-      phys.ReportNodeId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "report_node_id").Value);
+      if ( elements.Any(x => x.Name == "report_node_id"))
+        phys.ReportNodeId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "report_node_id").Value);
 
       // Logger.LogInformation($"loaded Map {phys.Id}");
 

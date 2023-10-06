@@ -1,5 +1,6 @@
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,10 +13,16 @@ namespace OLab.Api.Importer
     private readonly AvatarsMapper _avMapper;
     private readonly ObjectMapper.Files _fileMapper;
 
-    public XmlMapAvatarDto(Importer importer) : base(importer, "map_avatar.xml")
+    public XmlMapAvatarDto(
+      IOLabLogger logger, 
+      Importer importer) : base(
+        logger, 
+        importer, 
+        Importer.DtoTypes.XmlMapAvatarDto, 
+        "map_avatar.xml")
     {
-      _avMapper = new AvatarsMapper(GetLogger());
-      _fileMapper = new Files(GetLogger());
+      _avMapper = new AvatarsMapper(logger);
+      _fileMapper = new Files(logger);
     }
 
     /// <summary>
@@ -63,7 +70,7 @@ namespace OLab.Api.Importer
       Context.MapAvatars.Add(avItem);
       Context.SaveChanges();
 
-      GetLogger().LogDebug($"Saved {GetFileName()} id {avItem.Id}");
+      Logger.LogInformation($"Saved {GetFileName()} id {avItem.Id}");
 
       var fileItem = CreateAvatarSystemFile(elements, avItem);
 
@@ -73,13 +80,13 @@ namespace OLab.Api.Importer
 
       var publicFile = GetPublicFileDirectory(fileItem.ImageableType, fileItem.ImageableId, fileItem.Path);
       if (!File.Exists(publicFile))
-        GetImporter().GetLogger().LogWarning(GetFileName(), 0, $"media file '{publicFile}' does not exist in public directory");
+        Logger.LogWarning(GetFileName(), 0, $"media file '{publicFile}' does not exist in public directory");
 
       Context.SystemFiles.Add(fileItem);
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, fileItem.Id);
-      GetLogger().LogDebug($"Saved SystemFile {fileItem.Id}");
+      Logger.LogInformation($"Saved SystemFile {fileItem.Id}");
 
       return true;
     }

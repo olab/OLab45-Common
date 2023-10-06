@@ -1,4 +1,5 @@
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using OLab.Import.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,13 @@ namespace OLab.Api.Importer
   /// </summary>
   public class XmlManifestDto : XmlImportDto<XmlManifest>
   {
-    public XmlManifestDto(IImporter importer) : base(importer, "manifest.xml") { }
+    public XmlManifestDto(
+      IOLabLogger logger, 
+      IImporter importer) : base(
+        logger,
+        importer, 
+        Importer.DtoTypes.XmlManifestDto, 
+        "manifest.xml") { }
 
     /// <summary>
     /// Loads the specific import file into a model object
@@ -36,7 +43,7 @@ namespace OLab.Api.Importer
           }
           catch (Exception ex)
           {
-            GetLogger().LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
+            Logger.LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
           }
 
         }

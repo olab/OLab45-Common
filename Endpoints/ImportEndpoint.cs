@@ -53,24 +53,35 @@ public partial class ImportEndpoint : OLabEndpoint
         wikiTagProvider,
         fileStorageProvider)
   {
-    _importer = new Importer(Logger, _configuration, dbContext, _wikiTagProvider);
+    _importer = new Importer(
+      Logger, 
+      _configuration, 
+      dbContext, 
+      _wikiTagProvider, 
+      _fileStorageModule);
   }
 
-  public async Task<bool> Import(IFormFile file, CancellationToken cancellationToken)
+  public async Task<bool> Import(
+    IFormFile file, 
+    CancellationToken token)
   {
-    var length = file.Length;
     var stream = new MemoryStream();
     file.CopyTo(stream);
 
     // need to set the stream position to start
     stream.Position = 0;
 
-    var newFileName = await _fileStorageModule.UploadFile(Logger, stream, file.FileName, cancellationToken);
+    // save import file to persistent storage
+    var archiveFile = 
+      await _fileStorageModule.UploadFileAsync(Logger, stream, file.FileName, token);
 
-    Logger.LogInformation($"Loading archive: '{newFileName}'");
+    Logger.LogInformation($"Importing archive: '{archiveFile}'");
 
-    if (_importer.LoadAll(newFileName))
-      _importer.SaveAll();
+    if (await _importer.ProcessImportFileAsync(archiveFile, token))
+      _importer.WriteImportToDatabase();
+
+    // delete source import file
+    await _fileStorageModule.DeleteFileAsync(Logger, archiveFile);
 
     return true;
   }

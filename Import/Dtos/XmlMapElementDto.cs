@@ -1,3 +1,4 @@
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.IO;
 
@@ -8,9 +9,15 @@ namespace OLab.Api.Importer
   {
     private readonly ObjectMapper.Files _mapper;
 
-    public XmlMapElementDto(Importer importer) : base(importer, "map_element.xml")
+    public XmlMapElementDto(
+      IOLabLogger logger, 
+      Importer importer) : base(
+        logger, 
+        importer, 
+        Importer.DtoTypes.XmlMapElementDto, 
+        "map_element.xml")
     {
-      _mapper = new ObjectMapper.Files(GetLogger());
+      _mapper = new ObjectMapper.Files(logger);
     }
 
     /// <summary>
@@ -41,7 +48,7 @@ namespace OLab.Api.Importer
 
       var path = Path.Combine(GetImportPackageDirectory(), "media", Path.GetFileName(item.Path));
       if (!File.Exists(path))
-        GetImporter().GetLogger().LogWarning(GetFileName(), 0, $"media file '{Path.GetFileName(item.Path)}' does not exist in import package");
+        Logger.LogWarning(GetFileName(), 0, $"media file '{Path.GetFileName(item.Path)}' does not exist in import package");
 
       item.Path = Path.GetFileName(item.Path);
 
@@ -49,7 +56,7 @@ namespace OLab.Api.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
-      GetLogger().LogDebug($"Saved {GetFileName()} id {oldId} -> {item.Id}");
+      Logger.LogInformation($"Saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

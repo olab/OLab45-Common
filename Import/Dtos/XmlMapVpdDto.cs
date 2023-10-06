@@ -1,3 +1,4 @@
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,9 +11,15 @@ namespace OLab.Api.Importer
   {
     private readonly ObjectMapper.MapVpd _mapper;
 
-    public XmlMapVpdDto(Importer importer) : base(importer, "map_vpd.xml")
+    public XmlMapVpdDto(
+      IOLabLogger logger, 
+      Importer importer) : base(
+        logger, 
+        importer, 
+        Importer.DtoTypes.XmlMapVpdDto, 
+        "map_vpd.xml")
     {
-      _mapper = new ObjectMapper.MapVpd(GetLogger());
+      _mapper = new ObjectMapper.MapVpd(logger);
     }
 
     /// <summary>
@@ -29,13 +36,13 @@ namespace OLab.Api.Importer
         SetImportDirectory(importDirectory);
 
         var filePath = Path.Combine(GetImportPackageDirectory(), GetFileName());
-        GetLogger().LogDebug($"Loading '{Path.GetFileName(filePath)}'");
+        Logger.LogInformation($"Loading '{Path.GetFileName(filePath)}'");
 
         if (File.Exists(filePath))
           _phys = DynamicXml.Load(filePath);
         else
         {
-          GetLogger().LogDebug($"File {filePath} does not exist");
+          Logger.LogInformation($"File {filePath} does not exist");
           return false;
         }
 
@@ -64,17 +71,17 @@ namespace OLab.Api.Importer
           }
           catch (Exception ex)
           {
-            GetLogger().LogError(ex, $"error loading '{GetFileName()}' record #{record}: {ex.Message}");
+            Logger.LogError(ex, $"error loading '{GetFileName()}' record #{record}: {ex.Message}");
           }
 
         }
 
-        GetLogger().LogDebug($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+        Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
 
       }
       catch (Exception ex)
       {
-        GetLogger().LogError(ex, $"Load error: {ex.Message}");
+        Logger.LogError(ex, $"Load error: {ex.Message}");
         rc = false;
       }
 

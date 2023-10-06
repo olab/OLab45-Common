@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using static OLab.Api.Importer.Importer;
 
 namespace OLab.Api.Importer
 {
@@ -16,7 +17,7 @@ namespace OLab.Api.Importer
   {
     protected dynamic _phys;
     private readonly string _fileName;
-    private readonly IOLabLogger _olabLogger;
+    protected readonly IOLabLogger Logger;
     private readonly IImporter _importer;
     protected OLabDBContext Context;
     private readonly string _websitePublicFilesDirectory;
@@ -30,7 +31,6 @@ namespace OLab.Api.Importer
     public override bool PostProcess(IDictionary<Importer.DtoTypes, XmlDto> dtos) { return true; }
     public IImporter GetImporter() { return _importer; }
     public string GetFileName() { return _fileName; }
-    public IOLabLogger GetLogger() { return _olabLogger; }
     public P GetModel() { return _modelObject; }
     public dynamic GetXmlPhys() { return _phys; }
     public override Object GetDbPhys() { return _modelObject; }
@@ -44,12 +44,13 @@ namespace OLab.Api.Importer
     /// </summary>
     /// <param name="importer">Importer object</param>
     /// <param name="fileName">File name to import</param>
-    public XmlImportDto(IImporter importer, string fileName)
+    public XmlImportDto(IOLabLogger logger, IImporter importer, DtoTypes dtoType, string fileName) : base( dtoType )
     {
       _importer = importer;
       _fileName = fileName;
+
       _tagProvider = GetImporter().GetWikiProvider();
-      _olabLogger = GetImporter().GetLogger();
+      this.Logger = logger;
       Context = GetImporter().GetContext();
       _websitePublicFilesDirectory = GetImporter().Settings().FileStorageFolder;
     }
@@ -86,7 +87,7 @@ namespace OLab.Api.Importer
     /// <summary>
     /// Load import files
     /// </summary>
-    /// <param name="importDirectory">Directory containing import files</param>
+    /// <param name="importDirectory">Directory containing extracted import files</param>
     /// <returns>Success/Failure</returns>
     public override bool Load(string importDirectory)
     {
@@ -96,14 +97,19 @@ namespace OLab.Api.Importer
       {
         _importDirectory = importDirectory;
 
-        var filePath = Path.Combine(GetImportPackageDirectory(), GetFileName());
-        GetLogger().LogDebug($"Loading {GetFileName()}");
+        Logger.LogInformation($"Loading {GetFileName()}");
 
-        if (File.Exists(filePath))
-          _phys = DynamicXml.Load(filePath);
+        if (_importer.GetFileStorageModule().FileExists(Logger, GetImportPackageDirectory(), GetFileName()))
+        {
+          var stream = _importer.GetFileStorageModule().ReadFileAsync(
+            Logger, 
+            importDirectory, 
+            GetFileName()).GetAwaiter().GetResult();
+          _phys = DynamicXml.Load(stream);
+        }
         else
         {
-          GetLogger().LogDebug($"File {GetFileName()} does not exist");
+          Logger.LogInformation($"File {GetFileName()} does not exist");
           return false;
         }
 
@@ -121,17 +127,17 @@ namespace OLab.Api.Importer
           }
           catch (Exception ex)
           {
-            GetLogger().LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
+            Logger.LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
           }
         }
 
-        GetLogger().LogDebug($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+        Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
 
       }
       catch (Exception ex)
       {
         if (!ex.Message.Contains("File not found"))
-          GetLogger().LogError(ex, $"load error: {ex.Message}");
+          Logger.LogError(ex, $"load error: {ex.Message}");
         rc = false;
       }
 
@@ -145,7 +151,7 @@ namespace OLab.Api.Importer
     /// <returns>Success/Failure</returns>
     public override bool Save()
     {
-      GetLogger().LogDebug($"Saving {xmlImportElementSets.Count()} {GetFileName()} objects");
+      Logger.LogInformation($"Saving {xmlImportElementSets.Count()} {GetFileName()} objects");
 
       var recordIndex = 1;
       foreach (var elements in xmlImportElementSets)
@@ -156,7 +162,7 @@ namespace OLab.Api.Importer
         }
         catch (System.Exception ex)
         {
-          GetLogger().LogError($"Error {GetFileName()} record #{recordIndex}: {ex.Message}");
+          Logger.LogError($"Error {GetFileName()} record #{recordIndex}: {ex.Message}");
         }
 
         recordIndex++;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using static OLab.Api.Importer.Importer;
 
 namespace OLab.Api.Importer
 {
@@ -9,9 +10,16 @@ namespace OLab.Api.Importer
     public abstract bool Save();
     public abstract object GetDbPhys();
 
+    public DtoTypes DtoType { get; private set; }
+
     // used to hold on to id translation between origin system and new one
     protected IDictionary<uint, uint?> _idTranslation = new Dictionary<uint, uint?>();
     protected IList<IEnumerable<dynamic>> xmlImportElementSets = new List<IEnumerable<dynamic>>();
+
+    public XmlDto(DtoTypes dtoType)
+    {
+      DtoType = dtoType;
+    }
 
     /// <summary>
     /// Add id translation record to store

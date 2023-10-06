@@ -2,10 +2,14 @@ using OLab.Api.Common;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using OLab.Import.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OLab.Api.Importer;
 
@@ -23,8 +27,8 @@ public class Importer : IImporter
     XmlMapNodeCounterDto,
     XmlMapQuestionDto,
     XmlMapQuestionResponseDto,
-    // XmlMapNodeSectionDto,
-    // XmlMapNodeSectionNodeDto,
+    XmlMapNodeSectionDto,
+    XmlMapNodeSectionNodeDto,
     XmlMapVpdDto,
     XmlMapVpdElementDto,
     XmlMediaElementsDto,
@@ -39,12 +43,13 @@ public class Importer : IImporter
   private readonly IDictionary<DtoTypes, XmlDto> _dtos = new Dictionary<DtoTypes, XmlDto>();
   private readonly IOLabLogger Logger;
   private readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
+  public readonly IFileStorageModule FileStorageModule;
 
   public IOLabModuleProvider<IWikiTagModule> GetWikiProvider() { return _wikiTagProvider; }
+  public IFileStorageModule GetFileStorageModule() { return FileStorageModule; }
   public XmlDto GetDto(DtoTypes type) { return _dtos[type]; }
   public OLabDBContext GetContext() { return _context; }
   public IOLabConfiguration GetConfiguration() { return _configuration; }
-  public IOLabLogger GetLogger() { return Logger; }
   public AppSettings Settings() { return _appSettings; }
 
   private string _logFileDirectory;
@@ -55,7 +60,8 @@ public class Importer : IImporter
     IOLabLogger logger,
     IOLabConfiguration configuration,
     OLabDBContext context,
-    IOLabModuleProvider<IWikiTagModule> wikiTagProvider)
+    IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+    IFileStorageModule fileStorageModule)
   {
     _appSettings = configuration.GetAppSettings();
     _context = context;
@@ -64,57 +70,55 @@ public class Importer : IImporter
     Logger = OLabLogger.CreateNew<Importer>(logger);
 
     _wikiTagProvider = wikiTagProvider;
+    FileStorageModule = fileStorageModule;
 
-    XmlDto dto = new XmlMapDto(this);
-    _dtos.Add(DtoTypes.XmlMapDto, dto);
+    XmlDto dto = new XmlMapDto(Logger, this);
+    _dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlMapElementDto(this);
-    _dtos.Add(DtoTypes.XmlMapElementDto, dto);
+    dto = new XmlMapElementDto(Logger, this);
+    _dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlMediaElementsDto(this);
-    _dtos.Add(DtoTypes.XmlMediaElementsDto, dto);
+    dto = new XmlMediaElementsDto(Logger, this);
+    _dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlMapAvatarDto(this);
-    _dtos.Add(DtoTypes.XmlMapAvatarDto, dto);
+    dto = new XmlMapAvatarDto(Logger, this);
+    _dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlMapVpdDto(this);
-    _dtos.Add(DtoTypes.XmlMapVpdDto, dto);
+    dto = new XmlMapVpdDto(Logger, this);
+    _dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlMapVpdElementDto(this);
-    _dtos.Add(DtoTypes.XmlMapVpdElementDto, dto);
+    dto = new XmlMapVpdElementDto(Logger, this);
+    _dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlMapCounterDto(this);
-    _dtos.Add(DtoTypes.XmlMapCounterDto, dto);
+    dto = new XmlMapCounterDto(Logger, this);
+    _dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlMapQuestionDto(this);
-    _dtos.Add(DtoTypes.XmlMapQuestionDto, dto);
+    dto = new XmlMapQuestionDto(Logger, this);
+    _dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlMapQuestionResponseDto(this);
-    _dtos.Add(DtoTypes.XmlMapQuestionResponseDto, dto);
+    dto = new XmlMapQuestionResponseDto(Logger, this);
+    _dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlMapNodeDto(this);
-    _dtos.Add(DtoTypes.XmlMapNodeDto, dto);
+    dto = new XmlMapNodeDto(Logger, this);
+    _dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlMapNodeCounterDto(this);
-    _dtos.Add(DtoTypes.XmlMapNodeCounterDto, dto);
+    dto = new XmlMapNodeCounterDto(Logger, this);
+    _dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlMapNodeLinkDto(this);
-    _dtos.Add(DtoTypes.XmlMapNodeLinkDto, dto);
+    dto = new XmlMapNodeLinkDto(Logger, this);
+    _dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlMapCounterRuleDto(this);
-    _dtos.Add(DtoTypes.XmlMapCounterRuleDto, dto);
+    dto = new XmlMapCounterRuleDto(Logger, this);
+    _dtos.Add(dto.DtoType, dto);
 
-    // dto = new XmlMapNodeSectionDto(this);
-    // _dtos.Add(DtoTypes.XmlMapNodeSectionDto, dto);
+    // dto = new XmlMapNodeSectionDto(Logger, this);
+    // _dtos.Add(dto.DtoType, dto);
 
-    // dto = new XmlMapNodeSectionNodeDto(this);
-    // _dtos.Add(DtoTypes.XmlMapNodeSectionNodeDto, dto);
+    dto = new XmlMetadataDto(Logger, this);
+    _dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlMetadataDto(this);
-    _dtos.Add(DtoTypes.XmlMetadataDto, dto);
-
-    dto = new XmlManifestDto(this);
-    _dtos.Add(DtoTypes.XmlManifestDto, dto);
+    dto = new XmlManifestDto(Logger, this);
+    _dtos.Add(dto.DtoType, dto);
 
   }
 
@@ -125,7 +129,7 @@ public class Importer : IImporter
 
   public void LogDebug(string message)
   {
-    Logger.LogDebug(message);
+    Logger.LogInformation(message);
   }
 
   public void LogWarning(string message)
@@ -146,17 +150,17 @@ public class Importer : IImporter
   private string Extract(string archiveFileName)
   {
     var tempDir = Path.GetTempPath();
-    // Logger.LogDebug($"Import temporary directory '{tempDir}'");
+    // Logger.LogInformation($"Import temporary directory '{tempDir}'");
 
     _logFileDirectory = Path.GetDirectoryName(archiveFileName);
     _extractPath = Path.Combine(tempDir, Path.GetFileNameWithoutExtension(archiveFileName));
     _importFileName = Path.GetFileNameWithoutExtension(archiveFileName);
 
-    // Logger.LogDebug($"Import extract directory '{_extractPath}'");
+    // Logger.LogInformation($"Import extract directory '{_extractPath}'");
 
     if (Directory.Exists(_extractPath))
     {
-      Logger.LogDebug($"Deleting existing extract directory");
+      Logger.LogInformation($"Deleting existing extract directory");
       Directory.Delete(_extractPath, true);
     }
     else
@@ -164,7 +168,7 @@ public class Importer : IImporter
       _ = Directory.CreateDirectory(_extractPath);
     }
 
-    System.IO.Compression.ZipFile.ExtractToDirectory(archiveFileName, _extractPath);
+    ZipFile.ExtractToDirectory(archiveFileName, _extractPath);
 
     return _extractPath;
   }
@@ -174,13 +178,23 @@ public class Importer : IImporter
   /// </summary>
   /// <param name="archiveFileName">Export ZIP file name</param>
   /// <returns>true</returns>
-  public bool LoadAll(string archiveFileName)
+  public async Task<bool> ProcessImportFileAsync(
+    string archiveFileName,
+    CancellationToken token = default)
   {
     var importStatus = true;
 
     try
     {
-      var extractPath = Extract(archiveFileName);
+      var extractPath = Path.GetFileNameWithoutExtension(archiveFileName).Replace(".", "");
+      archiveFileName = Path.GetFileName(archiveFileName);
+
+      await FileStorageModule.ExtractFileAsync( 
+        Logger, 
+        string.Empty, // import root folder
+        archiveFileName, 
+        extractPath,
+        token);
 
       foreach (var dto in _dtos.Values)
         dto.Load(extractPath);
@@ -194,7 +208,7 @@ public class Importer : IImporter
     return importStatus;
   }
 
-  public bool SaveAll()
+  public bool WriteImportToDatabase()
   {
     var rc = true;
 
@@ -207,7 +221,6 @@ public class Importer : IImporter
           dto.Save();
 
         transaction.Commit();
-        Directory.Delete(_extractPath, true);
 
         var xmlMapDto = _dtos[DtoTypes.XmlMapDto] as XmlMapDto;
         var xmlMap = (XmlMap)xmlMapDto.GetDbPhys();
