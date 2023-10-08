@@ -1,3 +1,5 @@
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using static OLab.Api.Importer.Importer;
 
@@ -5,6 +7,7 @@ namespace OLab.Api.Importer
 {
   public abstract class XmlDto
   {
+    protected readonly IOLabLogger Logger;
     public abstract bool Load(string importDirectory);
     public abstract bool PostProcess(IDictionary<Importer.DtoTypes, XmlDto> dtos);
     public abstract bool Save();
@@ -16,23 +19,13 @@ namespace OLab.Api.Importer
     protected IDictionary<uint, uint?> _idTranslation = new Dictionary<uint, uint?>();
     protected IList<IEnumerable<dynamic>> xmlImportElementSets = new List<IEnumerable<dynamic>>();
 
-    public XmlDto(DtoTypes dtoType)
+    public XmlDto(IOLabLogger logger, DtoTypes dtoType)
     {
       DtoType = dtoType;
+      Logger = logger;
     }
 
-    /// <summary>
-    /// Add id translation record to store
-    /// </summary>
-    /// <param name="originalId">Import system Id</param>
-    /// <param name="newId">Database id</param>
-    protected void CreateIdTranslation(uint originalId, uint? newId = null)
-    {
-      if (_idTranslation.ContainsKey(originalId))
-        return;
-      _idTranslation.Add(originalId, newId);
-    }
-
+    protected abstract void CreateIdTranslation(uint originalId, uint? newId = null);
     public abstract uint? GetIdTranslation(string referencedFile, uint originalId);
     public abstract int? GetIdTranslation(string referencedFile, int? originalId);
   }

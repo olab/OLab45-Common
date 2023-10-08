@@ -113,13 +113,12 @@ namespace OLab.Api.Importer
 
       try
       {
-        var sourceDirectory = Path.Combine(GetImportPackageDirectory(), "media");
+        var sourceDirectory = $"{GetImportFilesDirectory()}{GetImporter().GetFileStorageModule().GetFolderSeparator()}media";
 
         var mapDto = GetImporter().GetDto(DtoTypes.XmlMapDto) as XmlMapDto;
         var map = mapDto.GetModel().Data.FirstOrDefault();
 
         var targetDirectory = GetPublicFileDirectory("Maps", map.Id);
-        Directory.CreateDirectory(targetDirectory);
 
         foreach (var element in elements)
         {
@@ -127,9 +126,7 @@ namespace OLab.Api.Importer
           {
             dynamic fileName = Conversions.Base64Decode(element, true);
 
-            dynamic sourceFileName = Path.Combine(sourceDirectory, fileName);
-            dynamic targetFileName = Path.Combine(targetDirectory, fileName);
-            File.Copy(sourceFileName, targetFileName, true);
+            GetImporter().GetFileStorageModule().MoveFileAsync(Logger, fileName, sourceDirectory, targetDirectory).Wait();
 
             Logger.LogInformation($"Copied {GetFileName()} '{fileName}' -> '{targetDirectory}'");
 

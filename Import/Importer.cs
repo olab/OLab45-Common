@@ -173,6 +173,22 @@ public class Importer : IImporter
     return _extractPath;
   }
 
+  public async Task Import(
+    string archiveFileName,
+    CancellationToken token = default)
+  {
+    Logger.LogInformation($"Importing archive: '{archiveFileName}'");
+
+    if (await ProcessImportFileAsync(archiveFileName, token))
+      WriteImportToDatabase();
+
+    // delete source import file
+    await GetFileStorageModule().DeleteFileAsync(Logger, archiveFileName);
+    // delete extracted import file
+    var importContentsDirectory = $"{Path.GetDirectoryName(archiveFileName)}{Path.GetFileNameWithoutExtension(archiveFileName)}";
+    await GetFileStorageModule().DeleteFileAsync(Logger, importContentsDirectory );
+  }
+
   /// <summary>
   /// Loads import xml files into memory
   /// </summary>
@@ -189,10 +205,10 @@ public class Importer : IImporter
       var extractPath = Path.GetFileNameWithoutExtension(archiveFileName).Replace(".", "");
       archiveFileName = Path.GetFileName(archiveFileName);
 
-      await FileStorageModule.ExtractFileAsync( 
-        Logger, 
+      await FileStorageModule.ExtractFileAsync(
+        Logger,
         string.Empty, // import root folder
-        archiveFileName, 
+        archiveFileName,
         extractPath,
         token);
 

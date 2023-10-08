@@ -45,7 +45,10 @@ namespace OLab.Api.Importer
 
       // only support the VPDText type at this time
       if (phys.Key == "VPDText")
+      {
+        Logger.LogInformation($"Skipped MapVpdElement record of type 'VPDText'");
         return true;
+      }
 
       var item = new SystemConstants();
       var oldId = phys.VpdId;
@@ -71,7 +74,6 @@ namespace OLab.Api.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
-      Logger.LogInformation($"Saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

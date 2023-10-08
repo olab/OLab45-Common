@@ -15,13 +15,12 @@ namespace OLab.Import.Interfaces
     XmlDto GetDto(Importer.DtoTypes type);
     IOLabModuleProvider<IWikiTagModule> GetWikiProvider();
     IFileStorageModule GetFileStorageModule();
-    Task<bool> ProcessImportFileAsync(string archiveFileName, CancellationToken token);
-    void LogDebug(string message);
-    void LogError(Exception ex, string message);
-    void LogError(string message);
-    void LogInformation(string message);
-    void LogWarning(string message);
-    bool WriteImportToDatabase();
+    Task Import(string archiveFileName, CancellationToken token = default);
+    //void LogDebug(string message);
+    //void LogError(Exception ex, string message);
+    //void LogError(string message);
+    //void LogInformation(string message);
+    //void LogWarning(string message);
     AppSettings Settings();
   }
 }

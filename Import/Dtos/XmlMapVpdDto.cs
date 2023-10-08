@@ -35,11 +35,18 @@ namespace OLab.Api.Importer
       {
         SetImportDirectory(importDirectory);
 
-        var filePath = Path.Combine(GetImportPackageDirectory(), GetFileName());
-        Logger.LogInformation($"Loading '{Path.GetFileName(filePath)}'");
+        var filePath = $"{GetImportFilesDirectory()}{GetFileStorageModule().GetFolderSeparator()}{GetFileName()}";
+        Logger.LogInformation($"Loading '{filePath}'");
 
-        if (File.Exists(filePath))
-          _phys = DynamicXml.Load(filePath);
+        if (GetFileStorageModule().FileExists(Logger, GetImportFilesDirectory(), GetFileName()))
+        {
+          var stream = GetFileStorageModule().ReadFileAsync(
+            Logger, 
+            GetImportFilesDirectory(), 
+            GetFileName()).GetAwaiter().GetResult();
+
+          _phys = DynamicXml.Load(stream);
+        }
         else
         {
           Logger.LogInformation($"File {filePath} does not exist");

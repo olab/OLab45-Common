@@ -40,8 +40,6 @@ namespace OLab.Api.Importer
       var item = _mapper.ElementsToPhys(elements);
       var oldId = item.Id;
 
-      Logger.LogInformation($"Saving {GetFileName()} id {oldId}");
-
       item.Id = 0;
 
       var questionDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapQuestionDto) as XmlMapQuestionDto;
@@ -56,7 +54,6 @@ namespace OLab.Api.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
-      Logger.LogInformation($"Saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

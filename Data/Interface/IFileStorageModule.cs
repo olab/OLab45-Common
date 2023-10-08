@@ -15,11 +15,12 @@ namespace OLab.Data.Interface
       IOLabLogger logger,
       IList<SystemFiles> items);
 
-    public void MoveFile(
+    public Task MoveFileAsync(
       IOLabLogger logger,
       string fileName,
       string sourcePath,
-      string destinationPath);
+      string destinationPath,
+      CancellationToken token = default);
 
     Task<string> UploadFileAsync(
       IOLabLogger logger,

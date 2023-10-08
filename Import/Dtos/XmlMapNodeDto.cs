@@ -36,7 +36,7 @@ namespace OLab.Api.Importer
       var rc = false;
 
       // replace all VPD with CONST in node text
-      var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto) as XmlMapVpdDto;
+      var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto) as XmlMapVpdElementDto;
 
       var wiki = new VpdWikiTag(Logger, _configuration);
       while (wiki.HaveWikiTag(item.Text))
@@ -182,10 +182,7 @@ namespace OLab.Api.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
-
       GetModel().Data.Add(item);
-
-      Logger.LogInformation($"Saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

@@ -1,5 +1,6 @@
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using OLab.Import.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -17,11 +18,10 @@ namespace OLab.Api.Importer
   {
     protected dynamic _phys;
     private readonly string _fileName;
-    protected readonly IOLabLogger Logger;
     private readonly IImporter _importer;
     protected OLabDBContext Context;
     private readonly string _websitePublicFilesDirectory;
-    private string _importDirectory;
+    private string _extractedImportFilesDirectory;
 
     private readonly IOLabModuleProvider<IWikiTagModule> _tagProvider;
     public IOLabModuleProvider<IWikiTagModule> GetWikiProvider() { return _tagProvider; }
@@ -35,24 +35,46 @@ namespace OLab.Api.Importer
     public dynamic GetXmlPhys() { return _phys; }
     public override Object GetDbPhys() { return _modelObject; }
     public abstract IEnumerable<dynamic> GetElements(dynamic xmlPhys);
-    public string GetImportPackageDirectory() { return _importDirectory; }
+    public string GetImportFilesDirectory() { return _extractedImportFilesDirectory; }
     public string GetWebsitePublicDirectory() { return _websitePublicFilesDirectory; }
-    public void SetImportDirectory(string dir) { _importDirectory = dir; }
+    public void SetImportDirectory(string dir) { _extractedImportFilesDirectory = dir; }
+
+    public string GetMediaDirectory()
+    {
+      return $"{GetImportFilesDirectory()}{GetFileStorageModule().GetFolderSeparator()}media{GetFileStorageModule().GetFolderSeparator()}";
+    }
+
+    public IFileStorageModule GetFileStorageModule()
+    {
+      return GetImporter().GetFileStorageModule();
+    }
 
     /// <summary>
     /// Default constructor
     /// </summary>
     /// <param name="importer">Importer object</param>
     /// <param name="fileName">File name to import</param>
-    public XmlImportDto(IOLabLogger logger, IImporter importer, DtoTypes dtoType, string fileName) : base( dtoType )
+    public XmlImportDto(IOLabLogger logger, IImporter importer, DtoTypes dtoType, string fileName) : base(logger, dtoType)
     {
       _importer = importer;
       _fileName = fileName;
 
       _tagProvider = GetImporter().GetWikiProvider();
-      this.Logger = logger;
       Context = GetImporter().GetContext();
       _websitePublicFilesDirectory = GetImporter().Settings().FileStorageFolder;
+    }
+
+    /// <summary>
+    /// Add id translation record to store
+    /// </summary>
+    /// <param name="originalId">Import system Id</param>
+    /// <param name="newId">Database id</param>
+    protected override void CreateIdTranslation(uint originalId, uint? newId = null)
+    {
+      if (_idTranslation.ContainsKey(originalId))
+        return;
+      _idTranslation.Add(originalId, newId);
+      Logger.LogInformation($"  added {_fileName} translation {originalId} -> {newId.Value}");
     }
 
     /// <summary>
@@ -87,23 +109,23 @@ namespace OLab.Api.Importer
     /// <summary>
     /// Load import files
     /// </summary>
-    /// <param name="importDirectory">Directory containing extracted import files</param>
+    /// <param name="extractImportFilesDirectory">Directory containing extracted import files</param>
     /// <returns>Success/Failure</returns>
-    public override bool Load(string importDirectory)
+    public override bool Load(string extractImportFilesDirectory)
     {
       var rc = true;
 
       try
       {
-        _importDirectory = importDirectory;
+        _extractedImportFilesDirectory = extractImportFilesDirectory;
 
         Logger.LogInformation($"Loading {GetFileName()}");
 
-        if (_importer.GetFileStorageModule().FileExists(Logger, GetImportPackageDirectory(), GetFileName()))
+        if (_importer.GetFileStorageModule().FileExists(Logger, GetImportFilesDirectory(), GetFileName()))
         {
           var stream = _importer.GetFileStorageModule().ReadFileAsync(
             Logger, 
-            importDirectory, 
+            extractImportFilesDirectory, 
             GetFileName()).GetAwaiter().GetResult();
           _phys = DynamicXml.Load(stream);
         }
@@ -160,7 +182,7 @@ namespace OLab.Api.Importer
         {
           Save(recordIndex, elements);
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
           Logger.LogError($"Error {GetFileName()} record #{recordIndex}: {ex.Message}");
         }
@@ -187,11 +209,11 @@ namespace OLab.Api.Importer
     /// <returns>Public directory for scope</returns>
     public string GetPublicFileDirectory(string parentType, uint parentId, string path = "")
     {
-      var targetDirectory = Path.Combine(GetWebsitePublicDirectory(), parentType);
-      targetDirectory = Path.Combine(targetDirectory, parentId.ToString());
+      var targetDirectory = $"{GetWebsitePublicDirectory()}{GetImporter().GetFileStorageModule().GetFolderSeparator()}{parentType}";
+      targetDirectory = $"{targetDirectory}{GetImporter().GetFileStorageModule().GetFolderSeparator()}{parentId}";
 
       if (!string.IsNullOrEmpty(path))
-        targetDirectory = Path.Combine(targetDirectory, path);
+        targetDirectory = $"{targetDirectory}{GetImporter().GetFileStorageModule().GetFolderSeparator()}{path}";
 
       return targetDirectory;
     }

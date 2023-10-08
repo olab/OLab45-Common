@@ -46,9 +46,8 @@ namespace OLab.Api.Importer
       item.ImageableId = mapDto.GetIdTranslation(GetFileName(), item.ImageableId).Value;
       item.ImageableType = "Maps";
 
-      var path = Path.Combine(GetImportPackageDirectory(), "media", Path.GetFileName(item.Path));
-      if (!File.Exists(path))
-        Logger.LogWarning(GetFileName(), 0, $"media file '{Path.GetFileName(item.Path)}' does not exist in import package");
+      if (!GetFileStorageModule().FileExists(Logger, GetMediaDirectory(), Path.GetFileName(item.Path)))
+        Logger.LogWarning(GetFileName(), 0, $"media file '{item.Path}' does not exist in import package");
 
       item.Path = Path.GetFileName(item.Path);
 
@@ -56,7 +55,6 @@ namespace OLab.Api.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
-      Logger.LogInformation($"Saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

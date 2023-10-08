@@ -75,13 +75,7 @@ public partial class ImportEndpoint : OLabEndpoint
     var archiveFile = 
       await _fileStorageModule.UploadFileAsync(Logger, stream, file.FileName, token);
 
-    Logger.LogInformation($"Importing archive: '{archiveFile}'");
-
-    if (await _importer.ProcessImportFileAsync(archiveFile, token))
-      _importer.WriteImportToDatabase();
-
-    // delete source import file
-    await _fileStorageModule.DeleteFileAsync(Logger, archiveFile);
+    await _importer.Import(archiveFile, token);
 
     return true;
   }
