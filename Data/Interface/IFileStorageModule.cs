@@ -40,7 +40,8 @@ namespace OLab.Data.Interface
 
     Task<bool> DeleteFileAsync(
       IOLabLogger logger,
-      string filePath);
+      string folderName,
+      string fileName);
 
     Task<bool> ExtractFileAsync(
       IOLabLogger logger,

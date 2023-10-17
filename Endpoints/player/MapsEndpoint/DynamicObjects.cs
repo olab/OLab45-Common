@@ -3,6 +3,7 @@ using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
+using OLab.FunctionApp.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="sinceTime"></param>
     /// <returns></returns>
     public async Task<DynamicScopedObjectsDto> GetDynamicScopedObjectsRawAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       uint nodeId,
       uint sinceTime = 0)
@@ -43,7 +44,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="sinceTime"></param>
     /// <returns></returns>
     public async Task<DynamicScopedObjectsDto> GetDynamicScopedObjectsTranslatedAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       uint nodeId,
       uint sinceTime = 0)

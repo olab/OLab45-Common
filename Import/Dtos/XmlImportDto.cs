@@ -22,6 +22,7 @@ namespace OLab.Api.Importer
     protected OLabDBContext Context;
     private readonly string _websitePublicFilesDirectory;
     private string _extractedImportFilesDirectory;
+    protected int CurrentRecordIndex = 0;
 
     private readonly IOLabModuleProvider<IWikiTagModule> _tagProvider;
     public IOLabModuleProvider<IWikiTagModule> GetWikiProvider() { return _tagProvider; }
@@ -124,8 +125,8 @@ namespace OLab.Api.Importer
         if (_importer.GetFileStorageModule().FileExists(Logger, GetImportFilesDirectory(), GetFileName()))
         {
           var stream = _importer.GetFileStorageModule().ReadFileAsync(
-            Logger, 
-            extractImportFilesDirectory, 
+            Logger,
+            extractImportFilesDirectory,
             GetFileName()).GetAwaiter().GetResult();
           _phys = DynamicXml.Load(stream);
         }
@@ -154,6 +155,9 @@ namespace OLab.Api.Importer
         }
 
         Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+
+        // delete data file
+        GetFileStorageModule().DeleteFileAsync(Logger, extractImportFilesDirectory, GetFileName()).Wait();
 
       }
       catch (Exception ex)

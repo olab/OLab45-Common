@@ -123,6 +123,7 @@ namespace OLab.Api.Model
     public virtual DbSet<SystemSettings> SystemSettings { get; set; }
     public virtual DbSet<SystemThemes> SystemThemes { get; set; }
     public virtual DbSet<TodayTips> TodayTips { get; set; }
+    public virtual DbSet<TTalkParticipant> TTalkParticipants { get; set; }
     public virtual DbSet<TwitterCredits> TwitterCredits { get; set; }
     public virtual DbSet<UserBookmarks> UserBookmarks { get; set; }
     public virtual DbSet<UserGroups> UserGroups { get; set; }

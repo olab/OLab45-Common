@@ -53,7 +53,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="hideHidden">Flag to suppress hidden links</param>
     /// <returns>MapsNodesFullRelationsDto</returns>
     public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       uint nodeId,
       bool hideHidden = true)
@@ -91,7 +91,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="sessionId">session id</param>
     /// <returns>IActionResult</returns>
     public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       uint nodeId,
       DynamicScopedObjectsDto body)
@@ -181,7 +181,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="nodeId">node id</param>
     /// <returns>IActionResult</returns>
     public async Task<MapNodesPostResponseDto> DeleteNodeAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       uint nodeId
     )
@@ -231,7 +231,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="dto">node data</param>
     /// <returns>IActionResult</returns>
     public async Task<MapNodesPostResponseDto> PutNodeAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       uint nodeId,
       [FromBody] MapNodesFullDto dto

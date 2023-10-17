@@ -32,7 +32,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="linkId">link id</param>
     /// <returns>IActionResult</returns>
     public async Task PutMapNodeLinksAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       uint nodeId,
       uint linkId,

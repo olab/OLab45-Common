@@ -33,7 +33,7 @@ namespace Endpoints.player.ReportEndpoint
     }
 
     public async Task<SessionReport> GetAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       string contextId)
     {
       Logger.LogDebug($"{auth.GetUserContext().UserId}: ReportEndpoint.GetAsync");

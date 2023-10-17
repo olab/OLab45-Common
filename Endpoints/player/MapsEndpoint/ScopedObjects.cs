@@ -13,7 +13,7 @@ namespace OLab.Api.Endpoints.Player
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(IOLabAuthentication auth, uint id)
+    public async Task<Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(IOLabAuthorization auth, uint id)
     {
       Logger.LogInformation($"{auth.GetUserContext().UserId}: MapsEndpoint.GetScopedObjectsRawAsync");
 
@@ -30,7 +30,7 @@ namespace OLab.Api.Endpoints.Player
     /// </summary>
     /// <param name="id">Map Id</param>
     /// <returns>ScopedObjects dto</returns>
-    public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(IOLabAuthentication auth, uint id)
+    public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(IOLabAuthorization auth, uint id)
     {
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, id))

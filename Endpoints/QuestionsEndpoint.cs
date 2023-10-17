@@ -92,7 +92,7 @@ namespace OLab.Api.Endpoints
     /// <param name="id"></param>
     /// <returns></returns>
     public async Task<QuestionsFullDto> GetAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint id)
     {
 
@@ -122,7 +122,7 @@ namespace OLab.Api.Endpoints
     /// <param name="id">question id</param>
     /// <returns>IActionResult</returns>
     public async Task PutAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint id,
       QuestionsFullDto dto)
     {
@@ -160,7 +160,7 @@ namespace OLab.Api.Endpoints
     /// <param name="dto">Question data</param>
     /// <returns>IActionResult</returns>
     public async Task<QuestionsFullDto> PostAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       QuestionsFullDto dto)
     {
       Logger.LogDebug($"QuestionsController.PostAsync({dto.Stem})");

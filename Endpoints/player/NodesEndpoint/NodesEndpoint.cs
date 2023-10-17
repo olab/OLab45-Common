@@ -62,7 +62,7 @@ namespace OLab.Api.Endpoints.Player
     /// </summary>
     /// <param name="nodeId">Node id (0, if root node)</param>
     /// <returns>MapsNodesFullRelationsDto response</returns>
-    public async Task<MapsNodesFullRelationsDto> GetNodeTranslatedAsync(IOLabAuthentication auth, uint nodeId)
+    public async Task<MapsNodesFullRelationsDto> GetNodeTranslatedAsync(IOLabAuthorization auth, uint nodeId)
     {
       Logger.LogDebug($"{auth.GetUserContext().UserId}: NodesEndpoint.GetNodeTranslatedAsync");
       return await GetNodeAsync(nodeId, true);
@@ -74,7 +74,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="id"></param>
     /// <param name="dto"></param>
     /// <returns></returns>
-    public async Task PutNodeAsync(IOLabAuthentication auth, uint id, MapNodesFullDto dto)
+    public async Task PutNodeAsync(IOLabAuthorization auth, uint id, MapNodesFullDto dto)
     {
       Logger.LogDebug($"{auth.GetUserContext().UserId}: NodesEndpoint.PutNodeAsync");
 
@@ -102,7 +102,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="data"></param>
     /// <returns></returns>
     public async Task<MapNodeLinksPostResponseDto> PostLinkAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint nodeId,
       MapNodeLinksPostDataDto data
     )
@@ -137,7 +137,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="data"></param>
     /// <returns></returns>
     public async Task<MapNodesPostResponseDto> PostNodeAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       [FromBody] MapNodesPostDataDto data
     )

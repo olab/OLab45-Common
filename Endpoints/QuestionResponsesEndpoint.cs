@@ -40,7 +40,7 @@ namespace OLab.Api.Endpoints
     /// <param name="id">question id</param>
     /// <returns>IActionResult</returns>
     public async Task PutAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint id,
       QuestionResponsesDto dto)
     {
@@ -80,7 +80,7 @@ namespace OLab.Api.Endpoints
     /// <param name="dto">object data</param>
     /// <returns>IActionResult</returns>
     public async Task<QuestionResponsesDto> PostAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       QuestionResponsesDto dto)
     {
       Logger.LogDebug($"QuestionResponsesController.PostAsync({dto.Response})");
@@ -111,7 +111,7 @@ namespace OLab.Api.Endpoints
     /// <param name="id"></param>
     /// <returns></returns>
     public async Task<IActionResult> DeleteAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint id)
     {
       Logger.LogDebug($"QuestionResponsesController.DeleteAsync(uint id={id})");

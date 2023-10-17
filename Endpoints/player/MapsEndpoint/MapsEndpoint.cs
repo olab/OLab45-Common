@@ -80,7 +80,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="skip">SKip over a number of records</param>
     /// <returns>IActionResult</returns>
     public async Task<OLabAPIPagedResponse<MapsDto>> GetAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       int? take,
       int? skip)
     {
@@ -126,7 +126,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="id"></param>
     /// <returns></returns>
     public async Task<MapsFullDto> GetAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint id)
     {
       Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetAsync");
@@ -155,7 +155,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="CreateMapRequest.templateId">Template to add to map</param>
     /// <returns>IActionResult</returns>
     public async Task<ExtendMapResponse> PostExtendMapAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       ExtendMapRequest body)
     {
@@ -203,7 +203,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="body">Create map request body</param>
     /// <returns>IActionResult</returns>
     public async Task<MapsFullRelationsDto> PostCreateMapAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       CreateMapRequest body)
     {
       Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.PostCreateMapAsync");
@@ -256,7 +256,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="mapdto"></param>
     /// <returns></returns>
     public async Task PutAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint id,
       MapsFullDto mapdto)
     {
@@ -292,7 +292,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="id"></param>
     /// <returns></returns>
     public async Task DeleteAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint id)
     {
       Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.DeleteAsync");
@@ -315,7 +315,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="mapId"></param>
     /// <returns></returns>
     public async Task<IList<MapNodeLinksFullDto>> GetLinksAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId)
     {
       Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetLinksAsync");
@@ -341,7 +341,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="mapId"></param>
     /// <returns></returns>
     public async Task<IList<SessionInfo>> GetSessionsAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId)
     {
       Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetSessionsAsync");

@@ -8,6 +8,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.10" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Api\OLab.Access\OLab.Access.csproj" />
     <ProjectReference Include="..\Common\OLab.Common.csproj" />
     <ProjectReference Include="..\Data\OLab.Data.csproj" />
     <ProjectReference Include="..\Import\OLab.Import.csproj" />

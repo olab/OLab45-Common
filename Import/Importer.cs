@@ -181,12 +181,6 @@ public class Importer : IImporter
 
     if (await ProcessImportFileAsync(archiveFileName, token))
       WriteImportToDatabase();
-
-    // delete source import file
-    await GetFileStorageModule().DeleteFileAsync(Logger, archiveFileName);
-    // delete extracted import file
-    var importContentsDirectory = $"{Path.GetDirectoryName(archiveFileName)}{Path.GetFileNameWithoutExtension(archiveFileName)}";
-    await GetFileStorageModule().DeleteFileAsync(Logger, importContentsDirectory );
   }
 
   /// <summary>
@@ -214,6 +208,12 @@ public class Importer : IImporter
 
       foreach (var dto in _dtos.Values)
         dto.Load(extractPath);
+
+    // delete source import file
+    await GetFileStorageModule().DeleteFileAsync(
+      Logger, 
+      Path.GetDirectoryName(archiveFileName), 
+      Path.GetFileName(archiveFileName));
 
     }
     catch (Exception ex)

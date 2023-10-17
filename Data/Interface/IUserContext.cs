@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+
 namespace OLab.Api.Data.Interface
 {
   public interface IUserContext
@@ -39,7 +42,9 @@ namespace OLab.Api.Data.Interface
 
     string ReferringCourse { get; }
 
-    bool HasAccess(string requestedPerm, string objectType, uint? objectId);
+    public IList<string> UserRoles { get; }
+
+    //bool HasAccess(string requestedPerm, string objectType, uint? objectId);
 
   }
 }

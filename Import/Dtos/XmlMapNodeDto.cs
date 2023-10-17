@@ -165,6 +165,8 @@ namespace OLab.Api.Importer
       var item = _mapper.ElementsToPhys(elements);
       var oldId = item.Id;
 
+      CurrentRecordIndex = recordIndex;
+
       item.Id = 0;
 
       var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto);

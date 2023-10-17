@@ -43,7 +43,7 @@ namespace OLab.Api.Endpoints
     /// <param name="skip"></param>
     /// <returns></returns>
     public async Task<OLabAPIPagedResponse<ConstantsDto>> GetAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       int? take,
       int? skip)
     {
@@ -85,7 +85,7 @@ namespace OLab.Api.Endpoints
     /// <param name="id"></param>
     /// <returns></returns>
     public async Task<ConstantsDto> GetAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint id)
     {
       Logger.LogDebug($"{auth.GetUserContext().UserId}: ConstantsEndpoint.GetAsync");
@@ -112,7 +112,7 @@ namespace OLab.Api.Endpoints
     /// <param name="id">question id</param>
     /// <returns>IActionResult</returns>
     public async Task PutAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint id,
       ConstantsDto dto)
     {
@@ -149,7 +149,7 @@ namespace OLab.Api.Endpoints
     /// <param name="dto">object data</param>
     /// <returns>IActionResult</returns>
     public async Task<ConstantsDto> PostAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       ConstantsDto dto)
     {
       Logger.LogDebug($"{auth.GetUserContext().UserId}: ConstantsEndpoint.PostAsync");
@@ -179,7 +179,7 @@ namespace OLab.Api.Endpoints
     /// <param name="id"></param>
     /// <returns></returns>
     public async Task DeleteAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint id)
     {
       Logger.LogDebug($"{auth.GetUserContext().UserId}: ConstantsEndpoint.DeleteAsync");
