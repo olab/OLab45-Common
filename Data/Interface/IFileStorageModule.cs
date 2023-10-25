@@ -9,6 +9,8 @@ namespace OLab.Data.Interface
 {
   public interface IFileStorageModule
   {
+    string GetModuleName();
+
     char GetFolderSeparator();
 
     void AttachUrls(
