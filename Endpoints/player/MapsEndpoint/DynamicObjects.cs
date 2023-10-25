@@ -3,7 +3,6 @@ using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
-using OLab.FunctionApp.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,7 +25,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId,
       uint sinceTime = 0)
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetDynamicScopedObjectsRawAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsRawAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -49,7 +48,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId,
       uint sinceTime = 0)
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetDynamicScopedObjectsTranslatedAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsTranslatedAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))

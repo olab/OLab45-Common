@@ -38,7 +38,7 @@ namespace OLab.Api.Endpoints.Player
       uint linkId,
       MapNodeLinksFullDto linkdto)
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.PutMapNodeLinksAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.PutMapNodeLinksAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))

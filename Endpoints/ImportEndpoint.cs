@@ -1,25 +1,11 @@
-﻿using Dawn;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using OLab.Api.Common;
-using OLab.Api.Common.Exceptions;
-using OLab.Api.Data.Exceptions;
-using OLab.Api.Data.Interface;
-using OLab.Api.Dto;
+﻿using Microsoft.AspNetCore.Http;
 using OLab.Api.Endpoints;
 using OLab.Api.Importer;
 using OLab.Api.Model;
-using OLab.Api.Model.ReaderWriter;
-using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using OLab.Import.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -54,15 +40,15 @@ public partial class ImportEndpoint : OLabEndpoint
         fileStorageProvider)
   {
     _importer = new Importer(
-      Logger, 
-      _configuration, 
-      dbContext, 
-      _wikiTagProvider, 
+      Logger,
+      _configuration,
+      dbContext,
+      _wikiTagProvider,
       _fileStorageModule);
   }
 
   public async Task<bool> Import(
-    IFormFile file, 
+    IFormFile file,
     CancellationToken token)
   {
     var stream = new MemoryStream();
@@ -72,7 +58,7 @@ public partial class ImportEndpoint : OLabEndpoint
     stream.Position = 0;
 
     // save import file to persistent storage
-    var archiveFile = 
+    var archiveFile =
       await _fileStorageModule.UploadFileAsync(Logger, stream, file.FileName, token);
 
     await _importer.Import(archiveFile, token);

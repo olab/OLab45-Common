@@ -3,7 +3,6 @@ using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using static OLab.Api.Importer.Importer;
 
@@ -13,12 +12,13 @@ namespace OLab.Api.Importer
   public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
   {
     public XmlMediaElementsDto(
-      IOLabLogger logger, 
+      IOLabLogger logger,
       Importer importer) : base(
         logger,
         importer,
         DtoTypes.XmlMediaElementsDto,
-        "media_elements.xml") { }
+        "media_elements.xml")
+    { }
 
     /// <summary>
     /// Loads the specific import file into a model object

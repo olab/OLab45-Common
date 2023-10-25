@@ -14,11 +14,11 @@ namespace OLab.Api.Importer
     private readonly ObjectMapper.Files _fileMapper;
 
     public XmlMapAvatarDto(
-      IOLabLogger logger, 
+      IOLabLogger logger,
       Importer importer) : base(
-        logger, 
-        importer, 
-        Importer.DtoTypes.XmlMapAvatarDto, 
+        logger,
+        importer,
+        Importer.DtoTypes.XmlMapAvatarDto,
         "map_avatar.xml")
     {
       _avMapper = new AvatarsMapper(logger);

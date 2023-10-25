@@ -9,10 +9,10 @@ namespace OLab.Api.Importer
     private readonly ObjectMapper.Questions _mapper;
 
     public XmlMapQuestionDto(
-      IOLabLogger logger, 
+      IOLabLogger logger,
       Importer importer) : base(
-        logger, 
-        importer, 
+        logger,
+        importer,
         Importer.DtoTypes.XmlMapQuestionDto, "map_question.xml")
     {
       _mapper = new ObjectMapper.Questions(logger, GetWikiProvider());

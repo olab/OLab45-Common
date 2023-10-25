@@ -1,7 +1,6 @@
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace OLab.Api.Importer
@@ -12,11 +11,11 @@ namespace OLab.Api.Importer
     private readonly ObjectMapper.MapVpd _mapper;
 
     public XmlMapVpdDto(
-      IOLabLogger logger, 
+      IOLabLogger logger,
       Importer importer) : base(
-        logger, 
-        importer, 
-        Importer.DtoTypes.XmlMapVpdDto, 
+        logger,
+        importer,
+        Importer.DtoTypes.XmlMapVpdDto,
         "map_vpd.xml")
     {
       _mapper = new ObjectMapper.MapVpd(logger);
@@ -41,8 +40,8 @@ namespace OLab.Api.Importer
         if (GetFileStorageModule().FileExists(Logger, GetImportFilesDirectory(), GetFileName()))
         {
           var stream = GetFileStorageModule().ReadFileAsync(
-            Logger, 
-            GetImportFilesDirectory(), 
+            Logger,
+            GetImportFilesDirectory(),
             GetFileName()).GetAwaiter().GetResult();
 
           _phys = DynamicXml.Load(stream);

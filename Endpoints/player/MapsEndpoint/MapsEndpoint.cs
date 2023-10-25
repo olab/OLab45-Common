@@ -13,7 +13,6 @@ using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,10 +23,10 @@ namespace OLab.Api.Endpoints.Player
     public MapsEndpoint(
       IOLabLogger logger,
       IOLabConfiguration configuration,
-      OLabDBContext context) 
+      OLabDBContext context)
       : base(
-          logger, 
-          configuration, 
+          logger,
+          configuration,
           context)
     {
     }
@@ -37,12 +36,12 @@ namespace OLab.Api.Endpoints.Player
       IOLabConfiguration configuration,
       OLabDBContext context,
       IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
-      IOLabModuleProvider<IFileStorageModule> fileStorageProvider) 
+      IOLabModuleProvider<IFileStorageModule> fileStorageProvider)
       : base(
-          logger, 
-          configuration, 
-          context, 
-          wikiTagProvider, 
+          logger,
+          configuration,
+          context,
+          wikiTagProvider,
           fileStorageProvider)
     {
     }
@@ -84,7 +83,7 @@ namespace OLab.Api.Endpoints.Player
       int? take,
       int? skip)
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetAsync");
 
       var items = new List<Model.Maps>();
       var total = 0;
@@ -129,7 +128,7 @@ namespace OLab.Api.Endpoints.Player
       IOLabAuthorization auth,
       uint id)
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetAsync");
 
       var map = await GetMapAsync(id);
       if (map == null)
@@ -159,7 +158,7 @@ namespace OLab.Api.Endpoints.Player
       uint mapId,
       ExtendMapRequest body)
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.PostExtendMapAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.PostExtendMapAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
@@ -206,7 +205,7 @@ namespace OLab.Api.Endpoints.Player
       IOLabAuthorization auth,
       CreateMapRequest body)
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.PostCreateMapAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.PostCreateMapAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, 0))
@@ -236,7 +235,7 @@ namespace OLab.Api.Endpoints.Player
       }
 
       // set up default ACL for map author against map
-      var acl = SecurityUsers.CreateDefaultMapACL(auth.GetUserContext(), map);
+      var acl = SecurityUsers.CreateDefaultMapACL(auth.UserContext, map);
       dbContext.SecurityUsers.Add(acl);
 
       // update map's author
@@ -260,7 +259,7 @@ namespace OLab.Api.Endpoints.Player
       uint id,
       MapsFullDto mapdto)
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.PutAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.PutAsync");
 
       var map = new MapsFullMapper(Logger).DtoToPhysical(mapdto);
 
@@ -295,7 +294,7 @@ namespace OLab.Api.Endpoints.Player
       IOLabAuthorization auth,
       uint id)
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.DeleteAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.DeleteAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("D", Utils.Constants.ScopeLevelMap, id))
@@ -318,7 +317,7 @@ namespace OLab.Api.Endpoints.Player
       IOLabAuthorization auth,
       uint mapId)
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetLinksAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetLinksAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -344,7 +343,7 @@ namespace OLab.Api.Endpoints.Player
       IOLabAuthorization auth,
       uint mapId)
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetSessionsAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetSessionsAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
@@ -364,7 +363,7 @@ namespace OLab.Api.Endpoints.Player
           uuid = x.Uuid,
           nodesVisited = x.UserSessionTraces.Where(s => s.MapId == mapId).Count(),
           timestamp = x.StartTime,
-          user = x.Iss == auth.GetUserContext().Issuer
+          user = x.Iss == auth.UserContext.Issuer
             ? dbContext.Users.Where(u => u.Id == x.UserId).First()
             : null,
         })

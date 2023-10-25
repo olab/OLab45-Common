@@ -11,11 +11,11 @@ namespace OLab.Api.Importer
     private readonly ObjectMapper.Counters _mapper;
 
     public XmlMapCounterDto(
-      IOLabLogger logger, 
+      IOLabLogger logger,
       Importer importer) : base(
-        logger, 
-        importer, 
-        Importer.DtoTypes.XmlMapCounterDto, 
+        logger,
+        importer,
+        Importer.DtoTypes.XmlMapCounterDto,
         "map_counter.xml")
     {
       _mapper = new ObjectMapper.Counters(logger);

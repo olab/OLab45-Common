@@ -58,7 +58,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId,
       bool hideHidden = true)
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetMapNodeAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
 
       var dto = await GetRawNodeAsync(mapId, nodeId, hideHidden);
 
@@ -96,7 +96,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId,
       DynamicScopedObjectsDto body)
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetMapNodeAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -186,7 +186,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId
     )
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.DeleteNodeAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.DeleteNodeAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
@@ -237,7 +237,7 @@ namespace OLab.Api.Endpoints.Player
       [FromBody] MapNodesFullDto dto
     )
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.PutNodeAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.PutNodeAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))

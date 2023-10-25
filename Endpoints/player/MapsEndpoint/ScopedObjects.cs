@@ -15,7 +15,7 @@ namespace OLab.Api.Endpoints.Player
     /// <returns></returns>
     public async Task<Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(IOLabAuthorization auth, uint id)
     {
-      Logger.LogInformation($"{auth.GetUserContext().UserId}: MapsEndpoint.GetScopedObjectsRawAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetScopedObjectsRawAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, id))
@@ -55,8 +55,8 @@ namespace OLab.Api.Endpoints.Player
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 
       var phys = await GetScopedObjectsAllAsync(
-        map.Id, 
-        Utils.Constants.ScopeLevelMap, 
+        map.Id,
+        Utils.Constants.ScopeLevelMap,
         _fileStorageModule);
 
       // add map-level derived constants

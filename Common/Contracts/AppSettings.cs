@@ -6,7 +6,7 @@ namespace OLab.Api.Utils
     public string FileStorageConnectionString { get; set; }
     public string FileStorageContainer { get; set; }
     public string FileStorageFolder { get; set; }
-    public string FileImportFolder{ get; set; }
+    public string FileImportFolder { get; set; }
     public string FileStorageType { get; set; }
     public string FileStorageUrl { get; set; }
     public string Issuer { get; set; }

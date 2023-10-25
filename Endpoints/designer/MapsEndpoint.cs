@@ -23,12 +23,12 @@ namespace OLab.Api.Endpoints.Designer
       IOLabConfiguration configuration,
       OLabDBContext context,
       IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
-      IOLabModuleProvider<IFileStorageModule> fileStorageProvider) 
+      IOLabModuleProvider<IFileStorageModule> fileStorageProvider)
       : base(
-          logger, 
-          configuration, 
-          context, 
-          wikiTagProvider, 
+          logger,
+          configuration,
+          context,
+          wikiTagProvider,
           fileStorageProvider)
     {
     }
@@ -357,13 +357,13 @@ namespace OLab.Api.Endpoints.Designer
         return null;
 
       var phys = await GetScopedObjectsAllAsync(
-        map.Id, 
-        Utils.Constants.ScopeLevelMap, 
+        map.Id,
+        Utils.Constants.ScopeLevelMap,
         _fileStorageModule);
 
       var physServer = await GetScopedObjectsAllAsync(
-        1, 
-        Utils.Constants.ScopeLevelServer, 
+        1,
+        Utils.Constants.ScopeLevelServer,
         _fileStorageModule);
 
       phys.Combine(physServer);

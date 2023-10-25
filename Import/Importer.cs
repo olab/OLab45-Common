@@ -1,4 +1,3 @@
-using OLab.Api.Common;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
@@ -209,11 +208,11 @@ public class Importer : IImporter
       foreach (var dto in _dtos.Values)
         dto.Load(extractPath);
 
-    // delete source import file
-    await GetFileStorageModule().DeleteFileAsync(
-      Logger, 
-      Path.GetDirectoryName(archiveFileName), 
-      Path.GetFileName(archiveFileName));
+      // delete source import file
+      await GetFileStorageModule().DeleteFileAsync(
+        Logger,
+        Path.GetDirectoryName(archiveFileName),
+        Path.GetFileName(archiveFileName));
 
     }
     catch (Exception ex)

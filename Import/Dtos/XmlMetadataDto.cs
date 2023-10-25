@@ -7,11 +7,11 @@ namespace OLab.Api.Importer
   public class XmlMetadataDto : XmlImportDto<XmlMetadata>
   {
     public XmlMetadataDto(
-      IOLabLogger logger, 
+      IOLabLogger logger,
       Importer importer) : base(
-        logger, 
-        importer, 
-        Importer.DtoTypes.XmlMetadataDto, 
+        logger,
+        importer,
+        Importer.DtoTypes.XmlMetadataDto,
         "metadata.xml")
     {
 

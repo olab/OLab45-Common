@@ -31,6 +31,9 @@ namespace OLab.Api.Utils
     }
   }
 
+  /// <summary>
+  /// Common OLab logger class
+  /// </summary>
   public class OLabLogger : IOLabLogger
   {
     private readonly IList<OLabLogMessage> _messages = new List<OLabLogMessage>();

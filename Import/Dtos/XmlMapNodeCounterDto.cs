@@ -11,11 +11,11 @@ namespace OLab.Api.Importer
     private readonly CounterActionsMapper _mapper;
 
     public XmlMapNodeCounterDto(
-      IOLabLogger logger, 
+      IOLabLogger logger,
       Importer importer) : base(
-        logger, 
-        importer, 
-        Importer.DtoTypes.XmlMapNodeCounterDto, 
+        logger,
+        importer,
+        Importer.DtoTypes.XmlMapNodeCounterDto,
         "map_node_counter.xml")
     {
       _mapper = new CounterActionsMapper(logger);

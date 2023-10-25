@@ -10,11 +10,11 @@ namespace OLab.Api.Importer
     private readonly MapNodeLinksMapper _mapper;
 
     public XmlMapNodeLinkDto(
-      IOLabLogger logger, 
+      IOLabLogger logger,
       Importer importer) : base(
-        logger, 
-        importer, 
-        Importer.DtoTypes.XmlMapNodeLinkDto, 
+        logger,
+        importer,
+        Importer.DtoTypes.XmlMapNodeLinkDto,
         "map_node_link.xml")
     {
       _mapper = new MapNodeLinksMapper(logger);

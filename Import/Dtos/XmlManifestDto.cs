@@ -12,12 +12,13 @@ namespace OLab.Api.Importer
   public class XmlManifestDto : XmlImportDto<XmlManifest>
   {
     public XmlManifestDto(
-      IOLabLogger logger, 
+      IOLabLogger logger,
       IImporter importer) : base(
         logger,
-        importer, 
-        Importer.DtoTypes.XmlManifestDto, 
-        "manifest.xml") { }
+        importer,
+        Importer.DtoTypes.XmlManifestDto,
+        "manifest.xml")
+    { }
 
     /// <summary>
     /// Loads the specific import file into a model object

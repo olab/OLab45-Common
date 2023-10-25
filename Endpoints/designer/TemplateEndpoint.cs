@@ -20,12 +20,12 @@ namespace OLab.Api.Endpoints.Designer
       IOLabConfiguration configuration,
       OLabDBContext context,
       IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
-      IOLabModuleProvider<IFileStorageModule> fileStorageProvider) 
+      IOLabModuleProvider<IFileStorageModule> fileStorageProvider)
       : base(
-          logger, 
-          configuration, 
-          context, 
-          wikiTagProvider, 
+          logger,
+          configuration,
+          context,
+          wikiTagProvider,
           fileStorageProvider)
     {
     }

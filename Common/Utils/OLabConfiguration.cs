@@ -1,5 +1,7 @@
 ﻿using Dawn;
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
@@ -16,10 +18,10 @@ public class OLabConfiguration : IOLabConfiguration
   private readonly IOptions<AppSettings> _appSettings;
 
   public OLabConfiguration(
-    IOLabLogger logger,
+    ILoggerFactory loggerFactory,
     IConfiguration configuration)
   {
-    Guard.Argument(logger).NotNull(nameof(logger));
+    Guard.Argument(loggerFactory).NotNull(nameof(loggerFactory));
     Guard.Argument(configuration).NotNull(nameof(configuration));
 
     _configuration = configuration;
@@ -27,10 +29,14 @@ public class OLabConfiguration : IOLabConfiguration
     var appSettings = CreateAppSettings();
     _appSettings = Options.Create(appSettings);
 
+    var logger = OLabLogger.CreateNew<OLabConfiguration>(loggerFactory);
+
     foreach (var item in configuration.AsEnumerable())
       logger.LogDebug($"{item.Key} -> {item.Value}");
 
   }
+
+  public IConfiguration GetRawConfiguration() {  return _configuration; }
 
   //public IConfiguration GetConfiguration() { return _configuration; }
   public AppSettings GetAppSettings() { return _appSettings.Value; }

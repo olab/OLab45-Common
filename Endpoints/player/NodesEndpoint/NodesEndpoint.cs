@@ -22,12 +22,12 @@ namespace OLab.Api.Endpoints.Player
       IOLabConfiguration configuration,
       OLabDBContext context,
       IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
-      IOLabModuleProvider<IFileStorageModule> fileStorageProvider) 
+      IOLabModuleProvider<IFileStorageModule> fileStorageProvider)
       : base(
-          logger, 
-          configuration, 
-          context, 
-          wikiTagProvider, 
+          logger,
+          configuration,
+          context,
+          wikiTagProvider,
           fileStorageProvider)
     {
     }
@@ -64,7 +64,7 @@ namespace OLab.Api.Endpoints.Player
     /// <returns>MapsNodesFullRelationsDto response</returns>
     public async Task<MapsNodesFullRelationsDto> GetNodeTranslatedAsync(IOLabAuthorization auth, uint nodeId)
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: NodesEndpoint.GetNodeTranslatedAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: NodesEndpoint.GetNodeTranslatedAsync");
       return await GetNodeAsync(nodeId, true);
     }
 
@@ -76,7 +76,7 @@ namespace OLab.Api.Endpoints.Player
     /// <returns></returns>
     public async Task PutNodeAsync(IOLabAuthorization auth, uint id, MapNodesFullDto dto)
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: NodesEndpoint.PutNodeAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: NodesEndpoint.PutNodeAsync");
 
       var phys = await GetMapNodeAsync(id);
       if (phys == null)
@@ -107,7 +107,7 @@ namespace OLab.Api.Endpoints.Player
       MapNodeLinksPostDataDto data
     )
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: NodesEndpoint.PostLinkAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: NodesEndpoint.PostLinkAsync");
 
       var node = GetSimple(dbContext, nodeId);
       if (node == null)
@@ -142,7 +142,7 @@ namespace OLab.Api.Endpoints.Player
       [FromBody] MapNodesPostDataDto data
     )
     {
-      Logger.LogDebug($"{auth.GetUserContext().UserId}: NodesEndpoint.PostNodeAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: NodesEndpoint.PostNodeAsync");
 
       using var transaction = dbContext.Database.BeginTransaction();
 

@@ -10,11 +10,11 @@ namespace OLab.Api.Importer
     private readonly ObjectMapper.Files _mapper;
 
     public XmlMapElementDto(
-      IOLabLogger logger, 
+      IOLabLogger logger,
       Importer importer) : base(
-        logger, 
-        importer, 
-        Importer.DtoTypes.XmlMapElementDto, 
+        logger,
+        importer,
+        Importer.DtoTypes.XmlMapElementDto,
         "map_element.xml")
     {
       _mapper = new ObjectMapper.Files(logger);

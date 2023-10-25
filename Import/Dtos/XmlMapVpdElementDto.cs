@@ -13,11 +13,11 @@ namespace OLab.Api.Importer
     private readonly ObjectMapper.MapVpdElement _mapper;
 
     public XmlMapVpdElementDto(
-      IOLabLogger logger, 
+      IOLabLogger logger,
       Importer importer) : base(
-        logger, 
-        importer, 
-        Importer.DtoTypes.XmlMapVpdElementDto, 
+        logger,
+        importer,
+        Importer.DtoTypes.XmlMapVpdElementDto,
         "map_vpd_element.xml")
     {
       _mapper = new ObjectMapper.MapVpdElement(logger);

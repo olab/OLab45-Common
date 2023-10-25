@@ -6,11 +6,11 @@ namespace OLab.Api.Importer
   public class XmlMapNodeSectionNodeDto : XmlImportDto<XmlMapNodeSectionNode>
   {
     public XmlMapNodeSectionNodeDto(
-      IOLabLogger logger, 
+      IOLabLogger logger,
       Importer importer) : base(
-        logger, 
-        importer, 
-        Importer.DtoTypes.XmlMapNodeSectionNodeDto, 
+        logger,
+        importer,
+        Importer.DtoTypes.XmlMapNodeSectionNodeDto,
         "map_node_section_node.xml")
     {
 

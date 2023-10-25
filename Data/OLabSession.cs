@@ -17,7 +17,10 @@ namespace OLab.Api.Data
     private readonly ILogger _logger;
     private string _sessionId;
 
-    public OLabSession(ILogger logger, OLabDBContext context, IUserContext userContext)
+    public OLabSession(
+      ILogger logger, 
+      OLabDBContext context, 
+      IUserContext userContext)
     {
       // _appSettings = _appSettings.Value;
       _context = context;

@@ -7,11 +7,11 @@ namespace OLab.Api.Importer
   public class XmlMapCounterRuleDto : XmlImportDto<XmlMapCounterRule>
   {
     public XmlMapCounterRuleDto(
-      IOLabLogger logger, 
+      IOLabLogger logger,
       Importer importer) : base(
-        logger, 
-        importer, 
-        Importer.DtoTypes.XmlMapCounterRuleDto, 
+        logger,
+        importer,
+        Importer.DtoTypes.XmlMapCounterRuleDto,
         "map_counter_rule.xml")
     {
 
