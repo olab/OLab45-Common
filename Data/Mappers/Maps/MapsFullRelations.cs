@@ -50,8 +50,14 @@ namespace OLab.Api.ObjectMapper
     {
       var dto = new MapsFullRelationsDto
       {
-        Map = new MapsFullMapper(Logger).PhysicalToDto(map),
-        MapNodes = new MapNodesFullMapper(Logger).PhysicalToDto(map.MapNodes.ToList())
+        Map = new MapsFullMapper(
+          Logger,
+          _wikiTagModules
+        ).PhysicalToDto(map),
+        MapNodes = new MapNodesFullMapper(
+          Logger,
+          _wikiTagModules
+        ).PhysicalToDto(map.MapNodes.ToList())
       };
 
       var links = new List<MapNodeLinks>();

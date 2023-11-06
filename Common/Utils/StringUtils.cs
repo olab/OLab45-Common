@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace OLab.Api.Utils
 {
@@ -15,6 +16,16 @@ namespace OLab.Api.Utils
         sum += singleByte * 1013;
 
       return sum.ToString("X");
+    }
+
+    /// <summary>
+    /// Strip out unicode characters from a string
+    /// </summary>
+    /// <param name="str">Source string</param>
+    /// <returns>Cleanzed string</returns>
+    public static string StripUnicode(string str)
+    {
+      return Regex.Replace(str, @"[^\u0000-\u007F]+", string.Empty);
     }
 
     public static string EncryptString(string key, string plainText)

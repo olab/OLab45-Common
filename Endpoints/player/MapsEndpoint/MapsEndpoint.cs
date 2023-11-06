@@ -244,7 +244,10 @@ namespace OLab.Api.Endpoints.Player
 
       await dbContext.SaveChangesAsync();
 
-      var dto = new MapsFullRelationsMapper(Logger).PhysicalToDto(map);
+      var dto = new MapsFullRelationsMapper(
+        Logger,
+        _wikiTagProvider as WikiTagProvider
+      ).PhysicalToDto(map);
       return dto;
     }
 
