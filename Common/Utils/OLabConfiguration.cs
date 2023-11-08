@@ -70,7 +70,7 @@ public class OLabConfiguration : IOLabConfiguration
     var fullKey = $"{section}:{key}";
     var value = _configuration.GetValue<T>(fullKey);
     if (value == null && !optional)
-      throw new ArgumentException($"cannot find '{fullKey}'");
+      throw new ArgumentException($"cannot find configuration setting'{fullKey}'");
     return value;
   }
 
@@ -81,7 +81,7 @@ public class OLabConfiguration : IOLabConfiguration
     var fullKey = $"{AppSettingPrefix}:{key}";
     var value = _configuration.GetValue<T>(fullKey);
     if (value == null && !optional)
-      throw new ArgumentException($"cannot find '{fullKey}'");
+      throw new ArgumentException($"cannot find configuration '{fullKey}'");
     return value;
   }
 

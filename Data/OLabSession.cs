@@ -12,7 +12,7 @@ namespace OLab.Api.Data
   public class OLabSession : IOLabSession
   {
     // private readonly AppSettings _appSettings;
-    private readonly OLabDBContext _context;
+    private readonly OLabDBContext _dbContext;
     private readonly IUserContext _userContext;
     private readonly ILogger _logger;
     private string _sessionId;
@@ -23,7 +23,7 @@ namespace OLab.Api.Data
       IUserContext userContext)
     {
       // _appSettings = _appSettings.Value;
-      _context = context;
+      _dbContext = context;
       _userContext = userContext;
       _logger = logger;
     }
@@ -55,8 +55,8 @@ namespace OLab.Api.Data
         CourseName = userContext.ReferringCourse
       };
 
-      _context.UserSessions.Add(session);
-      _context.SaveChanges();
+      _dbContext.UserSessions.Add(session);
+      _dbContext.SaveChanges();
 
       _logger.LogInformation($"OnStartSession: session {_sessionId} ({userContext.UserName}) MapId: {mapId}. Session PK: {session.Id}");
     }
@@ -71,8 +71,8 @@ namespace OLab.Api.Data
 
       session.EndTime = Conversions.GetCurrentUnixTime();
 
-      _context.UserSessions.Update(session);
-      _context.SaveChanges();
+      _dbContext.UserSessions.Update(session);
+      _dbContext.SaveChanges();
     }
 
     public void OnPlayNode(uint mapId, uint nodeId)
@@ -92,8 +92,8 @@ namespace OLab.Api.Data
         UserId = session.UserId
       };
 
-      _context.UserSessionTraces.Add(sessionTrace);
-      _context.SaveChanges();
+      _dbContext.UserSessionTraces.Add(sessionTrace);
+      _dbContext.SaveChanges();
 
     }
 
@@ -118,8 +118,8 @@ namespace OLab.Api.Data
         CreatedAt = Conversions.GetCurrentUnixTime()
       };
 
-      _context.UserResponses.Add(userResponse);
-      _context.SaveChanges();
+      _dbContext.UserResponses.Add(userResponse);
+      _dbContext.SaveChanges();
     }
 
     public void SaveSessionState(uint mapId, uint nodeId, DynamicScopedObjectsDto dynamicObjects)
@@ -132,13 +132,13 @@ namespace OLab.Api.Data
         StateData = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(dynamicObjects))
       };
 
-      _context.UserState.Add(userState);
-      _context.SaveChanges();
+      _dbContext.UserState.Add(userState);
+      _dbContext.SaveChanges();
     }
 
     private UserSessions GetSession(string sessionId)
     {
-      var session = _context.UserSessions.Where(x => x.Uuid == sessionId).FirstOrDefault();
+      var session = _dbContext.UserSessions.Where(x => x.Uuid == sessionId).FirstOrDefault();
       if (session == null)
       {
         _logger.LogError($"Unable to get session, sessionId '{sessionId}' not found");

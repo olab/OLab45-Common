@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Configuration;
 
 namespace OLab.Api.Data.Interface
 {
@@ -43,7 +44,6 @@ namespace OLab.Api.Data.Interface
 
     public IList<string> UserRoles { get; }
 
-    //bool HasAccess(string requestedPerm, string objectType, uint? objectId);
-
+    public string ToString();
   }
 }
