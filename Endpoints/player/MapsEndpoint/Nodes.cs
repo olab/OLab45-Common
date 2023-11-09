@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common.Exceptions;
+using OLab.Api.Data;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
@@ -98,6 +99,8 @@ namespace OLab.Api.Endpoints.Player
     {
       Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
 
+      var session = new OLabSession(Logger, dbContext, auth.UserContext);
+
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
@@ -136,15 +139,15 @@ namespace OLab.Api.Endpoints.Player
       // if browser signals a new play, then start a new session
       if (body.NewPlay)
       {
-        _userContext.Session.OnStartSession(_userContext, mapId);
-        dto.ContextId = _userContext.Session.GetSessionId();
-        _userContext.Session.SetSessionId(dto.ContextId);
+        session.OnStartSession(_userContext, mapId);
+        dto.ContextId = session.GetSessionId();
+        session.SetSessionId(dto.ContextId);
       }
 
-      _userContext.Session.OnPlayNode(mapId, dto.Id.Value);
+      session.OnPlayNode(mapId, dto.Id.Value);
 
       // extend the session into the new node
-      _userContext.Session.OnExtendSession(mapId, nodeId);
+      session.OnExtendSession(mapId, nodeId);
 
       UpdateNodeCounter();
 
@@ -164,7 +167,7 @@ namespace OLab.Api.Endpoints.Player
       }
 
       // save current session state to database
-      _userContext.Session.SaveSessionState(mapId, dto.Id.Value, dto.DynamicObjects);
+      session.SaveSessionState(mapId, dto.Id.Value, dto.DynamicObjects);
 
       dto.DynamicObjects.RefreshChecksum();
 
@@ -272,7 +275,6 @@ namespace OLab.Api.Endpoints.Player
         throw;
       }
 
-
     }
 
     /// <summary>
@@ -309,11 +311,6 @@ namespace OLab.Api.Endpoints.Player
 
       dbContext.SystemCounters.Update(counter);
       dbContext.SaveChanges();
-    }
-
-    public void SaveSessionState(uint mapId, uint nodeId, DynamicScopedObjectsDto dynamicObjects)
-    {
-      _userContext.Session.SaveSessionState(mapId, nodeId, dynamicObjects);
     }
 
   }

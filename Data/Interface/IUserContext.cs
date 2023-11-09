@@ -5,7 +5,7 @@ namespace OLab.Api.Data.Interface
 {
   public interface IUserContext
   {
-    public IOLabSession Session
+    public string SessionId
     {
       get;
       set;

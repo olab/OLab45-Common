@@ -4,6 +4,7 @@ using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System.Linq;
 using System.Text;
 
@@ -11,18 +12,16 @@ namespace OLab.Api.Data
 {
   public class OLabSession : IOLabSession
   {
-    // private readonly AppSettings _appSettings;
     private readonly OLabDBContext _dbContext;
     private readonly IUserContext _userContext;
-    private readonly ILogger _logger;
+    private readonly IOLabLogger _logger;
     private string _sessionId;
 
     public OLabSession(
-      ILogger logger, 
+      IOLabLogger logger, 
       OLabDBContext context, 
       IUserContext userContext)
     {
-      // _appSettings = _appSettings.Value;
       _dbContext = context;
       _userContext = userContext;
       _logger = logger;
