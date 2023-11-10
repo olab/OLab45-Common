@@ -139,7 +139,7 @@ namespace OLab.Api.Endpoints.Player
       // if browser signals a new play, then start a new session
       if (body.NewPlay)
       {
-        session.OnStartSession(_userContext, mapId);
+        session.OnStartSession(auth.UserContext, mapId);
         dto.ContextId = session.GetSessionId();
         session.SetSessionId(dto.ContextId);
       }
