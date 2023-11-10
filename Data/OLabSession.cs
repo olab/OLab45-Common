@@ -40,7 +40,7 @@ namespace OLab.Api.Data
 
     public void OnStartSession(IUserContext userContext, uint mapId)
     {
-      _userContext.SessionId = IOLabSession.GenerateSessionId();
+      SetSessionId( IOLabSession.GenerateSessionId() );
 
       _logger.LogInformation($"generated a new contextId: {_userContext.SessionId}");
 
