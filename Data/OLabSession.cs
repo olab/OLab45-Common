@@ -42,7 +42,7 @@ namespace OLab.Api.Data
     {
       SetSessionId( IOLabSession.GenerateSessionId() );
 
-      _logger.LogInformation($"generated a new contextId: {_userContext.SessionId}");
+      _logger.LogInformation($"generated a new contextId: {GetSessionId()}");
 
       var session = new UserSessions
       {
