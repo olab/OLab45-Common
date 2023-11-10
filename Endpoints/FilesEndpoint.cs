@@ -139,21 +139,21 @@ namespace OLab.Api.Endpoints
     /// <summary>
     /// Create new file
     /// </summary>
-    /// <param name="phys">Physical object to save</param>
+    /// <param name="dto">Physical object to save</param>
     /// <returns>FilesFullDto</returns>
     public async Task<FilesFullDto> PostAsync(
       IOLabAuthorization auth,
-      SystemFiles phys)
+      FilesFullDto dto)
     {
       Logger.LogDebug($"FilesController.PostAsync()");
       var builder = new FilesFull(Logger);
-      var dto = builder.PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Files", 0);
 
+      var phys = builder.DtoToPhysical(dto);
       phys.CreatedAt = DateTime.Now;
 
       dbContext.SystemFiles.Add(phys);
