@@ -15,7 +15,6 @@ namespace OLab.Api.Data
     private readonly OLabDBContext _dbContext;
     private readonly IUserContext _userContext;
     private readonly IOLabLogger _logger;
-    private string _sessionId;
 
     public OLabSession(
       IOLabLogger logger, 
@@ -25,27 +24,29 @@ namespace OLab.Api.Data
       _dbContext = context;
       _userContext = userContext;
       _logger = logger;
+
+      _logger.LogInformation($"Session id = '{GetSessionId()}'");
     }
 
     public void SetSessionId(string sessionId)
     {
-      _sessionId = sessionId;
+      _userContext.SessionId = sessionId;
     }
 
     public string GetSessionId()
     {
-      return _sessionId;
+      return _userContext.SessionId;
     }
 
     public void OnStartSession(IUserContext userContext, uint mapId)
     {
-      _sessionId = IOLabSession.GenerateSessionId();
+      _userContext.SessionId = IOLabSession.GenerateSessionId();
 
-      _logger.LogInformation($"generated a new contextId: {_sessionId}");
+      _logger.LogInformation($"generated a new contextId: {_userContext.SessionId}");
 
       var session = new UserSessions
       {
-        Uuid = _sessionId,
+        Uuid = GetSessionId(),
         MapId = mapId,
         StartTime = Conversions.GetCurrentUnixTime(),
         UserIp = userContext.IPAddress,
@@ -57,7 +58,7 @@ namespace OLab.Api.Data
       _dbContext.UserSessions.Add(session);
       _dbContext.SaveChanges();
 
-      _logger.LogInformation($"OnStartSession: session {_sessionId} ({userContext.UserName}) MapId: {mapId}. Session PK: {session.Id}");
+      _logger.LogInformation($"OnStartSession: session {GetSessionId()} ({userContext.UserName}) MapId: {mapId}. Session PK: {session.Id}");
     }
 
     public void OnExtendSession(uint mapId, uint nodeId)
