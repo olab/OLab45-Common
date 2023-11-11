@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis.Scripting;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -24,5 +25,11 @@ namespace OLab.Api.ObjectMapper
       return dto;
     }
 
+    public override SystemFiles DtoToPhysical(FilesFullDto source)
+    {
+      var phys = base.DtoToPhysical(source);
+      phys.Path = source.FileName;
+      return phys;
+    }
   }
 }

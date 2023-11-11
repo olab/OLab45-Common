@@ -122,10 +122,9 @@ namespace OLab.Api.Importer
 
         Logger.LogInformation($"Loading {GetFileName()}");
 
-        if (_importer.GetFileStorageModule().FileExists(Logger, GetImportFilesDirectory(), GetFileName()))
+        if (_importer.GetFileStorageModule().FileExists(GetImportFilesDirectory(), GetFileName()))
         {
           var stream = _importer.GetFileStorageModule().ReadFileAsync(
-            Logger,
             extractImportFilesDirectory,
             GetFileName()).GetAwaiter().GetResult();
           _phys = DynamicXml.Load(stream);
@@ -157,7 +156,7 @@ namespace OLab.Api.Importer
         Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
 
         // delete data file
-        GetFileStorageModule().DeleteFileAsync(Logger, extractImportFilesDirectory, GetFileName()).Wait();
+        GetFileStorageModule().DeleteFileAsync(extractImportFilesDirectory, GetFileName()).Wait();
 
       }
       catch (Exception ex)

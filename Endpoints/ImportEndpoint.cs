@@ -59,7 +59,7 @@ public partial class ImportEndpoint : OLabEndpoint
 
     // save import file to persistent storage
     var archiveFile =
-      await _fileStorageModule.UploadFileAsync(Logger, stream, file.FileName, token);
+      await _fileStorageModule.UploadImportFileAsync(stream, file.FileName, token);
 
     await _importer.Import(archiveFile, token);
 

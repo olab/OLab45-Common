@@ -421,7 +421,7 @@ namespace OLab.Api.Endpoints
         x.ImageableType == scopeLevel && x.ImageableId == parentId).ToListAsync();
 
       // ask the module to add appropriate URLs to files
-      fileStorageModule.AttachUrls(Logger, items);
+      fileStorageModule.AttachUrls(items);
 
       return items;
     }

@@ -8,9 +8,12 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
@@ -21,7 +24,14 @@ namespace OLab.Api.Endpoints
     public FilesEndpoint(
       IOLabLogger logger,
       IOLabConfiguration configuration,
-      OLabDBContext context) : base(logger, configuration, context)
+      OLabDBContext context,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      IOLabModuleProvider<IFileStorageModule> fileStorageProvider) : base(
+        logger,
+        configuration,
+        context,
+        wikiTagProvider,
+        fileStorageProvider)
     {
     }
 
@@ -143,7 +153,8 @@ namespace OLab.Api.Endpoints
     /// <returns>FilesFullDto</returns>
     public async Task<FilesFullDto> PostAsync(
       IOLabAuthorization auth,
-      FilesFullDto dto)
+      FilesFullDto dto,
+      CancellationToken cancel)
     {
       Logger.LogDebug($"FilesController.PostAsync()");
       var builder = new FilesFull(Logger);
@@ -159,8 +170,14 @@ namespace OLab.Api.Endpoints
       dbContext.SystemFiles.Add(phys);
       await dbContext.SaveChangesAsync();
 
-      dto = builder.PhysicalToDto(phys);
-      return dto;
+      using (var stream = new MemoryStream())
+      {
+        dto.GetFileContents(stream);
+        await _fileStorageModule.UploadMapFileAsync(stream, dto, cancel);
+      }
+
+      var newDto = builder.PhysicalToDto(phys);
+      return newDto;
     }
 
     /// <summary>

@@ -37,10 +37,9 @@ namespace OLab.Api.Importer
         var filePath = $"{GetImportFilesDirectory()}{GetFileStorageModule().GetFolderSeparator()}{GetFileName()}";
         Logger.LogInformation($"Loading '{filePath}'");
 
-        if (GetFileStorageModule().FileExists(Logger, GetImportFilesDirectory(), GetFileName()))
+        if (GetFileStorageModule().FileExists(GetImportFilesDirectory(), GetFileName()))
         {
           var stream = GetFileStorageModule().ReadFileAsync(
-            Logger,
             GetImportFilesDirectory(),
             GetFileName()).GetAwaiter().GetResult();
 

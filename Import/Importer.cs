@@ -199,7 +199,6 @@ public class Importer : IImporter
       archiveFileName = Path.GetFileName(archiveFileName);
 
       await FileStorageModule.ExtractFileAsync(
-        Logger,
         string.Empty, // import root folder
         archiveFileName,
         extractPath,
@@ -210,7 +209,6 @@ public class Importer : IImporter
 
       // delete source import file
       await GetFileStorageModule().DeleteFileAsync(
-        Logger,
         Path.GetDirectoryName(archiveFileName),
         Path.GetFileName(archiveFileName));
 

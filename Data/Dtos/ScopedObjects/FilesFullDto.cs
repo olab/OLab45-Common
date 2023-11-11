@@ -1,6 +1,7 @@
 using HttpMultipartParser;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.IO;
 
 namespace OLab.Api.Dto
 {
@@ -51,6 +52,17 @@ namespace OLab.Api.Dto
       SelectedFileName = form["selectedFileName"];
       FileSize = Convert.ToInt32(form["fileSize"]);
       CreatedAt = DateTime.UtcNow;
+      if (form.Files.Count == 0)
+        throw new Exception("File not received");
+      FileContents = form.Files[0];
+      FileName = FileContents.FileName;
+    }
+
+    public long GetFileContents(MemoryStream stream)
+    {
+      FileContents.CopyTo(stream);
+      stream.Position = 0;
+      return stream.Length;
     }
 
     public FilesFullDto(MultipartFormDataParser parser)

@@ -126,7 +126,7 @@ namespace OLab.Api.Importer
           {
             dynamic fileName = Conversions.Base64Decode(element, true);
 
-            GetImporter().GetFileStorageModule().MoveFileAsync(Logger, fileName, sourceDirectory, targetDirectory).Wait();
+            GetImporter().GetFileStorageModule().MoveFileAsync(fileName, sourceDirectory, targetDirectory).Wait();
 
             Logger.LogInformation($"Copied {GetFileName()} '{fileName}' -> '{targetDirectory}'");
 

@@ -1,4 +1,5 @@
-﻿using OLab.Api.Model;
+﻿using OLab.Api.Dto;
+using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.IO;
@@ -14,39 +15,37 @@ namespace OLab.Data.Interface
     char GetFolderSeparator();
 
     void AttachUrls(
-      IOLabLogger logger,
       IList<SystemFiles> items);
 
     public Task MoveFileAsync(
-      IOLabLogger logger,
       string fileName,
       string sourcePath,
       string destinationPath,
       CancellationToken token = default);
 
-    Task<string> UploadFileAsync(
-      IOLabLogger logger,
+    Task<string> UploadImportFileAsync(
       Stream stream,
       string fileName,
       CancellationToken token);
 
+    Task<string> UploadMapFileAsync(
+      Stream stream,
+      FilesFullDto dto,
+      CancellationToken token);
+
     bool FileExists(
-      IOLabLogger logger,
       string folder,
       string fileName);
 
     Task<Stream> ReadFileAsync(
-      IOLabLogger logger,
       string folder,
       string fileName);
 
     Task<bool> DeleteFileAsync(
-      IOLabLogger logger,
       string folderName,
       string fileName);
 
     Task<bool> ExtractFileAsync(
-      IOLabLogger logger,
       string folderName,
       string fileName,
       string extractPath,
