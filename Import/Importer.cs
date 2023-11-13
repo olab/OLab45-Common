@@ -173,49 +173,55 @@ public class Importer : IImporter
   }
 
   public async Task Import(
+    Stream archiveFileStream,
     string archiveFileName,
     CancellationToken token = default)
   {
-    Logger.LogInformation($"Importing archive: '{archiveFileName}'");
-
-    if (await ProcessImportFileAsync(archiveFileName, token))
+    if (await ProcessImportFileAsync(archiveFileStream, archiveFileName, token))
       WriteImportToDatabase();
   }
 
   /// <summary>
   /// Loads import xml files into memory
   /// </summary>
-  /// <param name="archiveFileName">Export ZIP file name</param>
+  /// <param name="importFileName">Export ZIP file name</param>
   /// <returns>true</returns>
   public async Task<bool> ProcessImportFileAsync(
-    string archiveFileName,
+    Stream importFileStream,
+    string importFileName,
     CancellationToken token = default)
   {
     var importStatus = true;
 
     try
     {
-      var extractPath = Path.GetFileNameWithoutExtension(archiveFileName).Replace(".", "");
-      archiveFileName = Path.GetFileName(archiveFileName);
+      var moduleArchiveFile = $"{_configuration.GetAppSettings().FileImportFolder}{GetFileStorageModule().GetFolderSeparator()}{importFileName}";
+      Logger.LogInformation($"Module archive file: {moduleArchiveFile}");
+
+      await FileStorageModule.WriteFileAsync(importFileStream, moduleArchiveFile, token);
+
+      var extractFolderName = Path.GetFileNameWithoutExtension(importFileName).Replace(".", "");
+      Logger.LogInformation($"Folder extract directory: {extractFolderName}");
 
       await FileStorageModule.ExtractFileAsync(
-        string.Empty, // import root folder
-        archiveFileName,
-        extractPath,
+        _configuration.GetAppSettings().FileImportFolder,
+        importFileName,
+        extractFolderName,
         token);
 
       foreach (var dto in _dtos.Values)
-        dto.Load(extractPath);
+        dto.Load($"{_configuration.GetAppSettings().FileImportFolder}{GetFileStorageModule().GetFolderSeparator()}{extractFolderName}");
 
       // delete source import file
       await GetFileStorageModule().DeleteFileAsync(
-        Path.GetDirectoryName(archiveFileName),
-        Path.GetFileName(archiveFileName));
+        Path.GetDirectoryName(importFileName),
+        Path.GetFileName(importFileName));
 
     }
     catch (Exception ex)
     {
       Logger.LogError(ex, $"Load error: {ex.Message}");
+      throw;
     }
 
     return importStatus;

@@ -1,5 +1,6 @@
 using OLab.Common.Interfaces;
 using System.Collections.Generic;
+using System.IO;
 using static OLab.Api.Importer.Importer;
 
 namespace OLab.Api.Importer
@@ -7,7 +8,7 @@ namespace OLab.Api.Importer
   public abstract class XmlDto
   {
     protected readonly IOLabLogger Logger;
-    public abstract bool Load(string importDirectory);
+    public abstract bool Load(string extractPath);
     public abstract bool PostProcess(IDictionary<Importer.DtoTypes, XmlDto> dtos);
     public abstract bool Save();
     public abstract object GetDbPhys();

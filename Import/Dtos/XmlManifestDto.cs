@@ -3,6 +3,7 @@ using OLab.Common.Interfaces;
 using OLab.Import.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace OLab.Api.Importer
 {
@@ -25,9 +26,9 @@ namespace OLab.Api.Importer
     /// </summary>
     /// <param name="importDirectory">Directory where import file exists</param>
     /// <returns></returns>
-    public override bool Load(string importDirectory)
+    public override bool Load(string extractPath)
     {
-      var result = base.Load(importDirectory);
+      var result = base.Load(extractPath);
 
       if (result)
       {

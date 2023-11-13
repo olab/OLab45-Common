@@ -3,6 +3,7 @@ using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using static OLab.Api.Importer.Importer;
 
@@ -25,9 +26,9 @@ namespace OLab.Api.Importer
     /// </summary>
     /// <param name="importDirectory">Directory where import file exists</param>
     /// <returns></returns>
-    public override bool Load(string importDirectory)
+    public override bool Load(string extractPath)
     {
-      var result = base.Load(importDirectory);
+      var result = base.Load(extractPath);
       var record = 0;
 
       if (result)
@@ -113,7 +114,7 @@ namespace OLab.Api.Importer
 
       try
       {
-        var sourceDirectory = $"{GetImportFilesDirectory()}{GetImporter().GetFileStorageModule().GetFolderSeparator()}media";
+        var sourceDirectory = $"media";
 
         var mapDto = GetImporter().GetDto(DtoTypes.XmlMapDto) as XmlMapDto;
         var map = mapDto.GetModel().Data.FirstOrDefault();

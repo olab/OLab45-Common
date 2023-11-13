@@ -19,7 +19,7 @@ namespace OLab.Api.Importer
     /// </summary>
     /// <param name="importDirectory">Directory where import file exists</param>
     /// <returns></returns>
-    // public override bool Load(string importDirectory)
+    // public override bool Load(Stream stream)
     // {
     //   var result = base.Load(importDirectory);
     //   var elements = GetElements(GetXmlPhys());

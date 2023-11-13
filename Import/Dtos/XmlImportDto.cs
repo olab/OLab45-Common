@@ -18,10 +18,8 @@ namespace OLab.Api.Importer
   {
     protected dynamic _phys;
     private readonly string _fileName;
-    private readonly IImporter _importer;
+    protected readonly IImporter _importer;
     protected OLabDBContext Context;
-    private readonly string _websitePublicFilesDirectory;
-    private string _extractedImportFilesDirectory;
     protected int CurrentRecordIndex = 0;
 
     private readonly IOLabModuleProvider<IWikiTagModule> _tagProvider;
@@ -36,16 +34,8 @@ namespace OLab.Api.Importer
     public dynamic GetXmlPhys() { return _phys; }
     public override Object GetDbPhys() { return _modelObject; }
     public abstract IEnumerable<dynamic> GetElements(dynamic xmlPhys);
-    public string GetImportFilesDirectory() { return _extractedImportFilesDirectory; }
-    public string GetWebsitePublicDirectory() { return _websitePublicFilesDirectory; }
-    public void SetImportDirectory(string dir) { _extractedImportFilesDirectory = dir; }
 
-    public string GetMediaDirectory()
-    {
-      return $"{GetImportFilesDirectory()}{GetFileStorageModule().GetFolderSeparator()}media{GetFileStorageModule().GetFolderSeparator()}";
-    }
-
-    public IFileStorageModule GetFileStorageModule()
+    public IFileStorageModule GetFileModule()
     {
       return GetImporter().GetFileStorageModule();
     }
@@ -62,7 +52,6 @@ namespace OLab.Api.Importer
 
       _tagProvider = GetImporter().GetWikiProvider();
       Context = GetImporter().GetContext();
-      _websitePublicFilesDirectory = GetImporter().Settings().FileStorageFolder;
     }
 
     /// <summary>
@@ -110,28 +99,29 @@ namespace OLab.Api.Importer
     /// <summary>
     /// Load import files
     /// </summary>
-    /// <param name="extractImportFilesDirectory">Directory containing extracted import files</param>
+    /// <param name="importFilesFolder">Folder name of extracted import files</param>
     /// <returns>Success/Failure</returns>
-    public override bool Load(string extractImportFilesDirectory)
+    public override bool Load(string importFileDirectory)
     {
       var rc = true;
 
       try
       {
-        _extractedImportFilesDirectory = extractImportFilesDirectory;
 
-        Logger.LogInformation($"Loading {GetFileName()}");
+        var moduleFileName = $"{importFileDirectory}{GetFileModule().GetFolderSeparator()}{GetFileName()}";
+        Logger.LogInformation($"Loading {moduleFileName}");
 
-        if (_importer.GetFileStorageModule().FileExists(GetImportFilesDirectory(), GetFileName()))
+        if (GetFileModule().FileExists(importFileDirectory, GetFileName()))
         {
-          var stream = _importer.GetFileStorageModule().ReadFileAsync(
-            extractImportFilesDirectory,
-            GetFileName()).GetAwaiter().GetResult();
-          _phys = DynamicXml.Load(stream);
+          using (var moduleFileStream = new MemoryStream())
+          {
+            GetFileModule().ReadFileAsync(moduleFileStream, importFileDirectory, GetFileName(), new System.Threading.CancellationToken());
+            _phys = DynamicXml.Load(moduleFileStream);
+          }
         }
         else
         {
-          Logger.LogInformation($"File {GetFileName()} does not exist");
+          Logger.LogInformation($"File {importFileDirectory}{GetFileModule().GetFolderSeparator()}{GetFileName()} does not exist");
           return false;
         }
 
@@ -156,7 +146,7 @@ namespace OLab.Api.Importer
         Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
 
         // delete data file
-        GetFileStorageModule().DeleteFileAsync(extractImportFilesDirectory, GetFileName()).Wait();
+        GetFileModule().DeleteFileAsync(importFileDirectory, GetFileName()).Wait();
 
       }
       catch (Exception ex)
@@ -212,24 +202,13 @@ namespace OLab.Api.Importer
     /// <returns>Public directory for scope</returns>
     public string GetPublicFileDirectory(string parentType, uint parentId, string path = "")
     {
-      var targetDirectory = $"{GetWebsitePublicDirectory()}{GetImporter().GetFileStorageModule().GetFolderSeparator()}{parentType}";
+      var targetDirectory = $"{GetImporter().GetFileStorageModule().GetFolderSeparator()}{parentType}";
       targetDirectory = $"{targetDirectory}{GetImporter().GetFileStorageModule().GetFolderSeparator()}{parentId}";
 
       if (!string.IsNullOrEmpty(path))
         targetDirectory = $"{targetDirectory}{GetImporter().GetFileStorageModule().GetFolderSeparator()}{path}";
 
       return targetDirectory;
-    }
-
-    /// <summary>
-    /// Test if public file exists
-    /// </summary>
-    /// <param name="path">Full path to file</param>
-    /// <returns>true/false</returns>
-    public bool DoesPublicFileExist(string path)
-    {
-      var filePath = Path.Combine(GetWebsitePublicDirectory(), Path.GetFileName(path));
-      return File.Exists(filePath);
     }
 
     public static IList<string> GetWikiTags(string source)

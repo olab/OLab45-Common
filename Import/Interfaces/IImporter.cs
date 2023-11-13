@@ -3,6 +3,7 @@ using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,12 +15,8 @@ namespace OLab.Import.Interfaces
     XmlDto GetDto(Importer.DtoTypes type);
     IOLabModuleProvider<IWikiTagModule> GetWikiProvider();
     IFileStorageModule GetFileStorageModule();
-    Task Import(string archiveFileName, CancellationToken token = default);
-    //void LogDebug(string message);
-    //void LogError(Exception ex, string message);
-    //void LogError(string message);
-    //void LogInformation(string message);
-    //void LogWarning(string message);
+    Task Import(Stream stream, string importFileName, CancellationToken token = default);
+
     AppSettings Settings();
   }
 }

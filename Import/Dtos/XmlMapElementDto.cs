@@ -8,7 +8,6 @@ namespace OLab.Api.Importer
   public class XmlMapElementDto : XmlImportDto<XmlMapElements>
   {
     private readonly ObjectMapper.Files _mapper;
-
     public XmlMapElementDto(
       IOLabLogger logger,
       Importer importer) : base(
@@ -46,8 +45,8 @@ namespace OLab.Api.Importer
       item.ImageableId = mapDto.GetIdTranslation(GetFileName(), item.ImageableId).Value;
       item.ImageableType = "Maps";
 
-      if (!GetFileStorageModule().FileExists(GetMediaDirectory(), Path.GetFileName(item.Path)))
-        Logger.LogWarning(GetFileName(), 0, $"media file '{item.Path}' does not exist in import package");
+      //if (!GetFileModule().FileExists(GetMediaDirectory(), Path.GetFileName(item.Path)))
+      //  Logger.LogWarning(GetFileName(), 0, $"media file '{item.Path}' does not exist in import package");
 
       item.Path = Path.GetFileName(item.Path);
 

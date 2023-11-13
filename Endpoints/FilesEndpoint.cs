@@ -173,7 +173,8 @@ namespace OLab.Api.Endpoints
       using (var stream = new MemoryStream())
       {
         dto.GetFileContents(stream);
-        await _fileStorageModule.UploadMapFileAsync(stream, dto, cancel);
+        var filePath = $"{dto.ImageableType}{_fileStorageModule.GetFolderSeparator()}{dto.ImageableId}{_fileStorageModule.GetFolderSeparator()}{dto.FileName}";
+        await _fileStorageModule.WriteFileAsync(stream, filePath, cancel);
       }
 
       var newDto = builder.PhysicalToDto(phys);

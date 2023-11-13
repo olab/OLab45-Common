@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using HttpMultipartParser;
+using Microsoft.AspNetCore.Http;
 using OLab.Api.Endpoints;
 using OLab.Api.Importer;
 using OLab.Api.Model;
@@ -47,22 +48,12 @@ public partial class ImportEndpoint : OLabEndpoint
       _fileStorageModule);
   }
 
-  public async Task<bool> Import(
-    IFormFile file,
+  public async Task<bool> ImportAsync(
+    Stream archvieFileStream,
+    string archiveFileName,
     CancellationToken token)
   {
-    var stream = new MemoryStream();
-    file.CopyTo(stream);
-
-    // need to set the stream position to start
-    stream.Position = 0;
-
-    // save import file to persistent storage
-    var archiveFile =
-      await _fileStorageModule.UploadImportFileAsync(stream, file.FileName, token);
-
-    await _importer.Import(archiveFile, token);
-
+    await _importer.Import(archvieFileStream, archiveFileName, token);
     return true;
   }
 

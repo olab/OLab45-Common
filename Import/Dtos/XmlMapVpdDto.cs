@@ -1,6 +1,8 @@
 using OLab.Common.Interfaces;
+using OLab.Import.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace OLab.Api.Importer
@@ -26,29 +28,21 @@ namespace OLab.Api.Importer
     /// </summary>
     /// <param name="importDirectory">Directory where import file exists</param>
     /// <returns></returns>
-    public override bool Load(string importDirectory)
+    public override bool Load(string importFileFolder)
     {
       var rc = true;
 
       try
       {
-        SetImportDirectory(importDirectory);
+        Logger.LogInformation($"Loading '{GetFileName()}'");
 
-        var filePath = $"{GetImportFilesDirectory()}{GetFileStorageModule().GetFolderSeparator()}{GetFileName()}";
-        Logger.LogInformation($"Loading '{filePath}'");
-
-        if (GetFileStorageModule().FileExists(GetImportFilesDirectory(), GetFileName()))
+        if (GetFileModule().FileExists(importFileFolder, GetFileName()))
         {
-          var stream = GetFileStorageModule().ReadFileAsync(
-            GetImportFilesDirectory(),
-            GetFileName()).GetAwaiter().GetResult();
-
-          _phys = DynamicXml.Load(stream);
-        }
-        else
-        {
-          Logger.LogInformation($"File {filePath} does not exist");
-          return false;
+          var moduleFileName = $"{importFileFolder}{GetFileModule().GetFolderSeparator()}{GetFileName()}";
+          using (var moduleFileStream = new FileStream(moduleFileName, FileMode.Open, FileAccess.Read))
+          {
+            _phys = DynamicXml.Load(moduleFileStream);
+          }
         }
 
         dynamic outerElements = GetElements(GetXmlPhys());

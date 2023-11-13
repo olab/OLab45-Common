@@ -23,32 +23,29 @@ namespace OLab.Data.Interface
       string destinationPath,
       CancellationToken token = default);
 
-    Task<string> UploadImportFileAsync(
-      Stream stream,
-      string fileName,
-      CancellationToken token);
-
-    Task<string> UploadMapFileAsync(
-      Stream stream,
-      FilesFullDto dto,
-      CancellationToken token);
-
     bool FileExists(
       string folder,
       string fileName);
 
-    Task<Stream> ReadFileAsync(
+    Task ReadFileAsync(
+      Stream stream,
       string folder,
-      string fileName);
+      string fileName,
+      CancellationToken token);
+
+    Task<string> WriteFileAsync(
+      Stream stream,
+      string filePath,
+      CancellationToken token);
 
     Task<bool> DeleteFileAsync(
-      string folderName,
+      string folder,
       string fileName);
 
     Task<bool> ExtractFileAsync(
       string folderName,
       string fileName,
-      string extractPath,
+      string extractDirectory,
       CancellationToken token);
   }
 }
