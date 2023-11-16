@@ -242,7 +242,7 @@ namespace OLab.Api.Endpoints
       // if asked for, remove any hidden links
       if (hideHidden)
       {
-        Logger.LogError($"GetNodeSync hiding hidden links");
+        Logger.LogInformation($"GetNodeSync hiding hidden links");
         dto.MapNodeLinks = dto.MapNodeLinks.Where(x => !x.IsHidden).ToList();
       }
 
