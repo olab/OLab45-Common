@@ -121,10 +121,10 @@ namespace OLab.Api.Endpoints.Player
     }
 
     /// <summary>
-    /// 
+    /// Retrieve a map
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
+    /// <param name="id">Map Id</param>
+    /// <returns>Map</returns>
     public async Task<MapsFullDto> GetAsync(
       IOLabAuthorization auth,
       uint id)
@@ -166,16 +166,16 @@ namespace OLab.Api.Endpoints.Player
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
       var map = await dbContext.Maps
-  .AsNoTracking()
-  .Include(x => x.MapNodes)
-  .FirstOrDefaultAsync(x => x.Id == mapId);
+        .AsNoTracking()
+        .Include(x => x.MapNodes)
+        .FirstOrDefaultAsync(x => x.Id == mapId);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
       var template = await dbContext.Maps
-  .AsNoTracking()
-  .Include(x => x.MapNodes)
-  .FirstOrDefaultAsync(x => x.Id == body.TemplateId);
+        .AsNoTracking()
+        .Include(x => x.MapNodes)
+        .FirstOrDefaultAsync(x => x.Id == body.TemplateId);
       if (template == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, body.TemplateId);
 

@@ -115,7 +115,7 @@ namespace OLab.Api.Importer
         {
           using (var moduleFileStream = new MemoryStream())
           {
-            GetFileModule().ReadFileAsync(moduleFileStream, importFileDirectory, GetFileName(), new System.Threading.CancellationToken());
+            GetFileModule().CopyStreamToFileAsync(moduleFileStream, importFileDirectory, GetFileName(), new System.Threading.CancellationToken());
             _phys = DynamicXml.Load(moduleFileStream);
           }
         }

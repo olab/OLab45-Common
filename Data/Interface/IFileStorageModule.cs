@@ -3,6 +3,7 @@ using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,13 +28,13 @@ namespace OLab.Data.Interface
       string folder,
       string fileName);
 
-    Task ReadFileAsync(
+    Task CopyStreamToFileAsync(
       Stream stream,
       string folder,
       string fileName,
       CancellationToken token);
 
-    Task<string> WriteFileAsync(
+    Task<string> CopyFiletoStreamAsync(
       Stream stream,
       string filePath,
       CancellationToken token);
@@ -42,10 +43,16 @@ namespace OLab.Data.Interface
       string folder,
       string fileName);
 
-    Task<bool> ExtractFileAsync(
+    Task<bool> ExtractFileToStorageAsync(
       string folderName,
       string fileName,
       string extractDirectory,
+      CancellationToken token);
+
+    Task<bool> CopyFoldertoArchiveAsync(
+      ZipArchive archive,
+      string folderName,
+      bool appendToStream,
       CancellationToken token);
   }
 }

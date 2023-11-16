@@ -50,7 +50,7 @@ namespace OLab.Api.Model
     [ForeignKey(nameof(NodeId))]
     [InverseProperty(nameof(MapNodes.UserSessionTraces))]
     public virtual MapNodes Node { get; set; }
-    [ForeignKey(nameof(SessionId))]
+    [ForeignKey(nameof(Id))]
     [InverseProperty(nameof(UserSessions.UserSessionTraces))]
     public virtual UserSessions Session { get; set; }
   }

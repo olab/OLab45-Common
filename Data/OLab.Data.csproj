@@ -22,6 +22,9 @@
     <ProjectReference Include="..\Common\OLab.Common.csproj" />
     <ProjectReference Include="..\WikiTags\OLab.WikiTags.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Dtos\Reporting\" />
+  </ItemGroup>
   <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <ItemGroup>
       <OutputFiles Include="$(ProjectDir)$(OutputPath)*.*" />  
