@@ -20,7 +20,6 @@ namespace OLab.Api.Endpoints
 {
   public partial class FilesEndpoint : OLabEndpoint
   {
-
     public FilesEndpoint(
       IOLabLogger logger,
       IOLabConfiguration configuration,
