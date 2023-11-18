@@ -5,14 +5,11 @@ namespace OLab.Api.Model
 {
   public class ImportResponse
   {
-    //public IList<OLabLogMessage> Objects { get; set; }
-    public IList<string> Messages { get; set; }
+    public IList<OLabLogMessage> Messages { get; set; }
 
     public ImportResponse()
     {
-      //Objects = new List<OLabLogMessage>();
-      Messages = new List<string>();
+      Messages = new List<OLabLogMessage>();
     }
-
   }
 }

@@ -49,17 +49,16 @@ namespace OLab.Api.Importer
         Logger.LogInformation($"Skipped MapVpdElement record of type 'VPDText'");
         return true;
       }
-      }
 
       var item = new SystemConstants();
-      var oldId = phys.Id;
+      var oldId = phys.VpdId;
 
       item.Id = 0;
       item.ImageableType = "Maps";
       item.Name = phys.Key;
       item.Value = Encoding.ASCII.GetBytes(phys.Value);
       item.CreatedAt = DateTime.Now;
-      item.Description = $" saved {GetFileName()} id = {phys.Id}.";
+      item.Description = $"Imported from {GetFileName()} id = {phys.Id}.";
 
       var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdDto) as XmlMapVpdDto;
       var vpd = vpdDto.GetModel().Data.First(x => x.Id == phys.VpdId);
