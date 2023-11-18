@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using System;
 
-namespace OLabWebAPI.Dto
+namespace OLab.Api.Dto
 {
   public class MapNodesFullDto : MapNodesDto
   {

@@ -1,16 +1,23 @@
-using OLabWebAPI.ObjectMapper;
+using OLab.Api.ObjectMapper;
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Api.Importer
 {
 
   public class XmlMapNodeLinkDto : XmlImportDto<XmlMapNodeLinks>
   {
     private readonly MapNodeLinksMapper _mapper;
 
-    public XmlMapNodeLinkDto(Importer importer) : base(importer, "map_node_link.xml")
+    public XmlMapNodeLinkDto(
+      IOLabLogger logger,
+      Importer importer) : base(
+        logger,
+        importer,
+        Importer.DtoTypes.XmlMapNodeLinkDto,
+        "map_node_link.xml")
     {
-      _mapper = new MapNodeLinksMapper(GetLogger(), GetWikiProvider());
+      _mapper = new MapNodeLinksMapper(logger);
     }
 
     /// <summary>
@@ -31,7 +38,7 @@ namespace OLabWebAPI.Importer
     /// <returns>Success/failure</returns>
     public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
     {
-      Model.MapNodeLinks item = _mapper.ElementsToPhys(elements);
+      var item = _mapper.ElementsToPhys(elements);
       var oldId = item.Id;
 
       item.Id = 0;
@@ -47,7 +54,6 @@ namespace OLabWebAPI.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
-      GetLogger().LogDebug($" saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

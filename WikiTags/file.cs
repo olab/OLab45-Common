@@ -1,10 +1,13 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Common.Attributes;
+using OLab.Common.Interfaces;
 
-[WikiTagModule("FILE")]
+[OLabModule("FILE")]
 public class FileWikiTag : WikiTag1Argument
 {
-  public FileWikiTag(OLabLogger logger) : base(logger, "OlabFileTag")
+  public FileWikiTag(
+    IOLabLogger logger,
+    IOLabConfiguration configuration) : base(logger, configuration, "OlabFileTag")
   {
   }
 }

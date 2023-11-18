@@ -1,28 +1,36 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using OLabWebAPI.Common;
-using OLabWebAPI.Common.Exceptions;
-using OLabWebAPI.Data.Exceptions;
-using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.ObjectMapper;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Common.Exceptions;
+using OLab.Api.Data.Exceptions;
+using OLab.Api.Data.Interface;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.ObjectMapper;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OLabWebAPI.Endpoints
+namespace OLab.Api.Endpoints
 {
-  public partial class QuestionsEndpoint : OlabEndpoint
+  public partial class QuestionsEndpoint : OLabEndpoint
   {
-
     public QuestionsEndpoint(
-      OLabLogger logger,
-      IOptions<AppSettings> appSettings,
-      OLabDBContext context) : base(logger, appSettings, context)
+      IOLabLogger logger,
+      IOLabConfiguration configuration,
+      OLabDBContext context,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      IOLabModuleProvider<IFileStorageModule> fileStorageProvider)
+      : base(
+          logger,
+          configuration,
+          context,
+          wikiTagProvider,
+          fileStorageProvider)
     {
     }
 
@@ -45,7 +53,7 @@ namespace OLabWebAPI.Endpoints
     public async Task<OLabAPIPagedResponse<QuestionsDto>> GetAsync([FromQuery] int? take, [FromQuery] int? skip)
     {
 
-      logger.LogDebug($"QuestionsController.GetAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
+      Logger.LogDebug($"QuestionsController.GetAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
 
       var physList = new List<SystemQuestions>();
       var total = 0;
@@ -63,15 +71,15 @@ namespace OLabWebAPI.Endpoints
         remaining = total - take.Value - skip.Value;
       }
 
-      logger.LogDebug(string.Format("found {0} questions", physList.Count));
+      Logger.LogDebug(string.Format("found {0} questions", physList.Count));
 
-      IList<QuestionsDto> dtoList = new ObjectMapper.Questions(logger, new WikiTagProvider(logger)).PhysicalToDto(physList);
+      var dtoList = new Questions(Logger, _wikiTagProvider).PhysicalToDto(physList);
 
       var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
       var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
       var servers = dbContext.Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
 
-      foreach (QuestionsDto dto in dtoList)
+      foreach (var dto in dtoList)
         dto.ParentInfo = FindParentInfo(dto.ImageableType, dto.ImageableId, maps, nodes, servers);
 
       return new OLabAPIPagedResponse<QuestionsDto> { Data = dtoList, Remaining = remaining, Count = total };
@@ -84,21 +92,21 @@ namespace OLabWebAPI.Endpoints
     /// <param name="id"></param>
     /// <returns></returns>
     public async Task<QuestionsFullDto> GetAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint id)
     {
 
-      logger.LogDebug($"QuestionsController.GetAsync(uint id={id})");
+      Logger.LogDebug($"QuestionsController.GetAsync(uint id={id})");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Questions", id);
 
-      SystemQuestions phys = await dbContext.SystemQuestions.Include("SystemQuestionResponses").FirstAsync(x => x.Id == id);
-      var builder = new QuestionsFull(logger);
-      QuestionsFullDto dto = builder.PhysicalToDto(phys);
+      var phys = await dbContext.SystemQuestions.Include("SystemQuestionResponses").FirstAsync(x => x.Id == id);
+      var builder = new QuestionsFull(Logger);
+      var dto = builder.PhysicalToDto(phys);
 
       // test if user has access to object
-      IActionResult accessResult = auth.HasAccess("R", dto);
+      var accessResult = auth.HasAccess("R", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Questions", id);
 
@@ -114,23 +122,23 @@ namespace OLabWebAPI.Endpoints
     /// <param name="id">question id</param>
     /// <returns>IActionResult</returns>
     public async Task PutAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint id,
       QuestionsFullDto dto)
     {
-      logger.LogDebug($"PutAsync(uint id={id})");
+      Logger.LogDebug($"PutAsync(uint id={id})");
 
       dto.ImageableId = dto.ParentInfo.Id;
 
       // test if user has access to object
-      IActionResult accessResult = auth.HasAccess("W", dto);
+      var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Questions", id);
 
       try
       {
-        var builder = new QuestionsFull(logger);
-        SystemQuestions phys = builder.DtoToPhysical(dto);
+        var builder = new QuestionsFull(Logger);
+        var phys = builder.DtoToPhysical(dto);
 
         phys.UpdatedAt = DateTime.Now;
 
@@ -139,7 +147,7 @@ namespace OLabWebAPI.Endpoints
       }
       catch (DbUpdateConcurrencyException)
       {
-        SystemQuestions existingObject = await GetQuestionAsync(id);
+        var existingObject = await GetQuestionAsync(id);
         if (existingObject == null)
           throw new OLabObjectNotFoundException("Questions", id);
       }
@@ -152,21 +160,21 @@ namespace OLabWebAPI.Endpoints
     /// <param name="dto">Question data</param>
     /// <returns>IActionResult</returns>
     public async Task<QuestionsFullDto> PostAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       QuestionsFullDto dto)
     {
-      logger.LogDebug($"QuestionsController.PostAsync({dto.Stem})");
+      Logger.LogDebug($"QuestionsController.PostAsync({dto.Stem})");
 
       dto.ImageableId = dto.ParentInfo.Id;
       dto.Prompt = !string.IsNullOrEmpty(dto.Prompt) ? dto.Prompt : "";
 
       // test if user has access to object
-      IActionResult accessResult = auth.HasAccess("W", dto);
+      var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Questions", 0);
 
-      var builder = new QuestionsFull(logger);
-      SystemQuestions phys = builder.DtoToPhysical(dto);
+      var builder = new QuestionsFull(Logger);
+      var phys = builder.DtoToPhysical(dto);
 
       phys.CreatedAt = DateTime.Now;
 

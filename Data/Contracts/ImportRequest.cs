@@ -1,7 +1,7 @@
-using OLabWebAPI.Utils;
+using OLab.Api.Utils;
 using System.ComponentModel.DataAnnotations;
 
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model
 {
   public class ImportRequest
   {

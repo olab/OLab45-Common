@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model
 {
   [Table("options")]
   [Index(nameof(Name), Name = "name", IsUnique = true)]

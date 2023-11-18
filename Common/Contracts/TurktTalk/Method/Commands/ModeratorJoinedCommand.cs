@@ -1,8 +1,8 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OLabWebAPI.TurkTalk.Methods;
+using OLab.Api.TurkTalk.Methods;
 
-namespace OLabWebAPI.TurkTalk.Commands
+namespace OLab.Api.TurkTalk.Commands
 {
   public class ModeratorJoinedCommand : CommandMethod
   {

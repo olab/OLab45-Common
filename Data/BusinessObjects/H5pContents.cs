@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model
 {
   [Table("h5p_contents")]
   public partial class H5pContents

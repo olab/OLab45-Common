@@ -1,22 +1,28 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
   {
     private static Random random = null;
 
-    public MapNodeLinksMapper(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public MapNodeLinksMapper(
+      IOLabLogger logger,
+      bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public MapNodeLinksMapper(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public MapNodeLinksMapper(
+      IOLabLogger logger,
+      WikiTagProvider tagProvider,
+      bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
       if (random == null)
         random = new Random((int)DateTime.Now.Ticks);
@@ -26,7 +32,7 @@ namespace OLabWebAPI.ObjectMapper
     {
       var dtoList = new List<MapNodeLinksDto>();
 
-      foreach (MapNodeLinks phys in physList.OrderBy(x => x.Order))
+      foreach (var phys in physList.OrderBy(x => x.Order))
       {
         // do isHidden check
         //if (phys.Hidden.HasValue && phys.Hidden.Value)
@@ -46,9 +52,9 @@ namespace OLabWebAPI.ObjectMapper
       }
 
       // hook up two-way links
-      foreach (MapNodeLinksDto itemOuter in dtoList)
+      foreach (var itemOuter in dtoList)
       {
-        foreach (MapNodeLinksDto itemInner in dtoList)
+        foreach (var itemInner in dtoList)
         {
           if ((itemOuter.SourceId == itemInner.DestinationId) && (itemOuter.DestinationId == itemInner.SourceId))
             itemOuter.ReverseId = itemInner.Id;
@@ -72,7 +78,7 @@ namespace OLabWebAPI.ObjectMapper
 
     public override MapNodeLinksDto PhysicalToDto(MapNodeLinks phys, Object source = null)
     {
-      MapNodeLinksDto dto = GetDto(source);
+      var dto = GetDto(source);
       InternalPhysicalToDto(phys, dto);
       return dto;
     }
@@ -90,14 +96,14 @@ namespace OLabWebAPI.ObjectMapper
 
     public override MapNodeLinks DtoToPhysical(MapNodeLinksDto dto, Object source = null)
     {
-      MapNodeLinks phys = GetPhys(source);
+      var phys = GetPhys(source);
       InternalDtoToPhysical(dto, phys);
       return phys;
     }
 
     public override MapNodeLinks ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
     {
-      MapNodeLinks phys = GetPhys(source);
+      var phys = GetPhys(source);
 
       phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
       CreateIdTranslation(phys.Id);
@@ -113,7 +119,7 @@ namespace OLabWebAPI.ObjectMapper
         phys.Hidden = (nTemp == 1);
       phys.CreatedAt = DateTime.Now;
 
-      // logger.LogInformation($"loaded MapNodeLinks {phys.Id}");
+      // Logger.LogInformation($"loaded MapNodeLinks {phys.Id}");
 
       return phys;
     }

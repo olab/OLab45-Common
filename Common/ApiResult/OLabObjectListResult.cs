@@ -1,11 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.Common
+namespace OLab.Api.Common
 {
   public class OLabObjectListResult<D>
   {
-    public static JsonResult Result(IList<D> value)
+    public static OLabAPIResponse<IList<D>> Result(IList<D> value)
     {
       var result = new OLabAPIPagedResponse<D>
       {
@@ -13,7 +12,7 @@ namespace OLabWebAPI.Common
         Count = value.Count
       };
 
-      return new JsonResult(result);
+      return result;
     }
   }
 }

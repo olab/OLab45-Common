@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model
 {
   [Table("scope_types")]
   public partial class ScopeTypes

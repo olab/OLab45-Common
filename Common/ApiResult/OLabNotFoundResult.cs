@@ -1,24 +1,22 @@
-using Microsoft.AspNetCore.Mvc;
-
-namespace OLabWebAPI.Common
+namespace OLab.Api.Common
 {
   public class OLabNotFoundResult<D>
   {
-    public static NotFoundObjectResult Result(D value)
+    public static OLabAPIResponse<D> Result(D value)
     {
-      return new NotFoundObjectResult(new OLabAPIResponse<D>()
+      return new OLabAPIResponse<D>()
       {
         Data = value
-      });
+      };
     }
 
-    public static NotFoundObjectResult Result(string objectType, D value)
+    public static OLabAPIResponse<uint> Result(string objectType, uint value)
     {
-      return new NotFoundObjectResult(new OLabAPIResponse<D>()
+      return new OLabAPIResponse<uint>()
       {
         Message = $"{objectType}",
         Data = value
-      });
+      };
     }
   }
 }

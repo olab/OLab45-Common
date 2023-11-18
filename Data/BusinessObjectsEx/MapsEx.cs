@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model
 {
   public partial class Maps
   {
@@ -15,7 +15,7 @@ namespace OLabWebAPI.Model
         cfg.CreateMap<Maps, Maps>().ReverseMap()
       ));
 
-      Maps map = mapper.Map<Maps>(templateMap);
+      var map = mapper.Map<Maps>(templateMap);
 
       map.Id = 0;
       map.IsTemplate = 0;
@@ -25,7 +25,7 @@ namespace OLabWebAPI.Model
 
     public void AppendMapNodes(Maps sourceMap)
     {
-      foreach (MapNodes node in sourceMap.MapNodes)
+      foreach (var node in sourceMap.MapNodes)
         MapNodes.Add(node);
     }
 

@@ -1,10 +1,13 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Common.Attributes;
+using OLab.Common.Interfaces;
 
-[WikiTagModule("CR")]
+[OLabModule("CR")]
 public class CounterWikiTag : WikiTag1Argument
 {
-  public CounterWikiTag(OLabLogger logger) : base(logger, "OlabCounterTag")
+  public CounterWikiTag(
+    IOLabLogger logger,
+    IOLabConfiguration configuration) : base(logger, configuration, "OlabCounterTag")
   {
   }
 }

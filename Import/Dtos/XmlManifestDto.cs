@@ -1,31 +1,41 @@
-using OLabWebAPI.Utils;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
+using OLab.Import.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Api.Importer
 {
   /// <summary>
   /// Xml import Manifest object DTO
   /// </summary>
   public class XmlManifestDto : XmlImportDto<XmlManifest>
   {
-    public XmlManifestDto(Importer importer) : base(importer, "manifest.xml") { }
+    public XmlManifestDto(
+      IOLabLogger logger,
+      IImporter importer) : base(
+        logger,
+        importer,
+        Importer.DtoTypes.XmlManifestDto,
+        "manifest.xml")
+    { }
 
     /// <summary>
     /// Loads the specific import file into a model object
     /// </summary>
     /// <param name="importDirectory">Directory where import file exists</param>
     /// <returns></returns>
-    public override bool Load(string importDirectory)
+    public override bool Load(string extractPath)
     {
-      var result = base.Load(importDirectory);
+      var result = base.Load(extractPath);
 
       if (result)
       {
         dynamic elements = GetElements(GetXmlPhys());
 
         var record = 0;
-        foreach (dynamic element in elements)
+        foreach (var element in elements)
         {
           try
           {
@@ -35,7 +45,7 @@ namespace OLabWebAPI.Importer
           }
           catch (Exception ex)
           {
-            GetLogger().LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
+            Logger.LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
           }
 
         }

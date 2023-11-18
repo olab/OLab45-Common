@@ -1,7 +1,7 @@
-using OLabWebAPI.Dto;
+using OLab.Api.Dto;
 using System;
 
-namespace OLabWebAPI.Data.Interface
+namespace OLab.Api.Data.Interface
 {
   public interface IOLabSession
   {

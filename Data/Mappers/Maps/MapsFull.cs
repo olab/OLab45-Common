@@ -1,13 +1,21 @@
 using AutoMapper;
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto;
+using OLab.Common.Interfaces;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class MapsFullMapper : OLabMapper<Model.Maps, MapsFullDto>
   {
-    public MapsFullMapper(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public MapsFullMapper(
+      IOLabLogger logger,
+      bool enableWikiTranslation = true) : base(logger)
+    {
+    }
+    public MapsFullMapper(
+      IOLabLogger logger,
+      WikiTagProvider tagProvider,
+      bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 
@@ -22,10 +30,6 @@ namespace OLabWebAPI.ObjectMapper
         .ForMember(dest => dest.Description, act => act.MapFrom(src => src.Abstract))
         .ReverseMap()
       );
-    }
-
-    public MapsFullMapper(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
-    {
     }
 
   }

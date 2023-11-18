@@ -1,32 +1,42 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class QuestionResponses : OLabMapper<SystemQuestionResponses, QuestionResponsesDto>
   {
     protected readonly QuestionsFullDto ParentQuestion;
 
-    public QuestionResponses(OLabLogger logger, QuestionsFullDto parentQuestion) : base(logger)
+    public QuestionResponses(
+      IOLabLogger logger,
+      QuestionsFullDto parentQuestion) : base(logger)
     {
       ParentQuestion = parentQuestion;
     }
 
-    public QuestionResponses(OLabLogger logger, WikiTagProvider tagProvider, QuestionsFullDto parentQuestion) : base(logger, tagProvider)
+    public QuestionResponses(
+      IOLabLogger logger,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      QuestionsFullDto parentQuestion) : base(logger, wikiTagProvider)
     {
       ParentQuestion = parentQuestion;
     }
 
-    public QuestionResponses(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public QuestionResponses(
+      IOLabLogger logger,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      bool enableWikiTranslation = true) : base(logger, wikiTagProvider)
     {
     }
 
-    public override SystemQuestionResponses DtoToPhysical(QuestionResponsesDto dto, SystemQuestionResponses phys)
+    public override SystemQuestionResponses DtoToPhysical(
+      QuestionResponsesDto dto,
+      SystemQuestionResponses phys)
     {
       if (!dto.IsCorrect.HasValue)
         phys.IsCorrect = -1;
@@ -36,7 +46,9 @@ namespace OLabWebAPI.ObjectMapper
       return phys;
     }
 
-    public override QuestionResponsesDto PhysicalToDto(SystemQuestionResponses phys, QuestionResponsesDto dto)
+    public override QuestionResponsesDto PhysicalToDto(
+      SystemQuestionResponses phys,
+      QuestionResponsesDto dto)
     {
       if (ParentQuestion != null)
       {
@@ -64,9 +76,11 @@ namespace OLabWebAPI.ObjectMapper
       return dto;
     }
 
-    public override SystemQuestionResponses ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
+    public override SystemQuestionResponses ElementsToPhys(
+      IEnumerable<dynamic> elements,
+      Object source = null)
     {
-      SystemQuestionResponses phys = GetPhys(source);
+      var phys = GetPhys(source);
 
       phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
       CreateIdTranslation(phys.Id);
@@ -85,7 +99,7 @@ namespace OLabWebAPI.ObjectMapper
       phys.To = elements.FirstOrDefault(x => x.Name == "to").Value;
       phys.CreatedAt = DateTime.Now;
 
-      // logger.LogInformation($"loaded SystemQuestionResponses {phys.Id}");
+      // Logger.LogInformation($"loaded SystemQuestionResponses {phys.Id}");
 
       return phys;
     }

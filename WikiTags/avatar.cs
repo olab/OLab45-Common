@@ -1,10 +1,13 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Common.Attributes;
+using OLab.Common.Interfaces;
 
-[WikiTagModule("AV")]
+[OLabModule("AV")]
 public class AvatarWikiTag : WikiTag1Argument
 {
-  public AvatarWikiTag(OLabLogger logger) : base(logger, "OlabAvatarTag")
+  public AvatarWikiTag(
+    IOLabLogger logger,
+    IOLabConfiguration configuration) : base(logger, configuration, "OlabAvatarTag")
   {
   }
 

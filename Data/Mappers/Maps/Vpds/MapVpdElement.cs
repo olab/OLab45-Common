@@ -1,22 +1,22 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class MapVpdElement : OLabMapper<MapVpdElements, MapVpdElementsDto>
   {
-    public MapVpdElement(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public MapVpdElement(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
     public override MapVpdElements ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
     {
-      MapVpdElements phys = GetPhys(source);
+      var phys = GetPhys(source);
 
       phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
       CreateIdTranslation(phys.Id);
@@ -24,7 +24,7 @@ namespace OLabWebAPI.ObjectMapper
       phys.Key = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "key"));
       phys.Value = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "value"));
 
-      // logger.LogInformation($"loaded MapVpdElement {phys.Id}");
+      // Logger.LogInformation($"loaded MapVpdElement {phys.Id}");
 
       return phys;
     }

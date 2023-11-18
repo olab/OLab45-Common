@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model
 {
   [Table("user_sessiontraces")]
   [Index(nameof(MapId), Name = "map_id")]
@@ -50,7 +50,7 @@ namespace OLabWebAPI.Model
     [ForeignKey(nameof(NodeId))]
     [InverseProperty(nameof(MapNodes.UserSessionTraces))]
     public virtual MapNodes Node { get; set; }
-    [ForeignKey(nameof(SessionId))]
+    [ForeignKey(nameof(Id))]
     [InverseProperty(nameof(UserSessions.UserSessionTraces))]
     public virtual UserSessions Session { get; set; }
   }

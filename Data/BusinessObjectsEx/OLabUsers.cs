@@ -1,4 +1,4 @@
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model
 {
   public class OLabUser
   {

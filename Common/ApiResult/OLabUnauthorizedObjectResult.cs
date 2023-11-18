@@ -1,18 +1,19 @@
-using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace OLabWebAPI.Common
+namespace OLab.Api.Common
 {
-  public class OLabUnauthorizedObjectResult<D>
+  public class OLabUnauthorizedObjectResult
   {
-    public static UnauthorizedObjectResult Result(D value)
+    public static OLabAPIResponse<string> Result(string value)
     {
-      return new UnauthorizedObjectResult(new OLabAPIResponse<D>()
+      var apiResponse = new OLabAPIResponse<string>()
       {
         Data = value,
         ErrorCode = HttpStatusCode.Unauthorized,
         Message = "Unauthorized"
-      });
+      };
+
+      return apiResponse;
     }
   }
 }

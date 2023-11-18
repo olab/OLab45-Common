@@ -1,26 +1,27 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class Files : OLabMapper<SystemFiles, FilesDto>
   {
-    public Files(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public Files(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public Files(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public Files(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 
     public override SystemFiles ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
     {
-      SystemFiles phys = GetPhys(source);
+      var phys = GetPhys(source);
 
       phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
       if (uint.TryParse(elements.FirstOrDefault(x => x.Name == "map_id").Value, out uint id))
@@ -42,8 +43,6 @@ namespace OLabWebAPI.ObjectMapper
       phys.IsShared = Convert.ToSByte(elements.FirstOrDefault(x => x.Name == "is_shared").Value);
       phys.IsPrivate = Convert.ToSByte(elements.FirstOrDefault(x => x.Name == "is_private").Value);
       phys.CreatedAt = DateTime.Now;
-
-      // logger.LogInformation($"loaded SystemFiles {phys.Id}");
 
       return phys;
     }

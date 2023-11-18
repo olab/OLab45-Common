@@ -1,28 +1,34 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class MapNodesMapper : OLabMapper<Model.MapNodes, MapNodesDto>
   {
     public static int DefaultWidth = 400;
     public static int DefaultHeight = 300;
 
-    public MapNodesMapper(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public MapNodesMapper(
+      IOLabLogger logger,
+      WikiTagProvider tagProvider,
+      bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 
-    public MapNodesMapper(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public MapNodesMapper(
+      IOLabLogger logger,
+      bool enableWikiTranslation = true) : base(logger)
     {
     }
 
     public override Model.MapNodes ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
     {
-      Model.MapNodes phys = GetPhys(source);
+      var phys = GetPhys(source);
 
       phys.Annotation = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "annotation"));
       phys.Conditional = elements.FirstOrDefault(x => x.Name == "conditional").Value;
@@ -48,7 +54,7 @@ namespace OLabWebAPI.ObjectMapper
       phys.Y = Convert.ToDouble(elements.FirstOrDefault(x => x.Name == "y").Value);
       phys.CreatedAt = DateTime.Now;
 
-      // logger.LogInformation($"loaded MapNodes {phys.Id}");
+      // Logger.LogInformation($"loaded MapNodes {phys.Id}");
 
       return phys;
     }

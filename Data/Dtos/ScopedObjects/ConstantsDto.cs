@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace OLabWebAPI.Dto
+namespace OLab.Api.Dto
 {
   public class ConstantsDto : ScopedObjectDto
   {
@@ -8,5 +8,10 @@ namespace OLabWebAPI.Dto
     public string Value { get; set; }
     [JsonProperty("isSystem")]
     public int? IsSystem { get; set; }
+
+    public override string ToString()
+    {
+      return $" '{Name}({Id})' = {Value}";
+    }
   }
 }

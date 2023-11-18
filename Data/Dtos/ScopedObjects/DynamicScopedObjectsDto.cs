@@ -1,11 +1,12 @@
 using Newtonsoft.Json;
-using OLabWebAPI.Utils;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OLabWebAPI.Dto
+namespace OLab.Api.Dto
 {
   public class DynamicScopedObject
   {
@@ -130,13 +131,13 @@ namespace OLabWebAPI.Dto
     {
       var counterValues = UpdatedAt.ToString() + "/";
 
-      foreach (CountersDto counter in Server.Counters.OrderBy(x => x.Id))
+      foreach (var counter in Server.Counters.OrderBy(x => x.Id))
         counterValues += counter.Value + "/";
 
-      foreach (CountersDto counter in Node.Counters.OrderBy(x => x.Id))
+      foreach (var counter in Node.Counters.OrderBy(x => x.Id))
         counterValues += counter.Value + "/";
 
-      foreach (CountersDto counter in Map.Counters.OrderBy(x => x.Id))
+      foreach (var counter in Map.Counters.OrderBy(x => x.Id))
         counterValues += counter.Value + "/";
 
       return counterValues;
@@ -166,7 +167,7 @@ namespace OLabWebAPI.Dto
       return dto;
     }
 
-    public void Dump(OLabLogger logger, string prefix)
+    public void Dump(IOLabLogger logger, string prefix)
     {
       var message = $"{prefix}{Environment.NewLine}";
 
@@ -180,13 +181,13 @@ namespace OLabWebAPI.Dto
       message += $"Text:   {plainText}{Environment.NewLine}";
       message += $"Bytes:  {GetPlainTextBytes(plainText)}{Environment.NewLine}";
 
-      foreach (CountersDto counter in Server.Counters)
+      foreach (var counter in Server.Counters)
         message += $"Server: {counter}{Environment.NewLine}";
 
-      foreach (CountersDto counter in Node.Counters)
+      foreach (var counter in Node.Counters)
         message += $"Node:   {counter}{Environment.NewLine}";
 
-      foreach (CountersDto counter in Map.Counters)
+      foreach (var counter in Map.Counters)
         message += $"Map:    {counter}{Environment.NewLine}";
 
       message += $"Update  {UpdatedAt.ToString()}{Environment.NewLine}";

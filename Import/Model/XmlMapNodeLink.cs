@@ -1,6 +1,6 @@
-using OLabWebAPI.Model;
+using OLab.Api.Model;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Api.Importer
 {
   public class XmlMapNodeLinks : XmlImportArray<MapNodeLinks>
   {

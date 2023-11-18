@@ -1,16 +1,16 @@
 using Microsoft.EntityFrameworkCore;
-using OLabWebAPI.Common.Exceptions;
-using OLabWebAPI.Data.Exceptions;
-using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.ObjectMapper;
+using OLab.Api.Common.Exceptions;
+using OLab.Api.Data.Exceptions;
+using OLab.Api.Data.Interface;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.ObjectMapper;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OLabWebAPI.Endpoints.Player
+namespace OLab.Api.Endpoints.Player
 {
-  public partial class MapsEndpoint : OlabEndpoint
+  public partial class MapsEndpoint : OLabEndpoint
   {
     /// <summary>
     /// 
@@ -20,7 +20,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <returns></returns>
     public Model.MapNodeLinks GetLinkSimple(OLabDBContext context, uint id)
     {
-      MapNodeLinks phys = context.MapNodeLinks.FirstOrDefault(x => x.Id == id);
+      var phys = context.MapNodeLinks.FirstOrDefault(x => x.Id == id);
       return phys;
     }
 
@@ -32,13 +32,13 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="linkId">link id</param>
     /// <returns>IActionResult</returns>
     public async Task PutMapNodeLinksAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       uint nodeId,
       uint linkId,
       MapNodeLinksFullDto linkdto)
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.PutMapNodeLinksAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.PutMapNodeLinksAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
@@ -46,15 +46,15 @@ namespace OLabWebAPI.Endpoints.Player
 
       try
       {
-        var builder = new MapNodeLinksFullMapper(logger);
-        MapNodeLinks phys = builder.DtoToPhysical(linkdto);
+        var builder = new MapNodeLinksFullMapper(Logger);
+        var phys = builder.DtoToPhysical(linkdto);
 
         dbContext.Entry(phys).State = EntityState.Modified;
         await dbContext.SaveChangesAsync();
       }
       catch (DbUpdateConcurrencyException)
       {
-        MapNodeLinks existingMap = GetLinkSimple(dbContext, linkId);
+        var existingMap = GetLinkSimple(dbContext, linkId);
         if (existingMap == null)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
       }

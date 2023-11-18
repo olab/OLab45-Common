@@ -2,8 +2,9 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
-namespace OLabWebAPI.Utils
+namespace OLab.Api.Utils
 {
   public class StringUtils
   {
@@ -17,6 +18,16 @@ namespace OLabWebAPI.Utils
       return sum.ToString("X");
     }
 
+    /// <summary>
+    /// Strip out unicode characters from a string
+    /// </summary>
+    /// <param name="str">Source string</param>
+    /// <returns>Cleanzed string</returns>
+    public static string StripUnicode(string str)
+    {
+      return Regex.Replace(str, @"[^\u0000-\u007F]+", string.Empty);
+    }
+
     public static string EncryptString(string key, string plainText)
     {
       var iv = new byte[16];
@@ -27,7 +38,7 @@ namespace OLabWebAPI.Utils
         aes.Key = Encoding.UTF8.GetBytes(key);
         aes.IV = iv;
 
-        ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+        var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
         using (var memoryStream = new MemoryStream())
         {
@@ -55,7 +66,7 @@ namespace OLabWebAPI.Utils
       {
         aes.Key = Encoding.UTF8.GetBytes(key);
         aes.IV = iv;
-        ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+        var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
         using (var memoryStream = new MemoryStream(buffer))
         {

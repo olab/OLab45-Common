@@ -1,10 +1,11 @@
-using OLabWebAPI.Model;
-using OLabWebAPI.ObjectMapper;
+using OLab.Api.Model;
+using OLab.Api.ObjectMapper;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Api.Importer
 {
 
   public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
@@ -12,10 +13,16 @@ namespace OLabWebAPI.Importer
     private readonly AvatarsMapper _avMapper;
     private readonly ObjectMapper.Files _fileMapper;
 
-    public XmlMapAvatarDto(Importer importer) : base(importer, "map_avatar.xml")
+    public XmlMapAvatarDto(
+      IOLabLogger logger,
+      Importer importer) : base(
+        logger,
+        importer,
+        Importer.DtoTypes.XmlMapAvatarDto,
+        "map_avatar.xml")
     {
-      _avMapper = new AvatarsMapper(GetLogger(), GetWikiProvider());
-      _fileMapper = new ObjectMapper.Files(GetLogger(), GetWikiProvider());
+      _avMapper = new AvatarsMapper(logger);
+      _fileMapper = new Files(logger);
     }
 
     /// <summary>
@@ -52,7 +59,7 @@ namespace OLabWebAPI.Importer
     /// <returns>Success/failure</returns>
     public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
     {
-      MapAvatars avItem = _avMapper.ElementsToPhys(elements);
+      var avItem = _avMapper.ElementsToPhys(elements);
       var oldId = avItem.Id;
 
       avItem.Id = 0;
@@ -63,9 +70,9 @@ namespace OLabWebAPI.Importer
       Context.MapAvatars.Add(avItem);
       Context.SaveChanges();
 
-      GetLogger().LogDebug($" saved {GetFileName()} id {avItem.Id}");
+      Logger.LogInformation($"Saved {GetFileName()} id {avItem.Id}");
 
-      SystemFiles fileItem = CreateAvatarSystemFile(elements, avItem);
+      var fileItem = CreateAvatarSystemFile(elements, avItem);
 
       fileItem.ImageableId = avItem.MapId;
       fileItem.ImageableType = "Maps";
@@ -73,13 +80,13 @@ namespace OLabWebAPI.Importer
 
       var publicFile = GetPublicFileDirectory(fileItem.ImageableType, fileItem.ImageableId, fileItem.Path);
       if (!File.Exists(publicFile))
-        GetImporter().GetLogger().LogWarning(GetFileName(), 0, $"media file '{publicFile}' does not exist in public directory");
+        Logger.LogWarning(GetFileName(), 0, $"media file '{publicFile}' does not exist in public directory");
 
       Context.SystemFiles.Add(fileItem);
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, fileItem.Id);
-      GetLogger().LogDebug($" saved SystemFile {fileItem.Id}");
+      Logger.LogInformation($"Saved SystemFile {fileItem.Id}");
 
       return true;
     }

@@ -1,19 +1,19 @@
 using AutoMapper;
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Common.Interfaces;
 using System.Linq;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class QuestionsFull : OLabMapper<SystemQuestions, QuestionsFullDto>
   {
-    public QuestionsFull(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public QuestionsFull(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public QuestionsFull(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public QuestionsFull(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 
@@ -39,7 +39,7 @@ namespace OLabWebAPI.ObjectMapper
       dto.Wiki = phys.GetWikiTag();
       dto.Value = null;
 
-      var builder = new ObjectMapper.QuestionResponses(logger, GetWikiProvider(), dto);
+      var builder = new QuestionResponses(Logger, GetWikiProvider(), dto);
       dto.Responses.AddRange(builder.PhysicalToDto(phys.SystemQuestionResponses.ToList()));
 
       return dto;

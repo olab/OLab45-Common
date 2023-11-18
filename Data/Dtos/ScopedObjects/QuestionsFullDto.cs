@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.Dto
+namespace OLab.Api.Dto
 {
   public class QuestionsFullDto : QuestionsDto
   {

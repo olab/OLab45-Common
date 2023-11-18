@@ -1,17 +1,32 @@
-using OLabWebAPI.ObjectMapper;
+using OLab.Api.ObjectMapper;
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Api.Importer
 {
 
   public class XmlMapDto : XmlImportDto<XmlMap>
   {
     private readonly MapsMapper _mapper;
 
-    public XmlMapDto(Importer importer) : base(importer, "map.xml")
+    public XmlMapDto(IOLabLogger logger, Importer importer) : base(logger, importer, Importer.DtoTypes.XmlMapDto, "map.xml")
     {
-      _mapper = new MapsMapper(GetLogger(), GetWikiProvider());
+      _mapper = new MapsMapper(logger);
     }
+
+    /// <summary>
+    /// Loads the specific import file into a model object
+    /// </summary>
+    /// <param name="importDirectory">Directory where import file exists</param>
+    /// <returns></returns>
+    // public override bool Load(Stream stream)
+    // {
+    //   var result = base.Load(importDirectory);
+    //   var elements = GetElements(GetXmlPhys());
+    //   xmlImportElementSets.Add(elements);
+
+    //   return result;
+    // }
 
     /// <summary>
     /// Extract records from the xml document
@@ -31,7 +46,7 @@ namespace OLabWebAPI.Importer
     /// <returns>Success/failure</returns>
     public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
     {
-      Model.Maps item = _mapper.ElementsToPhys(elements);
+      var item = _mapper.ElementsToPhys(elements);
       var oldId = item.Id;
       item.Id = 0;
 
@@ -39,8 +54,6 @@ namespace OLabWebAPI.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
-      GetLogger().LogDebug($" saved {GetFileName()} id {oldId} -> {item.Id}");
-
       GetModel().Data.Add(item);
 
       return true;

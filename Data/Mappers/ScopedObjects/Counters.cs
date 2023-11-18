@@ -1,14 +1,15 @@
 using AutoMapper;
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class CounterValueResolver : IValueResolver<SystemCounters, CountersDto, string>
   {
@@ -20,11 +21,16 @@ namespace OLabWebAPI.ObjectMapper
 
   public class Counters : OLabMapper<SystemCounters, CountersDto>
   {
-    public Counters(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public Counters(IOLabLogger logger, WikiTagProvider tagProvider) : base(logger, tagProvider)
+    {
+
+    }
+
+    public Counters(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public Counters(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public Counters(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 
@@ -48,8 +54,7 @@ namespace OLabWebAPI.ObjectMapper
     {
       if (phys.Value != null)
         dto.Value = Encoding.ASCII.GetString(phys.Value);
-      if (dto.Value == null)
-        dto.Value = "";
+      dto.Value ??= "";
       return dto;
     }
 
@@ -61,7 +66,7 @@ namespace OLabWebAPI.ObjectMapper
 
     public override SystemCounters ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
     {
-      SystemCounters phys = GetPhys(source);
+      var phys = GetPhys(source);
 
       phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
       phys.Name = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "name"));

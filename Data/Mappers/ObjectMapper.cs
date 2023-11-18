@@ -1,15 +1,14 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public abstract class ObjectMapper<P, D> : object where P : new() where D : new()
   {
-    protected OLabLogger logger;
-    protected WikiTagProvider _tagProvider = null;
-    public WikiTagProvider GetWikiProvider() { return _tagProvider; }
+    protected IOLabLogger Logger;
+    protected IOLabModuleProvider<IWikiTagModule> _wikiTagModules = null;
 
     // used to hold on to id translation between origin system and new one
     protected IDictionary<uint, uint?> _idTranslation = new Dictionary<uint, uint?>();
@@ -18,16 +17,18 @@ namespace OLabWebAPI.ObjectMapper
     public abstract P DtoToPhysical(D dto, Object source = null);
     public virtual P ElementsToPhys(IEnumerable<dynamic> elements, Object source = null) { return default; }
 
-    public ObjectMapper(OLabLogger logger)
+    public ObjectMapper(
+      IOLabLogger logger)
     {
-      this.logger = logger;
-      _tagProvider = new WikiTagProvider(logger);
+      Logger = OLabLogger.CreateNew<ObjectMapper<P, D>>(logger);
     }
 
-    public ObjectMapper(OLabLogger logger, WikiTagProvider tagProvider)
+    public ObjectMapper(
+      IOLabLogger logger,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider)
     {
-      this.logger = logger;
-      _tagProvider = tagProvider;
+      Logger = OLabLogger.CreateNew<ObjectMapper<P, D>>(logger);
+      _wikiTagModules = wikiTagProvider;
     }
 
     public virtual D GetDto(Object source = null)
@@ -49,9 +50,9 @@ namespace OLabWebAPI.ObjectMapper
     public virtual IList<D> PhysicalToDto(IList<P> physList)
     {
       var dtoList = new List<D>();
-      foreach (P phys in physList)
+      foreach (var phys in physList)
       {
-        D dto = PhysicalToDto(phys);
+        var dto = PhysicalToDto(phys);
         dtoList.Add(dto);
       }
 

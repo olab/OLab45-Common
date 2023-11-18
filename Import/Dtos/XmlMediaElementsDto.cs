@@ -1,26 +1,34 @@
 using Microsoft.CSharp.RuntimeBinder;
-using OLabWebAPI.Utils;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using static OLabWebAPI.Importer.Importer;
+using static OLab.Api.Importer.Importer;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Api.Importer
 {
 
   public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
   {
-    public XmlMediaElementsDto(Importer importer) : base(importer, "media_elements.xml") { }
+    public XmlMediaElementsDto(
+      IOLabLogger logger,
+      Importer importer) : base(
+        logger,
+        importer,
+        DtoTypes.XmlMediaElementsDto,
+        "media_elements.xml")
+    { }
 
     /// <summary>
     /// Loads the specific import file into a model object
     /// </summary>
     /// <param name="importDirectory">Directory where import file exists</param>
     /// <returns></returns>
-    public override bool Load(string importDirectory)
+    public override bool Load(string extractPath)
     {
-      var result = base.Load(importDirectory);
+      var result = base.Load(extractPath);
       var record = 0;
 
       if (result)
@@ -29,7 +37,7 @@ namespace OLabWebAPI.Importer
         {
           var outerElements = (IEnumerable<dynamic>)GetXmlPhys().media_elements.media_elements_files.Elements();
 
-          foreach (dynamic element in outerElements)
+          foreach (var element in outerElements)
           {
             try
             {
@@ -40,13 +48,13 @@ namespace OLabWebAPI.Importer
             }
             catch (Exception ex)
             {
-              GetLogger().LogError(ex, $"Error loading '{GetFileName()}' media_elements_files record #{record}: {ex.Message}");
+              Logger.LogError(ex, $"Error loading '{GetFileName()}' media_elements_files record #{record}: {ex.Message}");
             }
           }
         }
         catch (RuntimeBinderException)
         {
-          GetLogger().LogWarning($"No media_elements_files records in {GetFileName()}");
+          Logger.LogWarning($"No media_elements_files records in {GetFileName()}");
         }
 
         record = 0;
@@ -55,7 +63,7 @@ namespace OLabWebAPI.Importer
         {
           var outerElements = (IEnumerable<dynamic>)GetXmlPhys().media_elements.media_elements_avatars.Elements();
 
-          foreach (dynamic element in outerElements)
+          foreach (var element in outerElements)
           {
             try
             {
@@ -66,18 +74,18 @@ namespace OLabWebAPI.Importer
             }
             catch (Exception ex)
             {
-              GetLogger().LogError(ex, $"Error loading '{GetFileName()}' media_elements_avatars record #{++record}: {ex.Message}");
+              Logger.LogError(ex, $"Error loading '{GetFileName()}' media_elements_avatars record #{++record}: {ex.Message}");
             }
 
           }
         }
         catch (RuntimeBinderException)
         {
-          GetLogger().LogWarning($"No media_elements_avatars records in {GetFileName()}");
+          Logger.LogWarning($"No media_elements_avatars records in {GetFileName()}");
         }
 
-        GetLogger().LogDebug($" loaded {GetModel().MediaElementsFiles.Count()} {GetFileName()} MediaElementsFiles objects");
-        GetLogger().LogDebug($" loaded {GetModel().MediaElementsAvatars.Count()} {GetFileName()} MediaElementsAvatars objects");
+        Logger.LogInformation($"loaded {GetModel().MediaElementsFiles.Count()} {GetFileName()} MediaElementsFiles objects");
+        Logger.LogInformation($"loaded {GetModel().MediaElementsAvatars.Count()} {GetFileName()} MediaElementsAvatars objects");
 
       }
 
@@ -106,30 +114,27 @@ namespace OLabWebAPI.Importer
 
       try
       {
-        var sourceDirectory = Path.Combine(GetImportPackageDirectory(), "media");
+        var sourceDirectory = $"media";
 
         var mapDto = GetImporter().GetDto(DtoTypes.XmlMapDto) as XmlMapDto;
-        Model.Maps map = mapDto.GetModel().Data.FirstOrDefault();
+        var map = mapDto.GetModel().Data.FirstOrDefault();
 
         var targetDirectory = GetPublicFileDirectory("Maps", map.Id);
-        Directory.CreateDirectory(targetDirectory);
 
-        foreach (dynamic element in elements)
+        foreach (var element in elements)
         {
           try
           {
             dynamic fileName = Conversions.Base64Decode(element, true);
 
-            dynamic sourceFileName = Path.Combine(sourceDirectory, fileName);
-            dynamic targetFileName = Path.Combine(targetDirectory, fileName);
-            File.Copy(sourceFileName, targetFileName, true);
+            GetImporter().GetFileStorageModule().MoveFileAsync(fileName, sourceDirectory, targetDirectory).Wait();
 
-            GetLogger().LogDebug($" copied {GetFileName()} '{fileName}' -> '{targetDirectory}'");
+            Logger.LogInformation($"Copied {GetFileName()} '{fileName}' -> '{targetDirectory}'");
 
           }
           catch (System.Exception ex)
           {
-            GetLogger().LogError($" error importing {GetFileName()} '{element.Name}' = '{element.Value}': reason : {ex.Message}");
+            Logger.LogError($"Error importing {GetFileName()} '{element.Name}' = '{element.Value}': reason : {ex.Message}");
             rc = false;
           }
 
@@ -138,7 +143,7 @@ namespace OLabWebAPI.Importer
       }
       catch (System.Exception ex)
       {
-        GetLogger().LogError($" error importing {GetFileName()}: reason : {ex.Message}");
+        Logger.LogError($"Error importing {GetFileName()}: reason : {ex.Message}");
         rc = false;
       }
 

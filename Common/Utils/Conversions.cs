@@ -2,7 +2,7 @@ using Microsoft.CSharp.RuntimeBinder;
 using System;
 using System.Text;
 
-namespace OLabWebAPI.Utils
+namespace OLab.Api.Utils
 {
   public static class Conversions
   {
@@ -73,7 +73,7 @@ namespace OLabWebAPI.Utils
     /// <returns>Seconds (including fractional) since epoch</returns>
     public static decimal GetCurrentUnixTime()
     {
-      TimeSpan span = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+      var span = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
       var unixTime = span.TotalSeconds;
       return (decimal)unixTime;
     }

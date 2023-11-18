@@ -1,45 +1,63 @@
 using Dawn;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Data.Interface;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
+using Constants = OLab.Api.Utils.Constants;
 
-namespace OLabWebAPI.Endpoints
+namespace OLab.Api.Endpoints
 {
-  public class OlabEndpoint
+  public class OLabEndpoint
   {
     protected readonly OLabDBContext dbContext;
-    protected OLabLogger logger;
+    protected IOLabLogger Logger;
     protected string token;
     protected IUserContext _userContext;
-    readonly AppSettings appSettings;
+    protected readonly IOLabConfiguration _configuration;
+    protected readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
+    protected readonly IFileStorageModule _fileStorageModule;
 
-    public OlabEndpoint(OLabLogger logger, OLabDBContext context)
+    public OLabEndpoint(
+      IOLabLogger logger,
+      IOLabConfiguration configuration,
+      OLabDBContext context)
     {
       Guard.Argument(logger).NotNull(nameof(logger));
+      Guard.Argument(configuration).NotNull(nameof(configuration));
       Guard.Argument(context).NotNull(nameof(context));
 
-      this.dbContext = context;
-      this.logger = logger;
+      dbContext = context;
+      _configuration = configuration;
+
+      Logger = logger;
     }
 
-    public OlabEndpoint(OLabLogger logger, IOptions<AppSettings> appSettings, OLabDBContext context)
+    public OLabEndpoint(
+      IOLabLogger logger,
+      IOLabConfiguration configuration,
+      OLabDBContext context,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      IOLabModuleProvider<IFileStorageModule> fileStorageProvider) : this(logger, configuration, context)
     {
-      Guard.Argument(logger).NotNull(nameof(logger));
-      Guard.Argument(appSettings).NotNull(nameof(appSettings));
-      Guard.Argument(context).NotNull(nameof(context));
+      Guard.Argument(wikiTagProvider).NotNull(nameof(wikiTagProvider));
+      Guard.Argument(fileStorageProvider).NotNull(nameof(fileStorageProvider));
 
-      this.dbContext = context;
-      this.appSettings = appSettings.Value;
-      this.logger = logger;
+      var fileSystemModuleName = _configuration.GetAppSettings().FileStorageType;
+      if (string.IsNullOrEmpty(fileSystemModuleName))
+        throw new ConfigurationErrorsException($"missing FileStorageType");
+
+      _fileStorageModule = fileStorageProvider.GetModule(fileSystemModuleName);
+      _wikiTagProvider = wikiTagProvider;
     }
 
     public void SetUserContext(IUserContext userContext)
@@ -49,8 +67,8 @@ namespace OLabWebAPI.Endpoints
 
     protected async ValueTask<Maps> GetMapAsync(uint id)
     {
-      Maps phys = await dbContext.Maps.FirstOrDefaultAsync(x => x.Id == id);
-      if ( phys != null)
+      var phys = await dbContext.Maps.FirstOrDefaultAsync(x => x.Id == id);
+      if (phys != null)
         dbContext.Entry(phys).Collection(b => b.MapNodes).Load();
 
       return phys;
@@ -65,21 +83,21 @@ namespace OLabWebAPI.Endpoints
     {
       if (dto.ImageableType == Constants.ScopeLevelServer)
       {
-        Servers obj = dbContext.Servers.FirstOrDefault(x => x.Id == dto.ImageableId);
+        var obj = dbContext.Servers.FirstOrDefault(x => x.Id == dto.ImageableId);
         dto.ParentInfo.Id = obj.Id;
         dto.ParentInfo.Name = obj.Name;
       }
 
       else if (dto.ImageableType == Constants.ScopeLevelMap)
       {
-        Maps obj = dbContext.Maps.FirstOrDefault(x => x.Id == dto.ImageableId);
+        var obj = dbContext.Maps.FirstOrDefault(x => x.Id == dto.ImageableId);
         dto.ParentInfo.Id = obj.Id;
         dto.ParentInfo.Name = obj.Name;
       }
 
       else if (dto.ImageableType == Constants.ScopeLevelNode)
       {
-        MapNodes obj = dbContext.MapNodes.FirstOrDefault(x => x.Id == dto.ImageableId);
+        var obj = dbContext.MapNodes.FirstOrDefault(x => x.Id == dto.ImageableId);
         dto.ParentInfo.Id = obj.Id;
         dto.ParentInfo.Name = obj.Title;
       }
@@ -93,7 +111,7 @@ namespace OLabWebAPI.Endpoints
           .Where(x => x.MapId == mapId && x.Id == nodeId)
           .FirstOrDefaultAsync(x => x.Id == nodeId);
 
-      MapNodes item = await dbContext.MapNodes
+      var item = await dbContext.MapNodes
           .Where(x => x.MapId == mapId && x.TypeId == 1)
           .FirstOrDefaultAsync(x => x.Id == nodeId);
 
@@ -108,17 +126,20 @@ namespace OLabWebAPI.Endpoints
 
     protected IList<IdName> GetMapIdNames()
     {
-      return dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
+      return dbContext.Maps
+        .Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
     }
 
     protected IList<IdName> GetNodeIdNames()
     {
-      return dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
+      return dbContext.MapNodes
+        .Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
     }
 
     protected IList<IdName> GetServerIdNames()
     {
-      return dbContext.Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
+      return dbContext.Servers
+        .Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
     }
 
     protected IdName FindParentInfo(
@@ -130,10 +151,13 @@ namespace OLabWebAPI.Endpoints
     {
       if (scopeLevel == Utils.Constants.ScopeLevelServer)
         return servers.FirstOrDefault(x => x.Id == parentId);
+
       if (scopeLevel == Utils.Constants.ScopeLevelMap)
         return maps.FirstOrDefault(x => x.Id == parentId);
+
       if (scopeLevel == Utils.Constants.ScopeLevelNode)
         return nodes.FirstOrDefault(x => x.Id == parentId);
+
       return null;
     }
 
@@ -141,24 +165,26 @@ namespace OLabWebAPI.Endpoints
     /// Get nodes for map
     /// </summary>
     /// <param name="map">Parent map to query for</param>
-    /// <param name="enableWikiTanslation">PErform WikiTag translation</param>
+    /// <param name="enableWikiTanslation">PErform Name translation</param>
     /// <returns>List of mapnode dto's</returns>
     [NonAction]
     protected async Task<IList<MapNodesFullDto>> GetNodesAsync(Maps map, bool enableWikiTanslation = true)
     {
-      List<MapNodes> physList = await dbContext.MapNodes.Where(x => x.MapId == map.Id).ToListAsync();
-      logger.LogDebug(string.Format("found {0} mapNodes", physList.Count));
+      var physList = await dbContext.MapNodes.Where(x => x.MapId == map.Id).ToListAsync();
+      Logger.LogDebug(string.Format("found {0} mapNodes", physList.Count));
 
       // patch up any malformed nodes that have 0/0 sizes, 
       // whic prevent them from being displayed
       var physNodes = physList.Where(x => (x.Height == 0) || (x.Width == 0)).ToList();
-      foreach (MapNodes physNode in physNodes)
+      foreach (var physNode in physNodes)
       {
         physNode.Height = 440;
         physNode.Width = 300;
       }
 
-      IList<MapNodesFullDto> dtoList = new ObjectMapper.MapNodesFullMapper(logger, enableWikiTanslation).PhysicalToDto(physList);
+      var dtoList = new ObjectMapper.MapNodesFullMapper(
+        Logger,
+        enableWikiTanslation).PhysicalToDto(physList);
       return dtoList;
     }
 
@@ -168,34 +194,47 @@ namespace OLabWebAPI.Endpoints
     /// <param name="map">Map object</param>
     /// <param name="nodeId">Node id</param>
     /// <param name="hideHidden">flag to hide hidden links</param>
-    /// <param name="enableWikiTanslation">PErform WikiTag translation</param>
+    /// <param name="enableWikiTanslation">PErform Name translation</param>
     /// <returns>MapsNodesFullRelationsDto</returns>
     [NonAction]
-    protected async Task<MapsNodesFullRelationsDto> GetNodeAsync(uint mapId, uint nodeId, bool hideHidden, bool enableWikiTanslation)
+    protected async Task<MapsNodesFullRelationsDto> GetNodeAsync(
+      uint mapId,
+      uint nodeId,
+      bool hideHidden,
+      bool enableWikiTanslation)
     {
-      MapNodes phys = await dbContext.MapNodes
+      var phys = await dbContext.MapNodes
         .FirstOrDefaultAsync(x => x.MapId == mapId && x.Id == nodeId);
 
       if (phys == null)
       {
-        logger.LogError($"GetNodeSync unable to find map {mapId}, node {nodeId}");
+        Logger.LogError($"GetNodeSync unable to find map {mapId}, node {nodeId}");
         return new MapsNodesFullRelationsDto();
       }
 
       // explicitly load the related objects.
       dbContext.Entry(phys).Collection(b => b.MapNodeLinksNodeId1Navigation).Load();
 
-      var builder = new ObjectMapper.MapsNodesFullRelationsMapper(logger, enableWikiTanslation);
-      MapsNodesFullRelationsDto dto = builder.PhysicalToDto(phys);
+      var builder = new ObjectMapper.MapsNodesFullRelationsMapper(
+        Logger,
+        _wikiTagProvider as WikiTagProvider,
+        enableWikiTanslation);
+      var dto = builder.PhysicalToDto(phys);
 
-      var linkedIds = phys.MapNodeLinksNodeId1Navigation.Select(x => x.NodeId2).Distinct().ToList();
-      var linkedNodes = dbContext.MapNodes.Where(x => linkedIds.Contains(x.Id)).ToList();
+      var linkedIds =
+        phys.MapNodeLinksNodeId1Navigation.Select(x => x.NodeId2).Distinct().ToList();
+
+      var linkedNodes =
+        dbContext.MapNodes.Where(x => linkedIds.Contains(x.Id)).ToList();
 
       // add destination node title to link information
-      foreach (MapNodeLinksDto item in dto.MapNodeLinks)
+      foreach (var item in dto.MapNodeLinks)
       {
-        MapNodes link = linkedNodes.Where(x => x.Id == item.DestinationId).FirstOrDefault();
-        item.DestinationTitle = linkedNodes.Where(x => x.Id == item.DestinationId).Select(x => x.Title).FirstOrDefault();
+        var link = linkedNodes.Where(x => x.Id == item.DestinationId).FirstOrDefault();
+        item.DestinationTitle = linkedNodes
+          .Where(x => x.Id == item.DestinationId)
+          .Select(x => x.Title).FirstOrDefault();
+
         if (string.IsNullOrEmpty(item.LinkText))
           item.LinkText = item.DestinationTitle;
       }
@@ -203,7 +242,7 @@ namespace OLabWebAPI.Endpoints
       // if asked for, remove any hidden links
       if (hideHidden)
       {
-        logger.LogError($"GetNodeSync hiding hidden links");
+        Logger.LogInformation($"GetNodeSync hiding hidden links");
         dto.MapNodeLinks = dto.MapNodeLinks.Where(x => !x.IsHidden).ToList();
       }
 
@@ -218,7 +257,7 @@ namespace OLabWebAPI.Endpoints
     [NonAction]
     public async ValueTask<MapNodes> GetMapNodeAsync(uint nodeId)
     {
-      MapNodes item = await dbContext.MapNodes
+      var item = await dbContext.MapNodes
           .FirstOrDefaultAsync(x => x.Id == nodeId);
 
       // explicitly load the related objects.
@@ -235,7 +274,7 @@ namespace OLabWebAPI.Endpoints
     [NonAction]
     protected async ValueTask<SystemQuestionResponses> GetQuestionResponseAsync(uint id)
     {
-      SystemQuestionResponses item = await dbContext.SystemQuestionResponses.FirstOrDefaultAsync(x => x.Id == id);
+      var item = await dbContext.SystemQuestionResponses.FirstOrDefaultAsync(x => x.Id == id);
       return item;
     }
 
@@ -247,7 +286,7 @@ namespace OLabWebAPI.Endpoints
     [NonAction]
     protected async ValueTask<SystemConstants> GetConstantAsync(uint id)
     {
-      SystemConstants item = await dbContext.SystemConstants
+      var item = await dbContext.SystemConstants
     .FirstOrDefaultAsync(x => x.Id == id);
       return item;
     }
@@ -260,7 +299,7 @@ namespace OLabWebAPI.Endpoints
     [NonAction]
     protected async ValueTask<SystemFiles> GetFileAsync(uint id)
     {
-      SystemFiles item = await dbContext.SystemFiles
+      var item = await dbContext.SystemFiles
     .FirstOrDefaultAsync(x => x.Id == id);
       return item;
     }
@@ -273,7 +312,7 @@ namespace OLabWebAPI.Endpoints
     [NonAction]
     protected async ValueTask<SystemQuestions> GetQuestionSimpleAsync(uint id)
     {
-      SystemQuestions item = await dbContext.SystemQuestions
+      var item = await dbContext.SystemQuestions
     .FirstOrDefaultAsync(x => x.Id == id);
       return item;
     }
@@ -286,7 +325,7 @@ namespace OLabWebAPI.Endpoints
     [NonAction]
     protected async ValueTask<SystemQuestions> GetQuestionAsync(uint id)
     {
-      SystemQuestions item = await dbContext.SystemQuestions
+      var item = await dbContext.SystemQuestions
     .Include(x => x.SystemQuestionResponses)
     .FirstOrDefaultAsync(x => x.Id == id);
       return item;
@@ -300,12 +339,12 @@ namespace OLabWebAPI.Endpoints
     /// <param name="scopeLevel"></param>
     /// <returns></returns>
     [NonAction]
-    protected async ValueTask<ScopedObjects> GetScopedObjectsDynamicAsync(
+    protected async ValueTask<Model.ScopedObjects> GetScopedObjectsDynamicAsync(
       uint parentId,
       uint sinceTime,
       string scopeLevel)
     {
-      var phys = new ScopedObjects
+      var phys = new Model.ScopedObjects
       {
         Counters = await GetScopedCountersAsync(scopeLevel, parentId, sinceTime)
       };
@@ -314,21 +353,23 @@ namespace OLabWebAPI.Endpoints
     }
 
     /// <summary>
-    /// 
+    /// Get scoped objects for a olab parent 
     /// </summary>
-    /// <param name="parentId"></param>
-    /// <param name="scopeLevel"></param>
-    /// <returns></returns>
+    /// <param name="parentId">Id pf parent object</param>
+    /// <param name="scopeLevel">Type of parent object</param>
+    /// <param name="fileStorageModule">File storage module that provides URL</param>
+    /// <returns>ScopedObject dto</returns>
     [NonAction]
-    protected async ValueTask<ScopedObjects> GetScopedObjectsAllAsync(
+    protected async ValueTask<Model.ScopedObjects> GetScopedObjectsAllAsync(
       uint parentId,
-      string scopeLevel)
+      string scopeLevel,
+      IFileStorageModule fileStorageModule)
     {
-      var phys = new ScopedObjects
+      var phys = new Model.ScopedObjects
       {
         Constants = await GetScopedConstantsAsync(parentId, scopeLevel),
         Questions = await GetScopedQuestionsAsync(parentId, scopeLevel),
-        Files = await GetScopedFilesAsync(parentId, scopeLevel),
+        Files = await GetScopedFilesAsync(parentId, scopeLevel, fileStorageModule),
         Scripts = await GetScopedScriptsAsync(parentId, scopeLevel),
         Themes = await GetScopedThemesAsync(parentId, scopeLevel),
         Counters = await GetScopedCountersAsync(scopeLevel, parentId, 0)
@@ -364,29 +405,23 @@ namespace OLabWebAPI.Endpoints
     }
 
     /// <summary>
-    /// 
+    /// Gets scoped object for an olab object
     /// </summary>
-    /// <param name="parentId"></param>
-    /// <param name="scopeLevel"></param>
+    /// <param name="parentId">Id pf parent object</param>
+    /// <param name="scopeLevel">Type of parent object</param>
+    /// <param name="fileStorageModule">File storage module that provides URL</param>
     /// <returns></returns>
     [NonAction]
-    protected async Task<List<SystemFiles>> GetScopedFilesAsync(uint parentId, string scopeLevel)
+    protected async Task<List<SystemFiles>> GetScopedFilesAsync(
+      uint parentId,
+      string scopeLevel,
+      IFileStorageModule fileStorageModule)
     {
-      var items = new List<SystemFiles>();
+      var items = await dbContext.SystemFiles.Where(x =>
+        x.ImageableType == scopeLevel && x.ImageableId == parentId).ToListAsync();
 
-      items.AddRange(await dbContext.SystemFiles.Where(x =>
-        x.ImageableType == scopeLevel && x.ImageableId == parentId).ToListAsync());
-
-      foreach (SystemFiles item in items)
-      {
-        var subPath = $"{scopeLevel}/{parentId}/{item.Path}";
-        var physicalPath = Path.Combine(appSettings.WebsitePublicFilesDirectory, subPath.Replace('/', Path.DirectorySeparatorChar));
-
-        if (File.Exists(physicalPath))
-          item.OriginUrl = $"/{Path.GetFileName(appSettings.WebsitePublicFilesDirectory)}/{subPath}";
-        else
-          item.OriginUrl = null;
-      }
+      // ask the module to add appropriate URLs to files
+      fileStorageModule.AttachUrls(items);
 
       return items;
     }
@@ -408,7 +443,7 @@ namespace OLabWebAPI.Endpoints
         .ToListAsync());
 
       // order the responses by Order field
-      foreach (SystemQuestions item in items)
+      foreach (var item in items)
         item.SystemQuestionResponses = item.SystemQuestionResponses.OrderBy(x => x.Order).ToList();
 
       return items;
@@ -456,7 +491,7 @@ namespace OLabWebAPI.Endpoints
     [NonAction]
     protected async Task<SystemCounters> GetCounterAsync(uint id)
     {
-      SystemCounters phys = await dbContext.SystemCounters.SingleOrDefaultAsync(x => x.Id == id);
+      var phys = await dbContext.SystemCounters.SingleOrDefaultAsync(x => x.Id == id);
       if (phys.Value == null)
         phys.Value = new List<byte>().ToArray();
       if (phys.StartValue == null)

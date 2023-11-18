@@ -1,18 +1,26 @@
+using OLab.Common.Interfaces;
+using OLab.Import.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Api.Importer
 {
 
   public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
   {
     private readonly ObjectMapper.MapVpd _mapper;
 
-    public XmlMapVpdDto(Importer importer) : base(importer, "map_vpd.xml")
+    public XmlMapVpdDto(
+      IOLabLogger logger,
+      Importer importer) : base(
+        logger,
+        importer,
+        Importer.DtoTypes.XmlMapVpdDto,
+        "map_vpd.xml")
     {
-      _mapper = new ObjectMapper.MapVpd(GetLogger(), GetWikiProvider());
+      _mapper = new ObjectMapper.MapVpd(logger);
     }
 
     /// <summary>
@@ -20,29 +28,27 @@ namespace OLabWebAPI.Importer
     /// </summary>
     /// <param name="importDirectory">Directory where import file exists</param>
     /// <returns></returns>
-    public override bool Load(string importDirectory)
+    public override bool Load(string importFileFolder)
     {
       var rc = true;
 
       try
       {
-        SetImportDirectory(importDirectory);
+        Logger.LogInformation($"Loading '{GetFileName()}'");
 
-        var filePath = Path.Combine(GetImportPackageDirectory(), GetFileName());
-        GetLogger().LogDebug($"Loading '{Path.GetFileName(filePath)}'");
-
-        if (File.Exists(filePath))
-          _phys = DynamicXml.Load(filePath);
-        else
+        if (GetFileModule().FileExists(importFileFolder, GetFileName()))
         {
-          GetLogger().LogDebug($"File {filePath} does not exist");
-          return false;
+          var moduleFileName = $"{importFileFolder}{GetFileModule().GetFolderSeparator()}{GetFileName()}";
+          using (var moduleFileStream = new FileStream(moduleFileName, FileMode.Open, FileAccess.Read))
+          {
+            _phys = DynamicXml.Load(moduleFileStream);
+          }
         }
 
         dynamic outerElements = GetElements(GetXmlPhys());
         var record = 0;
 
-        foreach (dynamic innerElements in outerElements)
+        foreach (var innerElements in outerElements)
         {
           try
           {
@@ -50,7 +56,7 @@ namespace OLabWebAPI.Importer
             var elements = (IEnumerable<dynamic>)innerElements.Elements();
             xmlImportElementSets.Add(elements);
 
-            Model.MapVpds item = _mapper.ElementsToPhys(elements);
+            var item = _mapper.ElementsToPhys(elements);
 
             var phys = new XmlMapVpd
             {
@@ -64,17 +70,17 @@ namespace OLabWebAPI.Importer
           }
           catch (Exception ex)
           {
-            GetLogger().LogError(ex, $"error loading '{GetFileName()}' record #{record}: {ex.Message}");
+            Logger.LogError(ex, $"error loading '{GetFileName()}' record #{record}: {ex.Message}");
           }
 
         }
 
-        GetLogger().LogDebug($" loaded {xmlImportElementSets.Count()} {GetFileName()} objects");
+        Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
 
       }
       catch (Exception ex)
       {
-        GetLogger().LogError(ex, $"Load error: {ex.Message}");
+        Logger.LogError(ex, $"Load error: {ex.Message}");
         rc = false;
       }
 
@@ -99,7 +105,7 @@ namespace OLabWebAPI.Importer
     /// <returns>Success/failure</returns>
     public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
     {
-      Model.MapVpds item = _mapper.ElementsToPhys(elements);
+      var item = _mapper.ElementsToPhys(elements);
       var oldId = item.Id;
       item.Id = 0;
 

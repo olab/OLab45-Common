@@ -1,8 +1,8 @@
 using Newtonsoft.Json;
-using OLabWebAPI.Utils;
+using OLab.Api.Utils;
 using System;
 
-namespace OLabWebAPI.Dto
+namespace OLab.Api.Dto
 {
   public class ScopedObjectDto
   {
@@ -27,6 +27,11 @@ namespace OLabWebAPI.Dto
     public ScopedObjectDto()
     {
       ParentInfo = new IdName();
+    }
+
+    public override string ToString()
+    {
+      return $" '{Name}({Id})'";
     }
   }
 }

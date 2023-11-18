@@ -1,22 +1,29 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using OLabWebAPI.Common;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Model;
+using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OLabWebAPI.Endpoints.Player
+namespace OLab.Api.Endpoints.Player
 {
-  public partial class ServerEndpoint : OlabEndpoint
+  public partial class ServerEndpoint : OLabEndpoint
   {
-
     public ServerEndpoint(
-      OLabLogger logger,
-      IOptions<AppSettings> appSettings,
-      OLabDBContext context) : base(logger, appSettings, context)
+      IOLabLogger logger,
+      IOLabConfiguration configuration,
+      OLabDBContext context,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      IOLabModuleProvider<IFileStorageModule> fileStorageProvider)
+      : base(
+          logger,
+          configuration,
+          context,
+          wikiTagProvider,
+          fileStorageProvider)
     {
     }
 
@@ -47,7 +54,7 @@ namespace OLabWebAPI.Endpoints.Player
 
       total = items.Count;
 
-      logger.LogDebug(string.Format("found {0} servers", items.Count));
+      Logger.LogDebug(string.Format("found {0} servers", items.Count));
 
       return new OLabAPIPagedResponse<Servers> { Data = items, Remaining = remaining, Count = total };
     }
@@ -57,10 +64,10 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     /// <param name="serverId"></param>
     /// <returns></returns>
-    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint serverId)
+    public async Task<Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint serverId)
     {
-      logger.LogDebug($"ServerEndpoint.GetScopedObjectsRawAsync(uint serverId={serverId})");
-      Dto.ScopedObjectsDto dto = await GetScopedObjectsAsync(serverId, false);
+      Logger.LogDebug($"ServerEndpoint.GetScopedObjectsRawAsync(uint serverId={serverId})");
+      var dto = await GetScopedObjectsAsync(serverId, false);
       return dto;
     }
 
@@ -69,10 +76,10 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     /// <param name="serverId"></param>
     /// <returns></returns>
-    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsTranslatedAsync(uint serverId)
+    public async Task<Dto.ScopedObjectsDto> GetScopedObjectsTranslatedAsync(uint serverId)
     {
-      logger.LogDebug($"ServerEndpoint.GetScopedObjectsTranslatedAsync(uint serverId={serverId})");
-      Dto.ScopedObjectsDto dto = await GetScopedObjectsAsync(serverId, true);
+      Logger.LogDebug($"ServerEndpoint.GetScopedObjectsTranslatedAsync(uint serverId={serverId})");
+      var dto = await GetScopedObjectsAsync(serverId, true);
       return dto;
     }
 
@@ -82,15 +89,15 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="serverId"></param>
     /// <param name="enableWikiTranslation"></param>
     /// <returns></returns>
-    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsAsync(
+    public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(
       uint serverId,
       bool enableWikiTranslation)
     {
-      logger.LogDebug($"ServerEndpoint.GetScopedObjectsAsync(uint serverId={serverId})");
+      Logger.LogDebug($"ServerEndpoint.GetScopedObjectsAsync(uint serverId={serverId})");
 
-      Model.ScopedObjects phys = await GetScopedObjectsAllAsync(serverId, Utils.Constants.ScopeLevelServer);
-      var builder = new ObjectMapper.ScopedObjects(logger, enableWikiTranslation);
-      Dto.ScopedObjectsDto dto = builder.PhysicalToDto(phys);
+      var phys = await GetScopedObjectsAllAsync(serverId, Utils.Constants.ScopeLevelServer, _fileStorageModule);
+      var builder = new ObjectMapper.ScopedObjects(Logger, _wikiTagProvider, enableWikiTranslation);
+      var dto = builder.PhysicalToDto(phys);
 
       return dto;
     }

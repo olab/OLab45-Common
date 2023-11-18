@@ -1,10 +1,13 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Common.Attributes;
+using OLab.Common.Interfaces;
 
-[WikiTagModule("MR")]
+[OLabModule("MR")]
 public class MediaResourceWikiTag : WikiTag1Argument
 {
-  public MediaResourceWikiTag(OLabLogger logger) : base(logger, "OlabMediaResourceTag")
+  public MediaResourceWikiTag(
+    IOLabLogger logger,
+    IOLabConfiguration configuration) : base(logger, configuration, "OlabMediaResourceTag")
   {
   }
 }

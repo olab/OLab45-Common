@@ -1,15 +1,16 @@
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace OLabWebAPI.Utils
+namespace OLab.Api.Utils
 {
   public class ConcurrentList<T>
   {
     private readonly IList<T> _items = new List<T>();
-    private readonly OLabLogger _logger;
-    private static readonly Mutex mutex = new Mutex();
+    private readonly IOLabLogger _logger;
+    private static readonly Mutex mutex = new();
 
-    public ConcurrentList(OLabLogger logger)
+    public ConcurrentList(IOLabLogger logger)
     {
       _logger = logger;
     }
@@ -130,10 +131,9 @@ namespace OLabWebAPI.Utils
     /// <returns>Index of item just added</returns>
     public int Add(T item)
     {
-      var count = 0;
       _items.Add(item);
 
-      count = _items.Count;
+      var count = _items.Count;
       return count - 1;
 
     }

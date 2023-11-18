@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.Common
+namespace OLab.Api.Common
 {
   public class OLabAPIPagedResponse<D> : OLabAPIResponse<IList<D>>
   {

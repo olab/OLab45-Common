@@ -1,25 +1,34 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using OLabWebAPI.Common.Exceptions;
-using OLabWebAPI.Data.Exceptions;
-using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Common.Exceptions;
+using OLab.Api.Data.Exceptions;
+using OLab.Api.Data.Interface;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OLabWebAPI.Endpoints.Player
+namespace OLab.Api.Endpoints.Player
 {
-  public partial class NodesEndpoint : OlabEndpoint
+  public partial class NodesEndpoint : OLabEndpoint
   {
-
     public NodesEndpoint(
-      OLabLogger logger,
-      IOptions<AppSettings> appSettings,
-      OLabDBContext context) : base(logger, appSettings, context)
+      IOLabLogger logger,
+      IOLabConfiguration configuration,
+      OLabDBContext context,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      IOLabModuleProvider<IFileStorageModule> fileStorageProvider)
+      : base(
+          logger,
+          configuration,
+          context,
+          wikiTagProvider,
+          fileStorageProvider)
     {
     }
 
@@ -31,16 +40,19 @@ namespace OLabWebAPI.Endpoints.Player
     /// <returns>MapNodes</returns>
     private static Model.MapNodes GetSimple(OLabDBContext context, uint id)
     {
-      MapNodes phys = context.MapNodes.FirstOrDefault(x => x.Id == id);
+      var phys = context.MapNodes.FirstOrDefault(x => x.Id == id);
       return phys;
     }
 
     private async Task<MapsNodesFullRelationsDto> GetNodeAsync(uint id, bool enableWikiTranslation)
     {
-      MapNodes phys = await GetMapNodeAsync(id);
+      var phys = await GetMapNodeAsync(id);
 
-      var builder = new ObjectMapper.MapsNodesFullRelationsMapper(logger, enableWikiTranslation);
-      MapsNodesFullRelationsDto dto = builder.PhysicalToDto(phys);
+      var builder = new ObjectMapper.MapsNodesFullRelationsMapper(
+        Logger,
+        _wikiTagProvider as WikiTagProvider,
+        enableWikiTranslation);
+      var dto = builder.PhysicalToDto(phys);
 
       return dto;
     }
@@ -50,9 +62,9 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     /// <param name="nodeId">Node id (0, if root node)</param>
     /// <returns>MapsNodesFullRelationsDto response</returns>
-    public async Task<MapsNodesFullRelationsDto> GetNodeTranslatedAsync(IOLabAuthentication auth, uint nodeId)
+    public async Task<MapsNodesFullRelationsDto> GetNodeTranslatedAsync(IOLabAuthorization auth, uint nodeId)
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: NodesEndpoint.GetNodeTranslatedAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: NodesEndpoint.GetNodeTranslatedAsync");
       return await GetNodeAsync(nodeId, true);
     }
 
@@ -62,11 +74,11 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="id"></param>
     /// <param name="dto"></param>
     /// <returns></returns>
-    public async Task PutNodeAsync(IOLabAuthentication auth, uint id, MapNodesFullDto dto)
+    public async Task PutNodeAsync(IOLabAuthorization auth, uint id, MapNodesFullDto dto)
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: NodesEndpoint.PutNodeAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: NodesEndpoint.PutNodeAsync");
 
-      MapNodes phys = await GetMapNodeAsync(id);
+      var phys = await GetMapNodeAsync(id);
       if (phys == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
 
@@ -74,7 +86,7 @@ namespace OLabWebAPI.Endpoints.Player
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelNode, id))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, id);
 
-      var builder = new ObjectMapper.MapNodesFullMapper(logger);
+      var builder = new ObjectMapper.MapNodesFullMapper(Logger);
       phys = builder.DtoToPhysical(dto);
 
       dbContext.Entry(phys).State = EntityState.Modified;
@@ -90,14 +102,14 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="data"></param>
     /// <returns></returns>
     public async Task<MapNodeLinksPostResponseDto> PostLinkAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint nodeId,
       MapNodeLinksPostDataDto data
     )
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: NodesEndpoint.PostLinkAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: NodesEndpoint.PostLinkAsync");
 
-      MapNodes node = GetSimple(dbContext, nodeId);
+      var node = GetSimple(dbContext, nodeId);
       if (node == null)
         throw new OLabObjectNotFoundException(Constants.ScopeLevelNode, nodeId);
 
@@ -108,7 +120,7 @@ namespace OLabWebAPI.Endpoints.Player
 
       dbContext.MapNodeLinks.Add(phys);
       await dbContext.SaveChangesAsync();
-      logger.LogDebug($"created MapNodeLink id = {phys.Id}");
+      Logger.LogDebug($"created MapNodeLink id = {phys.Id}");
 
       var dto = new MapNodeLinksPostResponseDto
       {
@@ -125,14 +137,14 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="data"></param>
     /// <returns></returns>
     public async Task<MapNodesPostResponseDto> PostNodeAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       [FromBody] MapNodesPostDataDto data
     )
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: NodesEndpoint.PostNodeAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: NodesEndpoint.PostNodeAsync");
 
-      using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = dbContext.Database.BeginTransaction();
+      using var transaction = dbContext.Database.BeginTransaction();
 
       try
       {
@@ -143,7 +155,7 @@ namespace OLabWebAPI.Endpoints.Player
 
         dbContext.MapNodes.Add(phys);
         await dbContext.SaveChangesAsync();
-        logger.LogDebug($"created MapNode id = {phys.Id}");
+        Logger.LogDebug($"created MapNode id = {phys.Id}");
 
         var link = new MapNodeLinks
         {
@@ -154,7 +166,7 @@ namespace OLabWebAPI.Endpoints.Player
 
         dbContext.MapNodeLinks.Add(link);
         await dbContext.SaveChangesAsync();
-        logger.LogDebug($"created MapNodeLink id = {link.Id}");
+        Logger.LogDebug($"created MapNodeLink id = {link.Id}");
 
         await transaction.CommitAsync();
 

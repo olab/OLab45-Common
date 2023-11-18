@@ -1,19 +1,19 @@
-using Microsoft.Extensions.Options;
-using OLabWebAPI.Common.Exceptions;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Common.Exceptions;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Common.Interfaces;
 using System;
 using System.Threading.Tasks;
 
-namespace OLabWebAPI.Endpoints.Player
+namespace OLab.Api.Endpoints.Player
 {
-  public partial class ResponseEndpoint : OlabEndpoint
+  public partial class ResponseEndpoint : OLabEndpoint
   {
 
     public ResponseEndpoint(
-      OLabLogger logger,
-      IOptions<AppSettings> appSettings, OLabDBContext context) : base(logger, appSettings, context)
+      IOLabLogger logger,
+      IOLabConfiguration configuration,
+      OLabDBContext context) : base(logger, configuration, context)
     {
     }
 
@@ -26,19 +26,19 @@ namespace OLabWebAPI.Endpoints.Player
       SystemQuestions question,
       QuestionResponsePostDataDto body)
     {
-      logger.LogDebug($"PostQuestionResponseAsync(questionId={body.QuestionId}, response={body.PreviousValue}->{body.Value}");
+      Logger.LogDebug($"PostQuestionResponseAsync(questionId={body.QuestionId}, response={body.PreviousValue}->{body.Value}");
 
       // dump out original dynamic objects for logging
-      body.DynamicObjects.Dump(logger, "Response Original");
+      body.DynamicObjects.Dump(Logger, "Response Original");
 
       // test if counter associated with the question
       if (question.CounterId.HasValue && (question.CounterId.Value > 0))
       {
-        SystemCounters dbCounter = await GetCounterAsync(question.CounterId.Value);
+        var dbCounter = await GetCounterAsync(question.CounterId.Value);
         if (dbCounter == null)
           throw new Exception($"Counter {question.CounterId.Value} not found");
 
-        CountersDto counterDto = GetTargetCounter(question, dbCounter, body);
+        var counterDto = GetTargetCounter(question, dbCounter, body);
 
         if (question.SystemQuestionResponses.Count > 0)
         {
@@ -70,14 +70,14 @@ namespace OLabWebAPI.Endpoints.Player
         }
       }
       else
-        logger.LogWarning($"question {question.Id} response: question has no counter");
+        Logger.LogWarning($"question {question.Id} response: question has no counter");
 
       // update dynamic object checksum since counter values
       // map have changed
       body.DynamicObjects.RefreshChecksum();
 
       // dump out original dynamic objects for logging
-      body.DynamicObjects.Dump(logger, "Response New");
+      body.DynamicObjects.Dump(Logger, "Response New");
 
       return body.DynamicObjects;
 
@@ -92,9 +92,9 @@ namespace OLabWebAPI.Endpoints.Player
     /// <returns>Dto counter</returns>
     private CountersDto GetTargetCounter(SystemQuestions question, SystemCounters dbCounter, QuestionResponsePostDataDto body)
     {
-      CountersDto dynamicCounter = body.DynamicObjects.GetCounter(question.CounterId.Value);
+      var dynamicCounter = body.DynamicObjects.GetCounter(question.CounterId.Value);
       if (dynamicCounter == null)
-        logger.LogError($"Counter {question.CounterId.Value} not found in request. Update ignored");
+        Logger.LogError($"Counter {question.CounterId.Value} not found in request. Update ignored");
       else
       {
         // if counter is server-level, then take db value and copy
@@ -123,7 +123,7 @@ namespace OLabWebAPI.Endpoints.Player
 
       var score = question.GetScoreFromResponses(body.Value);
 
-      logger.LogDebug($"counter {counterDto.Id} value = {score}");
+      Logger.LogDebug($"counter {counterDto.Id} value = {score}");
       counterDto.SetValue(score);
     }
 
@@ -168,7 +168,7 @@ namespace OLabWebAPI.Endpoints.Player
         if (currentResponse.Score.HasValue)
           currentScore = currentResponse.Score.Value;
         else
-          logger.LogWarning($"Response {body.ResponseId.Value} does not have a score value");
+          Logger.LogWarning($"Response {body.ResponseId.Value} does not have a score value");
       }
       else
         throw new Exception($"Question id = {question.Id} current response not valid.");
@@ -182,24 +182,24 @@ namespace OLabWebAPI.Endpoints.Player
         if (previousResponse.Score.HasValue)
           previousScore = previousResponse.Score.Value;
         else
-          logger.LogWarning($"Response {body.ResponseId.Value} does not have a score value");
+          Logger.LogWarning($"Response {body.ResponseId.Value} does not have a score value");
       }
 
       // back out any previous response value
       if (previousResponse != null)
       {
-        logger.LogDebug($"reverting previous question reponse {body.PreviousResponseId.Value} = {previousScore}");
+        Logger.LogDebug($"reverting previous question reponse {body.PreviousResponseId.Value} = {previousScore}");
         score -= previousScore;
       }
 
       // add in current response score
       if (currentResponse != null)
       {
-        logger.LogDebug($"adjusting question with reponse {body.ResponseId.Value} = {currentScore}");
+        Logger.LogDebug($"adjusting question with reponse {body.ResponseId.Value} = {currentScore}");
         score += currentScore;
       }
 
-      logger.LogDebug($"counter {counterDto.Id} value = {score}");
+      Logger.LogDebug($"counter {counterDto.Id} value = {score}");
 
       counterDto.SetValue(score);
 

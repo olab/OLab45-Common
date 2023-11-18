@@ -1,12 +1,14 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Model;
+using OLab.Common.Interfaces;
+using OLab.Data.Interface;
+using OLab.Import.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using static OLab.Api.Importer.Importer;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Api.Importer
 {
   /// <summary>
   /// Xml import base object
@@ -16,42 +18,53 @@ namespace OLabWebAPI.Importer
   {
     protected dynamic _phys;
     private readonly string _fileName;
-    private readonly OLabLogger _olabLogger;
-    private readonly Importer _importer;
+    protected readonly IImporter _importer;
     protected OLabDBContext Context;
-    private readonly string _websitePublicFilesDirectory;
-    private string _importDirectory;
+    protected int CurrentRecordIndex = 0;
 
-    private readonly WikiTagProvider _tagProvider;
-    public WikiTagProvider GetWikiProvider() { return _tagProvider; }
+    private readonly IOLabModuleProvider<IWikiTagModule> _tagProvider;
+    public IOLabModuleProvider<IWikiTagModule> GetWikiProvider() { return _tagProvider; }
 
     protected readonly P _modelObject = new P();
 
     public override bool PostProcess(IDictionary<Importer.DtoTypes, XmlDto> dtos) { return true; }
-    public Importer GetImporter() { return _importer; }
+    public IImporter GetImporter() { return _importer; }
     public string GetFileName() { return _fileName; }
-    public OLabLogger GetLogger() { return _olabLogger; }
     public P GetModel() { return _modelObject; }
     public dynamic GetXmlPhys() { return _phys; }
     public override Object GetDbPhys() { return _modelObject; }
     public abstract IEnumerable<dynamic> GetElements(dynamic xmlPhys);
-    public string GetImportPackageDirectory() { return _importDirectory; }
-    public string GetWebsitePublicDirectory() { return _websitePublicFilesDirectory; }
-    public void SetImportDirectory(string dir) { _importDirectory = dir; }
+
+    public IFileStorageModule GetFileModule()
+    {
+      return GetImporter().GetFileStorageModule();
+    }
 
     /// <summary>
     /// Default constructor
     /// </summary>
     /// <param name="importer">Importer object</param>
     /// <param name="fileName">File name to import</param>
-    public XmlImportDto(Importer importer, string fileName)
+    public XmlImportDto(IOLabLogger logger, IImporter importer, DtoTypes dtoType, string fileName) : base(logger, dtoType)
     {
       _importer = importer;
       _fileName = fileName;
+
       _tagProvider = GetImporter().GetWikiProvider();
-      _olabLogger = GetImporter().GetLogger();
       Context = GetImporter().GetContext();
-      _websitePublicFilesDirectory = GetImporter().Settings.WebsitePublicFilesDirectory;
+    }
+
+    /// <summary>
+    /// Add id translation record to store
+    /// </summary>
+    /// <param name="originalId">Import system Id</param>
+    /// <param name="newId">Database id</param>
+    protected override void CreateIdTranslation(uint originalId, uint? newId = null)
+    {
+      if (_idTranslation.ContainsKey(originalId))
+        return;
+      _idTranslation.Add(originalId, newId);
+      Logger.LogInformation($"  added {_fileName} translation {originalId} -> {newId.Value}");
     }
 
     /// <summary>
@@ -86,24 +99,29 @@ namespace OLabWebAPI.Importer
     /// <summary>
     /// Load import files
     /// </summary>
-    /// <param name="importDirectory">Directory containing import files</param>
+    /// <param name="importFilesFolder">Folder name of extracted import files</param>
     /// <returns>Success/Failure</returns>
-    public override bool Load(string importDirectory)
+    public override bool Load(string importFileDirectory)
     {
       var rc = true;
 
       try
       {
-        _importDirectory = importDirectory;
 
-        var filePath = Path.Combine(GetImportPackageDirectory(), GetFileName());
-        GetLogger().LogDebug($"Loading {GetFileName()}");
+        var moduleFileName = $"{importFileDirectory}{GetFileModule().GetFolderSeparator()}{GetFileName()}";
+        Logger.LogInformation($"Loading {moduleFileName}");
 
-        if (File.Exists(filePath))
-          _phys = DynamicXml.Load(filePath);
+        if (GetFileModule().FileExists(importFileDirectory, GetFileName()))
+        {
+          using (var moduleFileStream = new MemoryStream())
+          {
+            GetFileModule().CopyStreamToFileAsync(moduleFileStream, importFileDirectory, GetFileName(), new System.Threading.CancellationToken());
+            _phys = DynamicXml.Load(moduleFileStream);
+          }
+        }
         else
         {
-          GetLogger().LogDebug($" file {GetFileName()} does not exist");
+          Logger.LogInformation($"File {importFileDirectory}{GetFileModule().GetFolderSeparator()}{GetFileName()} does not exist");
           return false;
         }
 
@@ -111,7 +129,7 @@ namespace OLabWebAPI.Importer
 
         var record = 0;
 
-        foreach (dynamic innerElements in outerElements)
+        foreach (var innerElements in outerElements)
         {
           try
           {
@@ -121,17 +139,20 @@ namespace OLabWebAPI.Importer
           }
           catch (Exception ex)
           {
-            GetLogger().LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
+            Logger.LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
           }
         }
 
-        GetLogger().LogDebug($" imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+        Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+
+        // delete data file
+        GetFileModule().DeleteFileAsync(importFileDirectory, GetFileName()).Wait();
 
       }
       catch (Exception ex)
       {
         if (!ex.Message.Contains("File not found"))
-          GetLogger().LogError(ex, $"load error: {ex.Message}");
+          Logger.LogError(ex, $"load error: {ex.Message}");
         rc = false;
       }
 
@@ -145,18 +166,18 @@ namespace OLabWebAPI.Importer
     /// <returns>Success/Failure</returns>
     public override bool Save()
     {
-      GetLogger().LogDebug($"Saving {xmlImportElementSets.Count()} {GetFileName()} objects");
+      Logger.LogInformation($"Saving {xmlImportElementSets.Count()} {GetFileName()} objects");
 
       var recordIndex = 1;
-      foreach (IEnumerable<dynamic> elements in xmlImportElementSets)
+      foreach (var elements in xmlImportElementSets)
       {
         try
         {
           Save(recordIndex, elements);
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
-          GetLogger().LogError($" error {GetFileName()} record #{recordIndex}: {ex.Message}");
+          Logger.LogError($"Error {GetFileName()} record #{recordIndex}: {ex.Message}");
         }
 
         recordIndex++;
@@ -181,24 +202,13 @@ namespace OLabWebAPI.Importer
     /// <returns>Public directory for scope</returns>
     public string GetPublicFileDirectory(string parentType, uint parentId, string path = "")
     {
-      var targetDirectory = Path.Combine(GetWebsitePublicDirectory(), parentType);
-      targetDirectory = Path.Combine(targetDirectory, parentId.ToString());
+      var targetDirectory = $"{GetImporter().GetFileStorageModule().GetFolderSeparator()}{parentType}";
+      targetDirectory = $"{targetDirectory}{GetImporter().GetFileStorageModule().GetFolderSeparator()}{parentId}";
 
       if (!string.IsNullOrEmpty(path))
-        targetDirectory = Path.Combine(targetDirectory, path);
+        targetDirectory = $"{targetDirectory}{GetImporter().GetFileStorageModule().GetFolderSeparator()}{path}";
 
       return targetDirectory;
-    }
-
-    /// <summary>
-    /// Test if public file exists
-    /// </summary>
-    /// <param name="path">Full path to file</param>
-    /// <returns>true/false</returns>
-    public bool DoesPublicFileExist(string path)
-    {
-      var filePath = Path.Combine(GetWebsitePublicDirectory(), Path.GetFileName(path));
-      return File.Exists(filePath);
     }
 
     public static IList<string> GetWikiTags(string source)

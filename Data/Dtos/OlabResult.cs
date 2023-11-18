@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using OLabWebAPI.Common;
+using OLab.Api.Common;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.Dto
+namespace OLab.Api.Dto
 {
   public class OlabResult : ActionResult
   {

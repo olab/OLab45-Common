@@ -1,28 +1,28 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using OLabWebAPI.Common;
-using OLabWebAPI.Common.Exceptions;
-using OLabWebAPI.Data.Exceptions;
-using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.ObjectMapper;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Common.Exceptions;
+using OLab.Api.Data.Exceptions;
+using OLab.Api.Data.Interface;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.ObjectMapper;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OLabWebAPI.Endpoints
+namespace OLab.Api.Endpoints
 {
-  public partial class ConstantsEndpoint : OlabEndpoint
+  public partial class ConstantsEndpoint : OLabEndpoint
   {
 
     public ConstantsEndpoint(
-      OLabLogger logger,
-      IOptions<AppSettings> appSettings,
-      OLabDBContext context) : base(logger, appSettings, context)
+      IOLabLogger logger,
+      IOLabConfiguration configuration,
+      OLabDBContext context) : base(logger, configuration, context)
     {
     }
 
@@ -43,11 +43,11 @@ namespace OLabWebAPI.Endpoints
     /// <param name="skip"></param>
     /// <returns></returns>
     public async Task<OLabAPIPagedResponse<ConstantsDto>> GetAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       int? take,
       int? skip)
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: ConstantsEndpoint.GetAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: ConstantsEndpoint.GetAsync");
 
       var Constants = new List<SystemConstants>();
       var total = 0;
@@ -65,15 +65,15 @@ namespace OLabWebAPI.Endpoints
         remaining = total - take.Value - skip.Value;
       }
 
-      logger.LogDebug(string.Format("found {0} Constants", Constants.Count));
+      Logger.LogDebug(string.Format("found {0} Constants", Constants.Count));
 
-      IList<ConstantsDto> dtoList = new ObjectMapper.Constants(logger).PhysicalToDto(Constants);
+      var dtoList = new ObjectMapper.Constants(Logger).PhysicalToDto(Constants);
 
       var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
       var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
       var servers = dbContext.Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
 
-      foreach (ConstantsDto dto in dtoList)
+      foreach (var dto in dtoList)
         dto.ParentInfo = FindParentInfo(dto.ImageableType, dto.ImageableId, maps, nodes, servers);
 
       return new OLabAPIPagedResponse<ConstantsDto> { Data = dtoList, Remaining = remaining, Count = total };
@@ -85,19 +85,19 @@ namespace OLabWebAPI.Endpoints
     /// <param name="id"></param>
     /// <returns></returns>
     public async Task<ConstantsDto> GetAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint id)
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: ConstantsEndpoint.GetAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: ConstantsEndpoint.GetAsync");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Constants", id);
 
-      SystemConstants phys = await dbContext.SystemConstants.FirstAsync(x => x.Id == id);
-      ConstantsDto dto = new ObjectMapper.Constants(logger).PhysicalToDto(phys);
+      var phys = await dbContext.SystemConstants.FirstAsync(x => x.Id == id);
+      var dto = new ObjectMapper.Constants(Logger).PhysicalToDto(phys);
 
       // test if user has access to object
-      IActionResult accessResult = auth.HasAccess("R", dto);
+      var accessResult = auth.HasAccess("R", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Constants", id);
 
@@ -112,23 +112,23 @@ namespace OLabWebAPI.Endpoints
     /// <param name="id">question id</param>
     /// <returns>IActionResult</returns>
     public async Task PutAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint id,
       ConstantsDto dto)
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: ConstantsEndpoint.PutAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: ConstantsEndpoint.PutAsync");
 
       dto.ImageableId = dto.ParentInfo.Id;
 
       // test if user has access to object
-      IActionResult accessResult = auth.HasAccess("W", dto);
+      var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Constants", id);
 
       try
       {
-        var builder = new ConstantsFull(logger);
-        SystemConstants phys = builder.DtoToPhysical(dto);
+        var builder = new ConstantsFull(Logger);
+        var phys = builder.DtoToPhysical(dto);
 
         phys.UpdatedAt = DateTime.Now;
 
@@ -137,9 +137,8 @@ namespace OLabWebAPI.Endpoints
       }
       catch (DbUpdateConcurrencyException)
       {
-        SystemConstants existingObject = await GetConstantAsync(id);
-        if (existingObject == null)
-          throw new OLabObjectNotFoundException("Constants", id);
+        var existingObject = await GetConstantAsync(id)
+          ?? throw new OLabObjectNotFoundException("Constants", id);
       }
 
     }
@@ -150,20 +149,20 @@ namespace OLabWebAPI.Endpoints
     /// <param name="dto">object data</param>
     /// <returns>IActionResult</returns>
     public async Task<ConstantsDto> PostAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       ConstantsDto dto)
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: ConstantsEndpoint.PostAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: ConstantsEndpoint.PostAsync");
 
       dto.ImageableId = dto.ParentInfo.Id;
 
       // test if user has access to object
-      IActionResult accessResult = auth.HasAccess("W", dto);
+      var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Constants", 0);
 
-      var builder = new ConstantsFull(logger);
-      SystemConstants phys = builder.DtoToPhysical(dto);
+      var builder = new ConstantsFull(Logger);
+      var phys = builder.DtoToPhysical(dto);
 
       phys.CreatedAt = DateTime.Now;
 
@@ -180,21 +179,21 @@ namespace OLabWebAPI.Endpoints
     /// <param name="id"></param>
     /// <returns></returns>
     public async Task DeleteAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint id)
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: ConstantsEndpoint.DeleteAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: ConstantsEndpoint.DeleteAsync");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Constants", id);
 
       try
       {
-        SystemConstants phys = await GetConstantAsync(id);
-        ConstantsDto dto = new ConstantsFull(logger).PhysicalToDto(phys);
+        var phys = await GetConstantAsync(id);
+        var dto = new ConstantsFull(Logger).PhysicalToDto(phys);
 
         // test if user has access to object
-        IActionResult accessResult = auth.HasAccess("W", dto);
+        var accessResult = auth.HasAccess("W", dto);
         if (accessResult is UnauthorizedResult)
           throw new OLabUnauthorizedException("Constants", id);
 
@@ -204,9 +203,8 @@ namespace OLabWebAPI.Endpoints
       }
       catch (DbUpdateConcurrencyException)
       {
-        SystemConstants existingObject = await GetConstantAsync(id);
-        if (existingObject == null)
-          throw new OLabObjectNotFoundException("Constants", id);
+        var existingObject = await GetConstantAsync(id)
+          ?? throw new OLabObjectNotFoundException("Constants", id);
       }
 
     }

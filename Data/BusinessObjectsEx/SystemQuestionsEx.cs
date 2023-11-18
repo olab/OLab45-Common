@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model
 {
   public partial class SystemQuestions
   {
@@ -45,7 +45,7 @@ namespace OLabWebAPI.Model
       var score = 0;
       foreach (var id in ids)
       {
-        SystemQuestionResponses response = GetResponse(id);
+        var response = GetResponse(id);
         if (response != null)
         {
           if (response.Score.HasValue)
@@ -58,7 +58,7 @@ namespace OLabWebAPI.Model
 
     public SystemQuestionResponses GetResponse(uint id)
     {
-      foreach (SystemQuestionResponses item in SystemQuestionResponses)
+      foreach (var item in SystemQuestionResponses)
       {
         if (item.Id == id)
           return item;

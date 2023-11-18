@@ -1,4 +1,4 @@
-namespace OLabWebAPI.Importer
+namespace OLab.Api.Importer
 {
   public class XmlMapNodeCounters : XmlImportArray<XmlMapNodeCounter>
   {

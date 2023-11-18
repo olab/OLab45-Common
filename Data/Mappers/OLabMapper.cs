@@ -1,34 +1,58 @@
 using AutoMapper;
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
+  public class DateTimeTypeConverter : ITypeConverter<decimal, DateTime>
+  {
+    public DateTime Convert(decimal source, DateTime destination, ResolutionContext context)
+    {
+      return new System.DateTime(1970, 1, 1).AddSeconds(System.Convert.ToDouble(source));
+    }
+  }
+
+  public class DecimalDateTimeTypeConverter : ITypeConverter<DateTime, decimal>
+  {
+    public decimal Convert(DateTime source, decimal destination, ResolutionContext context)
+    {
+      DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+      TimeSpan diff = source.ToUniversalTime() - origin;
+      return System.Convert.ToDecimal( Math.Floor(diff.TotalSeconds) );
+    }
+  }
+
   public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   {
     protected readonly Mapper _mapper;
 
-    protected OLabLogger logger;
-    protected WikiTagProvider _tagProvider = null;
+    protected IOLabLogger Logger;
+    protected WikiTagProvider _wikiTagModules = null;
+
     // used to hold on to id translation between origin system and new one
     protected IDictionary<uint, uint?> _idTranslation = new Dictionary<uint, uint?>();
 
     public virtual P ElementsToPhys(IEnumerable<dynamic> elements, Object source = null) { return default; }
-    public WikiTagProvider GetWikiProvider() { return _tagProvider; }
+    public WikiTagProvider GetWikiProvider() { return _wikiTagModules; }
 
-    public OLabMapper(OLabLogger logger)
+
+    public OLabMapper(
+      IOLabLogger logger)
     {
-      this.logger = logger;
-      _tagProvider = new WikiTagProvider(logger);
+      Logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
       _mapper = new Mapper(GetConfiguration());
     }
 
-    public OLabMapper(OLabLogger logger, WikiTagProvider tagProvider)
+    public OLabMapper(
+      IOLabLogger logger,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider)
     {
-      this.logger = logger;
-      _tagProvider = tagProvider;
+      Logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
+
+      _wikiTagModules = wikiTagProvider as WikiTagProvider;
       _mapper = new Mapper(GetConfiguration());
     }
 
@@ -70,7 +94,7 @@ namespace OLabWebAPI.ObjectMapper
     /// <returns>Dto object</returns>
     public virtual D PhysicalToDto(P phys)
     {
-      D dto = _mapper.Map<D>(phys);
+      var dto = _mapper.Map<D>(phys);
       dto = PhysicalToDto(phys, dto);
       return dto;
     }
@@ -83,9 +107,9 @@ namespace OLabWebAPI.ObjectMapper
     public virtual IList<D> PhysicalToDto(IList<P> physList)
     {
       var dtoList = new List<D>();
-      foreach (P phys in physList)
+      foreach (var phys in physList)
       {
-        D dto = PhysicalToDto(phys);
+        var dto = PhysicalToDto(phys);
         dtoList.Add(dto);
       }
 
@@ -133,9 +157,9 @@ namespace OLabWebAPI.ObjectMapper
     public virtual IList<P> DtoToPhysical(IList<D> dtoList)
     {
       var physList = new List<P>();
-      foreach (D dto in dtoList)
+      foreach (var dto in dtoList)
       {
-        P phys = DtoToPhysical(dto);
+        var phys = DtoToPhysical(dto);
         physList.Add(phys);
       }
 

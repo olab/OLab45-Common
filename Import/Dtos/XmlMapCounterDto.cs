@@ -1,17 +1,24 @@
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Api.Importer
 {
 
   public class XmlMapCounterDto : XmlImportDto<XmlMapCounters>
   {
     private readonly ObjectMapper.Counters _mapper;
 
-    public XmlMapCounterDto(Importer importer) : base(importer, "map_counter.xml")
+    public XmlMapCounterDto(
+      IOLabLogger logger,
+      Importer importer) : base(
+        logger,
+        importer,
+        Importer.DtoTypes.XmlMapCounterDto,
+        "map_counter.xml")
     {
-      _mapper = new ObjectMapper.Counters(GetLogger(), GetWikiProvider());
+      _mapper = new ObjectMapper.Counters(logger);
     }
 
     /// <summary>
@@ -32,7 +39,7 @@ namespace OLabWebAPI.Importer
     /// <returns>Success/failure</returns>
     public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
     {
-      Model.SystemCounters item = _mapper.ElementsToPhys(elements);
+      var item = _mapper.ElementsToPhys(elements);
       item.ImageableId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "map_id").Value);
 
       var oldId = item.Id;
@@ -47,7 +54,6 @@ namespace OLabWebAPI.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
-      GetLogger().LogDebug($" saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

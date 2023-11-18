@@ -1,18 +1,17 @@
-using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace OLabWebAPI.Common
+namespace OLab.Api.Common
 {
   public class OLabServerErrorResult
   {
-    public static BadRequestObjectResult Result(string errorMessage, HttpStatusCode ErrorCode = HttpStatusCode.InternalServerError)
+    public static OLabAPIResponse<string> Result(string errorMessage, HttpStatusCode ErrorCode = HttpStatusCode.InternalServerError)
     {
-      return new BadRequestObjectResult(new OLabAPIResponse<string>()
+      return new OLabAPIResponse<string>()
       {
         Data = errorMessage,
         ErrorCode = ErrorCode,
         Message = "failed"
-      });
+      };
     }
 
   }

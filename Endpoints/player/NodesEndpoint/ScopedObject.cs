@@ -1,37 +1,37 @@
-using OLabWebAPI.Data.Exceptions;
-using OLabWebAPI.Model;
+using OLab.Api.Data.Exceptions;
+using OLab.Api.Model;
 using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OLabWebAPI.Endpoints.Player
+namespace OLab.Api.Endpoints.Player
 {
-  public partial class NodesEndpoint : OlabEndpoint
+  public partial class NodesEndpoint : OLabEndpoint
   {
 
-    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint nodeId)
+    public async Task<Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint nodeId)
     {
-      logger.LogDebug($"NodesController.GetScopedObjectsRawAsync(uint nodeId={nodeId})");
+      Logger.LogDebug($"NodesController.GetScopedObjectsRawAsync(uint nodeId={nodeId})");
       return await GetScopedObjectsAsync(nodeId, false);
     }
 
-    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsAsync(uint nodeId)
+    public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(uint nodeId)
     {
-      logger.LogDebug($"NodesController.GetScopedObjectsAsync(uint nodeId={nodeId})");
+      Logger.LogDebug($"NodesController.GetScopedObjectsAsync(uint nodeId={nodeId})");
       return await GetScopedObjectsAsync(nodeId, true);
     }
 
-    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsAsync(
+    public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(
       uint id,
       bool enableWikiTranslation)
     {
-      logger.LogDebug($"NodesController.GetScopedObjectsAsync(uint nodeId={id})");
+      Logger.LogDebug($"NodesController.GetScopedObjectsAsync(uint nodeId={id})");
 
-      MapNodes node = GetSimple(dbContext, id);
+      var node = GetSimple(dbContext, id);
       if (node == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
 
-      Model.ScopedObjects phys = await GetScopedObjectsAllAsync(node.Id, Utils.Constants.ScopeLevelNode);
+      var phys = await GetScopedObjectsAllAsync(node.Id, Utils.Constants.ScopeLevelNode, _fileStorageModule);
 
       phys.Constants.Add(new SystemConstants
       {
@@ -63,9 +63,9 @@ namespace OLabWebAPI.Endpoints.Player
         Value = Encoding.ASCII.GetBytes(DateTime.UtcNow.ToString() + " UTC")
       });
 
-      var builder = new ObjectMapper.ScopedObjects(logger, enableWikiTranslation);
+      var builder = new ObjectMapper.ScopedObjects(Logger, _wikiTagProvider, enableWikiTranslation);
 
-      Dto.ScopedObjectsDto dto = builder.PhysicalToDto(phys);
+      var dto = builder.PhysicalToDto(phys);
       return dto;
     }
   }

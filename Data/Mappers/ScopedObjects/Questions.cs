@@ -1,22 +1,32 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class Questions : OLabMapper<SystemQuestions, QuestionsDto>
   {
-    public Questions(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public Questions(
+      IOLabLogger logger,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      bool enableWikiTranslation = true) : base(logger, wikiTagProvider)
     {
     }
 
+    //public Questions(
+    //  IOLabLogger logger, 
+    //  WikiTagProvider tagProvider, 
+    //  bool enableWikiTranslation = true) : base(logger, tagProvider)
+    //{
+    //}
+
     public override SystemQuestions ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
     {
-      SystemQuestions phys = GetPhys(source);
+      var phys = GetPhys(source);
 
       phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
       CreateIdTranslation(phys.Id);
@@ -35,11 +45,14 @@ namespace OLabWebAPI.ObjectMapper
       phys.ShowAnswer = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "show_answer").Value) == 1 ? true : false;
       if (uint.TryParse(elements.FirstOrDefault(x => x.Name == "counter_id").Value, out uint id1))
         phys.CounterId = id1;
+
       if (int.TryParse(elements.FirstOrDefault(x => x.Name == "num_tries").Value, out int id2))
         phys.NumTries = id2;
+
       phys.ShowSubmit = Convert.ToSByte(elements.FirstOrDefault(x => x.Name == "show_submit").Value);
       if (uint.TryParse(elements.FirstOrDefault(x => x.Name == "redirect_node_id").Value, out uint id3))
         phys.RedirectNodeId = id3;
+
       phys.SubmitText = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "submit_text"));
 
       phys.TypeDisplay = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "type_display").Value);
@@ -54,7 +67,7 @@ namespace OLabWebAPI.ObjectMapper
         phys.ExternalSourceId = id5.ToString();
       phys.CreatedAt = DateTime.Now;
 
-      // logger.LogInformation($"loaded SystemQuestions {phys.Id}");
+      // Logger.LogInformation($"loaded SystemQuestions {phys.Id}");
 
       return phys;
     }

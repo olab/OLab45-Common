@@ -1,11 +1,11 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OLabWebAPI.Common.Contracts;
-using OLabWebAPI.TurkTalk.BusinessObjects;
-using OLabWebAPI.TurkTalk.Methods;
+using OLab.Api.Common.Contracts;
+using OLab.Api.TurkTalk.BusinessObjects;
+using OLab.Api.TurkTalk.Methods;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.TurkTalk.Commands
+namespace OLab.Api.TurkTalk.Commands
 {
 
   public class LearnerAssignmentPayload

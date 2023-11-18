@@ -1,17 +1,24 @@
-using OLabWebAPI.ObjectMapper;
+using OLab.Api.ObjectMapper;
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Api.Importer
 {
 
   public class XmlMapNodeCounterDto : XmlImportDto<XmlMapNodeCounters>
   {
     private readonly CounterActionsMapper _mapper;
 
-    public XmlMapNodeCounterDto(Importer importer) : base(importer, "map_node_counter.xml")
+    public XmlMapNodeCounterDto(
+      IOLabLogger logger,
+      Importer importer) : base(
+        logger,
+        importer,
+        Importer.DtoTypes.XmlMapNodeCounterDto,
+        "map_node_counter.xml")
     {
-      _mapper = new CounterActionsMapper(GetLogger(), GetWikiProvider());
+      _mapper = new CounterActionsMapper(logger);
     }
 
     /// <summary>
@@ -32,13 +39,13 @@ namespace OLabWebAPI.Importer
     /// <returns>Success/failure</returns>
     public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
     {
-      Model.SystemCounterActions item = _mapper.ElementsToPhys(elements);
+      var item = _mapper.ElementsToPhys(elements);
       var oldId = item.Id;
 
       // test for empty value/expression.  if so, igmore this save
       if (string.IsNullOrEmpty(item.Expression))
       {
-        GetLogger().LogDebug($"Empty {GetFileName()} id = {oldId} value.  Skipping");
+        Logger.LogInformation($"Empty {GetFileName()} id = {oldId} value.  Skipping");
         return true;
       }
 
@@ -50,14 +57,13 @@ namespace OLabWebAPI.Importer
       var counterDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapCounterDto) as XmlMapCounterDto;
       item.CounterId = counterDto.GetIdTranslation(GetFileName(), item.CounterId).Value;
 
-      XmlDto mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto);
-      Model.MapNodes node = nodeDto.GetModel().Data.Where(x => x.Id == item.ImageableId).FirstOrDefault();
+      var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto);
+      var node = nodeDto.GetModel().Data.Where(x => x.Id == item.ImageableId).FirstOrDefault();
       item.MapId = node.MapId;
 
       Context.SystemCounterActions.Add(item);
       Context.SaveChanges();
 
-      GetLogger().LogDebug($" saved {GetFileName()} id {oldId} -> {item.Id}");
       CreateIdTranslation(oldId, item.Id);
 
       return true;

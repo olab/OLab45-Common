@@ -1,19 +1,26 @@
-using OLabWebAPI.Model;
+using OLab.Api.Model;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Api.Importer
 {
 
   public class XmlMapVpdElementDto : XmlImportDto<XmlMapVpdElements>
   {
     private readonly ObjectMapper.MapVpdElement _mapper;
 
-    public XmlMapVpdElementDto(Importer importer) : base(importer, "map_vpd_element.xml")
+    public XmlMapVpdElementDto(
+      IOLabLogger logger,
+      Importer importer) : base(
+        logger,
+        importer,
+        Importer.DtoTypes.XmlMapVpdElementDto,
+        "map_vpd_element.xml")
     {
-      _mapper = new ObjectMapper.MapVpdElement(GetLogger(), GetWikiProvider());
+      _mapper = new ObjectMapper.MapVpdElement(logger);
     }
 
     /// <summary>
@@ -34,13 +41,14 @@ namespace OLabWebAPI.Importer
     /// <returns>Success/failure</returns>
     public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
     {
-      MapVpdElements phys = _mapper.ElementsToPhys(elements);
+      var phys = _mapper.ElementsToPhys(elements);
 
       // only support the VPDText type at this time
       if (phys.Key == "VPDText")
       {
-        GetLogger().LogDebug($" skipping {GetFileName()} id {phys.Id}, type '{phys.Key}'");
+        Logger.LogInformation($"Skipped MapVpdElement record of type 'VPDText'");
         return true;
+      }
       }
 
       var item = new SystemConstants();
@@ -54,7 +62,7 @@ namespace OLabWebAPI.Importer
       item.Description = $" saved {GetFileName()} id = {phys.Id}.";
 
       var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdDto) as XmlMapVpdDto;
-      XmlMapVpd vpd = vpdDto.GetModel().Data.First(x => x.Id == phys.VpdId);
+      var vpd = vpdDto.GetModel().Data.First(x => x.Id == phys.VpdId);
 
       var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
       item.ImageableId = mapDto.GetIdTranslation(GetFileName(), vpd.MapId).Value;
@@ -67,7 +75,6 @@ namespace OLabWebAPI.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
-      GetLogger().LogDebug($" saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

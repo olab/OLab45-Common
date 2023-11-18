@@ -1,16 +1,22 @@
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.IO;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Api.Importer
 {
 
   public class XmlMapElementDto : XmlImportDto<XmlMapElements>
   {
     private readonly ObjectMapper.Files _mapper;
-
-    public XmlMapElementDto(Importer importer) : base(importer, "map_element.xml")
+    public XmlMapElementDto(
+      IOLabLogger logger,
+      Importer importer) : base(
+        logger,
+        importer,
+        Importer.DtoTypes.XmlMapElementDto,
+        "map_element.xml")
     {
-      _mapper = new ObjectMapper.Files(GetLogger(), GetWikiProvider());
+      _mapper = new ObjectMapper.Files(logger);
     }
 
     /// <summary>
@@ -30,7 +36,7 @@ namespace OLabWebAPI.Importer
     /// <returns>Success/failure</returns>
     public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
     {
-      Model.SystemFiles item = _mapper.ElementsToPhys(elements);
+      var item = _mapper.ElementsToPhys(elements);
       var oldId = item.Id;
 
       item.Id = 0;
@@ -39,9 +45,8 @@ namespace OLabWebAPI.Importer
       item.ImageableId = mapDto.GetIdTranslation(GetFileName(), item.ImageableId).Value;
       item.ImageableType = "Maps";
 
-      var path = Path.Combine(GetImportPackageDirectory(), "media", Path.GetFileName(item.Path));
-      if (!File.Exists(path))
-        GetImporter().GetLogger().LogWarning(GetFileName(), 0, $"media file '{Path.GetFileName(item.Path)}' does not exist in import package");
+      //if (!GetFileModule().FileExists(GetMediaDirectory(), Path.GetFileName(item.Path)))
+      //  Logger.LogWarning(GetFileName(), 0, $"media file '{item.Path}' does not exist in import package");
 
       item.Path = Path.GetFileName(item.Path);
 
@@ -49,7 +54,6 @@ namespace OLabWebAPI.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
-      GetLogger().LogDebug($" saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

@@ -2,7 +2,7 @@ using System;
 
 #nullable disable
 
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model
 {
   public partial class MapNodes
   {

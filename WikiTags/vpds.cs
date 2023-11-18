@@ -1,10 +1,13 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Common.Attributes;
+using OLab.Common.Interfaces;
 
-[WikiTagModule("VPD")]
+[OLabModule("VPD")]
 public class VpdWikiTag : WikiTag1Argument
 {
-  public VpdWikiTag(OLabLogger logger) : base(logger, "")
+  public VpdWikiTag(
+    IOLabLogger logger,
+    IOLabConfiguration configuration) : base(logger, configuration, "")
   {
   }
 }

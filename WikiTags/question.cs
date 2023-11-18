@@ -1,10 +1,13 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Common.Attributes;
+using OLab.Common.Interfaces;
 
-[WikiTagModule("QU")]
+[OLabModule("QU")]
 public class QuestionWikiTag : WikiTag1Argument
 {
-  public QuestionWikiTag(OLabLogger logger) : base(logger, "OlabQuestionTag")
+  public QuestionWikiTag(
+    IOLabLogger logger,
+    IOLabConfiguration configuration) : base(logger, configuration, "OlabQuestionTag")
   {
   }
 

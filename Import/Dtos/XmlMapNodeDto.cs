@@ -1,16 +1,19 @@
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.Importer
+namespace OLab.Api.Importer
 {
 
   public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
   {
     private readonly ObjectMapper.MapNodesMapper _mapper;
+    private readonly IOLabConfiguration _configuration;
 
-    public XmlMapNodeDto(Importer importer) : base(importer, "map_node.xml")
+    public XmlMapNodeDto(IOLabLogger logger, Importer importer) : base(logger, importer, Importer.DtoTypes.XmlMapNodeDto, "map_node.xml")
     {
-      _mapper = new ObjectMapper.MapNodesMapper(GetLogger(), GetWikiProvider());
+      _mapper = new ObjectMapper.MapNodesMapper(logger);
+      _configuration = importer.GetConfiguration();
     }
 
     /// <summary>
@@ -34,11 +37,10 @@ namespace OLabWebAPI.Importer
 
       // replace all VPD with CONST in node text
       var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto) as XmlMapVpdElementDto;
+      var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto) as XmlMapVpdElementDto;
 
-      var wiki = new VpdWikiTag(GetLogger());
-      var wikiStrings = wiki.GetWikiTags(item.Text);
-
-      foreach (var wikiString in wikiStrings)
+      var wiki = new VpdWikiTag(Logger, _configuration);
+      while (wiki.HaveWikiTag(item.Text))
       {
         wiki.SetWiki(wikiString);
 
@@ -50,8 +52,8 @@ namespace OLabWebAPI.Importer
           var newWikiTag = wikiString.Replace(id.ToString(), newId.ToString());
           newWikiTag = newWikiTag.Replace(wiki.GetWikiType(), "CONST");
 
-          GetLogger().LogDebug($" replacing '{wikiString}' -> '{newWikiTag}'");
-          item.Text = item.Text.Replace(wikiString, newWikiTag);
+        Logger.LogInformation($"Replacing '{wikiTag}' -> '{newWikiTag}'");
+        item.Text = item.Text.Replace(wikiTag, newWikiTag);
 
           rc = true;
         }
@@ -79,7 +81,7 @@ namespace OLabWebAPI.Importer
       // replace all VPD with CONST in node text
       var avDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapAvatarDto) as XmlMapAvatarDto;
 
-      var wiki = new AvatarWikiTag(GetLogger());
+      var wiki = new AvatarWikiTag(Logger, _configuration);
       while (wiki.HaveWikiTag(item.Text))
       {
         var id = Convert.ToUInt16(wiki.GetWikiArgument1());
@@ -90,7 +92,7 @@ namespace OLabWebAPI.Importer
         var newWikiTag = wikiTag.Replace(id.ToString(), newId.ToString());
         newWikiTag = newWikiTag.Replace(wiki.GetWikiType(), "MR");
 
-        GetLogger().LogDebug($"Replacing '{wikiTag}' -> '{newWikiTag}'");
+        Logger.LogInformation($"Replacing '{wikiTag}' -> '{newWikiTag}'");
         item.Text = item.Text.Replace(wikiTag, newWikiTag);
 
         rc = true;
@@ -104,10 +106,10 @@ namespace OLabWebAPI.Importer
       var rc = true;
 
       // remap all MR with new id's in node text
-      XmlDto mapElementDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapElementDto);
+      var mapElementDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapElementDto);
       var mappedWikiTags = new Dictionary<string, string>();
 
-      var wiki = new MediaResourceWikiTag(GetLogger());
+      var wiki = new MediaResourceWikiTag(Logger, _configuration);
       while (wiki.HaveWikiTag(item.Text))
       {
         var id = Convert.ToUInt32(wiki.GetWikiArgument1());
@@ -124,7 +126,7 @@ namespace OLabWebAPI.Importer
 
       foreach (var key in mappedWikiTags.Keys)
       {
-        GetLogger().LogDebug($"Remapping '{key}' -> '{mappedWikiTags[key]}'");
+        Logger.LogInformation($"Remapping '{key}' -> '{mappedWikiTags[key]}'");
         item.Text = item.Text.Replace(key, mappedWikiTags[key]);
       }
 
@@ -136,10 +138,10 @@ namespace OLabWebAPI.Importer
       var rc = true;
 
       // remap all MR with new id's in node text
-      XmlDto questionDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapQuestionDto);
+      var questionDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapQuestionDto);
       var mappedWikiTags = new Dictionary<string, string>();
 
-      var wiki = new QuestionWikiTag(GetLogger());
+      var wiki = new QuestionWikiTag(Logger, _configuration);
       while (wiki.HaveWikiTag(item.Text))
       {
         var id = Convert.ToUInt32(wiki.GetWikiArgument1());
@@ -156,7 +158,7 @@ namespace OLabWebAPI.Importer
 
       foreach (var key in mappedWikiTags.Keys)
       {
-        GetLogger().LogDebug($"Remapping '{key}' -> '{mappedWikiTags[key]}'");
+        Logger.LogInformation($"Remapping '{key}' -> '{mappedWikiTags[key]}'");
         item.Text = item.Text.Replace(key, mappedWikiTags[key]);
       }
 
@@ -171,10 +173,14 @@ namespace OLabWebAPI.Importer
     /// <returns>Success/failure</returns>
     public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
     {
-      Model.MapNodes item = _mapper.ElementsToPhys(elements);
+      var item = _mapper.ElementsToPhys(elements);
       var oldId = item.Id;
 
-      XmlDto mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto);
+      CurrentRecordIndex = recordIndex;
+
+      item.Id = 0;
+
+      var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto);
       item.MapId = mapDto.GetIdTranslation(GetFileName(), item.MapId).Value;
 
       // remap 'true' MR's before Avatars since Avatars are rendered as MR's.
@@ -190,10 +196,7 @@ namespace OLabWebAPI.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
-
       GetModel().Data.Add(item);
-
-      GetLogger().LogDebug($" saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

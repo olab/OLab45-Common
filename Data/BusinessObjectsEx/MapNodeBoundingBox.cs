@@ -1,9 +1,9 @@
-using OLabWebAPI.Model;
+using OLab.Api.Model;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace OLabWebAPI.Utils
+namespace OLab.Api.Utils
 {
   public class MapNodeBoundingBox
   {

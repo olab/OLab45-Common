@@ -1,20 +1,21 @@
 using AutoMapper;
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class CounterActionsMapper : OLabMapper<SystemCounterActions, CounterActionsDto>
   {
     public static int DefaultWidth = 400;
     public static int DefaultHeight = 300;
 
-    public CounterActionsMapper(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public CounterActionsMapper(
+      IOLabLogger logger,
+      bool enableWikiTranslation = true) : base(logger)
     {
     }
 
@@ -35,7 +36,7 @@ namespace OLabWebAPI.ObjectMapper
 
     public override SystemCounterActions ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
     {
-      SystemCounterActions phys = GetPhys(source);
+      var phys = GetPhys(source);
 
       phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
       phys.OperationType = "open";

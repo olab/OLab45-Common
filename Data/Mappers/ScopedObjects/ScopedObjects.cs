@@ -1,52 +1,54 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Utils;
+using OLab.Api.Dto;
+using OLab.Common.Interfaces;
 using System;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class ScopedObjects : ObjectMapper<Model.ScopedObjects, ScopedObjectsDto>
   {
     protected readonly bool enableWikiTranslation = true;
 
-    public ScopedObjects(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
-    {
-    }
+    //public ScopedObjects(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    //{
+    //}
 
-    public ScopedObjects(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public ScopedObjects(
+      IOLabLogger logger,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      bool enableWikiTranslation = true) : base(logger, wikiTagProvider)
     {
     }
 
     public override ScopedObjectsDto PhysicalToDto(Model.ScopedObjects phys, object source = null)
     {
-      ScopedObjectsDto dto = GetDto(source);
+      var dto = GetDto(source);
 
-      System.Collections.Generic.IList<QuestionsFullDto> dtoQuestionsList
-        = new ObjectMapper.QuestionsFull(logger, GetWikiProvider()).PhysicalToDto(phys.Questions);
+      var dtoQuestionsList
+        = new ObjectMapper.QuestionsFull(Logger).PhysicalToDto(phys.Questions);
       dto.Questions.AddRange(dtoQuestionsList);
 
-      System.Collections.Generic.IList<CountersDto> dtCountersList
-        = new ObjectMapper.Counters(logger, GetWikiProvider()).PhysicalToDto(phys.Counters);
+      var dtCountersList
+        = new ObjectMapper.Counters(Logger).PhysicalToDto(phys.Counters);
       dto.Counters.AddRange(dtCountersList);
 
-      System.Collections.Generic.IList<ConstantsDto> dtConstantsList
-        = new ObjectMapper.Constants(logger, GetWikiProvider()).PhysicalToDto(phys.Constants);
+      var dtConstantsList
+        = new ObjectMapper.Constants(Logger).PhysicalToDto(phys.Constants);
       dto.Constants.AddRange(dtConstantsList);
 
-      System.Collections.Generic.IList<FilesFullDto> dtFilesList
-        = new ObjectMapper.FilesFull(logger, GetWikiProvider()).PhysicalToDto(phys.Files);
+      var dtFilesList
+        = new ObjectMapper.FilesFull(Logger).PhysicalToDto(phys.Files);
       dto.Files.AddRange(dtFilesList);
 
-      System.Collections.Generic.IList<ScriptsDto> dtScriptsList
-        = new ObjectMapper.Scripts(logger, GetWikiProvider()).PhysicalToDto(phys.Scripts);
+      var dtScriptsList
+        = new ObjectMapper.Scripts(Logger).PhysicalToDto(phys.Scripts);
       dto.Scripts.AddRange(dtScriptsList);
 
-      System.Collections.Generic.IList<ThemesFullDto> dtThemesList
-        = new ThemesFull(logger, GetWikiProvider(), enableWikiTranslation).PhysicalToDto(phys.Themes);
+      var dtThemesList
+        = new ThemesFull(Logger, _wikiTagModules).PhysicalToDto(phys.Themes);
       dto.Themes.AddRange(dtThemesList);
 
-      System.Collections.Generic.IList<CounterActionsDto> dtCounterActionsList
-        = new CounterActionsMapper(logger, GetWikiProvider()).PhysicalToDto(phys.CounterActions);
+      var dtCounterActionsList
+        = new CounterActionsMapper(Logger).PhysicalToDto(phys.CounterActions);
       dto.CounterActions.AddRange(dtCounterActionsList);
 
       return dto;

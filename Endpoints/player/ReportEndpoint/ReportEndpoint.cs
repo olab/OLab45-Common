@@ -1,11 +1,11 @@
 using Data.Contracts;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using OLabWebAPI.Data.Exceptions;
-using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Endpoints;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Data.Exceptions;
+using OLab.Api.Data.Interface;
+using OLab.Api.Endpoints;
+using OLab.Api.Model;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Endpoints.player.ReportEndpoint
 {
-  public partial class ReportEndpoint : OlabEndpoint
+  public partial class ReportEndpoint : OLabEndpoint
   {
     private IList<UserSessionTraces> _sessionTraces;
     private IList<UserResponses> _sessionResponses;
@@ -26,17 +26,17 @@ namespace Endpoints.player.ReportEndpoint
     private IList<UserState> _userStates;
 
     public ReportEndpoint(
-      OLabLogger logger,
-      IOptions<AppSettings> appSettings,
-      OLabDBContext context) : base(logger, appSettings, context)
+      IOLabLogger logger,
+      IOLabConfiguration configuration,
+      OLabDBContext context) : base(logger, configuration, context)
     {
     }
 
     public async Task<SessionReport> GetAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       string contextId)
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: ReportEndpoint.GetAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: ReportEndpoint.GetAsync");
 
       var dto = new SessionReport();
 
@@ -55,32 +55,32 @@ namespace Endpoints.player.ReportEndpoint
       _sessionTraces = dbContext.UserSessionTraces
         .Where(x => x.SessionId == _session.Id)
         .OrderBy(x => x.DateStamp).ToList();
-      logger.LogDebug($"Found {_sessionTraces.Count} UserSessionTraces records for userSession {contextId}");
+      Logger.LogDebug($"Found {_sessionTraces.Count} UserSessionTraces records for userSession {contextId}");
 
       _sessionResponses = dbContext.UserResponses
         .Where(x => x.SessionId == _session.Id)
         .OrderBy(x => x.CreatedAt).ToList();
-      logger.LogDebug($"Found {_sessionResponses.Count} UserResponses records for userSession {contextId}");
+      Logger.LogDebug($"Found {_sessionResponses.Count} UserResponses records for userSession {contextId}");
 
       _userStates = dbContext.UserState
         .Where(x => x.SessionId == _session.Id).ToList();
-      logger.LogDebug($"Found {_userStates.Count} UserState records for userSession {contextId}");
+      Logger.LogDebug($"Found {_userStates.Count} UserState records for userSession {contextId}");
 
       _questionsTypes = dbContext.SystemQuestionTypes.ToList();
 
       var questionIds = _sessionResponses.Select(x => x.QuestionId).ToList();
       _questions = dbContext.SystemQuestions
         .Where(x => questionIds.Contains(x.Id)).ToList();
-      logger.LogDebug($"Found {_questions.Count} question records for userSession {contextId}");
+      Logger.LogDebug($"Found {_questions.Count} question records for userSession {contextId}");
 
       _questionsResponses = dbContext.SystemQuestionResponses
         .Where(x => questionIds.Contains(x.QuestionId.Value)).ToList();
-      logger.LogDebug($"Found {_questionsResponses.Count} question correctREsponses records for userSession {contextId}");
+      Logger.LogDebug($"Found {_questionsResponses.Count} question correctREsponses records for userSession {contextId}");
 
       var nodeIds = _sessionTraces.Select(x => x.NodeId).ToList();
       _nodes = dbContext.MapNodes
         .Where(x => nodeIds.Contains(x.Id)).ToList();
-      logger.LogDebug($"Found {_nodes.Count} node records for userSession {contextId}");
+      Logger.LogDebug($"Found {_nodes.Count} node records for userSession {contextId}");
 
       var mapId = _session.MapId;
       _map = dbContext.Maps.FirstOrDefault(x => x.Id == mapId);
@@ -106,12 +106,12 @@ namespace Endpoints.player.ReportEndpoint
     {
       var plainText = "";
 
-      foreach (CounterSession counter in dto.Counters)
+      foreach (var counter in dto.Counters)
         plainText += counter.Value;
 
-      foreach (NodeSession node in dto.Nodes)
+      foreach (var node in dto.Nodes)
       {
-        foreach (NodeResponse response in node.Responses)
+        foreach (var response in node.Responses)
           plainText += response.ResponseText;
       }
 
@@ -123,11 +123,11 @@ namespace Endpoints.player.ReportEndpoint
     {
       var sessionNodes = new List<NodeSession>();
 
-      foreach (UserSessionTraces sessionTrace in _sessionTraces)
+      foreach (var sessionTrace in _sessionTraces)
       {
         var sessionNode = new NodeSession();
 
-        MapNodes node = _nodes.FirstOrDefault(x => x.Id == sessionTrace.NodeId);
+        var node = _nodes.FirstOrDefault(x => x.Id == sessionTrace.NodeId);
         sessionNode.NodeName = node.Title;
 
         sessionNode.NodeId = sessionTrace.NodeId;
@@ -148,18 +148,18 @@ namespace Endpoints.player.ReportEndpoint
       var nodeSessionResponses = _sessionResponses.Where(x => x.NodeId == nodeId).ToList();
       var processedConversations = new List<string>();
 
-      foreach (UserResponses nodeSessionResponse in nodeSessionResponses)
+      foreach (var nodeSessionResponse in nodeSessionResponses)
       {
         var nodeResponse = new NodeResponse();
         nodeResponse.TimeStamp = Conversions.GetTime(nodeSessionResponse.CreatedAt);
 
-        SystemQuestions question = _questions.FirstOrDefault(x => x.Id == nodeSessionResponse.QuestionId);
+        var question = _questions.FirstOrDefault(x => x.Id == nodeSessionResponse.QuestionId);
         var questionResponses =
           _questionsResponses.Where(x => x.QuestionId == question.Id).ToList();
 
         nodeResponse.QuestionId = question.Id;
         nodeResponse.QuestionName = question.Name;
-        SystemQuestionTypes questionType =
+        var questionType =
           _questionsTypes.FirstOrDefault(x => x.Id == question.EntryTypeId);
         nodeResponse.QuestionType = questionType.Title;
         nodeResponse.QuestionStem = question.Stem;
@@ -168,7 +168,7 @@ namespace Endpoints.player.ReportEndpoint
         // displayed so this code jsut removes any previous responses for the question.
         if ((question.EntryTypeId == 6) || (question.EntryTypeId == 3))
         {
-          NodeResponse previousResponse = nodeResponses.FirstOrDefault(x => (x.QuestionId == question.Id));
+          var previousResponse = nodeResponses.FirstOrDefault(x => (x.QuestionId == question.Id));
           if (previousResponse != null)
             nodeResponses.Remove(previousResponse);
         }
@@ -183,7 +183,7 @@ namespace Endpoints.player.ReportEndpoint
           var conversationTextResponses = _sessionResponses
             .Where(x => x.QuestionId == question.Id && x.NodeId == nodeId && x.SessionId == _session.Id).OrderBy(x => x.CreatedAt).ToList();
 
-          foreach (UserResponses textResponse in conversationTextResponses)
+          foreach (var textResponse in conversationTextResponses)
             nodeResponse.ResponseText += $"{textResponse.Response}<br/>\n";
 
           processedConversations.Add($"{question.Id}:{nodeId}:{_session.Id}");
@@ -270,7 +270,7 @@ namespace Endpoints.player.ReportEndpoint
           responseTexts.Add(responseIdString.ToString());
         else
         {
-          SystemQuestionResponses questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
+          var questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
           responseTexts.Add(questionResponse.Response);
         }
       }
@@ -284,7 +284,7 @@ namespace Endpoints.player.ReportEndpoint
       if (!Int32.TryParse(response, out responseId))
         return response;
 
-      SystemQuestionResponses questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
+      var questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
       return questionResponse.Response;
     }
 
@@ -300,7 +300,7 @@ namespace Endpoints.player.ReportEndpoint
         if (!Int32.TryParse(responseIdString, out responseId))
           return response;
 
-        SystemQuestionResponses questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
+        var questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
         responsesText.Add(questionResponse.Response);
 
       }

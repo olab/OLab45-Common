@@ -1,18 +1,18 @@
 using AutoMapper;
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto.Designer;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto.Designer;
+using OLab.Api.Model;
+using OLab.Common.Interfaces;
 
-namespace OLabWebAPI.ObjectMapper.Designer
+namespace OLab.Api.ObjectMapper.Designer
 {
   public class Counters : OLabMapper<SystemCounters, ScopedObjectDto>
   {
-    public Counters(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public Counters(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public Counters(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public Counters(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

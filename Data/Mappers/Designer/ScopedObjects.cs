@@ -1,19 +1,22 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto.Designer;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto.Designer;
+using OLab.Common.Interfaces;
 using System;
 
-namespace OLabWebAPI.ObjectMapper.Designer
+namespace OLab.Api.ObjectMapper.Designer
 {
   public class ScopedObjects : ObjectMapper<Model.ScopedObjects, ScopedObjectsDto>
   {
     protected readonly bool enableWikiTranslation = true;
 
-    public ScopedObjects(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public ScopedObjects(
+      IOLabLogger logger,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      bool enableWikiTranslation = true) : base(logger, wikiTagProvider)
     {
     }
 
-    public ScopedObjects(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public ScopedObjects(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 
@@ -21,18 +24,18 @@ namespace OLabWebAPI.ObjectMapper.Designer
       Model.ScopedObjects phys,
       object source = null)
     {
-      ScopedObjectsDto dto = GetDto(source);
+      var dto = GetDto(source);
 
-      System.Collections.Generic.IList<ScopedObjectDto> dtConstantsList = new Constants(logger, GetWikiProvider()).PhysicalToDto(phys.Constants);
+      var dtConstantsList = new Constants(Logger).PhysicalToDto(phys.Constants);
       dto.Constants.AddRange(dtConstantsList);
 
-      System.Collections.Generic.IList<ScopedObjectDto> dtoQuestionsList = new Questions(logger, GetWikiProvider()).PhysicalToDto(phys.Questions);
+      var dtoQuestionsList = new Questions(Logger).PhysicalToDto(phys.Questions);
       dto.Questions.AddRange(dtoQuestionsList);
 
-      System.Collections.Generic.IList<ScopedObjectDto> dtCountersList = new Counters(logger, GetWikiProvider()).PhysicalToDto(phys.Counters);
+      var dtCountersList = new Counters(Logger).PhysicalToDto(phys.Counters);
       dto.Counters.AddRange(dtCountersList);
 
-      System.Collections.Generic.IList<ScopedObjectDto> dtFilesList = new Files(logger, GetWikiProvider()).PhysicalToDto(phys.Files);
+      var dtFilesList = new Files(Logger).PhysicalToDto(phys.Files);
       dto.Files.AddRange(dtFilesList);
 
       return dto;

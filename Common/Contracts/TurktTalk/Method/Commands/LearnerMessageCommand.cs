@@ -1,9 +1,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OLabWebAPI.Common.Contracts;
-using OLabWebAPI.TurkTalk.Methods;
+using OLab.Api.Common.Contracts;
+using OLab.Api.TurkTalk.Methods;
 
-namespace OLabWebAPI.TurkTalk.Commands
+namespace OLab.Api.TurkTalk.Commands
 {
   public class LearnerMessageCommand : Method
   {

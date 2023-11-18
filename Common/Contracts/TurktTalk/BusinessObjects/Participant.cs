@@ -1,6 +1,5 @@
 using Common.Utils;
 using Dawn;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using System;
@@ -8,7 +7,7 @@ using System.Net;
 using System.Security.Claims;
 
 
-namespace OLabWebAPI.TurkTalk.BusinessObjects
+namespace OLab.Api.TurkTalk.BusinessObjects
 {
   public class Participant
   {
@@ -48,11 +47,11 @@ namespace OLabWebAPI.TurkTalk.BusinessObjects
 
     public Participant(HubCallerContext context)
     {
-      HttpContext httpContext = context.GetHttpContext();
+      var httpContext = context.GetHttpContext();
 
       // extract fields from bearer token
       var identity = (ClaimsIdentity)context.User.Identity;
-      Claim nameClaim = identity.FindFirst("name");
+      var nameClaim = identity.FindFirst("name");
       var userId = identity.FindFirst(ClaimTypes.Name).Value;
 
       var nickName = "";

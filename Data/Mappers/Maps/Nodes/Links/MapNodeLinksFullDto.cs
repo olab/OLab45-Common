@@ -1,17 +1,22 @@
 using AutoMapper;
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto;
+using OLab.Common.Interfaces;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class MapNodeLinksFullMapper : OLabMapper<Model.MapNodeLinks, MapNodeLinksFullDto>
   {
-    public MapNodeLinksFullMapper(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public MapNodeLinksFullMapper(
+      IOLabLogger logger,
+      bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public MapNodeLinksFullMapper(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public MapNodeLinksFullMapper(
+      IOLabLogger logger,
+      WikiTagProvider tagProvider,
+      bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

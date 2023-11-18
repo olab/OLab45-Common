@@ -1,7 +1,7 @@
 
-using OLabWebAPI.TurkTalk.BusinessObjects;
+using OLab.Api.TurkTalk.BusinessObjects;
 
-namespace OLabWebAPI.Common.Contracts
+namespace OLab.Api.Common.Contracts
 {
   public class Envelope
   {

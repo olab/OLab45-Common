@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model
 {
   [Table("map_node_notes")]
   [Index(nameof(MapNodeId), Name = "fk_map_node_id_idx")]

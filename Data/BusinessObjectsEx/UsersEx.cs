@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model
 {
   public partial class Users
   {
@@ -18,7 +18,7 @@ namespace OLabWebAPI.Model
 
     public static Users CreateDefault(AddUserRequest model)
     {
-      Users newUser = CreateDefault();
+      var newUser = CreateDefault();
 
       if (!string.IsNullOrEmpty(model.Password))
         newUser.Password = model.Password;

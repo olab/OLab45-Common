@@ -1,19 +1,17 @@
 using AutoMapper;
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class MapsMapper : OLabMapper<Model.Maps, Dto.MapsDto>
   {
-    public MapsMapper(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
-    {
-    }
-
-    public MapsMapper(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public MapsMapper(
+      IOLabLogger logger,
+      bool enableWikiTranslation = true) : base(logger)
     {
     }
 
@@ -32,7 +30,7 @@ namespace OLabWebAPI.ObjectMapper
 
     public override Model.Maps ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
     {
-      Model.Maps phys = base.GetPhys(source);
+      var phys = base.GetPhys(source);
 
       phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
       phys.Name = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "name"));
@@ -64,8 +62,10 @@ namespace OLabWebAPI.ObjectMapper
       phys.RevisableAnswers = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "revisable_answers").Value) == 1;
       phys.SendXapiStatements = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "send_xapi_statements").Value) == 1;
       phys.CreatedAt = DateTime.Now;
+      if (elements.Any(x => x.Name == "report_node_id"))
+        phys.ReportNodeId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "report_node_id").Value);
 
-      // logger.LogInformation($"loaded Map {phys.Id}");
+      // Logger.LogInformation($"loaded Map {phys.Id}");
 
       return phys;
     }

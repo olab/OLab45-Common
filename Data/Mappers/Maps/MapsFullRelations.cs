@@ -1,20 +1,25 @@
 using AutoMapper;
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
-  public class MapsFullRelationsMapper : OLabMapper<Model.Maps, MapsFullRelationsDto>
+  public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
   {
-    public MapsFullRelationsMapper(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public MapsFullRelationsMapper(
+      IOLabLogger logger,
+      bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public MapsFullRelationsMapper(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public MapsFullRelationsMapper(
+      IOLabLogger logger,
+      WikiTagProvider tagProvider,
+      bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 
@@ -26,9 +31,9 @@ namespace OLabWebAPI.ObjectMapper
     {
       return new MapperConfiguration(cfg =>
       {
-        cfg.CreateMap<Model.Maps, MapsFullRelationsDto>().ReverseMap();
-        cfg.CreateMap<Model.MapNodes, MapNodesFullDto>().ReverseMap();
-        cfg.CreateMap<Model.MapNodeLinks, MapNodeLinksFullDto>().ReverseMap();
+        cfg.CreateMap<Maps, MapsFullRelationsDto>().ReverseMap();
+        cfg.CreateMap<MapNodes, MapNodesFullDto>().ReverseMap();
+        cfg.CreateMap<MapNodeLinks, MapNodeLinksFullDto>().ReverseMap();
       });
     }
 
@@ -41,19 +46,25 @@ namespace OLabWebAPI.ObjectMapper
     /// </remarks>
     /// <param name="phys">Physical object</param>
     /// <returns>Dto object</returns>
-    public override MapsFullRelationsDto PhysicalToDto(Model.Maps map)
+    public override MapsFullRelationsDto PhysicalToDto(Maps map)
     {
       var dto = new MapsFullRelationsDto
       {
-        Map = new MapsFullMapper(logger).PhysicalToDto(map),
-        MapNodes = new MapNodesFullMapper(logger).PhysicalToDto(map.MapNodes.ToList())
+        Map = new MapsFullMapper(
+          Logger,
+          _wikiTagModules
+        ).PhysicalToDto(map),
+        MapNodes = new MapNodesFullMapper(
+          Logger,
+          _wikiTagModules
+        ).PhysicalToDto(map.MapNodes.ToList())
       };
 
       var links = new List<MapNodeLinks>();
-      foreach (MapNodes node in map.MapNodes)
+      foreach (var node in map.MapNodes)
         links.AddRange(node.MapNodeLinksNodeId1Navigation);
 
-      dto.MapNodeLinks = new MapNodeLinksMapper(logger).PhysicalToDto(links);
+      dto.MapNodeLinks = new MapNodeLinksMapper(Logger).PhysicalToDto(links);
 
       return dto;
     }

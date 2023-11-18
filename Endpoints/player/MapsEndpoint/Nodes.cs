@@ -1,19 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OLabWebAPI.Common.Exceptions;
-using OLabWebAPI.Data.Exceptions;
-using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Model.ReaderWriter;
+using OLab.Api.Common.Exceptions;
+using OLab.Api.Data;
+using OLab.Api.Data.Exceptions;
+using OLab.Api.Data.Interface;
+using OLab.Api.Dto;
+using OLab.Api.Model.ReaderWriter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OLabWebAPI.Endpoints.Player
+namespace OLab.Api.Endpoints.Player
 {
-  public partial class MapsEndpoint : OlabEndpoint
+  public partial class MapsEndpoint : OLabEndpoint
   {
     /// <summary>
     /// Gets a node, with no security
@@ -54,14 +54,14 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="hideHidden">Flag to suppress hidden links</param>
     /// <returns>MapsNodesFullRelationsDto</returns>
     public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       uint nodeId,
       bool hideHidden = true)
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetMapNodeAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
 
-      MapsNodesFullRelationsDto dto = await GetRawNodeAsync(mapId, nodeId, hideHidden);
+      var dto = await GetRawNodeAsync(mapId, nodeId, hideHidden);
 
       // now that we had a real node id, test if user has explicit no access to node.
       if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, nodeId))
@@ -70,7 +70,7 @@ namespace OLabWebAPI.Endpoints.Player
       // filter out any destination links the user
       // does not have access to 
       var filteredLinks = new List<MapNodeLinksDto>();
-      foreach (MapNodeLinksDto mapNodeLink in dto.MapNodeLinks)
+      foreach (var mapNodeLink in dto.MapNodeLinks)
       {
         if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
           continue;
@@ -92,29 +92,31 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="sessionId">session id</param>
     /// <returns>IActionResult</returns>
     public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       uint nodeId,
       DynamicScopedObjectsDto body)
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.GetMapNodeAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
+
+      var session = new OLabSession(Logger, dbContext, auth.UserContext);
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
       // dump out original dynamic objects for logging
-      body.Dump(logger, "Original");
+      body.Dump(Logger, "Original");
 
       // test for valid dynamic objects
       if (!body.IsValid())
         throw new OLabUnauthorizedException("Object validity check failed");
 
-      Maps map = await MapsReaderWriter.Instance(logger.GetLogger(), dbContext).GetSingleAsync(mapId);
+      var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).GetSingleAsync(mapId);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
-      MapsNodesFullRelationsDto dto = await GetRawNodeAsync(mapId, nodeId, true);
+      var dto = await GetRawNodeAsync(mapId, nodeId, true);
 
       // now that we had a real node id, test if user has explicit no access to node.
       if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, dto.Id.Value))
@@ -123,7 +125,7 @@ namespace OLabWebAPI.Endpoints.Player
       // filter out any destination links the user
       // does not have access to 
       var filteredLinks = new List<MapNodeLinksDto>();
-      foreach (MapNodeLinksDto mapNodeLink in dto.MapNodeLinks)
+      foreach (var mapNodeLink in dto.MapNodeLinks)
       {
         if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
           continue;
@@ -137,15 +139,15 @@ namespace OLabWebAPI.Endpoints.Player
       // if browser signals a new play, then start a new session
       if (body.NewPlay)
       {
-        _userContext.Session.OnStartSession(_userContext, mapId);
-        dto.ContextId = _userContext.Session.GetSessionId();
-        _userContext.Session.SetSessionId(dto.ContextId);
+        session.OnStartSession(auth.UserContext, mapId);
+        dto.ContextId = session.GetSessionId();
+        session.SetSessionId(dto.ContextId);
       }
 
-      _userContext.Session.OnPlayNode(mapId, dto.Id.Value);
+      session.OnPlayNode(mapId, dto.Id.Value);
 
       // extend the session into the new node
-      _userContext.Session.OnExtendSession(mapId, nodeId);
+      session.OnExtendSession(mapId, nodeId);
 
       UpdateNodeCounter();
 
@@ -165,12 +167,12 @@ namespace OLabWebAPI.Endpoints.Player
       }
 
       // save current session state to database
-      _userContext.Session.SaveSessionState(mapId, dto.Id.Value, dto.DynamicObjects);
+      session.SaveSessionState(mapId, dto.Id.Value, dto.DynamicObjects);
 
       dto.DynamicObjects.RefreshChecksum();
 
       // dump out the dynamic objects for logging
-      dto.DynamicObjects.Dump(logger, "New");
+      dto.DynamicObjects.Dump(Logger, "New");
 
       return dto;
     }
@@ -182,28 +184,28 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="nodeId">node id</param>
     /// <returns>IActionResult</returns>
     public async Task<MapNodesPostResponseDto> DeleteNodeAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       uint nodeId
     )
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.DeleteNodeAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.DeleteNodeAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = dbContext.Database.BeginTransaction();
+      using var transaction = dbContext.Database.BeginTransaction();
 
       try
       {
-        MapNodeLinks[] links = dbContext.MapNodeLinks.Where(x => (x.NodeId1 == nodeId) || (x.NodeId2 == nodeId)).ToArray();
-        logger.LogDebug($"deleting {links.Count()} links");
+        var links = dbContext.MapNodeLinks.Where(x => (x.NodeId1 == nodeId) || (x.NodeId2 == nodeId)).ToArray();
+        Logger.LogDebug($"deleting {links.Count()} links");
         dbContext.MapNodeLinks.RemoveRange(links);
 
-        MapNodes node = await dbContext.MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
+        var node = await dbContext.MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
         dbContext.MapNodes.Remove(node);
-        logger.LogDebug($"deleting node id: {node.Id}");
+        Logger.LogDebug($"deleting node id: {node.Id}");
 
         await dbContext.SaveChangesAsync();
 
@@ -232,24 +234,24 @@ namespace OLabWebAPI.Endpoints.Player
     /// <param name="dto">node data</param>
     /// <returns>IActionResult</returns>
     public async Task<MapNodesPostResponseDto> PutNodeAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       uint nodeId,
       [FromBody] MapNodesFullDto dto
     )
     {
-      logger.LogDebug($"{auth.GetUserContext().UserId}: MapsEndpoint.PutNodeAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.PutNodeAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = dbContext.Database.BeginTransaction();
+      using var transaction = dbContext.Database.BeginTransaction();
 
       try
       {
-        var builder = new ObjectMapper.MapNodesFullMapper(logger);
-        MapNodes phys = builder.DtoToPhysical(dto);
+        var builder = new ObjectMapper.MapNodesFullMapper(Logger);
+        var phys = builder.DtoToPhysical(dto);
 
         // patch up node size, just in case it's not set properly
         if (phys.Height == 0) phys.Height = 440;
@@ -273,7 +275,6 @@ namespace OLabWebAPI.Endpoints.Player
         throw;
       }
 
-
     }
 
     /// <summary>
@@ -283,7 +284,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// <returns>MapsNodesFullRelationsDto</returns>
     private async Task<MapsNodesFullRelationsDto> GetRootNodeAsync(uint mapId, bool hideHidden)
     {
-      MapNodes phys = await dbContext.MapNodes
+      var phys = await dbContext.MapNodes
         .FirstOrDefaultAsync(x => x.MapId == mapId && x.TypeId.Value == (int)Model.MapNodes.NodeType.RootNode);
 
       if (phys == null)
@@ -301,7 +302,7 @@ namespace OLabWebAPI.Endpoints.Player
     /// </summary>
     public void UpdateNodeCounter()
     {
-      SystemCounters counter = dbContext.SystemCounters.Where(x => x.Name == "nodeCounter").FirstOrDefault();
+      var counter = dbContext.SystemCounters.Where(x => x.Name == "nodeCounter").FirstOrDefault();
 
       var value = counter.ValueAsNumber();
 
@@ -310,11 +311,6 @@ namespace OLabWebAPI.Endpoints.Player
 
       dbContext.SystemCounters.Update(counter);
       dbContext.SaveChanges();
-    }
-
-    public void SaveSessionState(uint mapId, uint nodeId, DynamicScopedObjectsDto dynamicObjects)
-    {
-      _userContext.Session.SaveSessionState(mapId, nodeId, dynamicObjects);
     }
 
   }

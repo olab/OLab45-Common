@@ -1,22 +1,22 @@
 using AutoMapper;
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class CountersFull : OLabMapper<SystemCounters, CountersFullDto>
   {
 
-    public CountersFull(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public CountersFull(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public CountersFull(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public CountersFull(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

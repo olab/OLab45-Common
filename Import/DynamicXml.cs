@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 // https://stackoverflow.com/questions/13704752/deserialize-xml-to-object-using-dynamic
 
-namespace OLabWebAPI.Importer
+namespace OLab.Api.Importer
 {
   public class DynamicXml : DynamicObject
   {
@@ -34,27 +34,32 @@ namespace OLabWebAPI.Importer
       throw new FileNotFoundException("File not found", filename);
     }
 
+    public static DynamicXml Load(Stream stream)
+    {
+      return new DynamicXml(XDocument.Load(stream).Root);
+    }
+
     public IEnumerable<XElement> Elements() { return _root.Elements(); }
 
     public override bool TryGetMember(GetMemberBinder binder, out object result)
     {
       result = null;
 
-      XAttribute att = _root.Attribute(binder.Name);
+      var att = _root.Attribute(binder.Name);
       if (att != null)
       {
         result = att.Value;
         return true;
       }
 
-      IEnumerable<XElement> nodes = _root.Elements(binder.Name);
+      var nodes = _root.Elements(binder.Name);
       if (nodes.Count() > 1)
       {
         result = nodes.Select(n => n.HasElements ? (object)new DynamicXml(n) : n.Value).ToList();
         return true;
       }
 
-      XElement node = _root.Element(binder.Name);
+      var node = _root.Element(binder.Name);
       if (node != null)
       {
         result = node.HasElements || node.HasAttributes ? new DynamicXml(node) : node.Value;

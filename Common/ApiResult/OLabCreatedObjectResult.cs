@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace OLabWebAPI.Common
+namespace OLab.Api.Common
 {
   public class OLabCreatedObjectResult<D>
   {

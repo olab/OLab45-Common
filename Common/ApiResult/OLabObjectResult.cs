@@ -1,10 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-
-namespace OLabWebAPI.Common
+namespace OLab.Api.Common
 {
   public class OLabObjectResult<D>
   {
-    public static JsonResult Result(D value)
+    public static OLabAPIResponse<D> Result(D value)
     {
       var result = new OLabAPIResponse<D>
       {
@@ -12,7 +10,7 @@ namespace OLabWebAPI.Common
         ErrorCode = System.Net.HttpStatusCode.OK
       };
 
-      return new JsonResult(result);
+      return result;
     }
   }
 }

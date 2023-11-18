@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using System;
 
-namespace OLabWebAPI.Dto
+namespace OLab.Api.Dto
 {
   public class CountersDto : ScopedObjectDto
   {
@@ -30,7 +30,7 @@ namespace OLabWebAPI.Dto
     }
     public override string ToString()
     {
-      return $"'{Name}({Id})' = {Value}";
+      return $" '{Name}({Id})' = {Value}";
     }
   }
 }

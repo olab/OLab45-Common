@@ -1,18 +1,18 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto;
+using OLab.Common.Interfaces;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper
 {
   public class DynamicScopedObjects : ObjectMapper<Model.ScopedObjects, DynamicScopedObjectsDto>
   {
     protected readonly bool enableWikiTranslation = true;
 
-    public DynamicScopedObjects(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public DynamicScopedObjects(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public DynamicScopedObjects(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public DynamicScopedObjects(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 
@@ -43,16 +43,16 @@ namespace OLabWebAPI.ObjectMapper
       Model.ScopedObjects node,
       DynamicScopedObjectsDto dto)
     {
-      System.Collections.Generic.IList<CountersDto> dtoCountersList = new ObjectMapper.Counters(logger, GetWikiProvider()).PhysicalToDto(server.Counters);
+      var dtoCountersList = new Counters(Logger).PhysicalToDto(server.Counters);
       dto.Server.Counters.AddRange(dtoCountersList);
 
-      dtoCountersList = new ObjectMapper.Counters(logger, GetWikiProvider()).PhysicalToDto(map.Counters);
+      dtoCountersList = new Counters(Logger).PhysicalToDto(map.Counters);
       dto.Map.Counters.AddRange(dtoCountersList);
 
-      dtoCountersList = new ObjectMapper.Counters(logger, GetWikiProvider()).PhysicalToDto(node.Counters);
+      dtoCountersList = new Counters(Logger).PhysicalToDto(node.Counters);
       dto.Node.Counters.AddRange(dtoCountersList);
 
-      // var dtoConstantsList = new ConstantsObjectMapper(logger, GetWikiProvider()).PhysicalToDto( server.Constants );
+      // var dtoConstantsList = new ConstantsObjectMapper(Logger, GetWikiProvider()).PhysicalToDto( server.Constants );
       // dto.Server.Constants.AddRange(dtoConstantsList);
 
       // calculate validation

@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace OLabWebAPI.Dto
+namespace OLab.Api.Dto
 {
   public class CounterActionsDto
   {
@@ -14,5 +14,10 @@ namespace OLabWebAPI.Dto
     public string Function { get; set; }
     [JsonProperty("display")]
     public int Display { get; set; }
+
+    public override string ToString()
+    {
+      return $" '{Function}({Id})'";
+    }
   }
 }

@@ -1,6 +1,6 @@
 using System;
 
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model
 {
   public class RefreshToken
   {

@@ -1,16 +1,19 @@
-using OLabWebAPI.Utils;
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
-namespace OLabWebAPI.Common
+namespace OLab.Api.Common
 {
   public abstract class WikiTag1Argument : WikiTagModule
   {
     protected string wikiTagIdPart;
-    protected List<string> wikiTagNamePatterns = new List<string>();
+    protected List<string> wikiTagNamePatterns = new();
 
-    public WikiTag1Argument(OLabLogger logger, string htmlElementName) : base(logger, htmlElementName)
+    public WikiTag1Argument(
+      IOLabLogger logger,
+      IOLabConfiguration configuration,
+      string htmlElementName) : base(logger, configuration, htmlElementName)
     {
       wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:[0-9]*\\]\\]");
       wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:\"[.A-Za-z0-9\\- ]*\"\\]\\]");
@@ -26,7 +29,7 @@ namespace OLabWebAPI.Common
       foreach (var pattern in wikiTagNamePatterns)
       {
         var regex = new Regex(pattern);
-        Match match = regex.Match(source);
+        var match = regex.Match(source);
         if (match.Success)
         {
           wikiTagIdPart = match.Value.Replace("\"", "");
@@ -94,13 +97,13 @@ namespace OLabWebAPI.Common
         if (string.IsNullOrEmpty(name))
         {
           var str = $"**Invalid wiki tag {GetWiki()}**";
-          _logger.LogDebug($"replacing {GetWiki()} <= {str}");
+          Logger.LogDebug($"replacing {GetWiki()} <= {str}");
           source = ReplaceWikiTag(source, str);
         }
         else
         {
           var element = BuildWikiTagHTMLElement();
-          _logger.LogDebug($"replacing {GetWiki()} <= {element}");
+          Logger.LogDebug($"replacing {GetWiki()} <= {element}");
           source = ReplaceWikiTag(source, element);
         }
       }

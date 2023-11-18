@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model
 {
   [Table("h5p_libraries")]
   [Index(nameof(Name), nameof(MajorVersion), nameof(MinorVersion), nameof(PatchVersion), Name = "name_version")]

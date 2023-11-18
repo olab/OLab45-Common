@@ -1,10 +1,10 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OLabWebAPI.TurkTalk.BusinessObjects;
-using OLabWebAPI.TurkTalk.Methods;
+using OLab.Api.TurkTalk.BusinessObjects;
+using OLab.Api.TurkTalk.Methods;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.TurkTalk.Commands
+namespace OLab.Api.TurkTalk.Commands
 {
   /// <summary>
   /// Defines a Learners Update command method

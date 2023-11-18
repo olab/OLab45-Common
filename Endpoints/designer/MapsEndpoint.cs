@@ -1,28 +1,35 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using OLabWebAPI.Common.Exceptions;
-using OLabWebAPI.Data.Exceptions;
-using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Model.ReaderWriter;
-using OLabWebAPI.ObjectMapper;
-using OLabWebAPI.Utils;
+using OLab.Api.Common.Exceptions;
+using OLab.Api.Data.Exceptions;
+using OLab.Api.Data.Interface;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.Model.ReaderWriter;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OLabWebAPI.Endpoints.Designer
+namespace OLab.Api.Endpoints.Designer
 {
-  public partial class MapsEndpoint : OlabEndpoint
+  public partial class MapsEndpoint : OLabEndpoint
   {
-
     public MapsEndpoint(
-      OLabLogger logger,
-      IOptions<AppSettings> appSettings,
-      OLabDBContext context) : base(logger, appSettings, context)
+      IOLabLogger logger,
+      IOLabConfiguration configuration,
+      OLabDBContext context,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      IOLabModuleProvider<IFileStorageModule> fileStorageProvider)
+      : base(
+          logger,
+          configuration,
+          context,
+          wikiTagProvider,
+          fileStorageProvider)
     {
     }
 
@@ -34,7 +41,7 @@ namespace OLabWebAPI.Endpoints.Designer
     /// <returns></returns>
     private static Model.Maps GetSimple(OLabDBContext context, uint id)
     {
-      Maps phys = context.Maps.Include(x => x.SystemCounterActions).FirstOrDefault(x => x.Id == id);
+      var phys = context.Maps.Include(x => x.SystemCounterActions).FirstOrDefault(x => x.Id == id);
       return phys;
     }
 
@@ -44,17 +51,16 @@ namespace OLabWebAPI.Endpoints.Designer
     /// <param name="mapId">map id</param>
     /// <param name="nodeId">node id</param>
     /// <returns>IActionResult</returns>
-    public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(IOLabAuthentication auth, uint mapId, uint nodeId)
+    public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(IOLabAuthorization auth, uint mapId, uint nodeId)
     {
-      logger.LogDebug($"GetMapNodeAsync(uint mapId={mapId}, nodeId={nodeId})");
+      Logger.LogDebug($"GetMapNodeAsync(uint mapId={mapId}, nodeId={nodeId})");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      Maps map = await MapsReaderWriter.Instance(logger.GetLogger(), dbContext).GetSingleAsync(mapId);
-      if (map == null)
-        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
+      var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).GetSingleAsync(mapId)
+        ?? throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
       MapsNodesFullRelationsDto dto;
       // get node with no wikitag translation
@@ -72,21 +78,21 @@ namespace OLabWebAPI.Endpoints.Designer
     /// <param name="mapId">Map id</param>
     /// <returns>IActionResult</returns>
     public async Task<IList<MapNodesFullDto>> GetMapNodesAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId)
     {
-      logger.LogDebug($"GetMapNodesAsync(uint mapId={mapId})");
+      Logger.LogDebug($"GetMapNodesAsync(uint mapId={mapId})");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
         throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-      Maps map = await MapsReaderWriter.Instance(logger.GetLogger(), dbContext).GetSingleAsync(mapId);
+      var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).GetSingleAsync(mapId);
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
       // get node with no wikitag translation
-      IList<MapNodesFullDto> dtoList = await GetNodesAsync(map, false);
+      var dtoList = await GetNodesAsync(map, false);
       return dtoList;
     }
 
@@ -95,12 +101,12 @@ namespace OLabWebAPI.Endpoints.Designer
     /// </summary>
     /// <returns>IActionResult</returns>
     public async Task<PostNewLinkResponse> PostMapNodeLinkAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       uint nodeId,
       PostNewLinkRequest body)
     {
-      logger.LogDebug($"PostMapNodeLinkAsync( destinationId = {body.DestinationId})");
+      Logger.LogDebug($"PostMapNodeLinkAsync( destinationId = {body.DestinationId})");
 
       try
       {
@@ -108,11 +114,11 @@ namespace OLabWebAPI.Endpoints.Designer
         if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
           throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-        MapNodes sourceNode = await GetMapNodeAsync(nodeId);
+        var sourceNode = await GetMapNodeAsync(nodeId);
         if (sourceNode == null)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, nodeId);
 
-        MapNodes destinationNode = await GetMapNodeAsync(body.DestinationId);
+        var destinationNode = await GetMapNodeAsync(body.DestinationId);
         if (destinationNode == null)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, body.DestinationId);
 
@@ -133,7 +139,7 @@ namespace OLabWebAPI.Endpoints.Designer
       }
       catch (Exception ex)
       {
-        logger.LogError(ex, "PostMapNodeLinkAsync");
+        Logger.LogError(ex, "PostMapNodeLinkAsync");
         throw;
       }
     }
@@ -143,16 +149,16 @@ namespace OLabWebAPI.Endpoints.Designer
     /// </summary>
     /// <returns>IActionResult</returns>
     public async Task<PostNewNodeResponse> PostMapNodesAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       PostNewNodeRequest body)
     {
-      logger.LogDebug($"PostMapNodesAsync(x = {body.X}, y = {body.Y}, sourceId = {body.SourceId})");
+      Logger.LogDebug($"PostMapNodesAsync(x = {body.X}, y = {body.Y}, sourceId = {body.SourceId})");
 
-      using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = dbContext.Database.BeginTransaction();
+      using var transaction = dbContext.Database.BeginTransaction();
 
       try
       {
-        MapNodes sourceNode = await GetMapNodeAsync(body.SourceId);
+        var sourceNode = await GetMapNodeAsync(body.SourceId);
         if (sourceNode == null)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, body.SourceId);
 
@@ -203,18 +209,18 @@ namespace OLabWebAPI.Endpoints.Designer
     /// <param name="body">nodegrid DTO</param>
     /// <returns>IActionResult</returns>
     public async Task<bool> PutMapNodegridAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       PutNodeGridRequest[] body)
     {
       if (0 == body.Length)
         return true;
 
-      using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = dbContext.Database.BeginTransaction();
+      using var transaction = dbContext.Database.BeginTransaction();
 
       try
       {
-        Maps map = GetSimple(dbContext, mapId);
+        var map = GetSimple(dbContext, mapId);
 
         if (map == null)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
@@ -223,7 +229,7 @@ namespace OLabWebAPI.Endpoints.Designer
         if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, map.Id))
           throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, map.Id);
 
-        foreach ( PutNodeGridRequest nodeDto in body )
+        foreach (var nodeDto in body)
         {
           var phys = dbContext.MapNodes.FirstOrDefault(x => x.Id == nodeDto.Id);
 
@@ -261,7 +267,7 @@ namespace OLabWebAPI.Endpoints.Designer
     /// <returns></returns>
     public Model.MapNodeLinks GetLinkSimple(OLabDBContext context, uint id)
     {
-      MapNodeLinks phys = context.MapNodeLinks.FirstOrDefault(x => x.Id == id);
+      var phys = context.MapNodeLinks.FirstOrDefault(x => x.Id == id);
       return phys;
     }
 
@@ -270,11 +276,11 @@ namespace OLabWebAPI.Endpoints.Designer
     /// </summary>
     /// <returns>IActionResult</returns>
     public async Task<bool> DeleteMapNodeLinkAsync(
-      IOLabAuthentication auth,
+      IOLabAuthorization auth,
       uint mapId,
       uint linkId)
     {
-      logger.LogDebug($"DeleteMapNodeLinkAsync(mapId = {mapId}, linkId = {linkId})");
+      Logger.LogDebug($"DeleteMapNodeLinkAsync(mapId = {mapId}, linkId = {linkId})");
 
       try
       {
@@ -282,19 +288,19 @@ namespace OLabWebAPI.Endpoints.Designer
         if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
           throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-        MapNodeLinks link = GetLinkSimple(dbContext, linkId);
+        var link = GetLinkSimple(dbContext, linkId);
 
         if (link == null)
           throw new OLabObjectNotFoundException("Links", linkId);
 
-        logger.LogDebug($"deleting link {link.Id} of map {link.MapId}");
+        Logger.LogDebug($"deleting link {link.Id} of map {link.MapId}");
         dbContext.MapNodeLinks.Remove(link);
         await dbContext.SaveChangesAsync();
         return true;
       }
       catch (Exception ex)
       {
-        logger.LogError(ex, "DeleteMapNodeLinkAsync");
+        Logger.LogError(ex, "DeleteMapNodeLinkAsync");
         throw;
       }
     }
@@ -304,11 +310,11 @@ namespace OLabWebAPI.Endpoints.Designer
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<OLabWebAPI.Dto.Designer.ScopedObjectsDto> GetScopedObjectsRawAsync(
-      IOLabAuthentication auth,
+    public async Task<Dto.Designer.ScopedObjectsDto> GetScopedObjectsRawAsync(
+      IOLabAuthorization auth,
       uint id)
     {
-      logger.LogDebug($"MapsController.GetScopedObjectsRawAsync(uint id={id})");
+      Logger.LogDebug($"MapsController.GetScopedObjectsRawAsync(uint id={id})");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, id))
@@ -322,11 +328,11 @@ namespace OLabWebAPI.Endpoints.Designer
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public async Task<OLabWebAPI.Dto.Designer.ScopedObjectsDto> GetScopedObjectsAsync(
-      IOLabAuthentication auth,
+    public async Task<Dto.Designer.ScopedObjectsDto> GetScopedObjectsAsync(
+      IOLabAuthorization auth,
       uint id)
     {
-      logger.LogDebug($"MapsController.GetScopedObjectsTranslatedAsync(uint id={id})");
+      Logger.LogDebug($"MapsController.GetScopedObjectsTranslatedAsync(uint id={id})");
 
       // test if user has access to map.
       // test if user has access to map.
@@ -342,16 +348,23 @@ namespace OLabWebAPI.Endpoints.Designer
     /// <param name="id"></param>
     /// <param name="enableWikiTranslation"></param>
     /// <returns></returns>
-    public async Task<OLabWebAPI.Dto.Designer.ScopedObjectsDto> GetScopedObjectsAsync(
+    public async Task<Dto.Designer.ScopedObjectsDto> GetScopedObjectsAsync(
       uint id,
       bool enableWikiTranslation)
     {
-      Maps map = GetSimple(dbContext, id);
+      var map = GetSimple(dbContext, id);
       if (map == null)
         return null;
 
-      Model.ScopedObjects phys = await GetScopedObjectsAllAsync(map.Id, Utils.Constants.ScopeLevelMap);
-      Model.ScopedObjects physServer = await GetScopedObjectsAllAsync(1, Utils.Constants.ScopeLevelServer);
+      var phys = await GetScopedObjectsAllAsync(
+        map.Id,
+        Utils.Constants.ScopeLevelMap,
+        _fileStorageModule);
+
+      var physServer = await GetScopedObjectsAllAsync(
+        1,
+        Utils.Constants.ScopeLevelServer,
+        _fileStorageModule);
 
       phys.Combine(physServer);
 
@@ -385,26 +398,26 @@ namespace OLabWebAPI.Endpoints.Designer
         Value = Encoding.ASCII.GetBytes(DateTime.UtcNow.ToString() + " UTC")
       });
 
-      var builder = new ObjectMapper.Designer.ScopedObjects(logger, enableWikiTranslation);
-      Dto.Designer.ScopedObjectsDto dto = builder.PhysicalToDto(phys);
+      var builder = new ObjectMapper.Designer.ScopedObjects(Logger, _wikiTagProvider, enableWikiTranslation);
+      var dto = builder.PhysicalToDto(phys);
 
       var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
       var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
       var servers = dbContext.Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
 
-      foreach (Dto.Designer.ScopedObjectDto question in dto.Questions)
+      foreach (var question in dto.Questions)
         question.ParentInfo = FindParentInfo(question.ScopeLevel, question.ParentId, maps, nodes, servers);
 
-      foreach (Dto.Designer.ScopedObjectDto constant in dto.Constants)
+      foreach (var constant in dto.Constants)
         constant.ParentInfo = FindParentInfo(constant.ScopeLevel, constant.ParentId, maps, nodes, servers);
 
-      foreach (Dto.Designer.ScopedObjectDto counter in dto.Counters)
+      foreach (var counter in dto.Counters)
         counter.ParentInfo = FindParentInfo(counter.ScopeLevel, counter.ParentId, maps, nodes, servers);
 
-      foreach (Dto.Designer.ScopedObjectDto file in dto.Files)
+      foreach (var file in dto.Files)
         file.ParentInfo = FindParentInfo(file.ScopeLevel, file.ParentId, maps, nodes, servers);
 
-      foreach (Dto.Designer.ScopedObjectDto script in dto.Scripts)
+      foreach (var script in dto.Scripts)
         script.ParentInfo = FindParentInfo(script.ScopeLevel, script.ParentId, maps, nodes, servers);
 
       return dto;
@@ -461,7 +474,7 @@ namespace OLabWebAPI.Endpoints.Designer
         || u.Email.ToLower() == body.Email.ToLower()).FirstOrDefault();
 
       // email and/or username taken
-      if ( null != existing )
+      if (null != existing)
         throw new OLabBadRequestException("Username and/or email already taken.");
 
       var phys = Users.CreateDefault(new AddUserRequest
@@ -474,7 +487,7 @@ namespace OLabWebAPI.Endpoints.Designer
       await dbContext.Users.AddAsync(phys);
       var id = await dbContext.SaveChangesAsync();
 
-      return (int) phys.Id;
+      return (int)phys.Id;
     }
 
     /// <summary>
@@ -517,7 +530,7 @@ namespace OLabWebAPI.Endpoints.Designer
       if (null == user)
         throw new OLabBadRequestException("User not found.");
 
-      SecurityUsers securityUser = dbContext.SecurityUsers.SingleOrDefault(x => x.ImageableId == map.Id
+      var securityUser = dbContext.SecurityUsers.SingleOrDefault(x => x.ImageableId == map.Id
       && (
         // note: this excludes `ImageableType == "*"` entries, allowing authors
         // to manipulate those rows may lead to unwanted side-effects
@@ -525,7 +538,7 @@ namespace OLabWebAPI.Endpoints.Designer
         && x.UserId == body.UserId
       ));
 
-      if ( null == securityUser )
+      if (null == securityUser)
         securityUser = new SecurityUsers();
 
       securityUser.ImageableId = map.Id;
@@ -535,18 +548,20 @@ namespace OLabWebAPI.Endpoints.Designer
 
       try
       {
-        if ( securityUser.Id > 0 ) // update existing security user
+        if (securityUser.Id > 0) // update existing security user
         {
           dbContext.SecurityUsers.Update(securityUser);
           var id = await dbContext.SaveChangesAsync();
           return id > 0;
-        } else // insert security user
+        }
+        else // insert security user
         {
           await dbContext.SecurityUsers.AddAsync(securityUser);
           var id = await dbContext.SaveChangesAsync();
           return id > 0;
         }
-      } catch(Exception)
+      }
+      catch (Exception)
       {
         return false;
       }
@@ -566,7 +581,7 @@ namespace OLabWebAPI.Endpoints.Designer
       if (map == null)
         return false;
 
-      SecurityUsers securityUser = dbContext.SecurityUsers.SingleOrDefault(x => x.ImageableId == map.Id
+      var securityUser = dbContext.SecurityUsers.SingleOrDefault(x => x.ImageableId == map.Id
       && (
         // note: this excludes `ImageableType == "*"` entries, allowing authors
         // to manipulate those rows may lead to unwanted side-effects
@@ -582,7 +597,8 @@ namespace OLabWebAPI.Endpoints.Designer
         dbContext.SecurityUsers.Remove(securityUser);
         var changes = await dbContext.SaveChangesAsync();
         return changes > 0;
-      } catch(Exception)
+      }
+      catch (Exception)
       {
         return false;
       }

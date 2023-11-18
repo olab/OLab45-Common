@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace OLabWebAPI.Utils
+namespace OLab.Api.Utils
 {
   public class GenericValidations
   {
@@ -16,7 +16,8 @@ namespace OLabWebAPI.Utils
         return Regex.IsMatch(username,
             @"^[a-zA-Z0-9_-]{2,}$",
             RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
-      } catch(Exception)
+      }
+      catch (Exception)
       {
         return false;
       }
@@ -41,7 +42,7 @@ namespace OLabWebAPI.Utils
           var idn = new IdnMapping();
 
           // Pull out and process domain name (throws ArgumentException on invalid)
-          string domainName = idn.GetAscii(match.Groups[2].Value);
+          var domainName = idn.GetAscii(match.Groups[2].Value);
 
           return match.Groups[1].Value + domainName;
         }

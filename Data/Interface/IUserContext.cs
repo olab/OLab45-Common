@@ -1,8 +1,11 @@
-namespace OLabWebAPI.Data.Interface
+using System.Collections.Generic;
+using System.Configuration;
+
+namespace OLab.Api.Data.Interface
 {
   public interface IUserContext
   {
-    public IOLabSession Session
+    public string SessionId
     {
       get;
       set;
@@ -39,7 +42,8 @@ namespace OLabWebAPI.Data.Interface
 
     string ReferringCourse { get; }
 
-    bool HasAccess(string requestedPerm, string objectType, uint? objectId);
+    public IList<string> UserRoles { get; }
 
+    public string ToString();
   }
 }

@@ -1,30 +1,36 @@
-using OLabWebAPI.Utils;
+using OLab.Common.Attributes;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace OLabWebAPI.Common
+namespace OLab.Api.Common
 {
   public abstract class WikiTagModule : IWikiTagModule
   {
-    protected List<string> wikiTagPatterns = new List<string>();
+    protected List<string> wikiTagPatterns = new();
     private string _wikiType;
     private string _wiki;
     private readonly string _htmlElementName;
+    protected readonly IOLabConfiguration _configuration;
 
     protected int wikiStart = 0;
     protected int wikiEnd = 0;
-    protected OLabLogger _logger;
+    protected IOLabLogger Logger;
 
-    public WikiTagModule(OLabLogger logger, string htmlElementName)
+    public WikiTagModule(
+      IOLabLogger logger,
+      IOLabConfiguration configuration,
+      string htmlElementName)
     {
-      Type t = GetType();
+      var t = GetType();
       var attribute =
-          (WikiTagModuleAttribute)Attribute.GetCustomAttribute(t, typeof(WikiTagModuleAttribute));
-      _wikiType = attribute.WikiTag;
+          (OLabModuleAttribute)Attribute.GetCustomAttribute(t, typeof(OLabModuleAttribute));
+      _wikiType = attribute.Name;
       _htmlElementName = htmlElementName;
 
-      _logger = logger;
+      Logger = logger;
+      _configuration = configuration;
     }
 
     public string GetWikiType() { return _wikiType; }
@@ -82,7 +88,7 @@ namespace OLabWebAPI.Common
       foreach (var pattern in wikiTagPatterns)
       {
         var regex = new Regex(pattern);
-        Match match = regex.Match(source);
+        var match = regex.Match(source);
         if (match.Success)
         {
           wikiStart = match.Index;

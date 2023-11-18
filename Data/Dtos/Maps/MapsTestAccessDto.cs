@@ -1,4 +1,4 @@
-namespace OLabWebAPI.Dto
+namespace OLab.Api.Dto
 {
   public class MapsTestAccessDto : MapsDto
   {

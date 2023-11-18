@@ -1,4 +1,4 @@
-namespace OLabWebAPI.Common.Contracts
+namespace OLab.Api.Common.Contracts
 {
   public class TargetNode
   {

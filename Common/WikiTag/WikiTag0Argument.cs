@@ -1,12 +1,15 @@
-using OLabWebAPI.Utils;
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace OLabWebAPI.Common
+namespace OLab.Api.Common
 {
   public abstract class WikiTag0Argument : WikiTagModule
   {
-    public WikiTag0Argument(OLabLogger logger, string htmlElementName) : base(logger, htmlElementName)
+    public WikiTag0Argument(
+      IOLabLogger logger,
+      IOLabConfiguration configuration,
+      string htmlElementName) : base(logger, configuration, htmlElementName)
     {
       wikiTagPatterns.Add($"\\[\\[{GetWikiType()}\\]\\]");
     }
@@ -41,7 +44,7 @@ namespace OLabWebAPI.Common
       while (HaveWikiTag(source))
       {
         var element = BuildWikiTagHTMLElement();
-        _logger.LogDebug($"replacing {GetWiki()} <= {element}");
+        Logger.LogDebug($"replacing {GetWiki()} <= {element}");
         source = ReplaceWikiTag(source, element);
       }
 

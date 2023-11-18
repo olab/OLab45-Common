@@ -1,4 +1,4 @@
-namespace OLabWebAPI.Importer
+namespace OLab.Api.Importer
 {
   public class XmlMapVpds : XmlImportArray<XmlMapVpd>
   {

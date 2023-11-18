@@ -1,49 +1,52 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using OLabWebAPI.Data.Interface;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Model;
-using OLabWebAPI.Utils;
+using OLab.Api.Data.Interface;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System.Linq;
 using System.Text;
 
-namespace OLabWebAPI.Data
+namespace OLab.Api.Data
 {
   public class OLabSession : IOLabSession
   {
-    // private readonly AppSettings _appSettings;
-    private readonly OLabDBContext _context;
+    private readonly OLabDBContext _dbContext;
     private readonly IUserContext _userContext;
-    private readonly ILogger _logger;
-    private string _sessionId;
+    private readonly IOLabLogger _logger;
 
-    public OLabSession(ILogger logger, OLabDBContext context, IUserContext userContext)
+    public OLabSession(
+      IOLabLogger logger, 
+      OLabDBContext context, 
+      IUserContext userContext)
     {
-      // _appSettings = appSettings.Value;
-      _context = context;
+      _dbContext = context;
       _userContext = userContext;
       _logger = logger;
+
+      _logger.LogInformation($"Session id = '{GetSessionId()}'");
     }
 
     public void SetSessionId(string sessionId)
     {
-      _sessionId = sessionId;
+      _userContext.SessionId = sessionId;
     }
 
     public string GetSessionId()
     {
-      return _sessionId;
+      return _userContext.SessionId;
     }
 
     public void OnStartSession(IUserContext userContext, uint mapId)
     {
-      _sessionId = IOLabSession.GenerateSessionId();
+      SetSessionId( IOLabSession.GenerateSessionId() );
 
-      _logger.LogInformation($"generated a new contextId: {_sessionId}");
+      _logger.LogInformation($"generated a new contextId: {GetSessionId()}");
 
       var session = new UserSessions
       {
-        Uuid = _sessionId,
+        Uuid = GetSessionId(),
         MapId = mapId,
         StartTime = Conversions.GetCurrentUnixTime(),
         UserIp = userContext.IPAddress,
@@ -52,31 +55,31 @@ namespace OLabWebAPI.Data
         CourseName = userContext.ReferringCourse
       };
 
-      _context.UserSessions.Add(session);
-      _context.SaveChanges();
+      _dbContext.UserSessions.Add(session);
+      _dbContext.SaveChanges();
 
-      _logger.LogInformation($"OnStartSession: session {_sessionId} ({userContext.UserName}) MapId: {mapId}. Session PK: {session.Id}");
+      _logger.LogInformation($"OnStartSession: session {GetSessionId()} ({userContext.UserName}) MapId: {mapId}. Session PK: {session.Id}");
     }
 
     public void OnExtendSession(uint mapId, uint nodeId)
     {
       _logger.LogInformation($"OnExtendSession: session {GetSessionId()} Map: {mapId} Node: {nodeId}");
 
-      UserSessions session = GetSession(GetSessionId());
+      var session = GetSession(GetSessionId());
       if (session == null)
         return;
 
       session.EndTime = Conversions.GetCurrentUnixTime();
 
-      _context.UserSessions.Update(session);
-      _context.SaveChanges();
+      _dbContext.UserSessions.Update(session);
+      _dbContext.SaveChanges();
     }
 
     public void OnPlayNode(uint mapId, uint nodeId)
     {
       _logger.LogInformation($"OnPlayNode: session {GetSessionId()} Map: {mapId} Node: {nodeId}");
 
-      UserSessions session = GetSession(GetSessionId());
+      var session = GetSession(GetSessionId());
       if (session == null)
         return;
 
@@ -89,8 +92,8 @@ namespace OLabWebAPI.Data
         UserId = session.UserId
       };
 
-      _context.UserSessionTraces.Add(sessionTrace);
-      _context.SaveChanges();
+      _dbContext.UserSessionTraces.Add(sessionTrace);
+      _dbContext.SaveChanges();
 
     }
 
@@ -98,7 +101,7 @@ namespace OLabWebAPI.Data
     {
       _logger.LogInformation($"OnQuestionResponse: session {GetSessionId()} Map: {mapId} Node: {nodeId} Question: {questionId} = {value} ");
 
-      UserSessions session = GetSession(GetSessionId());
+      var session = GetSession(GetSessionId());
       if (session == null)
         return;
 
@@ -115,8 +118,8 @@ namespace OLabWebAPI.Data
         CreatedAt = Conversions.GetCurrentUnixTime()
       };
 
-      _context.UserResponses.Add(userResponse);
-      _context.SaveChanges();
+      _dbContext.UserResponses.Add(userResponse);
+      _dbContext.SaveChanges();
     }
 
     public void SaveSessionState(uint mapId, uint nodeId, DynamicScopedObjectsDto dynamicObjects)
@@ -129,13 +132,13 @@ namespace OLabWebAPI.Data
         StateData = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(dynamicObjects))
       };
 
-      _context.UserState.Add(userState);
-      _context.SaveChanges();
+      _dbContext.UserState.Add(userState);
+      _dbContext.SaveChanges();
     }
 
     private UserSessions GetSession(string sessionId)
     {
-      UserSessions session = _context.UserSessions.Where(x => x.Uuid == sessionId).FirstOrDefault();
+      var session = _dbContext.UserSessions.Where(x => x.Uuid == sessionId).FirstOrDefault();
       if (session == null)
       {
         _logger.LogError($"Unable to get session, sessionId '{sessionId}' not found");
