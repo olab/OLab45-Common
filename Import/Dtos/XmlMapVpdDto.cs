@@ -113,6 +113,7 @@ namespace OLab.Api.Importer
       Context.SaveChanges();
 
       CreateIdTranslation(oldId, item.Id);
+      GetLogger().LogDebug($" saved {GetFileName()} id {oldId} -> {item.Id}");
 
       return true;
     }

@@ -83,6 +83,20 @@ namespace OLab.Api.Utils
       return _messages.Where(x => x.Level >= level).ToList();
     }
 
+    public IList<string> GetMessageStrings(OLabLogMessage.MessageLevel level = OLabLogMessage.MessageLevel.Debug)
+    {
+      var strings = new List<string>();
+      var messages = _messages.Where(x => x.Level >= level).ToList();
+      foreach (var message in messages)
+        strings.Add(message.ToString());
+      return strings;
+    }
+
+    public void ClearMessages()
+    {
+      _messages.Clear();
+    }
+
     private void Log(OLabLogMessage.MessageLevel level, string message)
     {
       if (_keepMessages)

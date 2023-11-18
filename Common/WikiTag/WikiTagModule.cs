@@ -40,6 +40,11 @@ namespace OLab.Api.Common
     protected abstract string BuildWikiTagHTMLElement();
 
     public string GetWiki() { return _wiki; }
+    public virtual void SetWiki(string wikiString) 
+    { 
+      _wiki = wikiString; 
+    }
+
     public string BuildWiki(uint id, string name = "")
     {
       if (string.IsNullOrEmpty(name))
@@ -52,6 +57,25 @@ namespace OLab.Api.Common
       var preWikiPart = original[..wikiStart];
       var postWikiPart = original[wikiEnd..];
       return preWikiPart + replaceString + postWikiPart;
+    }
+
+    /// <summary>
+    /// Gets all wiki matches from text
+    /// </summary>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    public virtual IList<string> GetWikiTags( string source )
+    {
+      var wikiTags = new List<string>();
+
+      foreach (var pattern in wikiTagPatterns)
+      {
+        var regex = new Regex(pattern);
+        foreach (Match match in regex.Matches(source))
+          wikiTags.Add(match.Value);
+      }
+
+      return wikiTags;
     }
 
     /// <summary>

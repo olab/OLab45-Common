@@ -43,7 +43,7 @@ namespace OLab.Api.Importer
 
       var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
       item.ImageableId = mapDto.GetIdTranslation(GetFileName(), item.ImageableId).Value;
-      item.Description = $"Imported from {GetFileName()} id = {oldId}";
+      item.Description = $" saved {GetFileName()} id = {oldId}";
 
       var counterDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapCounterDto) as XmlMapCounterDto;
       if (item.CounterId.HasValue)

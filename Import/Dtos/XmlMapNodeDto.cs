@@ -37,22 +37,33 @@ namespace OLab.Api.Importer
 
       // replace all VPD with CONST in node text
       var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto) as XmlMapVpdElementDto;
+      var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto) as XmlMapVpdElementDto;
 
       var wiki = new VpdWikiTag(Logger, _configuration);
       while (wiki.HaveWikiTag(item.Text))
       {
+        wiki.SetWiki(wikiString);
+
         var id = Convert.ToUInt32(wiki.GetWikiArgument1());
-        var wikiTag = wiki.GetWikiType();
 
-        var newId = vpdDto.GetIdTranslation(GetFileName(), id);
-
-        var newWikiTag = wikiTag.Replace(id.ToString(), newId.ToString());
-        newWikiTag = newWikiTag.Replace(wiki.GetWikiType(), "CONST");
+        try
+        {
+          var newId = vpdDto.GetIdTranslation(GetFileName(), id);
+          var newWikiTag = wikiString.Replace(id.ToString(), newId.ToString());
+          newWikiTag = newWikiTag.Replace(wiki.GetWikiType(), "CONST");
 
         Logger.LogInformation($"Replacing '{wikiTag}' -> '{newWikiTag}'");
         item.Text = item.Text.Replace(wikiTag, newWikiTag);
 
-        rc = true;
+          rc = true;
+        }
+        catch (KeyNotFoundException)
+        {
+          GetLogger().LogWarning($" unknown tag '{wikiString}' in node {item.Id}. replacement skipped");
+          var replacementWiki = wikiString.Replace('[', '*').Replace(']', '*');
+          item.Text = item.Text.Replace(wikiString, replacementWiki);
+
+        }
       }
 
       return rc;
@@ -178,6 +189,7 @@ namespace OLab.Api.Importer
       ReplaceVpdWikiTags(item);
       ReplaceAvWikiTags(item);
 
+      item.Id = 0;
       item.Info = $"\nImported from map_node.xml. id = {oldId}";
 
       Context.MapNodes.Add(item);
