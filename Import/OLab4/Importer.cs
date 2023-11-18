@@ -30,8 +30,6 @@ public class Importer : IImporter
   public IOLabConfiguration GetConfiguration() { return _configuration; }
   public AppSettings Settings() { return _appSettings; }
 
-  private string _extractPath;
-
   public Importer(
     IOLabLogger logger,
     IOLabConfiguration configuration,
@@ -48,53 +46,6 @@ public class Importer : IImporter
     _wikiTagProvider = wikiTagProvider;
     FileStorageModule = fileStorageModule;
 
-  }
-
-  public void LogInformation(string message)
-  {
-    Logger.LogInformation(message);
-  }
-
-  public void LogDebug(string message)
-  {
-    Logger.LogInformation(message);
-  }
-
-  public void LogWarning(string message)
-  {
-    Logger.LogWarning(message);
-  }
-
-  public void LogError(Exception ex, string message)
-  {
-    Logger.LogError(ex, message);
-  }
-
-  public void LogError(string message)
-  {
-    Logger.LogError(message);
-  }
-
-  private string Extract(string archiveFileName)
-  {
-    var tempDir = Path.GetTempPath();
-    // Logger.LogInformation($"Import temporary directory '{tempDir}'");
-
-    _extractPath = Path.Combine(tempDir, Path.GetFileNameWithoutExtension(archiveFileName));
-
-    // Logger.LogInformation($"Import extract directory '{_extractPath}'");
-
-    if (Directory.Exists(_extractPath))
-    {
-      Logger.LogInformation($"Deleting existing extract directory");
-      Directory.Delete(_extractPath, true);
-    }
-    else
-      _ = Directory.CreateDirectory(_extractPath);
-
-    ZipFile.ExtractToDirectory(archiveFileName, _extractPath);
-
-    return _extractPath;
   }
 
   public async Task Import(
