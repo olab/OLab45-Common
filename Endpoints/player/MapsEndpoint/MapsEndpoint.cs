@@ -74,7 +74,7 @@ namespace OLab.Api.Endpoints.Player
     }
 
     /// <summary>
-    /// Get a list of maps
+    /// GetAsync a list of maps
     /// </summary>
     /// <param name="take">Max number of records to return</param>
     /// <param name="skip">SKip over a number of records</param>

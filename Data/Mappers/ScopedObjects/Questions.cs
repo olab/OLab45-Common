@@ -18,9 +18,9 @@ namespace OLab.Api.ObjectMapper
     }
 
     //public Questions(
-    //  IOLabLogger logger, 
+    //  IOLabLogger Logger, 
     //  WikiTagProvider tagProvider, 
-    //  bool enableWikiTranslation = true) : base(logger, tagProvider)
+    //  bool enableWikiTranslation = true) : base(Logger, tagProvider)
     //{
     //}
 

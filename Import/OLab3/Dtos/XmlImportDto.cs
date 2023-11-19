@@ -51,7 +51,7 @@ namespace OLab.Import.OLab3.Dtos
             _fileName = fileName;
 
             _tagProvider = GetImporter().GetWikiProvider();
-            Context = GetImporter().GetContext();
+            Context = GetImporter().GetDbContext();
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace OLab.Import.OLab3.Dtos
         }
 
         /// <summary>
-        /// Get postimport object creation id
+        /// GetAsync postimport object creation id
         /// </summary>
         /// <param name="originalId">Import system id</param>
         /// <returns></returns>
@@ -84,7 +84,7 @@ namespace OLab.Import.OLab3.Dtos
         }
 
         /// <summary>
-        /// Get postimport object creation id
+        /// GetAsync postimport object creation id
         /// </summary>
         /// <param name="originalId">(nullable) original id</param>
         /// <returns></returns>

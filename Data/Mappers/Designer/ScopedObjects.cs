@@ -5,7 +5,7 @@ using System;
 
 namespace OLab.Api.ObjectMapper.Designer
 {
-  public class ScopedObjects : ObjectMapper<Model.ScopedObjects, ScopedObjectsDto>
+    public class ScopedObjects : ObjectMapper<OLab.Data.BusinessObjects.ScopedObjects, ScopedObjectsDto>
   {
     protected readonly bool enableWikiTranslation = true;
 
@@ -21,7 +21,7 @@ namespace OLab.Api.ObjectMapper.Designer
     }
 
     public override ScopedObjectsDto PhysicalToDto(
-      Model.ScopedObjects phys,
+      OLab.Data.BusinessObjects.ScopedObjects phys,
       object source = null)
     {
       var dto = GetDto(source);
@@ -41,7 +41,7 @@ namespace OLab.Api.ObjectMapper.Designer
       return dto;
     }
 
-    public override Model.ScopedObjects DtoToPhysical(ScopedObjectsDto dto, object source = null)
+    public override OLab.Data.BusinessObjects.ScopedObjects DtoToPhysical(ScopedObjectsDto dto, object source = null)
     {
       throw new NotImplementedException();
     }

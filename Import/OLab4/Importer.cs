@@ -1,4 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using OLab.Api.Common;
+using OLab.Api.Dto;
 using OLab.Api.Model;
+using OLab.Api.ObjectMapper;
 using OLab.Api.Utils;
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
@@ -10,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +23,7 @@ namespace OLab.Import.OLab4;
 
 public class Importer : IImporter
 {
-  private readonly OLabDBContext _context;
+  private readonly OLabDBContext _dbContext;
   public readonly AppSettings _appSettings;
   private readonly IOLabConfiguration _configuration;
   private readonly IOLabLogger Logger;
@@ -26,7 +32,7 @@ public class Importer : IImporter
 
   public IOLabModuleProvider<IWikiTagModule> GetWikiProvider() { return _wikiTagProvider; }
   public IFileStorageModule GetFileStorageModule() { return FileStorageModule; }
-  public OLabDBContext GetContext() { return _context; }
+  public OLabDBContext GetDbContext() { return _dbContext; }
   public IOLabConfiguration GetConfiguration() { return _configuration; }
   public AppSettings Settings() { return _appSettings; }
 
@@ -38,7 +44,7 @@ public class Importer : IImporter
     IFileStorageModule fileStorageModule)
   {
     _appSettings = configuration.GetAppSettings();
-    _context = context;
+    _dbContext = context;
     _configuration = configuration;
 
     Logger = OLabLogger.CreateNew<Importer>(logger);
@@ -107,7 +113,7 @@ public class Importer : IImporter
   {
     var rc = true;
 
-    using (var transaction = _context.Database.BeginTransaction())
+    using (var transaction = _dbContext.Database.BeginTransaction())
       try
       {
 
@@ -129,4 +135,47 @@ public class Importer : IImporter
     return rc;
   }
 
+  public async Task Export(Stream stream, uint mapId, CancellationToken token = default)
+  {
+    Logger.LogInformation($"Exporting mapId: {mapId} ");
+
+    var map = await _dbContext.Maps
+      .AsNoTracking()
+      .FirstOrDefaultAsync(
+        x => x.Id == mapId,
+        token);
+
+    MapsFullRelationsDto dto = new MapsFullRelationsMapper(
+      Logger,
+      _wikiTagProvider as WikiTagProvider
+    ).PhysicalToDto(map);
+
+    var mapQuestions = _dbContext.SystemQuestions.Where( x => x.ImageableId == mapId && x.ImageableType == OLab.Api.Utils.Constants.ScopeLevelMap).ToList();
+    var mapConstants = _dbContext.SystemConstants.Where( x => x.ImageableId == mapId && x.ImageableType == OLab.Api.Utils.Constants.ScopeLevelMap).ToList();
+    var mapCounters = _dbContext.SystemCounters.Where( x => x.ImageableId == mapId && x.ImageableType == OLab.Api.Utils.Constants.ScopeLevelMap).ToList();
+    var mapFiles = _dbContext.SystemFiles.Where( x => x.ImageableId == mapId && x.ImageableType == OLab.Api.Utils.Constants.ScopeLevelMap).ToList();
+
+
+    var rawJson = JsonConvert.SerializeObject(dto);
+
+    using (var zipArchive = new ZipArchive(stream, ZipArchiveMode.Create, true))
+    {
+      var entry = zipArchive.CreateEntry("map.json");
+      using (var fileContentStream = new MemoryStream())
+      {
+        var writer = new StreamWriter(fileContentStream);
+        writer.Write(rawJson);
+        writer.Flush();
+
+        fileContentStream.Position = 0;
+
+        Logger.LogInformation($"Read map: {map.Name} into stream. json size = {fileContentStream.Length} ");
+
+        using (var entryStream = entry.Open())
+        {
+          fileContentStream.CopyTo(entryStream);
+        }
+      }
+    }
+  }
 }

@@ -40,11 +40,11 @@ public partial class SessionEndpoint : OLabEndpoint
   {
     Logger.LogDebug($"{auth.UserContext.UserId}: SessionEndpoint.GetAsync");
 
-    var session = dbContext.UserSessions
+    var session = await dbContext.UserSessions
       .Include(session => session.Statements)
       .Include(session => session.UserBookmarks)
       .Include(session => session.UserSessionTraces)
-      .FirstOrDefault(x => x.Uuid == sessionUuid);
+      .FirstOrDefaultAsync(x => x.Uuid == sessionUuid);
 
     if (session == null)
       throw new OLabObjectNotFoundException("UserSession", sessionUuid);

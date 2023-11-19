@@ -3,6 +3,7 @@ using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
+using OLab.Data.BusinessObjects;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -72,18 +73,11 @@ namespace OLab.Api.Endpoints.Player
       uint sinceTime,
       bool enableWikiTranslation)
     {
-      var physServer = new Model.ScopedObjects();
-      var physNode = new Model.ScopedObjects();
-      var physMap = new Model.ScopedObjects();
-
-      physServer.Counters = await GetScopedCountersAsync(Utils.Constants.ScopeLevelServer, serverId);
-      physNode.Counters = await GetScopedCountersAsync(Utils.Constants.ScopeLevelNode, node.Id);
-      physMap.Counters = await GetScopedCountersAsync(Utils.Constants.ScopeLevelMap, node.MapId);
-
-      await ProcessNodeCounters(node, physMap.Counters);
+      var phys = new DynamicScopedObjects(Logger, dbContext, serverId, node.MapId, node.Id);
+      await phys.GetDynamicScopedObjectsAsync();
 
       var builder = new ObjectMapper.DynamicScopedObjects(Logger, enableWikiTranslation);
-      var dto = builder.PhysicalToDto(physServer, physMap, physNode);
+      var dto = builder.PhysicalToDto(phys);
 
       return dto;
     }

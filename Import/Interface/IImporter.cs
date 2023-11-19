@@ -10,10 +10,11 @@ namespace OLab.Import.Interface;
 
 public interface IImporter
 {
-  OLabDBContext GetContext();
+  OLabDBContext GetDbContext();
   IOLabModuleProvider<IWikiTagModule> GetWikiProvider();
   IFileStorageModule GetFileStorageModule();
-  Task Import(Stream stream, string importFileName, CancellationToken token = default);
+  Task Import(Stream stream, string fileName, CancellationToken token = default);
+  Task Export(Stream stream, uint mapId, CancellationToken token = default);
 
   AppSettings Settings();
 }

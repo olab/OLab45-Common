@@ -33,7 +33,7 @@ namespace OLab.Api.Endpoints.Player
     }
 
     /// <summary>
-    /// Get simple map node, no relations
+    /// GetAsync simple map node, no relations
     /// </summary>
     /// <param name="context">EF DBContext</param>
     /// <param name="id">Node Id</param>
@@ -58,7 +58,7 @@ namespace OLab.Api.Endpoints.Player
     }
 
     /// <summary>
-    /// Get full map node, with relations
+    /// GetAsync full map node, with relations
     /// </summary>
     /// <param name="nodeId">Node id (0, if root node)</param>
     /// <returns>MapsNodesFullRelationsDto response</returns>

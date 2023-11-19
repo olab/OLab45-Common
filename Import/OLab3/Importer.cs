@@ -38,7 +38,7 @@ public class Importer : IImporter
     XmlMapAvatarDto
   };
 
-  private readonly OLabDBContext _context;
+  private readonly OLabDBContext _dbContext;
   public readonly AppSettings _appSettings;
   private readonly IOLabConfiguration _configuration;
   private readonly IDictionary<DtoTypes, XmlDto> _dtos = new Dictionary<DtoTypes, XmlDto>();
@@ -49,7 +49,7 @@ public class Importer : IImporter
   public IOLabModuleProvider<IWikiTagModule> GetWikiProvider() { return _wikiTagProvider; }
   public IFileStorageModule GetFileStorageModule() { return FileStorageModule; }
   public XmlDto GetDto(DtoTypes type) { return _dtos[type]; }
-  public OLabDBContext GetContext() { return _context; }
+  public OLabDBContext GetDbContext() { return _dbContext; }
   public IOLabConfiguration GetConfiguration() { return _configuration; }
   public AppSettings Settings() { return _appSettings; }
 
@@ -61,7 +61,7 @@ public class Importer : IImporter
     IFileStorageModule fileStorageModule)
   {
     _appSettings = configuration.GetAppSettings();
-    _context = context;
+    _dbContext = context;
     _configuration = configuration;
 
     Logger = OLabLogger.CreateNew<Importer>(logger);
@@ -178,7 +178,7 @@ public class Importer : IImporter
   {
     var rc = true;
 
-    using (var transaction = _context.Database.BeginTransaction())
+    using (var transaction = _dbContext.Database.BeginTransaction())
     {
       try
       {
@@ -203,4 +203,8 @@ public class Importer : IImporter
     return rc;
   }
 
+  public Task Export(Stream stream, uint mapId, CancellationToken token = default)
+  {
+    throw new NotImplementedException();
+  }
 }

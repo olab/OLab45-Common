@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.EMMA;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
@@ -28,7 +29,7 @@ namespace OLab.Api.Endpoints.Player
     }
 
     /// <summary>
-    /// Get a list of servers
+    /// GetAsync a list of servers
     /// </summary>
     /// <param name="take">Max number of records to return</param>
     /// <param name="skip">SKip over a number of records</param>
@@ -95,7 +96,15 @@ namespace OLab.Api.Endpoints.Player
     {
       Logger.LogDebug($"ServerEndpoint.GetScopedObjectsAsync(uint serverId={serverId})");
 
-      var phys = await GetScopedObjectsAllAsync(serverId, Utils.Constants.ScopeLevelServer, _fileStorageModule);
+      var scopedObjects = new OLab.Data.BusinessObjects.ScopedObjects(
+        Logger, 
+        dbContext, 
+        serverId,
+        null,
+        null);
+
+      var phys = await scopedObjects.GetAsync(_fileStorageModule);
+
       var builder = new ObjectMapper.ScopedObjects(Logger, _wikiTagProvider, enableWikiTranslation);
       var dto = builder.PhysicalToDto(phys);
 
