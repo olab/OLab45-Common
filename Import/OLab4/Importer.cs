@@ -1,22 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OLab.Api.Common;
-using OLab.Api.Dto;
-using OLab.Api.Dto.Designer;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Api.Utils;
-using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using OLab.Import.Interface;
-using OLab.Import.OLab3.Dtos;
-using OLab.Import.OLab3.Model;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -148,7 +141,7 @@ public class Importer : IImporter
         x => x.Id == mapId,
         token);
 
-    MapsFullRelationsDto dto = new MapsFullRelationsMapper(
+    var dto = new MapsFullRelationsMapper(
       Logger,
       _wikiTagProvider as WikiTagProvider
     ).PhysicalToDto(map);
@@ -174,6 +167,8 @@ public class Importer : IImporter
     using (var zipArchive = new ZipArchive(stream, ZipArchiveMode.Create, true))
     {
       var entry = zipArchive.CreateEntry("map.json");
+
+      // write the map json to the archive
       using (var fileContentStream = new MemoryStream())
       {
         var writer = new StreamWriter(fileContentStream);
@@ -184,7 +179,6 @@ public class Importer : IImporter
 
         Logger.LogInformation($"Read map: {map.Name} into stream. json size = {fileContentStream.Length} ");
 
-        // write the map json to the archive
         using (var entryStream = entry.Open())
         {
           fileContentStream.CopyTo(entryStream);
@@ -192,14 +186,14 @@ public class Importer : IImporter
         }
       }
 
-      // add any map files to the archive
+      // add any map-level media files to the archive
       await FileStorageModule.CopyFoldertoArchiveAsync(
         zipArchive,
         $"Maps{FileStorageModule.GetFolderSeparator()}{map.Id}",
         true,
         token);
 
-      // write any node-level files to the archive
+      // write any node-level media files to the archive
       foreach (var nodeDto in dto.MapNodes)
         await FileStorageModule.CopyFoldertoArchiveAsync(
           zipArchive,

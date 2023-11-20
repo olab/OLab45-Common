@@ -5,7 +5,7 @@ using System;
 
 namespace OLab.Api.ObjectMapper.Designer
 {
-    public class ScopedObjects : ObjectMapper<OLab.Data.BusinessObjects.ScopedObjects, ScopedObjectsDto>
+  public class ScopedObjects : ObjectMapper<OLab.Data.BusinessObjects.ScopedObjects, ScopedObjectsDto>
   {
     protected readonly bool enableWikiTranslation = true;
 

@@ -61,7 +61,7 @@ namespace OLab.Api.ObjectMapper
       };
 
       var links = new List<MapNodeLinks>();
-      links.AddRange( map.MapNodeLinks );
+      links.AddRange(map.MapNodeLinks);
 
       //foreach (var node in map.MapNodes)
       //  links.AddRange(node.MapNodeLinksNodeId1Navigation);

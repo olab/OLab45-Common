@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.EMMA;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
@@ -97,8 +96,8 @@ namespace OLab.Api.Endpoints.Player
       Logger.LogDebug($"ServerEndpoint.GetScopedObjectsAsync(uint serverId={serverId})");
 
       var scopedObjects = new OLab.Data.BusinessObjects.ScopedObjects(
-        Logger, 
-        dbContext, 
+        Logger,
+        dbContext,
         serverId,
         null,
         null);

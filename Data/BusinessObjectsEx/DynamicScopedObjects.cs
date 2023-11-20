@@ -1,14 +1,8 @@
-﻿using DocumentFormat.OpenXml.Drawing;
-using Microsoft.EntityFrameworkCore;
-using OLab.Api.Dto;
+﻿using Microsoft.EntityFrameworkCore;
 using OLab.Api.Model;
-using OLab.Api.ObjectMapper;
-using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OLab.Data.BusinessObjects;
@@ -56,7 +50,7 @@ public class DynamicScopedObjects
   /// <returns></returns>
   public async Task GetDynamicScopedObjectsAsync()
   {
-    var scopedObjects = new ScopedObjects(Logger, dbContext, serverId, mapId, nodeId );
+    var scopedObjects = new ScopedObjects(Logger, dbContext, serverId, mapId, nodeId);
 
     var phys = await scopedObjects.GetAsync(Api.Utils.Constants.ScopeLevelServer);
     ServerCounters = phys.Counters;

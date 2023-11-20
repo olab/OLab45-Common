@@ -4,7 +4,7 @@ using System;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class ScopedObjectsMapper : ObjectMapper<OLab.Data.BusinessObjects.ScopedObjects, ScopedObjectsDto>
+  public class ScopedObjectsMapper : ObjectMapper<OLab.Data.BusinessObjects.ScopedObjects, ScopedObjectsDto>
   {
     protected readonly bool enableWikiTranslation = true;
 
@@ -20,7 +20,7 @@ namespace OLab.Api.ObjectMapper
     }
 
     public override ScopedObjectsDto PhysicalToDto(
-      OLab.Data.BusinessObjects.ScopedObjects phys, 
+      OLab.Data.BusinessObjects.ScopedObjects phys,
       object source = null)
     {
       var dto = GetDto(source);

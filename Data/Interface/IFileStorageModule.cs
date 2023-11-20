@@ -1,6 +1,4 @@
-﻿using OLab.Api.Dto;
-using OLab.Api.Model;
-using OLab.Common.Interfaces;
+﻿using OLab.Api.Model;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;

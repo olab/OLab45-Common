@@ -1,6 +1,5 @@
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Model;
-using OLab.Api.ObjectMapper;
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,10 +32,10 @@ namespace OLab.Api.Endpoints.Player
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
 
       var scopedObjects = new OLab.Data.BusinessObjects.ScopedObjects(
-        Logger, 
-        dbContext, 
-        node.Id, 
-        Utils.Constants.ScopeLevelNode );
+        Logger,
+        dbContext,
+        node.Id,
+        Utils.Constants.ScopeLevelNode);
 
       var phys = await scopedObjects.GetAsync(_fileStorageModule);
 

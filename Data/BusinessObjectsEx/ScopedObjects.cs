@@ -1,20 +1,12 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using OLab.Api.Model;
-using OLab.Data.Interface;
-using DocumentFormat.OpenXml.InkML;
-using System.Linq;
-using System;
 using Dawn;
-using DocumentFormat.OpenXml.Drawing;
-using Humanizer;
-using OLab.Api.Common;
-using OLab.Api.Dto;
-using DocumentFormat.OpenXml.EMMA;
+using Microsoft.EntityFrameworkCore;
+using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using OLab.Data.Interface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace OLab.Data.BusinessObjects
 {
@@ -35,7 +27,7 @@ namespace OLab.Data.BusinessObjects
     public List<SystemScripts> Scripts { get; set; }
     public List<SystemThemes> Themes { get; set; }
 
-    private IDictionary<string, ScopedObjects> scopedObjectList = new Dictionary<string, ScopedObjects>();
+    private readonly IDictionary<string, ScopedObjects> scopedObjectList = new Dictionary<string, ScopedObjects>();
 
     #endregion
 

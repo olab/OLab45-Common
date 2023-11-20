@@ -4,7 +4,7 @@ using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class DynamicScopedObjects : ObjectMapper<OLab.Data.BusinessObjects.DynamicScopedObjects, DynamicScopedObjectsDto>
+  public class DynamicScopedObjects : ObjectMapper<OLab.Data.BusinessObjects.DynamicScopedObjects, DynamicScopedObjectsDto>
   {
     protected readonly bool enableWikiTranslation = true;
 

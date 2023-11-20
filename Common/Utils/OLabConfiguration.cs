@@ -1,5 +1,4 @@
 ﻿using Dawn;
-using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -36,7 +35,7 @@ public class OLabConfiguration : IOLabConfiguration
 
   }
 
-  public IConfiguration GetRawConfiguration() {  return _configuration; }
+  public IConfiguration GetRawConfiguration() { return _configuration; }
 
   //public IConfiguration GetConfiguration() { return _configuration; }
   public AppSettings GetAppSettings() { return _appSettings.Value; }
