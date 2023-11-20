@@ -70,7 +70,7 @@ namespace OLab.Api.Endpoints.Player
         Value = Encoding.ASCII.GetBytes(DateTime.UtcNow.ToString() + " UTC")
       });
 
-      var builder = new ObjectMapper.ScopedObjects(Logger, _wikiTagProvider, enableWikiTranslation);
+      var builder = new ObjectMapper.ScopedObjectsMapper(Logger, _wikiTagProvider, enableWikiTranslation);
 
       var dto = builder.PhysicalToDto(phys);
       return dto;

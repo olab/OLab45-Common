@@ -52,7 +52,7 @@ namespace OLab.Data.BusinessObjects
       OLabDBContext dbContext,
       uint? serverId,
       uint? mapId,
-      uint? nodeId)
+      uint? nodeId) : this()
     {
       Logger = logger;
       this.dbContext = dbContext;
@@ -84,7 +84,7 @@ namespace OLab.Data.BusinessObjects
       IOLabLogger logger,
       OLabDBContext dbContext,
       uint parentId,
-      string scopeLevel)
+      string scopeLevel) : this()
     {
       Logger = logger;
       this.dbContext = dbContext;
@@ -92,9 +92,8 @@ namespace OLab.Data.BusinessObjects
       this.scopeLevel = scopeLevel;
 
       scopedObjectList.Add(
-        new KeyValuePair<string, ScopedObjects>(
           scopeLevel,
-          new ScopedObjects(Logger, dbContext, parentId, scopeLevel)));
+          this);
     }
 
     /// <summary>
@@ -131,9 +130,9 @@ namespace OLab.Data.BusinessObjects
     }
 
     /// <summary>
-    /// Appends a ScopedObjects to the current one
+    /// Appends a ScopedObjectsMapper to the current one
     /// </summary>
-    /// <param name="source">Source ScopedObjects</param>
+    /// <param name="source">Source ScopedObjectsMapper</param>
     public void Combine(ScopedObjects source)
     {
       Constants.AddRange(source.Constants);

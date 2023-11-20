@@ -340,12 +340,12 @@ namespace OLab.Api.Endpoints
     /// <param name="scopeLevel"></param>
     /// <returns></returns>
     //[NonAction]
-    //protected async ValueTask<ScopedObjects> GetScopedObjectsDynamicAsync(
+    //protected async ValueTask<ScopedObjectsMapper> GetScopedObjectsDynamicAsync(
     //  uint parentId,
     //  uint sinceTime,
     //  string scopeLevel)
     //{
-    //  var phys = new ScopedObjects
+    //  var phys = new ScopedObjectsMapper
     //  {
     //    Counters = await GetScopedCountersAsync(scopeLevel, parentId, sinceTime)
     //  };
@@ -361,12 +361,12 @@ namespace OLab.Api.Endpoints
     /// <param name="fileStorageModule">File storage module that provides URL</param>
     /// <returns>ScopedObject dto</returns>
     //[NonAction]
-    //protected async ValueTask<ScopedObjects> GetAsync(
+    //protected async ValueTask<ScopedObjectsMapper> GetAsync(
     //  uint parentId,
     //  string scopeLevel,
     //  IFileStorageModule fileStorageModule)
     //{
-    //  var phys = new ScopedObjects
+    //  var phys = new ScopedObjectsMapper
     //  {
     //    Constants = await GetScopedConstantsAsync(parentId, scopeLevel),
     //    Questions = await GetScopedQuestionsAsync(parentId, scopeLevel),

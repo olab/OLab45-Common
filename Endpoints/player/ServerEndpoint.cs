@@ -105,7 +105,7 @@ namespace OLab.Api.Endpoints.Player
 
       var phys = await scopedObjects.GetAsync(_fileStorageModule);
 
-      var builder = new ObjectMapper.ScopedObjects(Logger, _wikiTagProvider, enableWikiTranslation);
+      var builder = new ObjectMapper.ScopedObjectsMapper(Logger, _wikiTagProvider, enableWikiTranslation);
       var dto = builder.PhysicalToDto(phys);
 
       return dto;

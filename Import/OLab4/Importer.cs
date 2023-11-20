@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OLab.Api.Common;
 using OLab.Api.Dto;
+using OLab.Api.Dto.Designer;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Api.Utils;
@@ -140,6 +141,8 @@ public class Importer : IImporter
     Logger.LogInformation($"Exporting mapId: {mapId} ");
 
     var map = await _dbContext.Maps
+      .Include(map => map.MapNodes)
+      .Include(map => map.MapNodeLinks)
       .AsNoTracking()
       .FirstOrDefaultAsync(
         x => x.Id == mapId,
@@ -150,11 +153,21 @@ public class Importer : IImporter
       _wikiTagProvider as WikiTagProvider
     ).PhysicalToDto(map);
 
-    var mapQuestions = _dbContext.SystemQuestions.Where( x => x.ImageableId == mapId && x.ImageableType == OLab.Api.Utils.Constants.ScopeLevelMap).ToList();
-    var mapConstants = _dbContext.SystemConstants.Where( x => x.ImageableId == mapId && x.ImageableType == OLab.Api.Utils.Constants.ScopeLevelMap).ToList();
-    var mapCounters = _dbContext.SystemCounters.Where( x => x.ImageableId == mapId && x.ImageableType == OLab.Api.Utils.Constants.ScopeLevelMap).ToList();
-    var mapFiles = _dbContext.SystemFiles.Where( x => x.ImageableId == mapId && x.ImageableType == OLab.Api.Utils.Constants.ScopeLevelMap).ToList();
+    // apply map-level scoped objects to the map dto
+    var mapScopedObject = new Data.BusinessObjects.ScopedObjects(Logger, _dbContext, mapId, Api.Utils.Constants.ScopeLevelMap);
+    var mapScopedObjectPhys = await mapScopedObject.GetAsync(Api.Utils.Constants.ScopeLevelMap, FileStorageModule);
 
+    var scopedObjectMapper = new ScopedObjectsMapper(Logger, _wikiTagProvider);
+    dto.ScopedObjects = scopedObjectMapper.PhysicalToDto(mapScopedObjectPhys);
+
+    // apply node-level scoped objects to the node dtos
+    foreach (var nodeDto in dto.MapNodes)
+    {
+      var nodeScopedObject = new Data.BusinessObjects.ScopedObjects(Logger, _dbContext, nodeDto.Id.Value, Api.Utils.Constants.ScopeLevelNode);
+      var nodeScopedObjectsPhys = await nodeScopedObject.GetAsync(Api.Utils.Constants.ScopeLevelNode, FileStorageModule);
+
+      nodeDto.ScopedObjects = scopedObjectMapper.PhysicalToDto(nodeScopedObjectsPhys);
+    }
 
     var rawJson = JsonConvert.SerializeObject(dto);
 
@@ -171,11 +184,28 @@ public class Importer : IImporter
 
         Logger.LogInformation($"Read map: {map.Name} into stream. json size = {fileContentStream.Length} ");
 
+        // write the map json to the archive
         using (var entryStream = entry.Open())
         {
           fileContentStream.CopyTo(entryStream);
+          entryStream.Close();
         }
       }
+
+      // add any map files to the archive
+      await FileStorageModule.CopyFoldertoArchiveAsync(
+        zipArchive,
+        $"Maps{FileStorageModule.GetFolderSeparator()}{map.Id}",
+        true,
+        token);
+
+      // write any node-level files to the archive
+      foreach (var nodeDto in dto.MapNodes)
+        await FileStorageModule.CopyFoldertoArchiveAsync(
+          zipArchive,
+          $"Nodes{FileStorageModule.GetFolderSeparator()}{nodeDto.Id}",
+          true,
+          token);
     }
   }
 }

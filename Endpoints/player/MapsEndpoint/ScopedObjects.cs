@@ -29,7 +29,7 @@ namespace OLab.Api.Endpoints.Player
     /// Gets scoped objects for a given map
     /// </summary>
     /// <param name="id">Map Id</param>
-    /// <returns>ScopedObjects dto</returns>
+    /// <returns>ScopedObjectsMapper dto</returns>
     public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(IOLabAuthorization auth, uint id)
     {
       // test if user has access to map.
@@ -78,7 +78,7 @@ namespace OLab.Api.Endpoints.Player
         Value = Encoding.ASCII.GetBytes(map.Name)
       });
 
-      var builder = new ObjectMapper.ScopedObjects(Logger, _wikiTagProvider, enableWikiTranslation);
+      var builder = new ObjectMapper.ScopedObjectsMapper(Logger, _wikiTagProvider, enableWikiTranslation);
 
       var dto = builder.PhysicalToDto(phys);
       dto.Dump(Logger);

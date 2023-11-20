@@ -4,22 +4,24 @@ using System;
 
 namespace OLab.Api.ObjectMapper
 {
-    public class ScopedObjects : ObjectMapper<OLab.Data.BusinessObjects.ScopedObjects, ScopedObjectsDto>
+    public class ScopedObjectsMapper : ObjectMapper<OLab.Data.BusinessObjects.ScopedObjects, ScopedObjectsDto>
   {
     protected readonly bool enableWikiTranslation = true;
 
-    //public ScopedObjects(IOLabLogger Logger, bool enableWikiTranslation = true) : base(Logger)
+    //public ScopedObjectsMapper(IOLabLogger Logger, bool enableWikiTranslation = true) : base(Logger)
     //{
     //}
 
-    public ScopedObjects(
+    public ScopedObjectsMapper(
       IOLabLogger logger,
       IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
       bool enableWikiTranslation = true) : base(logger, wikiTagProvider)
     {
     }
 
-    public override ScopedObjectsDto PhysicalToDto(OLab.Data.BusinessObjects.ScopedObjects phys, object source = null)
+    public override ScopedObjectsDto PhysicalToDto(
+      OLab.Data.BusinessObjects.ScopedObjects phys, 
+      object source = null)
     {
       var dto = GetDto(source);
 
