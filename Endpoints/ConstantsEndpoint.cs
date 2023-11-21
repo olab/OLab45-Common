@@ -154,7 +154,7 @@ namespace OLab.Api.Endpoints
     {
       Logger.LogDebug($"{auth.UserContext.UserId}: ConstantsEndpoint.PostAsync");
 
-      dto.ImageableId = dto.ParentInfo.Id;
+      dto.ImageableId = dto.ParentInfo.Id != 0 ? dto.ParentInfo.Id : dto.ImageableId;
 
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);

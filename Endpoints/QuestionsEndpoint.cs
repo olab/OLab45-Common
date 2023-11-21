@@ -165,7 +165,7 @@ namespace OLab.Api.Endpoints
     {
       Logger.LogDebug($"QuestionsController.PostAsync({dto.Stem})");
 
-      dto.ImageableId = dto.ParentInfo.Id;
+      dto.ImageableId = dto.ParentInfo.Id != 0 ? dto.ParentInfo.Id : dto.ImageableId;
       dto.Prompt = !string.IsNullOrEmpty(dto.Prompt) ? dto.Prompt : "";
 
       // test if user has access to object
@@ -183,6 +183,42 @@ namespace OLab.Api.Endpoints
 
       dto = builder.PhysicalToDto(phys);
       return dto;
+
+    }
+
+    /// <summary>
+    /// Delete a question
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>No Content</returns>
+    public async Task DeleteAsync(
+      IOLabAuthorization auth,
+      uint id)
+    {
+      Logger.LogDebug($"{auth.UserContext.UserId}: QuestionsEndpoint.DeleteAsync");
+
+      if (!Exists(id))
+        throw new OLabObjectNotFoundException("Question", id);
+
+      try
+      {
+        var phys = await GetQuestionAsync(id);
+        var dto = new Questions(Logger, _wikiTagProvider).PhysicalToDto(phys);
+
+        // test if user has access to object
+        var accessResult = auth.HasAccess("W", dto);
+        if (accessResult is UnauthorizedResult)
+          throw new OLabUnauthorizedException("Question", id);
+
+        dbContext.SystemQuestions.Remove(phys);
+        await dbContext.SaveChangesAsync();
+
+      }
+      catch (DbUpdateConcurrencyException)
+      {
+        var existingObject = await GetQuestionAsync(id)
+          ?? throw new OLabObjectNotFoundException("Question", id);
+      }
 
     }
 
