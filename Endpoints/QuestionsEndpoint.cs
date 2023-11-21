@@ -53,7 +53,7 @@ namespace OLab.Api.Endpoints
     public async Task<OLabAPIPagedResponse<QuestionsDto>> GetAsync([FromQuery] int? take, [FromQuery] int? skip)
     {
 
-      Logger.LogDebug($"QuestionsController.GetAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
+      Logger.LogDebug($"GetAsync take={take} skip={skip}");
 
       var physList = new List<SystemQuestions>();
       var total = 0;
@@ -96,7 +96,7 @@ namespace OLab.Api.Endpoints
       uint id)
     {
 
-      Logger.LogDebug($"QuestionsController.GetAsync(uint id={id})");
+      Logger.LogDebug($"GetAsync id {id}");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Questions", id);
@@ -126,7 +126,7 @@ namespace OLab.Api.Endpoints
       uint id,
       QuestionsFullDto dto)
     {
-      Logger.LogDebug($"PutAsync(uint id={id})");
+      Logger.LogDebug($"PutAsync id {id}");
 
       dto.ImageableId = dto.ParentInfo.Id;
 
@@ -163,7 +163,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       QuestionsFullDto dto)
     {
-      Logger.LogDebug($"QuestionsController.PostAsync({dto.Stem})");
+      Logger.LogDebug($"PostAsync name = {dto.Name}");
 
       dto.ImageableId = dto.ParentInfo.Id != 0 ? dto.ParentInfo.Id : dto.ImageableId;
       dto.Prompt = !string.IsNullOrEmpty(dto.Prompt) ? dto.Prompt : "";
@@ -181,7 +181,22 @@ namespace OLab.Api.Endpoints
       dbContext.SystemQuestions.Add(phys);
       await dbContext.SaveChangesAsync();
 
-      dto = builder.PhysicalToDto(phys);
+      // convert the saved question to a dto so we can use it 
+      // in building the responses dtos.
+      var newDto = builder.PhysicalToDto(phys);
+
+      foreach (var responseDto in dto.Responses)
+      {
+        var responseBuilder = new QuestionResponses(Logger, newDto);
+        var responsePhys = responseBuilder.DtoToPhysical(responseDto);
+        dbContext.SystemQuestionResponses.Add(responsePhys);
+      }
+
+      await dbContext.SaveChangesAsync();
+
+      var newPhys = await GetQuestionAsync(phys.Id);
+      dto = builder.PhysicalToDto(newPhys);
+
       return dto;
 
     }
@@ -195,7 +210,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       uint id)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: QuestionsEndpoint.DeleteAsync");
+      Logger.LogDebug($"DeleteAsync id {id}");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Question", id);

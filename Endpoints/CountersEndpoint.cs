@@ -47,7 +47,7 @@ namespace OLab.Api.Endpoints
       int? take,
       int? skip)
     {
-      Logger.LogDebug($"CountersController.GetAsync(int? take={take}, int? skip={skip})");
+      Logger.LogDebug($"GetAsync take={take} skip={skip}");
 
       var Counters = new List<SystemCounters>();
       var total = 0;
@@ -84,7 +84,7 @@ namespace OLab.Api.Endpoints
     /// <returns></returns>
     public async Task<CountersDto> GetAsync(IOLabAuthorization auth, uint id)
     {
-      Logger.LogDebug($"CountersController.GetAsync(uint id={id})");
+      Logger.LogDebug($"GetAsync id {id}");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Counters", id);
@@ -111,7 +111,7 @@ namespace OLab.Api.Endpoints
       uint id,
       CountersFullDto dto)
     {
-      Logger.LogDebug($"PutAsync(uint id={id})");
+      Logger.LogDebug($"PutAsync id {id}");
 
       dto.ImageableId = dto.ParentInfo.Id;
 
@@ -148,7 +148,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       CountersFullDto dto)
     {
-      Logger.LogDebug($"CountersController.PostAsync({dto.Name})");
+      Logger.LogDebug($"PostAsync name = {dto.Name}");
 
       dto.ImageableId = dto.ParentInfo.Id;
       dto.Value = dto.StartValue;
@@ -181,7 +181,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       uint id)
     {
-      Logger.LogDebug($"CountersController.DeleteAsync(uint id={id})");
+      Logger.LogDebug($"DeleteAsync id {id}");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Counters", id);

@@ -43,6 +43,8 @@ namespace OLab.Api.ObjectMapper
       else
         phys.IsCorrect = dto.IsCorrect.Value;
 
+      phys.QuestionId = ParentQuestion.Id;
+
       return phys;
     }
 
