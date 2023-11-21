@@ -210,7 +210,14 @@ namespace OLab.Api.Endpoints
         if (accessResult is UnauthorizedResult)
           throw new OLabUnauthorizedException("Question", id);
 
+        if (dbContext.UserResponses.Any(x => x.QuestionId == id))
+          throw new Exception($"Question {id} is in use. Cannot delete.");
+
+        if ( phys.SystemQuestionResponses.Count > 0 )
+          dbContext.SystemQuestionResponses.RemoveRange( phys.SystemQuestionResponses.ToArray() );
+
         dbContext.SystemQuestions.Remove(phys);
+
         await dbContext.SaveChangesAsync();
 
       }
