@@ -8,6 +8,7 @@ using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -83,6 +84,8 @@ namespace OLab.Api.Endpoints
       if (dto.ImageableType == Constants.ScopeLevelServer)
       {
         var obj = dbContext.Servers.FirstOrDefault(x => x.Id == dto.ImageableId);
+        if (obj == null)
+          throw new Exception($"orphaned object cannot find {dto.ImageableType} {dto.ImageableId}");
         dto.ParentInfo.Id = obj.Id;
         dto.ParentInfo.Name = obj.Name;
       }
@@ -90,6 +93,8 @@ namespace OLab.Api.Endpoints
       else if (dto.ImageableType == Constants.ScopeLevelMap)
       {
         var obj = dbContext.Maps.FirstOrDefault(x => x.Id == dto.ImageableId);
+        if (obj == null)
+          throw new Exception($"orphaned object cannot find {dto.ImageableType} {dto.ImageableId}");
         dto.ParentInfo.Id = obj.Id;
         dto.ParentInfo.Name = obj.Name;
       }
@@ -97,6 +102,8 @@ namespace OLab.Api.Endpoints
       else if (dto.ImageableType == Constants.ScopeLevelNode)
       {
         var obj = dbContext.MapNodes.FirstOrDefault(x => x.Id == dto.ImageableId);
+        if (obj == null)
+          throw new Exception($"orphaned object cannot find {dto.ImageableType} {dto.ImageableId}");
         dto.ParentInfo.Id = obj.Id;
         dto.ParentInfo.Name = obj.Title;
       }
