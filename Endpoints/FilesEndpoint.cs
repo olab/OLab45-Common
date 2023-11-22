@@ -169,6 +169,7 @@ namespace OLab.Api.Endpoints
 
       var phys = builder.DtoToPhysical(dto);
       phys.CreatedAt = DateTime.Now;
+      phys.FileSize = dto.GetFileSize();
 
       dbContext.SystemFiles.Add(phys);
       await dbContext.SaveChangesAsync();

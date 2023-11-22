@@ -65,6 +65,16 @@ namespace OLab.Api.Dto
       FileName = form["selectedFileName"];
     }
 
+    public int GetFileSize()
+    {
+      if (FileContentsStream != null)
+        return Convert.ToInt32( FileContentsStream.Length );
+      else if (FormFile != null)
+        return Convert.ToInt32( FormFile.Length );
+
+      return 0;
+    }
+
     public long GetFileContents(MemoryStream stream)
     {
       if ( FileContentsStream != null )
