@@ -1,10 +1,12 @@
 using Dawn;
+using HeyRed.Mime;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -193,6 +195,13 @@ namespace OLab.Data.BusinessObjects
 
       // ask the module to add appropriate URLs to files
       fileStorageModule.AttachUrls(items);
+
+      // enhance the records with mime type
+      foreach (var item in items)
+      {
+        if ( string.IsNullOrEmpty( item.Mime ))
+          item.Mime = MimeTypesMap.GetMimeType(Path.GetFileName(item.Path));
+      }
 
       return items;
     }
