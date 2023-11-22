@@ -1,6 +1,7 @@
 using HttpMultipartParser;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 
 namespace OLab.Api.Dto
@@ -9,7 +10,9 @@ namespace OLab.Api.Dto
   public class FilesFullDto : FilesDto
   {
 
-    public IFormFile FileContents { get; set; }
+    private Stream FileContentsStream = null;
+    private IFormFile FormFile = null;
+
     public int? FileSize { get; set; }
     public int? Height { get; set; }
     public int? IsSystem { get; set; }
@@ -50,17 +53,25 @@ namespace OLab.Api.Dto
       ImageableType = form["scopeLevel"];
       IsMediaResource = Convert.ToBoolean(form["isMediaResource"]);
       SelectedFileName = form["selectedFileName"];
-      FileSize = Convert.ToInt32(form["fileSize"]);
       CreatedAt = DateTime.UtcNow;
       if (form.Files.Count == 0)
         throw new Exception("File not received");
-      FileContents = form.Files[0];
-      FileName = FileContents.FileName;
+
+      FileContentsStream = new MemoryStream();
+
+      FormFile = form.Files[0]; // .CopyTo(FileContentsStream);
+      FileSize = Convert.ToInt32( FormFile.Length );
+
+      FileName = form["selectedFileName"];
     }
 
     public long GetFileContents(MemoryStream stream)
     {
-      FileContents.CopyTo(stream);
+      if ( FileContentsStream != null )
+        FileContentsStream.CopyTo(stream);
+      else if ( FormFile != null )
+        FormFile.CopyTo(stream );
+
       stream.Position = 0;
       return stream.Length;
     }
@@ -68,7 +79,16 @@ namespace OLab.Api.Dto
     public FilesFullDto(MultipartFormDataParser parser)
     {
       Id = Convert.ToUInt32(parser.GetParameterValue("id"));
-      // TODO: complete the rest of the properties
+      Name = parser.GetParameterValue("name");
+      Description = parser.GetParameterValue("description");
+      Copyright = parser.GetParameterValue("copyright");
+      ImageableId = Convert.ToUInt32(parser.GetParameterValue("parentId"));
+      ImageableType = parser.GetParameterValue("scopeLevel");
+      FileName = parser.GetParameterValue("selectedFileName");
+      FileSize = Convert.ToInt32( parser.GetParameterValue("fileSize") );
+
+      FileContentsStream = parser.Files[0].Data;
+      FileContentsStream.Position = 0;
     }
 
   }

@@ -26,13 +26,13 @@ namespace OLab.Data.Interface
       string folder,
       string fileName);
 
-    Task CopyStreamToFileAsync(
+    Task CopyFileToStreamAsync(
       Stream stream,
       string folder,
       string fileName,
       CancellationToken token);
 
-    Task<string> CopyFiletoStreamAsync(
+    Task<string> CopyStreamToFileAsync(
       Stream stream,
       string filePath,
       CancellationToken token);

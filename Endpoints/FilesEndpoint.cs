@@ -1,3 +1,4 @@
+using HeyRed.Mime;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
@@ -163,6 +164,9 @@ namespace OLab.Api.Endpoints
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Files", 0);
 
+      if ( string.IsNullOrEmpty(dto.Mime))
+        dto.Mime = MimeTypesMap.GetMimeType(Path.GetFileName(dto.FileName));
+
       var phys = builder.DtoToPhysical(dto);
       phys.CreatedAt = DateTime.Now;
 
@@ -172,8 +176,8 @@ namespace OLab.Api.Endpoints
       using (var stream = new MemoryStream())
       {
         dto.GetFileContents(stream);
-        var filePath = $"{dto.ImageableType}{_fileStorageModule.GetFolderSeparator()}{dto.ImageableId}{_fileStorageModule.GetFolderSeparator()}{dto.FileName}";
-        await _fileStorageModule.CopyFiletoStreamAsync(stream, filePath, cancel);
+        var filePath = $"{_configuration.GetAppSettings().FileStorageFolder}{_fileStorageModule.GetFolderSeparator()}{dto.ImageableType}{_fileStorageModule.GetFolderSeparator()}{dto.ImageableId}{_fileStorageModule.GetFolderSeparator()}{dto.FileName}";
+        await _fileStorageModule.CopyStreamToFileAsync(stream, filePath, cancel);
       }
 
       var newDto = builder.PhysicalToDto(phys);

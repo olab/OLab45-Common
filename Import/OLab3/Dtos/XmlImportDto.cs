@@ -115,7 +115,7 @@ namespace OLab.Import.OLab3.Dtos
         {
           using (var moduleFileStream = new MemoryStream())
           {
-            GetFileModule().CopyStreamToFileAsync(moduleFileStream, importFileDirectory, GetFileName(), new System.Threading.CancellationToken());
+            GetFileModule().CopyFileToStreamAsync(moduleFileStream, importFileDirectory, GetFileName(), new System.Threading.CancellationToken());
             _phys = DynamicXml.Load(moduleFileStream);
           }
         }

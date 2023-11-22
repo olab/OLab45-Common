@@ -143,7 +143,7 @@ public class Importer : IImporter
       var moduleArchiveFile = $"{_configuration.GetAppSettings().FileImportFolder}{GetFileStorageModule().GetFolderSeparator()}{importFileName}";
       Logger.LogInformation($"Module archive file: {moduleArchiveFile}");
 
-      await FileStorageModule.CopyFiletoStreamAsync(importFileStream, moduleArchiveFile, token);
+      await FileStorageModule.CopyStreamToFileAsync(importFileStream, moduleArchiveFile, token);
 
       var extractFolderName = Path.GetFileNameWithoutExtension(importFileName).Replace(".", "");
       Logger.LogInformation($"Folder extract directory: {extractFolderName}");
