@@ -94,6 +94,7 @@ namespace OLab.Api.Dto
       Copyright = parser.GetParameterValue("copyright");
       ImageableId = Convert.ToUInt32(parser.GetParameterValue("parentId"));
       ImageableType = parser.GetParameterValue("scopeLevel");
+      IsMediaResource = Convert.ToBoolean(parser.GetParameterValue("isMediaResource"));
       FileName = parser.GetParameterValue("selectedFileName");
       FileSize = Convert.ToInt32( parser.GetParameterValue("fileSize") );
 
