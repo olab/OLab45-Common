@@ -8,7 +8,7 @@ namespace OLab.Common.Interfaces
   public interface IOLabLogger
   {
     bool HaveFatalError { get; }
-
+    void Clear();
     ILogger GetLogger();
     ILoggerFactory GetLoggerFactory();
     IList<OLabLogMessage> GetMessages(OLabLogMessage.MessageLevel level = OLabLogMessage.MessageLevel.Debug);

@@ -1,5 +1,4 @@
 using HeyRed.Mime;
-using HttpMultipartParser;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
@@ -165,7 +164,7 @@ namespace OLab.Api.Endpoints
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Files", 0);
 
-      if ( string.IsNullOrEmpty(dto.Mime))
+      if (string.IsNullOrEmpty(dto.Mime))
         dto.Mime = MimeTypesMap.GetMimeType(Path.GetFileName(dto.FileName));
 
       var phys = builder.DtoToPhysical(dto);
@@ -210,7 +209,7 @@ namespace OLab.Api.Endpoints
         await dbContext.SaveChangesAsync();
 
         var filePath = $"{_configuration.GetAppSettings().FileStorageFolder}{_fileStorageModule.GetFolderSeparator()}{dto.ImageableType}{_fileStorageModule.GetFolderSeparator()}{dto.ImageableId}";
-        await _fileStorageModule.DeleteFileAsync(filePath, dto.FileName );
+        await _fileStorageModule.DeleteFileAsync(filePath, dto.FileName);
       }
       catch (DbUpdateConcurrencyException)
       {

@@ -228,8 +228,8 @@ namespace OLab.Api.Endpoints
         if (dbContext.UserResponses.Any(x => x.QuestionId == id))
           throw new Exception($"Question {id} is in use. Cannot delete.");
 
-        if ( phys.SystemQuestionResponses.Count > 0 )
-          dbContext.SystemQuestionResponses.RemoveRange( phys.SystemQuestionResponses.ToArray() );
+        if (phys.SystemQuestionResponses.Count > 0)
+          dbContext.SystemQuestionResponses.RemoveRange(phys.SystemQuestionResponses.ToArray());
 
         dbContext.SystemQuestions.Remove(phys);
 

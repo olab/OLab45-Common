@@ -199,7 +199,7 @@ namespace OLab.Data.BusinessObjects
       // enhance the records with mime type
       foreach (var item in items)
       {
-        if ( string.IsNullOrEmpty( item.Mime ))
+        if (string.IsNullOrEmpty(item.Mime))
           item.Mime = MimeTypesMap.GetMimeType(Path.GetFileName(item.Path));
       }
 

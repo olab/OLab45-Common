@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.InkML;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
@@ -128,7 +127,7 @@ namespace OLab.Api.Endpoints.Designer
         phys.NodeId1 = sourceNode.Id;
         phys.NodeId2 = destinationNode.Id;
 
-        dbContext.MapNodeLinks.Add( phys );
+        dbContext.MapNodeLinks.Add(phys);
         await dbContext.SaveChangesAsync();
 
         var dto = new PostNewLinkResponse
@@ -619,7 +618,7 @@ namespace OLab.Api.Endpoints.Designer
       var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).GetSingleAsync(mapId)
         ?? throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
-      var phys = await dbContext.MapNodeLinks.Where( x => x.Id == id).FirstOrDefaultAsync();
+      var phys = await dbContext.MapNodeLinks.Where(x => x.Id == id).FirstOrDefaultAsync();
 
       if (phys == null)
         throw new OLabObjectNotFoundException("MapNodeLink", id);

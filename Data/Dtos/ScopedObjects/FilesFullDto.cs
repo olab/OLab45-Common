@@ -1,9 +1,5 @@
-using HttpMultipartParser;
-using Microsoft.AspNetCore.Http;
 using OLab.Common.Interfaces;
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.Contracts;
 using System.IO;
 
 namespace OLab.Api.Dto
@@ -12,7 +8,7 @@ namespace OLab.Api.Dto
   public class FilesFullDto : FilesDto
   {
 
-    private Stream FileContentsStream;
+    private readonly Stream FileContentsStream;
 
     public int? FileSize { get; set; }
     public int? Height { get; set; }

@@ -1,10 +1,6 @@
-﻿using System;
+﻿using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OLab.Common.Interfaces;
 
 namespace OLab.Common.Utils;
 public class OLabFormFieldHelper : IOLabFormFieldHelper
@@ -18,9 +14,9 @@ public class OLabFormFieldHelper : IOLabFormFieldHelper
     Stream = stream;
   }
 
-  public string Field( string key )
+  public string Field(string key)
   {
-    if ( Fields.ContainsKey( key ) )
+    if (Fields.ContainsKey(key))
       return Fields[key].ToString();
 
     return string.Empty;

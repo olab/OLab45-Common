@@ -52,5 +52,12 @@ namespace OLab.Data.Interface
       string folderName,
       bool appendToStream,
       CancellationToken token);
+
+    IList<string> GetFiles(
+      string folderName,
+      CancellationToken token);
+
+    string BuildPath(params object[] pathParts);
+
   }
 }
