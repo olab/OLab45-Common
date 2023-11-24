@@ -36,7 +36,7 @@ namespace Endpoints.player.ReportEndpoint
       IOLabAuthorization auth,
       string contextId)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: ReportEndpoint.GetAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: ReportEndpoint.ReadAsync");
 
       var dto = new SessionReport();
 

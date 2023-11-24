@@ -68,7 +68,7 @@ namespace OLab.Import.OLab3.Dtos
     }
 
     /// <summary>
-    /// GetAsync postimport object creation id
+    /// ReadAsync postimport object creation id
     /// </summary>
     /// <param name="originalId">Import system id</param>
     /// <returns></returns>
@@ -84,7 +84,7 @@ namespace OLab.Import.OLab3.Dtos
     }
 
     /// <summary>
-    /// GetAsync postimport object creation id
+    /// ReadAsync postimport object creation id
     /// </summary>
     /// <param name="originalId">(nullable) original id</param>
     /// <returns></returns>

@@ -27,7 +27,7 @@ public partial class SessionEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     string sessionUuid)
   {
-    Logger.LogDebug($"{auth.UserContext.UserId}: SessionEndpoint.GetAsync");
+    Logger.LogDebug($"{auth.UserContext.UserId}: SessionEndpoint.ReadAsync");
 
     var session = await dbContext.UserSessions
       .Include(session => session.Statements)

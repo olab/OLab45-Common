@@ -38,7 +38,7 @@ namespace OLab.Api.Endpoints.Designer
     /// <returns></returns>
     public async Task<OLabAPIPagedResponse<MapsDto>> GetAsync([FromQuery] int? take, [FromQuery] int? skip)
     {
-      Logger.LogDebug($"TemplatesController.GetAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
+      Logger.LogDebug($"TemplatesController.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
 
       var items = new List<Model.Maps>();
       var total = 0;

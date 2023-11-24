@@ -47,7 +47,7 @@ namespace OLab.Api.Endpoints
       int? take,
       int? skip)
     {
-      Logger.LogDebug($"GetAsync take={take} skip={skip}");
+      Logger.LogDebug($"ReadAsync take={take} skip={skip}");
 
       var Counters = new List<SystemCounters>();
       var total = 0;
@@ -84,7 +84,7 @@ namespace OLab.Api.Endpoints
     /// <returns></returns>
     public async Task<CountersDto> GetAsync(IOLabAuthorization auth, uint id)
     {
-      Logger.LogDebug($"GetAsync id {id}");
+      Logger.LogDebug($"ReadAsync id {id}");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Counters", id);

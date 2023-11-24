@@ -74,7 +74,7 @@ namespace OLab.Api.Endpoints.Player
     }
 
     /// <summary>
-    /// GetAsync a list of maps
+    /// ReadAsync a list of maps
     /// </summary>
     /// <param name="take">Max number of records to return</param>
     /// <param name="skip">SKip over a number of records</param>
@@ -84,7 +84,7 @@ namespace OLab.Api.Endpoints.Player
       int? take,
       int? skip)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.ReadAsync");
 
       var items = new List<Model.Maps>();
       var total = 0;
@@ -129,7 +129,7 @@ namespace OLab.Api.Endpoints.Player
       IOLabAuthorization auth,
       uint id)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.ReadAsync");
 
       var map = await GetMapAsync(id);
       if (map == null)

@@ -52,13 +52,13 @@ public class DynamicScopedObjects
   {
     var scopedObjects = new ScopedObjects(Logger, dbContext, serverId, mapId, nodeId);
 
-    var phys = await scopedObjects.GetAsync(Api.Utils.Constants.ScopeLevelServer);
+    var phys = await scopedObjects.ReadAsync(Api.Utils.Constants.ScopeLevelServer);
     ServerCounters = phys.Counters;
 
-    phys = await scopedObjects.GetAsync(Api.Utils.Constants.ScopeLevelNode);
+    phys = await scopedObjects.ReadAsync(Api.Utils.Constants.ScopeLevelNode);
     NodeCounters = phys.Counters;
 
-    phys = await scopedObjects.GetAsync(Api.Utils.Constants.ScopeLevelMap);
+    phys = await scopedObjects.ReadAsync(Api.Utils.Constants.ScopeLevelMap);
     MapCounters = phys.Counters;
 
     await ProcessNodeCounters(MapCounters);

@@ -66,5 +66,10 @@ namespace OLab.Api.Model
 
       return null;
     }
+
+    public override string ToString()
+    {
+      return $"({Id}) {Stem}";
+    }
   }
 }

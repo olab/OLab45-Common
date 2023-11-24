@@ -73,7 +73,7 @@ namespace OLab.Api.Endpoints.Designer
     }
 
     /// <summary>
-    /// GetAsync non-rendered nodes for a map
+    /// ReadAsync non-rendered nodes for a map
     /// </summary>
     /// <param name="mapId">Map id</param>
     /// <returns>IActionResult</returns>
@@ -363,7 +363,7 @@ namespace OLab.Api.Endpoints.Designer
         map.Id,
         null);
 
-      var phys = await scopedObjects.GetAsync(_fileStorageModule);
+      var phys = await scopedObjects.ReadAsync(_fileStorageModule);
 
       phys.Constants.Add(new SystemConstants
       {
@@ -421,7 +421,7 @@ namespace OLab.Api.Endpoints.Designer
     }
 
     /// <summary>
-    /// GetAsync a list of security users attached to a map
+    /// ReadAsync a list of security users attached to a map
     /// </summary>
     /// <param name="map">Relevent map object</param>
     /// <returns></returns>
@@ -488,7 +488,7 @@ namespace OLab.Api.Endpoints.Designer
     }
 
     /// <summary>
-    /// GetAsync a list of security users attached to a map
+    /// ReadAsync a list of security users attached to a map
     /// </summary>
     /// <param name="map">Relevent map object</param>
     /// <returns></returns>

@@ -28,7 +28,7 @@ namespace OLab.Api.Endpoints.Player
     }
 
     /// <summary>
-    /// GetAsync a list of servers
+    /// ReadAsync a list of servers
     /// </summary>
     /// <param name="take">Max number of records to return</param>
     /// <param name="skip">SKip over a number of records</param>
@@ -102,7 +102,7 @@ namespace OLab.Api.Endpoints.Player
         null,
         null);
 
-      var phys = await scopedObjects.GetAsync(_fileStorageModule);
+      var phys = await scopedObjects.ReadAsync(_fileStorageModule);
 
       var builder = new ObjectMapper.ScopedObjectsMapper(Logger, _wikiTagProvider, enableWikiTranslation);
       var dto = builder.PhysicalToDto(phys);

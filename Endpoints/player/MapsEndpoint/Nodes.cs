@@ -47,7 +47,7 @@ namespace OLab.Api.Endpoints.Player
     }
 
     /// <summary>
-    /// GetAsync map node with out scoped objects
+    /// ReadAsync map node with out scoped objects
     /// </summary>
     /// <param name="mapId">map id</param>
     /// <param name="nodeId">node id</param>
@@ -278,7 +278,7 @@ namespace OLab.Api.Endpoints.Player
     }
 
     /// <summary>
-    /// GetAsync node for map
+    /// ReadAsync node for map
     /// </summary>
     /// <param name="map">Map object</param>
     /// <returns>MapsNodesFullRelationsDto</returns>

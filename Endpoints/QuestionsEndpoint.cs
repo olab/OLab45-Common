@@ -53,7 +53,7 @@ namespace OLab.Api.Endpoints
     public async Task<OLabAPIPagedResponse<QuestionsDto>> GetAsync([FromQuery] int? take, [FromQuery] int? skip)
     {
 
-      Logger.LogDebug($"GetAsync take={take} skip={skip}");
+      Logger.LogDebug($"ReadAsync take={take} skip={skip}");
 
       var physList = new List<SystemQuestions>();
       var total = 0;
@@ -96,7 +96,7 @@ namespace OLab.Api.Endpoints
       uint id)
     {
 
-      Logger.LogDebug($"GetAsync id {id}");
+      Logger.LogDebug($"ReadAsync id {id}");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Questions", id);

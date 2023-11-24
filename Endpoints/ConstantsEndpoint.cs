@@ -47,7 +47,7 @@ namespace OLab.Api.Endpoints
       int? take,
       int? skip)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: ConstantsEndpoint.GetAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: ConstantsEndpoint.ReadAsync");
 
       var Constants = new List<SystemConstants>();
       var total = 0;
@@ -88,7 +88,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       uint id)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: ConstantsEndpoint.GetAsync");
+      Logger.LogDebug($"{auth.UserContext.UserId}: ConstantsEndpoint.ReadAsync");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Constants", id);

@@ -1,13 +1,17 @@
 using Dawn;
 using HeyRed.Mime;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
+using OLab.Api.Dto;
 using OLab.Api.Model;
+using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OLab.Data.BusinessObjects
@@ -15,9 +19,10 @@ namespace OLab.Data.BusinessObjects
   public partial class ScopedObjects
   {
     public IOLabLogger Logger { get; }
-    #region Properties
+    private readonly IDictionary<uint, SystemCounters> _nodeIdTranslation = 
+      new Dictionary<uint, SystemCounters>();    
+    private OLabDBContext _dbContext { get; set; }
 
-    public OLabDBContext dbContext { get; set; }
     public uint parentId { get; }
     public string scopeLevel { get; }
 
@@ -30,8 +35,6 @@ namespace OLab.Data.BusinessObjects
     public List<SystemThemes> Themes { get; set; }
 
     private readonly IDictionary<string, ScopedObjects> scopedObjectList = new Dictionary<string, ScopedObjects>();
-
-    #endregion
 
     /// <summary>
     /// Retrieves and combines multiple levels of scoped objects
@@ -49,7 +52,7 @@ namespace OLab.Data.BusinessObjects
       uint? nodeId) : this()
     {
       Logger = logger;
-      this.dbContext = dbContext;
+      this._dbContext = dbContext;
 
       if (serverId.HasValue)
         scopedObjectList.Add(
@@ -81,7 +84,7 @@ namespace OLab.Data.BusinessObjects
       string scopeLevel) : this()
     {
       Logger = logger;
-      this.dbContext = dbContext;
+      this._dbContext = dbContext;
       this.parentId = parentId;
       this.scopeLevel = scopeLevel;
 
@@ -144,12 +147,12 @@ namespace OLab.Data.BusinessObjects
     /// <param name="parentId"></param>
     /// <param name="scopeLevel"></param>
     /// <returns></returns>
-    public async Task<List<SystemConstants>> GetScopedConstantsAsync()
+    private async Task<List<SystemConstants>> ReadConstantsAsync()
     {
-      Guard.Argument(dbContext).NotNull(nameof(dbContext));
+      Guard.Argument(_dbContext).NotNull(nameof(_dbContext));
       var items = new List<SystemConstants>();
 
-      items.AddRange(await dbContext.SystemConstants.Where(x =>
+      items.AddRange(await _dbContext.SystemConstants.Where(x =>
         x.ImageableType == scopeLevel && x.ImageableId == parentId).ToListAsync());
 
       return items;
@@ -159,12 +162,12 @@ namespace OLab.Data.BusinessObjects
     /// Gets question scoped objects
     /// </summary>
     /// <returns></returns>
-    public async Task<List<SystemQuestions>> GetScopedQuestionsAsync()
+    private async Task<List<SystemQuestions>> ReadQuestionsAsync()
     {
-      Guard.Argument(dbContext).NotNull(nameof(dbContext));
+      Guard.Argument(_dbContext).NotNull(nameof(_dbContext));
       var items = new List<SystemQuestions>();
 
-      items.AddRange(await dbContext.SystemQuestions
+      items.AddRange(await _dbContext.SystemQuestions
         .Where(x => x.ImageableType == scopeLevel && x.ImageableId == parentId)
         .Include("SystemQuestionResponses")
         .ToListAsync());
@@ -181,16 +184,16 @@ namespace OLab.Data.BusinessObjects
     /// </summary>
     /// <param name="fileStorageModule">File storage module that provides URL</param>
     /// <returns></returns>
-    public async Task<List<SystemFiles>> GetScopedFilesAsync(
+    private async Task<List<SystemFiles>> ReadFileAsync(
       IFileStorageModule fileStorageModule = null)
     {
-      Guard.Argument(dbContext).NotNull(nameof(dbContext));
+      Guard.Argument(_dbContext).NotNull(nameof(_dbContext));
 
       // if no file module, return empty list
       if (fileStorageModule == null)
         return new List<SystemFiles>();
 
-      var items = await dbContext.SystemFiles.Where(x =>
+      var items = await _dbContext.SystemFiles.Where(x =>
         x.ImageableType == scopeLevel && x.ImageableId == parentId).ToListAsync();
 
       // ask the module to add appropriate URLs to files
@@ -210,40 +213,40 @@ namespace OLab.Data.BusinessObjects
     /// Gets thems scoped objects
     /// </summary>
     /// <returns></returns>
-    public async Task<List<SystemThemes>> GetScopedThemesAsync()
+    private async Task<List<SystemThemes>> ReadThemesAsync()
     {
-      Guard.Argument(dbContext).NotNull(nameof(dbContext));
+      Guard.Argument(_dbContext).NotNull(nameof(_dbContext));
       var items = new List<SystemThemes>();
 
-      items.AddRange(await dbContext.SystemThemes.Where(x =>
+      items.AddRange(await _dbContext.SystemThemes.Where(x =>
         x.ImageableType == scopeLevel && x.ImageableId == parentId).ToListAsync());
 
       return items;
     }
 
     /// <summary>
-    /// Gets scriptscoped objects
+    /// Gets script scoped objects
     /// </summary>
-    /// <returns></returns>
-    public async Task<List<SystemScripts>> GetScopedScriptsAsync()
+    /// <returns>List of SystemScripts</returns>
+    private async Task<List<SystemScripts>> ReadScriptsAsync()
     {
-      Guard.Argument(dbContext).NotNull(nameof(dbContext));
+      Guard.Argument(_dbContext).NotNull(nameof(_dbContext));
       var items = new List<SystemScripts>();
 
-      items.AddRange(await dbContext.SystemScripts.Where(x =>
+      items.AddRange(await _dbContext.SystemScripts.Where(x =>
         x.ImageableType == scopeLevel && x.ImageableId == parentId).ToListAsync());
 
       return items;
     }
 
     /// <summary>
-    /// GetAsync counters associated with a 'parent' object 
+    /// ReadAsync counters associated with a 'parent' object 
     /// </summary>
     /// <param name="sinceTime">(optional) looks for values changed since a (unix) time</param>
     /// <returns>List of counters</returns>
-    public async Task<List<SystemCounters>> GetScopedCountersAsync(uint sinceTime = 0)
+    private async Task<List<SystemCounters>> ReadCountersAsync(uint sinceTime = 0)
     {
-      Guard.Argument(dbContext).NotNull(nameof(dbContext));
+      Guard.Argument(_dbContext).NotNull(nameof(_dbContext));
       var items = new List<SystemCounters>();
 
       if (sinceTime != 0)
@@ -251,72 +254,216 @@ namespace OLab.Data.BusinessObjects
         // generate DateTime from sinceTime
         var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         dateTime = dateTime.AddSeconds(sinceTime).ToLocalTime();
-        items.AddRange(await dbContext.SystemCounters.Where(x =>
+        items.AddRange(await _dbContext.SystemCounters.Where(x =>
           x.ImageableType == scopeLevel && x.ImageableId == parentId && x.UpdatedAt >= dateTime).ToListAsync());
       }
       else
       {
-        items.AddRange(await dbContext.SystemCounters.Where(x =>
+        items.AddRange(await _dbContext.SystemCounters.Where(x =>
           x.ImageableType == scopeLevel && x.ImageableId == parentId).ToListAsync());
       }
 
       return items;
     }
 
-    private async ValueTask<ScopedObjects> GetInternalAsync(
+    /// <summary>
+    /// Gets counter action scoped objects
+    /// </summary>
+    /// <returns>List of SystemCounterActions</returns>
+    private async Task<List<SystemCounterActions>> ReadCounterActionsAsync()
+    {
+      if (scopeLevel == Api.Utils.Constants.ScopeLevelMap)
+      {
+        var items = new List<SystemCounterActions>();
+        items.AddRange(await _dbContext.SystemCounterActions.Where(x =>
+            x.MapId == parentId).ToListAsync());
+
+        return items;
+      }
+
+      return new List<SystemCounterActions>();
+    }
+
+    private async ValueTask<ScopedObjects> ReadInternalAsync(
       IFileStorageModule fileStorageModule = null)
     {
       var phys = new ScopedObjects
       {
-        Constants = await GetScopedConstantsAsync(),
-        Questions = await GetScopedQuestionsAsync(),
-        Files = await GetScopedFilesAsync(fileStorageModule),
-        Scripts = await GetScopedScriptsAsync(),
-        Themes = await GetScopedThemesAsync(),
-        Counters = await GetScopedCountersAsync(0)
+        Constants = await ReadConstantsAsync(),
+        Questions = await ReadQuestionsAsync(),
+        Files = await ReadFileAsync(fileStorageModule),
+        Scripts = await ReadScriptsAsync(),
+        Themes = await ReadThemesAsync(),
+        Counters = await ReadCountersAsync(0),
+        CounterActions = await ReadCounterActionsAsync()
       };
-
-      if (scopeLevel == Api.Utils.Constants.ScopeLevelMap)
-      {
-        var items = new List<SystemCounterActions>();
-        items.AddRange(await dbContext.SystemCounterActions.Where(x =>
-            x.MapId == parentId).ToListAsync());
-
-        phys.CounterActions.AddRange(items);
-      }
 
       return phys;
 
     }
 
     /// <summary>
-    /// GetAsync scoped objects for a specific scope level
+    /// ReadAsync scoped objects for a specific scope level
     /// </summary>
     /// <param name="fileStorageModule">File storage module that provides URL</param>
     /// <returns>ScopedObject dto</returns>
-    public async ValueTask<ScopedObjects> GetAsync(
+    public async ValueTask<ScopedObjects> ReadAsync(
       string scopeLevel,
       IFileStorageModule fileStorageModule = null)
     {
-      return await scopedObjectList[scopeLevel].GetInternalAsync(fileStorageModule);
+      return await scopedObjectList[scopeLevel].ReadInternalAsync(fileStorageModule);
     }
 
     /// <summary>
-    /// GetAsync scoped objects for all levels
+    /// ReadAsync scoped objects for all levels
     /// </summary>
     /// <param name="fileStorageModule">File storage module that provides URL</param>
     /// <returns>ScopedObject dto</returns>
-    public async ValueTask<ScopedObjects> GetAsync(
+    public async ValueTask<ScopedObjects> ReadAsync(
       IFileStorageModule fileStorageModule = null)
     {
       var phys = new ScopedObjects();
       foreach (var item in scopedObjectList)
       {
-        var typePhys = await GetAsync(item.Key, fileStorageModule);
+        var typePhys = await ReadAsync(item.Key, fileStorageModule);
         phys.Combine(typePhys);
       }
 
       return phys;
+    }
+
+    /// <summary>
+    /// Writes a dto to the database
+    /// </summary>
+    /// <param name="dto">Scoped Objects dto</param>
+    /// <param name="token">Cancellation token</param>
+    public async Task WriteAsync(ScopedObjectsDto dto, CancellationToken token)
+    {
+      foreach (var questionDto in dto.Questions)
+        await WriteQuestionsAsync(
+          questionDto,
+          token);
+
+      foreach (var constantDto in dto.Constants)
+        await WriteConstantAsync(
+          constantDto,
+          token);
+
+      foreach (var fileDto in dto.Files)
+        await WriteFileAsync(
+          fileDto,
+          token);
+
+      _nodeIdTranslation.Clear();
+      foreach (var counterDto in dto.Counters)
+        await WriteCounterAsync(
+          counterDto,
+          token);
+
+      foreach (var actionDto in dto.CounterActions)
+        await WriteActionAsync(
+          actionDto,
+          token);
+    }
+
+    private async Task WriteActionAsync(CounterActionsDto dto, CancellationToken token)
+    {
+      var phys = new CounterActionsMapper(Logger).DtoToPhysical(dto);
+
+      phys.Id = 0;
+      phys.CounterId = _nodeIdTranslation[dto.Id].Id;
+      phys.ImageableId = _nodeIdTranslation[dto.Id].ImageableId;
+      phys.ImageableType = _nodeIdTranslation[dto.Id].ImageableType;
+      
+      await _dbContext.SystemCounterActions.AddAsync(phys);
+      await _dbContext.SaveChangesAsync(token);
+    }
+
+    private async Task WriteCounterAsync(CountersDto dto, CancellationToken token)
+    {
+      var phys = new Counters(Logger).DtoToPhysical(dto);
+
+      phys.Id = 0;
+      phys.ImageableType = scopeLevel;
+      phys.ImageableId = parentId;
+
+      await _dbContext.SystemCounters.AddAsync(phys);
+      await _dbContext.SaveChangesAsync(token);
+
+      // save the new counter id since creating
+      // counter actions will need this mapping.
+      _nodeIdTranslation.Add(dto.Id.Value, phys);
+
+      Logger.LogInformation($"  imported counter '{phys.Name}'");    }
+
+    private async Task WriteFileAsync(
+      FilesFullDto dto,
+      CancellationToken token)
+    {
+      var phys = new FilesFull(Logger).DtoToPhysical(dto);
+
+      phys.Id = 0;
+      phys.ImageableType = scopeLevel;
+      phys.ImageableId = parentId;
+
+      await _dbContext.SystemFiles.AddAsync(phys);
+      await _dbContext.SaveChangesAsync(token);
+
+      Logger.LogInformation($"  imported file '{phys.Name}'");
+    }
+
+    private async Task WriteConstantAsync(
+      ConstantsDto dto,
+      CancellationToken token)
+    {
+      var phys = new ConstantsFull(Logger).DtoToPhysical(dto);
+
+      phys.Id = 0;
+      phys.ImageableType = scopeLevel;
+      phys.ImageableId = parentId;
+
+      await _dbContext.SystemConstants.AddAsync(phys);
+      await _dbContext.SaveChangesAsync(token);
+
+      Logger.LogInformation($"  imported constant {phys.Name}");
+    }
+
+    private async Task WriteQuestionsAsync(
+      QuestionsFullDto dto,
+      CancellationToken token)
+    {
+      var phys = new QuestionsFull(Logger).DtoToPhysical(dto);
+
+      phys.Id = 0;
+      phys.ImageableType = scopeLevel;
+      phys.ImageableId = parentId;
+
+      await _dbContext.SystemQuestions.AddAsync(phys);
+      await _dbContext.SaveChangesAsync(token);
+
+      Logger.LogInformation($"  imported question '{phys.Stem}'");
+
+      foreach (var responseDto in dto.Responses)
+        await ProcessScopedObjectQuestionResponseAsync(
+          dto,
+          responseDto,
+          token);
+    }
+
+    private async Task ProcessScopedObjectQuestionResponseAsync(
+      QuestionsFullDto questionDto,
+      QuestionResponsesDto dto,
+      CancellationToken token)
+    {
+      var phys = new QuestionResponses(Logger, questionDto).DtoToPhysical(dto);
+
+      phys.Id = 0;
+
+      await _dbContext.SystemQuestionResponses.AddAsync(phys);
+      await _dbContext.SaveChangesAsync(token);
+
+      Logger.LogInformation($"    imported question response '{phys.Response}'");
+
     }
 
   }

@@ -37,7 +37,7 @@ namespace OLab.Api.Endpoints.Player
         node.Id,
         Utils.Constants.ScopeLevelNode);
 
-      var phys = await scopedObjects.GetAsync(_fileStorageModule);
+      var phys = await scopedObjects.ReadAsync(_fileStorageModule);
 
       phys.Constants.Add(new SystemConstants
       {

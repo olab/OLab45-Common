@@ -1,8 +1,11 @@
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OLab.Api.Common;
+using OLab.Api.Dto;
 using OLab.Api.ObjectMapper;
 using OLab.Import.Interface;
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Threading;
@@ -12,9 +15,81 @@ namespace OLab.Import.OLab4;
 
 public partial class Importer : IImporter
 {
-  public async Task Export(Stream stream, uint mapId, CancellationToken token = default)
+  /// <summary>
+  /// Run the export process for a map
+  /// </summary>
+  /// <param name="stream">Target stream for export data</param>
+  /// <param name="mapId">Map id to export</param>
+  /// <param name="token"></param>
+  public async Task Export(
+    Stream stream,
+    uint mapId,
+    CancellationToken token = default)
   {
     Logger.LogInformation($"Exporting mapId: {mapId} ");
+
+    var dto = await ExportMapAsync(mapId, token);
+    await ExportMapNodesAsync(dto, token);
+
+    // serialize the dto into a json string
+    var rawJson = JsonConvert.SerializeObject(dto);
+
+    // write the json and map media files to 
+    // a zip archive file
+    using (var zipArchive = new ZipArchive(
+      stream, 
+      ZipArchiveMode.Create, 
+      true))
+    {
+      var zipEntry = zipArchive.CreateEntry(MapFileName);
+
+      // write the map json to the archive
+      using (var mapJsonStream = new MemoryStream())
+      {
+        var writer = new StreamWriter(mapJsonStream);
+        writer.Write(rawJson);
+        writer.Flush();
+        mapJsonStream.Position = 0;
+
+        Logger.LogInformation($"Writing map {dto.Map.Name}. json size = {mapJsonStream.Length} ");
+
+        using (var entryStream = zipEntry.Open())
+        {
+          mapJsonStream.CopyTo(entryStream);
+          entryStream.Close();
+        }
+      }
+
+      // add any map-level media files to the archive
+      await _fileModule.CopyFoldertoArchiveAsync(
+        zipArchive,
+        _fileModule.BuildPath(
+          _configuration.GetAppSettings().FileStorageFolder,
+          Api.Utils.Constants.ScopeLevelMap,
+          dto.Map.Id),
+        true,
+        token);
+
+      // write any node-level media files to the archive
+      foreach (var nodeDto in dto.MapNodes)
+      {
+        await _fileModule.CopyFoldertoArchiveAsync(
+          zipArchive,
+          _fileModule.BuildPath(
+            _configuration.GetAppSettings().FileStorageFolder,
+            Api.Utils.Constants.ScopeLevelNode,
+            nodeDto.Id),
+          true,
+          token);
+      }
+    }
+  }
+
+  private async Task<MapsFullRelationsDto> ExportMapAsync(
+    uint mapId,
+    CancellationToken token)
+  {
+    Logger.LogInformation($"  map {mapId} ");
 
     var map = await _dbContext.Maps
       .Include(map => map.MapNodes)
@@ -31,72 +106,42 @@ public partial class Importer : IImporter
 
     // apply map-level scoped objects to the map dto
     var mapScopedObject = new Data.BusinessObjects.ScopedObjects(
-      Logger, 
-      _dbContext, 
-      mapId, 
+      Logger,
+      _dbContext,
+      mapId,
       Api.Utils.Constants.ScopeLevelMap);
 
-    var mapScopedObjectPhys = await mapScopedObject.GetAsync(
-      Api.Utils.Constants.ScopeLevelMap, 
+    var mapScopedObjectPhys = await mapScopedObject.ReadAsync(
+      Api.Utils.Constants.ScopeLevelMap,
       _fileModule);
 
     var scopedObjectMapper = new ScopedObjectsMapper(Logger, _wikiTagProvider);
     dto.ScopedObjects = scopedObjectMapper.PhysicalToDto(mapScopedObjectPhys);
 
+    return dto;
+  }
+
+  private async Task ExportMapNodesAsync(MapsFullRelationsDto dto, CancellationToken token)
+  {
     // apply node-level scoped objects to the node dtos
     foreach (var nodeDto in dto.MapNodes)
     {
       var nodeScopedObject = new Data.BusinessObjects.ScopedObjects(
-        Logger, 
-        _dbContext, 
-        nodeDto.Id.Value, 
+        Logger,
+        _dbContext,
+        nodeDto.Id.Value,
         Api.Utils.Constants.ScopeLevelNode);
 
-      var nodeScopedObjectsPhys = await nodeScopedObject.GetAsync(
-        Api.Utils.Constants.ScopeLevelNode, 
+      Logger.LogInformation($"  node {nodeDto.Id} ");
+
+      var nodeScopedObjectsPhys = await nodeScopedObject.ReadAsync(
+        Api.Utils.Constants.ScopeLevelNode,
         _fileModule);
 
+      var scopedObjectMapper = new ScopedObjectsMapper(Logger, _wikiTagProvider);
       nodeDto.ScopedObjects = scopedObjectMapper.PhysicalToDto(nodeScopedObjectsPhys);
     }
-
-    var rawJson = JsonConvert.SerializeObject(dto);
-
-    using (var zipArchive = new ZipArchive(stream, ZipArchiveMode.Create, true))
-    {
-      var entry = zipArchive.CreateEntry(MapFileName);
-
-      // write the map json to the archive
-      using (var fileContentStream = new MemoryStream())
-      {
-        var writer = new StreamWriter(fileContentStream);
-        writer.Write(rawJson);
-        writer.Flush();
-
-        fileContentStream.Position = 0;
-
-        Logger.LogInformation($"Read map: {map.Name} into stream. json size = {fileContentStream.Length} ");
-
-        using (var entryStream = entry.Open())
-        {
-          fileContentStream.CopyTo(entryStream);
-          entryStream.Close();
-        }
-      }
-
-      // add any map-level media files to the archive
-      await _fileModule.CopyFoldertoArchiveAsync(
-        zipArchive,
-        $"{Api.Utils.Constants.ScopeLevelMap}{_fileModule.GetFolderSeparator()}{map.Id}",
-        true,
-        token);
-
-      // write any node-level media files to the archive
-      foreach (var nodeDto in dto.MapNodes)
-        await _fileModule.CopyFoldertoArchiveAsync(
-          zipArchive,
-          $"{Api.Utils.Constants.ScopeLevelNode}{_fileModule.GetFolderSeparator()}{nodeDto.Id}",
-          true,
-          token);
-    }
+    
   }
+
 }

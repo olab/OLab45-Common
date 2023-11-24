@@ -55,7 +55,7 @@ namespace OLab.Api.Endpoints.Player
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 
       var scopedObjects = new OLab.Data.BusinessObjects.ScopedObjects(Logger, dbContext, map.Id, Utils.Constants.ScopeLevelMap);
-      var phys = await scopedObjects.GetAsync(_fileStorageModule);
+      var phys = await scopedObjects.ReadAsync(_fileStorageModule);
 
       // add map-level derived constants
       phys.Constants.Add(new SystemConstants

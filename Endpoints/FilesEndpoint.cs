@@ -48,7 +48,7 @@ namespace OLab.Api.Endpoints
     /// <returns></returns>
     public async Task<OLabAPIPagedResponse<FilesDto>> GetAsync(int? take, int? skip)
     {
-      Logger.LogDebug($"FilesController.GetAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
+      Logger.LogDebug($"FilesController.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
 
       var Files = new List<SystemFiles>();
       var total = 0;
@@ -90,7 +90,7 @@ namespace OLab.Api.Endpoints
       uint id)
     {
 
-      Logger.LogDebug($"FilesController.GetAsync(uint id={id})");
+      Logger.LogDebug($"FilesController.ReadAsync(uint id={id})");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Files", id);

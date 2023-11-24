@@ -84,7 +84,7 @@ namespace OLab.Api.Endpoints.Player
     }
 
     /// <summary>
-    /// GetAsync counter for question
+    /// ReadAsync counter for question
     /// </summary>
     /// <param name="question">Source question</param>
     /// <param name="dbCounter">Database Counter</param>

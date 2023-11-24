@@ -1,11 +1,14 @@
 using Common.Utils;
+using Humanizer;
 using Newtonsoft.Json;
+using NuGet.Common;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.ObjectMapper;
 using OLab.Import.Interface;
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,19 +17,26 @@ namespace OLab.Import.OLab4;
 
 public partial class Importer : IImporter
 {
-  // Folder where th extracted Import file resides
+  // Folder where the xtracted import file resides
   private string ExtractFolderName;
 
+  /// <summary>
+  /// Run the import process on the data in the stream
+  /// </summary>
+  /// <param name="stream">Stream with improt archive file</param>
+  /// <param name="fileName">File name of improt file</param>
+  /// <param name="token"></param>
+  /// <returns></returns>
   public async Task Import(
-    Stream importFileStream,
-    string importFileName,
+    Stream stream,
+    string fileName,
     CancellationToken token = default)
   {
     try
     {
-      var mapFullDto = await ProcessImportFileAsync(
-        importFileStream,
-        importFileName,
+      var mapFullDto = await ExtractImportMapDefinition(
+        stream,
+        fileName,
         token);
 
       var newMapId = await ProcessMapAsync(mapFullDto, token);
@@ -42,11 +52,11 @@ public partial class Importer : IImporter
   }
 
   /// <summary>
-  /// Loads import xml files into memory
+  /// Loads import import file into memory
   /// </summary>
   /// <param name="importFileName">Export ZIP file name</param>
-  /// <returns>true</returns>
-  private async Task<MapsFullRelationsDto> ProcessImportFileAsync(
+  /// <returns>MapsFullRelationsDto</returns>
+  private async Task<MapsFullRelationsDto> ExtractImportMapDefinition(
     Stream importFileStream,
     string importFileName,
     CancellationToken token = default)
@@ -69,9 +79,9 @@ public partial class Importer : IImporter
 
     // save import file to storage
     await _fileModule.WriteFileAsync(
-      importFileStream, 
+      importFileStream,
       _configuration.GetAppSettings().FileImportFolder,
-      importFileName, 
+      importFileName,
       token);
 
     // extract import file to storage
@@ -138,6 +148,13 @@ public partial class Importer : IImporter
         Logger.LogInformation($"  imported map node link {mapNodeLinkDto.Id.Value} -> {nodeLinkId}");
       }
 
+      // import the map-level scoped objects
+      await ProcessScopedObjects(
+        Api.Utils.Constants.ScopeLevelMap,
+        _mapId,
+        mapFullDto.ScopedObjects,
+        token);
+
       await _dbContext.Database.CommitTransactionAsync();
 
       return _mapId;
@@ -150,11 +167,26 @@ public partial class Importer : IImporter
     }
   }
 
-  private async Task<uint> ProcessMapRecordAsync(
-    MapsFullRelationsDto mapFullDto,
+  private async Task ProcessScopedObjects(
+    string scopeLevel,
+    uint owningId,
+    ScopedObjectsDto dto,
     CancellationToken token)
   {
-    var mapDto = mapFullDto.Map;
+    var scopedObject = new Data.BusinessObjects.ScopedObjects(
+      Logger,
+      _dbContext,
+      owningId,
+      scopeLevel);
+
+    await scopedObject.WriteAsync(dto, token);
+  }
+
+  private async Task<uint> ProcessMapRecordAsync(
+    MapsFullRelationsDto dto,
+    CancellationToken token)
+  {
+    var mapDto = dto.Map;
     var phys = new MapsFullMapper(Logger).DtoToPhysical(mapDto);
     phys.Id = 0;
 
@@ -172,7 +204,10 @@ public partial class Importer : IImporter
     await _fileModule.DeleteFolderAsync(ExtractFolderName);
   }
 
-  private async Task ProcessMapFiles(uint originalMapId, uint newMapId, CancellationToken token)
+  private async Task ProcessMapFiles(
+    uint originalMapId,
+    uint newMapId,
+    CancellationToken token)
   {
     // move any map-level files
     var sourceFolder = _fileModule.BuildPath(
@@ -217,17 +252,17 @@ public partial class Importer : IImporter
 
   private async Task<uint> ProcessMapNodeLinkRecordAsync(
     uint mapId,
-    MapNodeLinksDto mapNodeLinkDto,
+    MapNodeLinksDto dto,
     CancellationToken token)
   {
     var phys = new MapNodeLinksMapper(
       Logger,
-      _wikiTagProvider as WikiTagProvider).DtoToPhysical(mapNodeLinkDto);
+      _wikiTagProvider as WikiTagProvider).DtoToPhysical(dto);
 
     phys.Id = 0;
     phys.MapId = mapId;
-    phys.NodeId1 = _nodeIdTranslation[mapNodeLinkDto.SourceId.Value].Value;
-    phys.NodeId2 = _nodeIdTranslation[mapNodeLinkDto.DestinationId.Value].Value;
+    phys.NodeId1 = _nodeIdTranslation[dto.SourceId.Value].Value;
+    phys.NodeId2 = _nodeIdTranslation[dto.DestinationId.Value].Value;
 
     await _dbContext.MapNodeLinks.AddAsync(phys);
     await _dbContext.SaveChangesAsync(token);
@@ -237,18 +272,25 @@ public partial class Importer : IImporter
 
   private async Task<uint> ProcessMapNodeRecordAsync(
     uint mapId,
-    MapNodesFullDto mapNodeFullDto,
+    MapNodesFullDto dto,
     CancellationToken token)
   {
     var phys = new MapNodesFullMapper(
       Logger,
-      _wikiTagProvider as WikiTagProvider).DtoToPhysical(mapNodeFullDto);
+      _wikiTagProvider as WikiTagProvider).DtoToPhysical(dto);
 
     phys.Id = 0;
     phys.MapId = mapId;
 
     await _dbContext.MapNodes.AddAsync(phys);
     await _dbContext.SaveChangesAsync(token);
+
+    // import the map-level scoped objects
+    await ProcessScopedObjects(
+      Api.Utils.Constants.ScopeLevelNode,
+      phys.Id,
+      dto.ScopedObjects,
+      token);
 
     return phys.Id;
   }
