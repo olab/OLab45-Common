@@ -173,8 +173,12 @@ namespace OLab.Api.Endpoints
       dbContext.SystemFiles.Add(phys);
       await dbContext.SaveChangesAsync();
 
-      var filePath = $"{_configuration.GetAppSettings().FileStorageFolder}{_fileStorageModule.GetFolderSeparator()}{dto.ImageableType}{_fileStorageModule.GetFolderSeparator()}{dto.ImageableId}{_fileStorageModule.GetFolderSeparator()}{dto.FileName}";
-      await _fileStorageModule.CopyStreamToFileAsync(dto.GetStream(), filePath, cancel);
+      var filePath = _fileStorageModule.BuildPath(
+        _configuration.GetAppSettings().FileStorageFolder,
+        dto.ImageableType,
+        dto.ImageableId);
+
+      await _fileStorageModule.WriteFileAsync(dto.GetStream(), filePath, dto.FileName, cancel);
 
       var newDto = builder.PhysicalToDto(phys);
       return newDto;

@@ -26,20 +26,24 @@ namespace OLab.Data.Interface
       string folder,
       string fileName);
 
-    Task CopyFileToStreamAsync(
+    Task ReadFileAsync(
       Stream stream,
       string folder,
       string fileName,
       CancellationToken token);
 
-    Task<string> CopyStreamToFileAsync(
+    Task<string> WriteFileAsync(
       Stream stream,
-      string filePath,
+      string folderName,
+      string fileName,
       CancellationToken token);
 
     Task<bool> DeleteFileAsync(
       string folder,
       string fileName);
+
+    Task DeleteFolderAsync(
+      string folder);
 
     Task<bool> ExtractFileToStorageAsync(
       string folderName,

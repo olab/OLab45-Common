@@ -25,14 +25,14 @@ public partial class Importer : IImporter
     try
     {
       var mapFullDto = await ProcessImportFileAsync(
-        importFileStream, 
-        importFileName, 
+        importFileStream,
+        importFileName,
         token);
 
       var newMapId = await ProcessMapAsync(mapFullDto, token);
       await ProcessMapFiles(mapFullDto.Map.Id.Value, newMapId, token);
 
-      CleanupImport();
+      await CleanupImportAsync();
     }
     catch (Exception ex)
     {
@@ -51,18 +51,28 @@ public partial class Importer : IImporter
     string importFileName,
     CancellationToken token = default)
   {
+    // build file module import file name
     var moduleArchiveFile = _fileModule.BuildPath(
       _configuration.GetAppSettings().FileImportFolder,
-      importFileName); ;
+      importFileName);
     Logger.LogInformation($"Module archive file: {moduleArchiveFile}");
 
-    // save import file to storage
-    await _fileModule.CopyStreamToFileAsync(importFileStream, moduleArchiveFile, token);
-
+    // build file module extraction folder name
     ExtractFolderName = _fileModule.BuildPath(
       _configuration.GetAppSettings().FileImportFolder,
-      Path.GetFileNameWithoutExtension(importFileName).Replace(".", ""));
+      Path.GetFileNameWithoutExtension(importFileName));
     Logger.LogInformation($"Folder extract directory: {ExtractFolderName}");
+
+    // delete any existing import files left over
+    // from previous run
+    await _fileModule.DeleteFolderAsync(ExtractFolderName);
+
+    // save import file to storage
+    await _fileModule.WriteFileAsync(
+      importFileStream, 
+      _configuration.GetAppSettings().FileImportFolder,
+      importFileName, 
+      token);
 
     // extract import file to storage
     await _fileModule.ExtractFileToStorageAsync(
@@ -76,7 +86,7 @@ public partial class Importer : IImporter
     // extract the map.json file from the extracted imported files
     using (var mapStream = new MemoryStream())
     {
-      await _fileModule.CopyFileToStreamAsync(
+      await _fileModule.ReadFileAsync(
         mapStream,
         ExtractFolderName,
         MapFileName,
@@ -153,6 +163,13 @@ public partial class Importer : IImporter
 
     Logger.LogInformation($"  imported map '{mapDto.Name}' {mapDto.Id.Value} -> {phys.Id}");
     return phys.Id;
+  }
+
+  private async Task CleanupImportAsync()
+  {
+    // delete any existing import files left over
+    // from previous run
+    await _fileModule.DeleteFolderAsync(ExtractFolderName);
   }
 
   private async Task ProcessMapFiles(uint originalMapId, uint newMapId, CancellationToken token)
@@ -234,11 +251,6 @@ public partial class Importer : IImporter
     await _dbContext.SaveChangesAsync(token);
 
     return phys.Id;
-  }
-
-  private void CleanupImport()
-  {
-    Directory.Delete(ExtractFolderName, true);
   }
 
 }
