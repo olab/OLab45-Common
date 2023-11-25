@@ -1,6 +1,7 @@
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using OLab.Data.Interface;
 using OLab.Import.Interface;
 using OLab.Import.OLab3.Dtos;
@@ -129,38 +130,42 @@ public class Importer : IImporter
   /// <summary>
   /// Loads import xml files into memory
   /// </summary>
-  /// <param name="importFileName">Export ZIP file name</param>
+  /// <param name="stream">Stream to write file to</param>
+  /// <param name="fileName">Export ZIP file name</param>
   /// <returns>true</returns>
   public async Task<bool> ProcessImportFileAsync(
-    Stream importFileStream,
-    string importFileName,
+    Stream stream,
+    string fileName,
     CancellationToken token = default)
   {
     var importStatus = true;
 
     try
     {
-      Logger.LogInformation($"Module archive file: {_configuration.GetAppSettings().FileImportFolder}/{importFileName}");
+      Logger.LogInformation($"Module archive file: {FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, fileName)}");
 
-      await FileStorageModule.WriteFileAsync(importFileStream, _configuration.GetAppSettings().FileImportFolder, importFileName, token);
+      await FileStorageModule.WriteFileAsync(
+        stream, 
+        FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, fileName), 
+        fileName, 
+        token);
 
-      var extractFolderName = Path.GetFileNameWithoutExtension(importFileName).Replace(".", "");
+      var extractFolderName = Path.GetFileNameWithoutExtension(fileName);
       Logger.LogInformation($"Folder extract directory: {extractFolderName}");
 
       await FileStorageModule.ExtractFileToStorageAsync(
-        _configuration.GetAppSettings().FileImportFolder,
-        importFileName,
+        OLabFileStorageModule.ImportRoot,
+        fileName,
         extractFolderName,
         token);
 
       foreach (var dto in _dtos.Values)
-        dto.Load($"{_configuration.GetAppSettings().FileImportFolder}{GetFileStorageModule().GetFolderSeparator()}{extractFolderName}");
+        dto.Load(FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, extractFolderName));
 
       // delete source import file
       await GetFileStorageModule().DeleteFileAsync(
-        Path.GetDirectoryName(importFileName),
-        Path.GetFileName(importFileName));
-
+        OLabFileStorageModule.ImportRoot, 
+        fileName);
     }
     catch (Exception ex)
     {
@@ -171,6 +176,10 @@ public class Importer : IImporter
     return importStatus;
   }
 
+  /// <summary>
+  /// WRite import dtos to database
+  /// </summary>
+  /// <returns>true</returns>
   public bool WriteImportToDatabase()
   {
     var rc = true;

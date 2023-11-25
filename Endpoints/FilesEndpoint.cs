@@ -9,6 +9,7 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
@@ -154,7 +155,7 @@ namespace OLab.Api.Endpoints
     public async Task<FilesFullDto> PostAsync(
       IOLabAuthorization auth,
       FilesFullDto dto,
-      CancellationToken cancel)
+      CancellationToken token)
     {
       Logger.LogDebug($"FilesController.PostAsync()");
       var builder = new FilesFull(Logger);
@@ -174,11 +175,15 @@ namespace OLab.Api.Endpoints
       await dbContext.SaveChangesAsync();
 
       var filePath = _fileStorageModule.BuildPath(
-        _configuration.GetAppSettings().FileStorageFolder,
+        OLabFileStorageModule.FilesRoot,
         dto.ImageableType,
         dto.ImageableId);
 
-      await _fileStorageModule.WriteFileAsync(dto.GetStream(), filePath, dto.FileName, cancel);
+      await _fileStorageModule.WriteFileAsync(
+        dto.GetStream(), 
+        filePath, 
+        dto.FileName, 
+        token);
 
       var newDto = builder.PhysicalToDto(phys);
       return newDto;
@@ -212,8 +217,14 @@ namespace OLab.Api.Endpoints
         dbContext.SystemFiles.Remove(phys);
         await dbContext.SaveChangesAsync();
 
-        var filePath = $"{_configuration.GetAppSettings().FileStorageFolder}{_fileStorageModule.GetFolderSeparator()}{dto.ImageableType}{_fileStorageModule.GetFolderSeparator()}{dto.ImageableId}";
-        await _fileStorageModule.DeleteFileAsync(filePath, dto.FileName);
+        var filePath = _fileStorageModule.BuildPath(
+          OLabFileStorageModule.FilesRoot,
+          dto.ImageableType,
+          dto.ImageableId);
+
+        await _fileStorageModule.DeleteFileAsync(
+          filePath, 
+          dto.FileName);
       }
       catch (DbUpdateConcurrencyException)
       {

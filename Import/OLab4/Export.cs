@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.ObjectMapper;
+using OLab.Common.Utils;
 using OLab.Import.Interface;
 using System;
 using System.IO;
@@ -28,8 +29,11 @@ public partial class Importer : IImporter
   {
     Logger.LogInformation($"Exporting mapId: {mapId} ");
 
+    // create map json object
     var dto = await ExportMapAsync(mapId, token);
-    await ExportMapNodesAsync(dto, token);
+
+    // add node-level scoped objects
+    await ExportMapNodesScopedObjectsAsync(dto, token);
 
     // serialize the dto into a json string
     var rawJson = JsonConvert.SerializeObject(dto);
@@ -51,7 +55,7 @@ public partial class Importer : IImporter
         writer.Flush();
         mapJsonStream.Position = 0;
 
-        Logger.LogInformation($"Writing map {dto.Map.Name}. json size = {mapJsonStream.Length} ");
+        Logger.LogInformation($"Writing map '{dto.Map.Name}'. json size = {mapJsonStream.Length} ");
 
         using (var entryStream = zipEntry.Open())
         {
@@ -61,10 +65,10 @@ public partial class Importer : IImporter
       }
 
       // add any map-level media files to the archive
-      await _fileModule.CopyFoldertoArchiveAsync(
+      await _fileModule.CopyFolderToArchiveAsync(
         zipArchive,
         _fileModule.BuildPath(
-          _configuration.GetAppSettings().FileStorageFolder,
+          OLabFileStorageModule.FilesRoot,
           Api.Utils.Constants.ScopeLevelMap,
           dto.Map.Id),
         true,
@@ -73,10 +77,10 @@ public partial class Importer : IImporter
       // write any node-level media files to the archive
       foreach (var nodeDto in dto.MapNodes)
       {
-        await _fileModule.CopyFoldertoArchiveAsync(
+        await _fileModule.CopyFolderToArchiveAsync(
           zipArchive,
           _fileModule.BuildPath(
-            _configuration.GetAppSettings().FileStorageFolder,
+            OLabFileStorageModule.FilesRoot,
             Api.Utils.Constants.ScopeLevelNode,
             nodeDto.Id),
           true,
@@ -121,7 +125,7 @@ public partial class Importer : IImporter
     return dto;
   }
 
-  private async Task ExportMapNodesAsync(MapsFullRelationsDto dto, CancellationToken token)
+  private async Task ExportMapNodesScopedObjectsAsync(MapsFullRelationsDto dto, CancellationToken token)
   {
     // apply node-level scoped objects to the node dtos
     foreach (var nodeDto in dto.MapNodes)

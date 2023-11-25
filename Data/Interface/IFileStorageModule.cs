@@ -51,7 +51,7 @@ namespace OLab.Data.Interface
       string extractDirectory,
       CancellationToken token);
 
-    Task<bool> CopyFoldertoArchiveAsync(
+    Task<bool> CopyFolderToArchiveAsync(
       ZipArchive archive,
       string folderName,
       bool appendToStream,

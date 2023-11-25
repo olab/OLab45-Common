@@ -5,6 +5,7 @@ using NuGet.Common;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.ObjectMapper;
+using OLab.Common.Utils;
 using OLab.Import.Interface;
 using System;
 using System.IO;
@@ -63,13 +64,13 @@ public partial class Importer : IImporter
   {
     // build file module import file name
     var moduleArchiveFile = _fileModule.BuildPath(
-      _configuration.GetAppSettings().FileImportFolder,
+      OLabFileStorageModule.ImportRoot,
       importFileName);
     Logger.LogInformation($"Module archive file: {moduleArchiveFile}");
 
     // build file module extraction folder name
     ExtractFolderName = _fileModule.BuildPath(
-      _configuration.GetAppSettings().FileImportFolder,
+      OLabFileStorageModule.ImportRoot,
       Path.GetFileNameWithoutExtension(importFileName));
     Logger.LogInformation($"Folder extract directory: {ExtractFolderName}");
 
@@ -80,13 +81,13 @@ public partial class Importer : IImporter
     // save import file to storage
     await _fileModule.WriteFileAsync(
       importFileStream,
-      _configuration.GetAppSettings().FileImportFolder,
+      OLabFileStorageModule.ImportRoot,
       importFileName,
       token);
 
     // extract import file to storage
     await _fileModule.ExtractFileToStorageAsync(
-      _configuration.GetAppSettings().FileImportFolder,
+      OLabFileStorageModule.ImportRoot,
       importFileName,
       ExtractFolderName,
       token);
@@ -109,7 +110,7 @@ public partial class Importer : IImporter
 
     // delete source import file
     await GetFileStorageModule().DeleteFileAsync(
-      _configuration.GetAppSettings().FileImportFolder,
+      OLabFileStorageModule.ImportRoot,
       Path.GetFileName(importFileName));
 
     return mapFullDto;
@@ -218,7 +219,7 @@ public partial class Importer : IImporter
     var sourceFiles = _fileModule.GetFiles(sourceFolder, token);
 
     var destinationFolder = _fileModule.BuildPath(
-      _configuration.GetAppSettings().FileStorageFolder,
+      OLabFileStorageModule.FilesRoot,
       Api.Utils.Constants.ScopeLevelMap,
       newMapId);
 
@@ -238,7 +239,7 @@ public partial class Importer : IImporter
     sourceFiles = _fileModule.GetFiles(sourceFolder, token);
 
     destinationFolder = _fileModule.BuildPath(
-      _configuration.GetAppSettings().FileStorageFolder,
+      OLabFileStorageModule.FilesRoot,
       Api.Utils.Constants.ScopeLevelNode,
       newMapId);
 

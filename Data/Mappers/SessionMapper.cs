@@ -23,7 +23,7 @@ namespace OLab.Data.Mappers
     }
 
     /// <summary>
-    /// Default (overridable) AutoMapper configuration
+    /// Default (overridable) AutoMapper cfg
     /// </summary>
     /// <returns>MapperConfiguration</returns>
     protected override MapperConfiguration GetConfiguration()
