@@ -213,8 +213,7 @@ public partial class Importer : IImporter
     // move any map-level files
     var sourceFolder = _fileModule.BuildPath(
       ExtractFolderName,
-      Api.Utils.Constants.ScopeLevelMap,
-      originalMapId);
+      Api.Utils.Constants.ScopeLevelMap);
 
     var sourceFiles = _fileModule.GetFiles(sourceFolder, token);
 
@@ -225,7 +224,7 @@ public partial class Importer : IImporter
 
     foreach (var sourceFile in sourceFiles)
       await _fileModule.MoveFileAsync(
-        sourceFile,
+        Path.GetFileName(sourceFile),
         sourceFolder,
         destinationFolder,
         token);
@@ -245,8 +244,8 @@ public partial class Importer : IImporter
 
     foreach (var sourceFile in sourceFiles)
       await _fileModule.MoveFileAsync(
-        sourceFile,
-        sourceFolder,
+        Path.GetFileName(sourceFile),
+        Path.GetDirectoryName(sourceFolder),
         destinationFolder,
         token);
   }

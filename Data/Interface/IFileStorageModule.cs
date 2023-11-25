@@ -54,6 +54,7 @@ namespace OLab.Data.Interface
     Task<bool> CopyFolderToArchiveAsync(
       ZipArchive archive,
       string folderName,
+      string zipEntryFolderName,
       bool appendToStream,
       CancellationToken token);
 

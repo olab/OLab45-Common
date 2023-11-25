@@ -109,6 +109,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   public abstract Task<bool> CopyFolderToArchiveAsync(
     ZipArchive archive,
     string folderName,
+    string zipEntryFolderName,
     bool appendToStream,
     CancellationToken token);
 

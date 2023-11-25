@@ -71,6 +71,7 @@ public partial class Importer : IImporter
           OLabFileStorageModule.FilesRoot,
           Api.Utils.Constants.ScopeLevelMap,
           dto.Map.Id),
+        Api.Utils.Constants.ScopeLevelMap,
         true,
         token);
 
@@ -81,6 +82,9 @@ public partial class Importer : IImporter
           zipArchive,
           _fileModule.BuildPath(
             OLabFileStorageModule.FilesRoot,
+            Api.Utils.Constants.ScopeLevelNode,
+            nodeDto.Id),
+          _fileModule.BuildPath(
             Api.Utils.Constants.ScopeLevelNode,
             nodeDto.Id),
           true,
