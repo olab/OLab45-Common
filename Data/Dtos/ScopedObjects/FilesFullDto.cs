@@ -24,7 +24,7 @@ namespace OLab.Api.Dto
     public string HAlign { get; set; }
     public string HeightType { get; set; }
     public string Mime { get; set; }
-    //public string OriginUrl { get; set; }
+    public string OriginUrl { get; set; }
     public string Path { get; set; }
     public string VAlign { get; set; }
     public string WidthType { get; set; }
