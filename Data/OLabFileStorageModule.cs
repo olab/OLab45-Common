@@ -74,7 +74,10 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   /// <param name="items">List of system files objects to enhance</param>
   public void AttachUrls(IList<SystemFiles> items)
   {
-    logger.LogInformation($"Attaching Azure Blob URLs for {items.Count} sourceFileStream records");
+    if (items.Count == 0)
+      return;
+
+    logger.LogInformation($"Attaching URLs for {items.Count} file records");
 
     foreach (var item in items)
     {

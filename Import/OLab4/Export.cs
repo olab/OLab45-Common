@@ -97,7 +97,7 @@ public partial class Importer : IImporter
     uint mapId,
     CancellationToken token)
   {
-    Logger.LogInformation($"  map {mapId} ");
+    Logger.LogInformation($"  processing map {mapId} ");
 
     var map = await _dbContext.Maps
       .Include(map => map.MapNodes)
@@ -140,7 +140,7 @@ public partial class Importer : IImporter
         nodeDto.Id.Value,
         Api.Utils.Constants.ScopeLevelNode);
 
-      Logger.LogInformation($"  node {nodeDto.Id} ");
+      Logger.LogInformation($"  processing node {nodeDto.Id} ");
 
       var nodeScopedObjectsPhys = await nodeScopedObject.ReadAsync(
         Api.Utils.Constants.ScopeLevelNode,

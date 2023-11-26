@@ -1,4 +1,5 @@
 using Dawn;
+using DocumentFormat.OpenXml.Spreadsheet;
 using HeyRed.Mime;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
@@ -19,8 +20,8 @@ namespace OLab.Data.BusinessObjects
   public partial class ScopedObjects
   {
     public IOLabLogger Logger { get; }
-    private readonly IDictionary<uint, SystemCounters> _nodeIdTranslation = 
-      new Dictionary<uint, SystemCounters>();    
+    private readonly IDictionary<uint, SystemCounters> _nodeIdTranslation =
+      new Dictionary<uint, SystemCounters>();
     private OLabDBContext _dbContext { get; set; }
 
     public uint parentId { get; }
@@ -155,6 +156,9 @@ namespace OLab.Data.BusinessObjects
       items.AddRange(await _dbContext.SystemConstants.Where(x =>
         x.ImageableType == scopeLevel && x.ImageableId == parentId).ToListAsync());
 
+      if (items.Count > 0)
+        Logger.LogInformation($"  constants read {items.Count}");
+
       return items;
     }
 
@@ -174,7 +178,10 @@ namespace OLab.Data.BusinessObjects
 
       // order the responses by Order field
       foreach (var item in items)
+      {
+        Logger.LogInformation($"  question '{item.Stem}'. read {item.SystemQuestionResponses.Count} responses");
         item.SystemQuestionResponses = item.SystemQuestionResponses.OrderBy(x => x.Order).ToList();
+      }
 
       return items;
     }
@@ -206,6 +213,9 @@ namespace OLab.Data.BusinessObjects
           item.Mime = MimeTypesMap.GetMimeType(Path.GetFileName(item.Path));
       }
 
+      if (items.Count > 0)
+        Logger.LogInformation($"  files read {items.Count}");
+
       return items;
     }
 
@@ -221,6 +231,9 @@ namespace OLab.Data.BusinessObjects
       items.AddRange(await _dbContext.SystemThemes.Where(x =>
         x.ImageableType == scopeLevel && x.ImageableId == parentId).ToListAsync());
 
+      if (items.Count > 0)
+        Logger.LogInformation($"  themes read {items.Count}");
+
       return items;
     }
 
@@ -235,6 +248,9 @@ namespace OLab.Data.BusinessObjects
 
       items.AddRange(await _dbContext.SystemScripts.Where(x =>
         x.ImageableType == scopeLevel && x.ImageableId == parentId).ToListAsync());
+
+      if (items.Count > 0)
+        Logger.LogInformation($"  script read {items.Count}");
 
       return items;
     }
@@ -263,6 +279,9 @@ namespace OLab.Data.BusinessObjects
           x.ImageableType == scopeLevel && x.ImageableId == parentId).ToListAsync());
       }
 
+      if (items.Count > 0)
+        Logger.LogInformation($"  counters read {items.Count}");
+
       return items;
     }
 
@@ -277,6 +296,9 @@ namespace OLab.Data.BusinessObjects
         var items = new List<SystemCounterActions>();
         items.AddRange(await _dbContext.SystemCounterActions.Where(x =>
             x.MapId == parentId).ToListAsync());
+
+        if (items.Count > 0)
+          Logger.LogInformation($"  counter actions read {items.Count}");
 
         return items;
       }
@@ -374,7 +396,7 @@ namespace OLab.Data.BusinessObjects
       phys.CounterId = _nodeIdTranslation[dto.Id].Id;
       phys.ImageableId = _nodeIdTranslation[dto.Id].ImageableId;
       phys.ImageableType = _nodeIdTranslation[dto.Id].ImageableType;
-      
+
       await _dbContext.SystemCounterActions.AddAsync(phys);
       await _dbContext.SaveChangesAsync(token);
     }
@@ -394,7 +416,8 @@ namespace OLab.Data.BusinessObjects
       // counter actions will need this mapping.
       _nodeIdTranslation.Add(dto.Id.Value, phys);
 
-      Logger.LogInformation($"  imported counter '{phys.Name}'");    }
+      Logger.LogInformation($"  imported counter '{phys.Name}'");
+    }
 
     private async Task WriteFileAsync(
       FilesFullDto dto,
