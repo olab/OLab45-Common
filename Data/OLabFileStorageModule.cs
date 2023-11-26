@@ -92,6 +92,10 @@ public abstract class OLabFileStorageModule : IFileStorageModule
             scopeFolder,
             item.Path
           );
+
+          // normalize to web path separator
+          item.OriginUrl = item.OriginUrl.Replace( "\\", "/" );
+
           logger.LogInformation($"  file '{item.Name}' mapped to url '{item.OriginUrl}'");
         }
         else
