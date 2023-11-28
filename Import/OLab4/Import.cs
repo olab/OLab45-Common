@@ -218,7 +218,6 @@ public partial class Importer : IImporter
     var sourceFiles = _fileModule.GetFiles(sourceFolder, token);
 
     var destinationFolder = _fileModule.BuildPath(
-      OLabFileStorageModule.FilesRoot,
       Api.Utils.Constants.ScopeLevelMap,
       newMapId);
 

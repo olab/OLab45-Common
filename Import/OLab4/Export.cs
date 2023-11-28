@@ -70,7 +70,6 @@ public partial class Importer : IImporter
       await _fileModule.CopyFolderToArchiveAsync(
         zipArchive,
         _fileModule.BuildPath(
-          OLabFileStorageModule.FilesRoot,
           Api.Utils.Constants.ScopeLevelMap,
           dto.Map.Id),
         Api.Utils.Constants.ScopeLevelMap,
@@ -83,7 +82,6 @@ public partial class Importer : IImporter
         await _fileModule.CopyFolderToArchiveAsync(
           zipArchive,
           _fileModule.BuildPath(
-            OLabFileStorageModule.FilesRoot,
             Api.Utils.Constants.ScopeLevelNode,
             nodeDto.Id),
           _fileModule.BuildPath(

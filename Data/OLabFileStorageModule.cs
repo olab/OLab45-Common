@@ -16,6 +16,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
 {
   public const string FilesRoot = "files";
   public const string ImportRoot = "import";
+
   protected IOLabLogger logger;
   protected IOLabConfiguration cfg;
 
@@ -32,6 +33,11 @@ public abstract class OLabFileStorageModule : IFileStorageModule
       throw new Exception("Missing OLabModule attribute");
 
     return attrib == null ? "" : attrib.Name;
+  }
+
+  public string GetUrlPath(string path, string fileName = null)
+  {
+    return BuildPath(cfg.GetAppSettings().FileStorageUrl, path, fileName).Replace( "\\", "/" );
   }
 
   public string GetPhysicalPath(string path, string fileName)
@@ -65,7 +71,9 @@ public abstract class OLabFileStorageModule : IFileStorageModule
         sb.Append(GetFolderSeparator());
     }
 
-    return sb.ToString();
+    // clean up any double separators
+    var path = sb.ToString().Replace($"{GetFolderSeparator()}{GetFolderSeparator()}", $"{GetFolderSeparator()}");
+    return path;
   }
 
   /// <summary>
@@ -87,22 +95,15 @@ public abstract class OLabFileStorageModule : IFileStorageModule
           item.ImageableType, 
           item.ImageableId);
 
-        if (FileExists(BuildPath(FilesRoot, scopeFolder ), item.Path))
+        if (FileExists(scopeFolder, item.Path))
         {
-          item.OriginUrl = BuildPath(
-            cfg.GetAppSettings().FileStorageUrl,
-            FilesRoot,
+          item.OriginUrl = GetUrlPath( 
             scopeFolder,
             item.Path
           );
 
-          // normalize to web path separator
-          item.OriginUrl = item.OriginUrl.Replace( "\\", "/" );
-
           logger.LogInformation($"  file '{item.Name}' mapped to url '{item.OriginUrl}'");
         }
-        else
-          logger.LogWarning($"  '{scopeFolder}{GetFolderSeparator()}{item.Path}' not found");
 
       }
       catch (Exception ex)
