@@ -27,6 +27,8 @@ public partial class Importer : IImporter
     uint mapId,
     CancellationToken token = default)
   {
+    Logger.Clear();
+
     Logger.LogInformation($"Exporting mapId: {mapId} ");
 
     // create map json object

@@ -36,7 +36,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
 
   public string GetPhysicalPath(string path, string fileName)
   {
-    return BuildPath(cfg.GetAppSettings().FileStorageRoot, path, fileName);
+    return BuildPath(path, fileName);
   }
 
   public string GetPhysicalPath(string path)

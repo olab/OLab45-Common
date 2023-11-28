@@ -4,7 +4,7 @@ namespace OLab.Api.Utils
   {
     public string Audience { get; set; }
     public string FileStorageConnectionString { get; set; }
-    public string FileStorageContainer { get; set; }
+    //public string FileStorageContainer { get; set; }
     public string FileStorageRoot { get; set; }    
     public string FileStorageType { get; set; }
     public string FileStorageUrl { get; set; }
