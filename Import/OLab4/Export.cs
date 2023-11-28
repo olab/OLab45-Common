@@ -121,7 +121,7 @@ public partial class Importer : IImporter
 
     var mapScopedObjectPhys = await mapScopedObject.ReadAsync(
       Api.Utils.Constants.ScopeLevelMap,
-      _fileModule);
+      null);
 
     var scopedObjectMapper = new ScopedObjectsMapper(Logger, _wikiTagProvider);
     dto.ScopedObjects = scopedObjectMapper.PhysicalToDto(mapScopedObjectPhys);
@@ -144,7 +144,7 @@ public partial class Importer : IImporter
 
       var nodeScopedObjectsPhys = await nodeScopedObject.ReadAsync(
         Api.Utils.Constants.ScopeLevelNode,
-        _fileModule);
+        null );
 
       var scopedObjectMapper = new ScopedObjectsMapper(Logger, _wikiTagProvider);
       nodeDto.ScopedObjects = scopedObjectMapper.PhysicalToDto(nodeScopedObjectsPhys);

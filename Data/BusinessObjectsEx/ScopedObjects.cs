@@ -196,15 +196,12 @@ namespace OLab.Data.BusinessObjects
     {
       Guard.Argument(_dbContext).NotNull(nameof(_dbContext));
 
-      // if no file module, return empty list
-      if (fileStorageModule == null)
-        return new List<SystemFiles>();
-
       var items = await _dbContext.SystemFiles.Where(x =>
         x.ImageableType == scopeLevel && x.ImageableId == parentId).ToListAsync();
 
       // ask the module to add appropriate URLs to files
-      fileStorageModule.AttachUrls(items);
+      if (fileStorageModule != null)
+        fileStorageModule.AttachUrls(items);
 
       // enhance the records with mime type
       foreach (var item in items)

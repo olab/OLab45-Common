@@ -189,7 +189,9 @@ public partial class Importer : IImporter
   {
     var mapDto = dto.Map;
     var phys = new MapsFullMapper(Logger).DtoToPhysical(mapDto);
+
     phys.Id = 0;
+    phys.Name = $"IMPORT: {phys.Name}";
 
     await _dbContext.Maps.AddAsync(phys);
     await _dbContext.SaveChangesAsync(token);
