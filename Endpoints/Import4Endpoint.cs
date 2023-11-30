@@ -1,4 +1,5 @@
-﻿using OLab.Api.Endpoints;
+﻿using OLab.Api.Dto;
+using OLab.Api.Endpoints;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
@@ -59,6 +60,13 @@ public partial class Import4Endpoint : OLabEndpoint
     uint mapId,
     CancellationToken token)
   {
-    await _importer.Export(stream, mapId, token);
+    await _importer.ExportAsync(stream, mapId, token);
+  }
+
+  public async Task<MapsFullRelationsDto> ExportAsync(
+    uint mapId,
+    CancellationToken token)
+  {
+    return await _importer.ExportAsync(mapId, token);
   }
 }

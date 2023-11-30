@@ -1,4 +1,5 @@
 using Dawn;
+using DocumentFormat.OpenXml.EMMA;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
@@ -57,6 +58,10 @@ namespace OLab.Api.Endpoints.Player
     {
       var phys = await dbContext.Maps
         .Include(x => x.SystemCounterActions).FirstOrDefaultAsync(x => x.Id == id);
+
+      if (phys == null)
+        throw new OLabObjectNotFoundException("Maps", id);
+
       return phys;
     }
 
@@ -169,15 +174,17 @@ namespace OLab.Api.Endpoints.Player
         .AsNoTracking()
         .Include(x => x.MapNodes)
         .FirstOrDefaultAsync(x => x.Id == mapId);
+
       if (map == null)
-        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
+        throw new OLabObjectNotFoundException("Maps", mapId);
 
       var template = await dbContext.Maps
         .AsNoTracking()
         .Include(x => x.MapNodes)
         .FirstOrDefaultAsync(x => x.Id == body.TemplateId);
+
       if (template == null)
-        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, body.TemplateId);
+        throw new OLabObjectNotFoundException("Maps", body.TemplateId);
 
       map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext)
         .CreateMapWithTemplateAsync(map, template);
@@ -223,16 +230,16 @@ namespace OLab.Api.Endpoints.Player
       }
       else
       {
-        var templateMap = await dbContext.Maps
+        var template = await dbContext.Maps
           .AsNoTracking()
           .Include(x => x.MapNodes)
-          .FirstOrDefaultAsync(x => x.Id == body.TemplateId);
+          .FirstOrDefaultAsync(x => x.Id == body.TemplateId.Value);
 
-        if (templateMap == null)
-          throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, body.TemplateId.Value);
+        if (template == null)
+          throw new OLabObjectNotFoundException("Maps", body.TemplateId.Value);
 
         map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext)
-          .CreateMapWithTemplateAsync(map, templateMap);
+          .CreateMapWithTemplateAsync(map, template);
       }
 
       // set up default ACL for map author against map

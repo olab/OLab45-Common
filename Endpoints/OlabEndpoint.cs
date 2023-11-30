@@ -1,7 +1,10 @@
 using Dawn;
+using DocumentFormat.OpenXml.EMMA;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
+using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -264,7 +267,10 @@ namespace OLab.Api.Endpoints
     public async ValueTask<MapNodes> GetMapNodeAsync(uint nodeId)
     {
       var item = await dbContext.MapNodes
-          .FirstOrDefaultAsync(x => x.Id == nodeId);
+      .FirstOrDefaultAsync(x => x.Id == nodeId);
+
+      if (item == null)
+        throw new OLabObjectNotFoundException("MapNodes", nodeId);
 
       // explicitly load the related objects.
       dbContext.Entry(item).Collection(b => b.MapNodeLinksNodeId1Navigation).Load();
@@ -281,6 +287,10 @@ namespace OLab.Api.Endpoints
     protected async ValueTask<SystemQuestionResponses> GetQuestionResponseAsync(uint id)
     {
       var item = await dbContext.SystemQuestionResponses.FirstOrDefaultAsync(x => x.Id == id);
+
+      if (item == null)
+        throw new OLabObjectNotFoundException("SystemQuestionResponses", id);
+
       return item;
     }
 
@@ -294,6 +304,10 @@ namespace OLab.Api.Endpoints
     {
       var item = await dbContext.SystemConstants
         .FirstOrDefaultAsync(x => x.Id == id);
+
+      if (item == null)
+        throw new OLabObjectNotFoundException("SystemConstants", id);
+
       return item;
     }
 
@@ -307,6 +321,10 @@ namespace OLab.Api.Endpoints
     {
       var item = await dbContext.SystemFiles
         .FirstOrDefaultAsync(x => x.Id == id);
+
+      if (item == null)
+        throw new OLabObjectNotFoundException("SystemFiles", id);
+
       return item;
     }
 
@@ -320,6 +338,10 @@ namespace OLab.Api.Endpoints
     {
       var item = await dbContext.SystemQuestions
         .FirstOrDefaultAsync(x => x.Id == id);
+
+      if (item == null)
+        throw new OLabObjectNotFoundException("SystemQuestions", id);
+
       return item;
     }
 
@@ -334,6 +356,10 @@ namespace OLab.Api.Endpoints
       var item = await dbContext.SystemQuestions
         .Include(x => x.SystemQuestionResponses)
         .FirstOrDefaultAsync(x => x.Id == id);
+
+      if (item == null)
+        throw new OLabObjectNotFoundException("SystemQuestions", id);
+
       return item;
     }
 

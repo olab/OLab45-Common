@@ -3,6 +3,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OLab.Api.Common;
+using OLab.Api.Data.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
@@ -21,18 +22,15 @@ namespace OLab.Import.OLab4;
 public partial class Importer : IImporter
 {
   /// <summary>
-  /// Run the export process for a map
+  /// Export a map to json
   /// </summary>
-  /// <param name="stream">Target stream for export data</param>
   /// <param name="mapId">Map id to export</param>
   /// <param name="token"></param>
-  public async Task Export(
-    Stream stream,
+  /// <returns>MapsFullRelationsDto</returns>
+  public async Task<MapsFullRelationsDto> ExportAsync(
     uint mapId,
     CancellationToken token = default)
   {
-    Logger.Clear();
-
     Logger.LogInformation($"Exporting mapId: {mapId} ");
 
     // create map json object
@@ -40,6 +38,25 @@ public partial class Importer : IImporter
 
     // add node-level scoped objects
     await ReadMapNodeScopedObjectFromDatabase(dto, token);
+
+    return dto;
+  }
+
+  /// <summary>
+  /// Run the export process for a map
+  /// </summary>
+  /// <param name="stream">Target stream for export data</param>
+  /// <param name="mapId">Map id to export</param>
+  /// <param name="token"></param>
+  public async Task ExportAsync(
+    Stream stream,
+    uint mapId,
+    CancellationToken token = default)
+  {
+    Logger.Clear();
+
+    // create map json object
+    var dto = await ExportAsync(mapId, token);
 
     // serialize the dto into a json string
     var rawJson = JsonConvert.SerializeObject(dto);
@@ -110,6 +127,9 @@ public partial class Importer : IImporter
       .FirstOrDefaultAsync(
         x => x.Id == mapId,
         token);
+
+    if (map == null)
+      throw new OLabObjectNotFoundException("Maps", mapId);
 
     var dto = new MapsFullRelationsMapper(
       Logger,

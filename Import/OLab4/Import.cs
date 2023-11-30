@@ -78,7 +78,7 @@ public partial class Importer : IImporter
   /// <summary>
   /// Loads import import file into memory
   /// </summary>
-  /// <param name="importFileName">Export ZIP file name</param>
+  /// <param name="importFileName">ExportAsync ZIP file name</param>
   /// <returns>MapsFullRelationsDto</returns>
   private async Task<MapsFullRelationsDto> ExtractImportMapDefinition(
     Stream importFileStream,

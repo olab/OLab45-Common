@@ -67,9 +67,7 @@ namespace OLab.Api.Endpoints
       }
       catch (DbUpdateConcurrencyException)
       {
-        var existingObject = await GetConstantAsync(id);
-        if (existingObject == null)
-          throw new OLabObjectNotFoundException("QuestionResponses", id);
+        await GetConstantAsync(id);
       }
 
     }

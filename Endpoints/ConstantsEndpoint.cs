@@ -137,8 +137,7 @@ namespace OLab.Api.Endpoints
       }
       catch (DbUpdateConcurrencyException)
       {
-        var existingObject = await GetConstantAsync(id)
-          ?? throw new OLabObjectNotFoundException("ConstantsPhys", id);
+        await GetConstantAsync(id);
       }
 
     }
@@ -203,8 +202,7 @@ namespace OLab.Api.Endpoints
       }
       catch (DbUpdateConcurrencyException)
       {
-        var existingObject = await GetConstantAsync(id)
-          ?? throw new OLabObjectNotFoundException("ConstantsPhys", id);
+        await GetConstantAsync(id);
       }
 
     }

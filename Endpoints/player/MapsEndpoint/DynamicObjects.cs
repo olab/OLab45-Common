@@ -1,5 +1,7 @@
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common.Exceptions;
+using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -86,6 +88,9 @@ namespace OLab.Api.Endpoints.Player
     {
       var newDtoList = new List<CountersDto>();
       var node = await dbContext.MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
+
+      if (node == null)
+        throw new OLabObjectNotFoundException("MapNodes", nodeId);
 
       var counterActions = await dbContext.SystemCounterActions.Where(x =>
         (x.ImageableId == node.Id) &&

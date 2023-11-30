@@ -1,3 +1,5 @@
+using DocumentFormat.OpenXml.EMMA;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common.Exceptions;
@@ -199,11 +201,17 @@ namespace OLab.Api.Endpoints.Player
 
       try
       {
-        var links = dbContext.MapNodeLinks.Where(x => (x.NodeId1 == nodeId) || (x.NodeId2 == nodeId)).ToArray();
+        var links = dbContext.MapNodeLinks.
+          Where(x => (x.NodeId1 == nodeId) || (x.NodeId2 == nodeId)).ToArray();
+
         Logger.LogInformation($"deleting {links.Count()} links");
         dbContext.MapNodeLinks.RemoveRange(links);
 
         var node = await dbContext.MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
+
+        if (node == null)
+          throw new OLabObjectNotFoundException("MapNodes", nodeId);
+
         dbContext.MapNodes.Remove(node);
         Logger.LogInformation($"deleting node id: {node.Id}");
 
@@ -291,7 +299,13 @@ namespace OLab.Api.Endpoints.Player
       {
         // if no map node by this point, then the map doesn't have a root node
         // defined so take the first one (by id)        
-        phys = await dbContext.MapNodes.Where(x => x.MapId == mapId).OrderBy(x => x.Id).FirstOrDefaultAsync();
+        phys = await dbContext.MapNodes
+          .Where(x => x.MapId == mapId)
+          .OrderBy(x => x.Id)
+          .FirstOrDefaultAsync();
+
+        if (phys == null)
+          throw new OLabObjectNotFoundException("MapNodes", mapId);
       }
 
       return await GetNodeAsync(mapId, phys.Id, hideHidden, true);

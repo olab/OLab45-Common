@@ -1,3 +1,4 @@
+using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
@@ -131,7 +132,7 @@ public class Importer : IImporter
   /// Loads import xml files into memory
   /// </summary>
   /// <param name="stream">Stream to write file to</param>
-  /// <param name="fileName">Export ZIP file name</param>
+  /// <param name="fileName">ExportAsync ZIP file name</param>
   /// <returns>true</returns>
   public async Task<bool> ProcessImportFileAsync(
     Stream stream,
@@ -209,7 +210,12 @@ public class Importer : IImporter
     return rc;
   }
 
-  public Task Export(Stream stream, uint mapId, CancellationToken token = default)
+  public Task ExportAsync(Stream stream, uint mapId, CancellationToken token = default)
+  {
+    throw new NotImplementedException();
+  }
+
+  public Task<MapsFullRelationsDto> ExportAsync(uint mapId, CancellationToken token = default)
   {
     throw new NotImplementedException();
   }
