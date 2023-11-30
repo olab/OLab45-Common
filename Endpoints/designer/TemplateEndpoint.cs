@@ -38,7 +38,7 @@ namespace OLab.Api.Endpoints.Designer
     /// <returns></returns>
     public async Task<OLabAPIPagedResponse<MapsDto>> GetAsync([FromQuery] int? take, [FromQuery] int? skip)
     {
-      Logger.LogDebug($"TemplatesController.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
+      Logger.LogInformation($"TemplatesController.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
 
       var items = new List<Model.Maps>();
       var total = 0;
@@ -79,7 +79,7 @@ namespace OLab.Api.Endpoints.Designer
         remaining = total - take.Value - skip.Value;
       }
 
-      Logger.LogDebug(string.Format("found {0} templates", items.Count));
+      Logger.LogInformation(string.Format("found {0} templates", items.Count));
 
       var dtoList = new MapsMapper(Logger).PhysicalToDto(items);
       return new OLabAPIPagedResponse<MapsDto> { Data = dtoList, Remaining = remaining, Count = total };
@@ -91,7 +91,7 @@ namespace OLab.Api.Endpoints.Designer
     /// <returns></returns>
     public MapNodeLinkTemplateDto Links()
     {
-      Logger.LogDebug($"TemplatesController.Links()");
+      Logger.LogInformation($"TemplatesController.Links()");
 
       var phys = MapNodeLinks.CreateDefault();
 
@@ -105,7 +105,7 @@ namespace OLab.Api.Endpoints.Designer
     /// <returns></returns>
     public MapNodeTemplateDto Nodes()
     {
-      Logger.LogDebug($"TemplatesController.Nodes()");
+      Logger.LogInformation($"TemplatesController.Nodes()");
 
       var phys = Model.MapNodes.CreateDefault();
       var dto = new ObjectMapper.MapNodeTemplate(Logger).PhysicalToDto(phys);

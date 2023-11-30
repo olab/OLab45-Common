@@ -26,7 +26,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId,
       uint sinceTime = 0)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsRawAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsRawAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -49,7 +49,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId,
       uint sinceTime = 0)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsTranslatedAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsTranslatedAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -92,7 +92,7 @@ namespace OLab.Api.Endpoints.Player
         (x.ImageableType == Utils.Constants.ScopeLevelNode) &&
         (x.OperationType == "open")).ToListAsync();
 
-      Logger.LogDebug($"Found {counterActions.Count} counterActions records for node {node.Id} ");
+      Logger.LogInformation($"Found {counterActions.Count} counterActions records for node {node.Id} ");
 
       foreach (var counterAction in counterActions)
       {
@@ -112,7 +112,7 @@ namespace OLab.Api.Endpoints.Player
             orgDtoList.Remove(dto);
 
             dto = new ObjectMapper.CounterMapper(Logger).PhysicalToDto(phys);
-            Logger.LogDebug($"Updated counter '{dto.Name}' ({dto.Id}) with function '{counterAction.Expression}'. now = {dto.Value}");
+            Logger.LogInformation($"Updated counter '{dto.Name}' ({dto.Id}) with function '{counterAction.Expression}'. now = {dto.Value}");
 
             // add updated counter back to list
             orgDtoList.Add(dto);
@@ -140,7 +140,7 @@ namespace OLab.Api.Endpoints.Player
         (x.ImageableType == Utils.Constants.ScopeLevelNode) &&
         (x.OperationType == "open")).ToListAsync();
 
-      Logger.LogDebug($"Found {counterActions.Count} counterActions records for node {node.Id} ");
+      Logger.LogInformation($"Found {counterActions.Count} counterActions records for node {node.Id} ");
 
       foreach (var counterAction in counterActions)
       {
@@ -149,7 +149,7 @@ namespace OLab.Api.Endpoints.Player
           Logger.LogError($"Enable to lookup counter {counterAction.CounterId} in action {counterAction.Id}");
 
         else if (counterAction.ApplyFunctionToCounter(phys))
-          Logger.LogDebug($"Updated counter '{phys.Name}' ({phys.Id}) with function '{counterAction.Expression}'. now = {phys.Value}");
+          Logger.LogInformation($"Updated counter '{phys.Name}' ({phys.Id}) with function '{counterAction.Expression}'. now = {phys.Value}");
       }
 
       return physList;

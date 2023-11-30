@@ -53,7 +53,7 @@ namespace OLab.Api.Endpoints
     public async Task<OLabAPIPagedResponse<QuestionsDto>> GetAsync([FromQuery] int? take, [FromQuery] int? skip)
     {
 
-      Logger.LogDebug($"ReadAsync take={take} skip={skip}");
+      Logger.LogInformation($"ReadAsync take={take} skip={skip}");
 
       var physList = new List<SystemQuestions>();
       var total = 0;
@@ -71,7 +71,7 @@ namespace OLab.Api.Endpoints
         remaining = total - take.Value - skip.Value;
       }
 
-      Logger.LogDebug(string.Format("found {0} questions", physList.Count));
+      Logger.LogInformation(string.Format("found {0} questions", physList.Count));
 
       var dtoList = new Questions(Logger, _wikiTagProvider).PhysicalToDto(physList);
 
@@ -96,7 +96,7 @@ namespace OLab.Api.Endpoints
       uint id)
     {
 
-      Logger.LogDebug($"ReadAsync id {id}");
+      Logger.LogInformation($"ReadAsync id {id}");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("QuestionsPhys", id);
@@ -126,7 +126,7 @@ namespace OLab.Api.Endpoints
       uint id,
       QuestionsFullDto dto)
     {
-      Logger.LogDebug($"PutAsync id {id}");
+      Logger.LogInformation($"PutAsync id {id}");
 
       dto.ImageableId = dto.ParentInfo.Id;
 
@@ -163,7 +163,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       QuestionsFullDto dto)
     {
-      Logger.LogDebug($"PostAsync name = {dto.Name}");
+      Logger.LogInformation($"PostAsync name = {dto.Name}");
 
       dto.ImageableId = dto.ParentInfo.Id != 0 ? dto.ParentInfo.Id : dto.ImageableId;
       dto.Prompt = !string.IsNullOrEmpty(dto.Prompt) ? dto.Prompt : "";
@@ -210,7 +210,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       uint id)
     {
-      Logger.LogDebug($"DeleteAsync id {id}");
+      Logger.LogInformation($"DeleteAsync id {id}");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("Question", id);

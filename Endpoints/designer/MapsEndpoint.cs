@@ -54,7 +54,7 @@ namespace OLab.Api.Endpoints.Designer
     /// <returns>IActionResult</returns>
     public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(IOLabAuthorization auth, uint mapId, uint nodeId)
     {
-      Logger.LogDebug($"GetMapNodeAsync(uint mapId={mapId}, nodeId={nodeId})");
+      Logger.LogInformation($"GetMapNodeAsync(uint mapId={mapId}, nodeId={nodeId})");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -82,7 +82,7 @@ namespace OLab.Api.Endpoints.Designer
       IOLabAuthorization auth,
       uint mapId)
     {
-      Logger.LogDebug($"GetMapNodesAsync(uint mapId={mapId})");
+      Logger.LogInformation($"GetMapNodesAsync(uint mapId={mapId})");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -107,7 +107,7 @@ namespace OLab.Api.Endpoints.Designer
       uint nodeId,
       PostNewLinkRequest body)
     {
-      Logger.LogDebug($"PostMapNodeLinkAsync( destinationId = {body.DestinationId})");
+      Logger.LogInformation($"PostMapNodeLinkAsync( destinationId = {body.DestinationId})");
 
       try
       {
@@ -153,7 +153,7 @@ namespace OLab.Api.Endpoints.Designer
       IOLabAuthorization auth,
       PostNewNodeRequest body)
     {
-      Logger.LogDebug($"PostMapNodesAsync(x = {body.X}, y = {body.Y}, sourceId = {body.SourceId})");
+      Logger.LogInformation($"PostMapNodesAsync(x = {body.X}, y = {body.Y}, sourceId = {body.SourceId})");
 
       using var transaction = dbContext.Database.BeginTransaction();
 
@@ -281,7 +281,7 @@ namespace OLab.Api.Endpoints.Designer
       uint mapId,
       uint id)
     {
-      Logger.LogDebug($"DeleteMapNodeLinkAsync(mapId = {mapId}, id = {id})");
+      Logger.LogInformation($"DeleteMapNodeLinkAsync(mapId = {mapId}, id = {id})");
 
       try
       {
@@ -294,7 +294,7 @@ namespace OLab.Api.Endpoints.Designer
         if (link == null)
           throw new OLabObjectNotFoundException("Links", id);
 
-        Logger.LogDebug($"deleting link {link.Id} of map {link.MapId}");
+        Logger.LogInformation($"deleting link {link.Id} of map {link.MapId}");
         dbContext.MapNodeLinks.Remove(link);
         await dbContext.SaveChangesAsync();
         return true;
@@ -315,7 +315,7 @@ namespace OLab.Api.Endpoints.Designer
       IOLabAuthorization auth,
       uint id)
     {
-      Logger.LogDebug($"MapsController.GetScopedObjectsRawAsync(uint id={id})");
+      Logger.LogInformation($"MapsController.GetScopedObjectsRawAsync(uint id={id})");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, id))
@@ -333,7 +333,7 @@ namespace OLab.Api.Endpoints.Designer
       IOLabAuthorization auth,
       uint id)
     {
-      Logger.LogDebug($"MapsController.GetScopedObjectsTranslatedAsync(uint id={id})");
+      Logger.LogInformation($"MapsController.GetScopedObjectsTranslatedAsync(uint id={id})");
 
       // test if user has access to map.
       // test if user has access to map.
@@ -609,7 +609,7 @@ namespace OLab.Api.Endpoints.Designer
     /// <returns>IActionResult</returns>
     public async Task<MapNodeLinksDto> GetMapNodeLinkAsync(IOLabAuthorization auth, uint mapId, uint id)
     {
-      Logger.LogDebug($"GetMapNodeLinkAsync(uint mapId={mapId}, id={id})");
+      Logger.LogInformation($"GetMapNodeLinkAsync(uint mapId={mapId}, id={id})");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))

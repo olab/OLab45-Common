@@ -47,7 +47,7 @@ namespace OLab.Api.Endpoints
       int? take,
       int? skip)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: ConstantsEndpoint.ReadAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: ConstantsEndpoint.ReadAsync");
 
       var Constants = new List<SystemConstants>();
       var total = 0;
@@ -65,7 +65,7 @@ namespace OLab.Api.Endpoints
         remaining = total - take.Value - skip.Value;
       }
 
-      Logger.LogDebug(string.Format("found {0} ConstantsPhys", Constants.Count));
+      Logger.LogInformation(string.Format("found {0} ConstantsPhys", Constants.Count));
 
       var dtoList = new ObjectMapper.Constants(Logger).PhysicalToDto(Constants);
 
@@ -88,7 +88,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       uint id)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: ConstantsEndpoint.ReadAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: ConstantsEndpoint.ReadAsync");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("ConstantsPhys", id);
@@ -116,7 +116,7 @@ namespace OLab.Api.Endpoints
       uint id,
       ConstantsDto dto)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: ConstantsEndpoint.PutAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: ConstantsEndpoint.PutAsync");
 
       dto.ImageableId = dto.ParentInfo.Id;
 
@@ -152,7 +152,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       ConstantsDto dto)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: ConstantsEndpoint.PostAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: ConstantsEndpoint.PostAsync");
 
       dto.ImageableId = dto.ParentInfo.Id != 0 ? dto.ParentInfo.Id : dto.ImageableId;
 
@@ -182,7 +182,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       uint id)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: ConstantsEndpoint.DeleteAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: ConstantsEndpoint.DeleteAsync");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("ConstantsPhys", id);

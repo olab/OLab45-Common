@@ -44,7 +44,7 @@ namespace OLab.Api.Endpoints
       uint id,
       QuestionResponsesDto dto)
     {
-      Logger.LogDebug($"PutAsync(uint id={id})");
+      Logger.LogInformation($"PutAsync(uint id={id})");
 
       var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
       var builder = new QuestionsFullMapper(Logger);
@@ -83,7 +83,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       QuestionResponsesDto dto)
     {
-      Logger.LogDebug($"QuestionResponsesController.PostAsync({dto.Response})");
+      Logger.LogInformation($"QuestionResponsesController.PostAsync({dto.Response})");
 
       var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
       var questionBuilder = new QuestionsFullMapper(Logger);
@@ -114,7 +114,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       uint id)
     {
-      Logger.LogDebug($"QuestionResponsesController.DeleteAsync(uint id={id})");
+      Logger.LogInformation($"QuestionResponsesController.DeleteAsync(uint id={id})");
 
       if (!Exists(id))
         return OLabNotFoundResult<uint>.Result(id);

@@ -26,7 +26,7 @@ namespace OLab.Api.Endpoints.Player
       SystemQuestions question,
       QuestionResponsePostDataDto body)
     {
-      Logger.LogDebug($"PostQuestionResponseAsync(questionId={body.QuestionId}, response={body.PreviousValue}->{body.Value}");
+      Logger.LogInformation($"PostQuestionResponseAsync(questionId={body.QuestionId}, response={body.PreviousValue}->{body.Value}");
 
       // dump out original dynamic objects for logging
       body.DynamicObjects.Dump(Logger, "Response Original");
@@ -123,7 +123,7 @@ namespace OLab.Api.Endpoints.Player
 
       var score = question.GetScoreFromResponses(body.Value);
 
-      Logger.LogDebug($"counter {counterDto.Id} value = {score}");
+      Logger.LogInformation($"counter {counterDto.Id} value = {score}");
       counterDto.SetValue(score);
     }
 
@@ -188,18 +188,18 @@ namespace OLab.Api.Endpoints.Player
       // back out any previous response value
       if (previousResponse != null)
       {
-        Logger.LogDebug($"reverting previous question reponse {body.PreviousResponseId.Value} = {previousScore}");
+        Logger.LogInformation($"reverting previous question reponse {body.PreviousResponseId.Value} = {previousScore}");
         score -= previousScore;
       }
 
       // add in current response score
       if (currentResponse != null)
       {
-        Logger.LogDebug($"adjusting question with reponse {body.ResponseId.Value} = {currentScore}");
+        Logger.LogInformation($"adjusting question with reponse {body.ResponseId.Value} = {currentScore}");
         score += currentScore;
       }
 
-      Logger.LogDebug($"counter {counterDto.Id} value = {score}");
+      Logger.LogInformation($"counter {counterDto.Id} value = {score}");
 
       counterDto.SetValue(score);
 

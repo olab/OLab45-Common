@@ -49,7 +49,7 @@ namespace OLab.Api.Endpoints
     /// <returns></returns>
     public async Task<OLabAPIPagedResponse<FilesDto>> GetAsync(int? take, int? skip)
     {
-      Logger.LogDebug($"FilesController.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
+      Logger.LogInformation($"FilesController.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
 
       var Files = new List<SystemFiles>();
       var total = 0;
@@ -67,7 +67,7 @@ namespace OLab.Api.Endpoints
         remaining = total - take.Value - skip.Value;
       }
 
-      Logger.LogDebug(string.Format("found {0} FilesPhys", Files.Count));
+      Logger.LogInformation(string.Format("found {0} FilesPhys", Files.Count));
 
       var dtoList = new Files(Logger).PhysicalToDto(Files);
 
@@ -91,7 +91,7 @@ namespace OLab.Api.Endpoints
       uint id)
     {
 
-      Logger.LogDebug($"FilesController.ReadAsync(uint id={id})");
+      Logger.LogInformation($"FilesController.ReadAsync(uint id={id})");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("FilesPhys", id);
@@ -119,7 +119,7 @@ namespace OLab.Api.Endpoints
       uint id, FilesFullDto dto)
     {
 
-      Logger.LogDebug($"PutAsync(uint id={id})");
+      Logger.LogInformation($"PutAsync(uint id={id})");
 
       dto.ImageableId = dto.ParentInfo.Id;
 
@@ -157,7 +157,7 @@ namespace OLab.Api.Endpoints
       FilesFullDto dto,
       CancellationToken token)
     {
-      Logger.LogDebug($"FilesController.PostAsync()");
+      Logger.LogInformation($"FilesController.PostAsync()");
       var builder = new FilesFull(Logger);
 
       // test if user has access to object
@@ -199,7 +199,7 @@ namespace OLab.Api.Endpoints
       uint id)
     {
 
-      Logger.LogDebug($"ConstantsEndpoint.DeleteAsync(uint id={id})");
+      Logger.LogInformation($"ConstantsEndpoint.DeleteAsync(uint id={id})");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("FilesPhys", id);

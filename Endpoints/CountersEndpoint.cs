@@ -47,7 +47,7 @@ namespace OLab.Api.Endpoints
       int? take,
       int? skip)
     {
-      Logger.LogDebug($"ReadAsync take={take} skip={skip}");
+      Logger.LogInformation($"ReadAsync take={take} skip={skip}");
 
       var Counters = new List<SystemCounters>();
       var total = 0;
@@ -84,7 +84,7 @@ namespace OLab.Api.Endpoints
     /// <returns></returns>
     public async Task<CountersDto> GetAsync(IOLabAuthorization auth, uint id)
     {
-      Logger.LogDebug($"ReadAsync id {id}");
+      Logger.LogInformation($"ReadAsync id {id}");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("CounterMapper", id);
@@ -111,7 +111,7 @@ namespace OLab.Api.Endpoints
       uint id,
       CountersFullDto dto)
     {
-      Logger.LogDebug($"PutAsync id {id}");
+      Logger.LogInformation($"PutAsync id {id}");
 
       dto.ImageableId = dto.ParentInfo.Id;
 
@@ -148,7 +148,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       CountersFullDto dto)
     {
-      Logger.LogDebug($"PostAsync name = {dto.Name}");
+      Logger.LogInformation($"PostAsync name = {dto.Name}");
 
       dto.ImageableId = dto.ParentInfo.Id;
       dto.Value = dto.StartValue;
@@ -181,7 +181,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       uint id)
     {
-      Logger.LogDebug($"DeleteAsync id {id}");
+      Logger.LogInformation($"DeleteAsync id {id}");
 
       if (!Exists(id))
         throw new OLabObjectNotFoundException("CounterMapper", id);

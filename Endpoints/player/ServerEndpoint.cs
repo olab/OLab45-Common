@@ -57,7 +57,7 @@ namespace OLab.Api.Endpoints.Player
 
       total = items.Count;
 
-      Logger.LogDebug(string.Format("found {0} servers", items.Count));
+      Logger.LogInformation(string.Format("found {0} servers", items.Count));
 
       return new OLabAPIPagedResponse<Servers> { Data = items, Remaining = remaining, Count = total };
     }
@@ -69,7 +69,7 @@ namespace OLab.Api.Endpoints.Player
     /// <returns></returns>
     public async Task<Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint serverId)
     {
-      Logger.LogDebug($"ServerEndpoint.GetScopedObjectsRawAsync(uint serverId={serverId})");
+      Logger.LogInformation($"ServerEndpoint.GetScopedObjectsRawAsync(uint serverId={serverId})");
       var dto = await GetScopedObjectsAsync(serverId, false);
       return dto;
     }
@@ -81,7 +81,7 @@ namespace OLab.Api.Endpoints.Player
     /// <returns></returns>
     public async Task<Dto.ScopedObjectsDto> GetScopedObjectsTranslatedAsync(uint serverId)
     {
-      Logger.LogDebug($"ServerEndpoint.GetScopedObjectsTranslatedAsync(uint serverId={serverId})");
+      Logger.LogInformation($"ServerEndpoint.GetScopedObjectsTranslatedAsync(uint serverId={serverId})");
       var dto = await GetScopedObjectsAsync(serverId, true);
       return dto;
     }
@@ -96,7 +96,7 @@ namespace OLab.Api.Endpoints.Player
       uint serverId,
       bool enableWikiTranslation)
     {
-      Logger.LogDebug($"ServerEndpoint.GetScopedObjectsAsync(uint serverId={serverId})");
+      Logger.LogInformation($"ServerEndpoint.GetScopedObjectsAsync(uint serverId={serverId})");
 
       var phys = new ScopedObjects(
         Logger,

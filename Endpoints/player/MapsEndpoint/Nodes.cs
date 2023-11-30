@@ -59,7 +59,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId,
       bool hideHidden = true)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
 
       var dto = await GetRawNodeAsync(mapId, nodeId, hideHidden);
 
@@ -97,7 +97,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId,
       DynamicScopedObjectsDto body)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
 
       var session = new OLabSession(Logger, dbContext, auth.UserContext);
 
@@ -189,7 +189,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId
     )
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.DeleteNodeAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.DeleteNodeAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
@@ -200,12 +200,12 @@ namespace OLab.Api.Endpoints.Player
       try
       {
         var links = dbContext.MapNodeLinks.Where(x => (x.NodeId1 == nodeId) || (x.NodeId2 == nodeId)).ToArray();
-        Logger.LogDebug($"deleting {links.Count()} links");
+        Logger.LogInformation($"deleting {links.Count()} links");
         dbContext.MapNodeLinks.RemoveRange(links);
 
         var node = await dbContext.MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
         dbContext.MapNodes.Remove(node);
-        Logger.LogDebug($"deleting node id: {node.Id}");
+        Logger.LogInformation($"deleting node id: {node.Id}");
 
         await dbContext.SaveChangesAsync();
 
@@ -240,7 +240,7 @@ namespace OLab.Api.Endpoints.Player
       [FromBody] MapNodesFullDto dto
     )
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.PutNodeAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutNodeAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))

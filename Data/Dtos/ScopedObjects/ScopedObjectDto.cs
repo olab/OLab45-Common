@@ -12,7 +12,7 @@ namespace OLab.Api.Dto
     public string Name { get; set; }
     [JsonProperty("description")]
     public string Description { get; set; }
-    [JsonProperty("scopeId")]
+    [JsonProperty("parentId")]
     public uint ImageableId { get; set; }
     [JsonProperty("scopeLevel")]
     public string ImageableType { get; set; }

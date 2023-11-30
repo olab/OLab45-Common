@@ -177,7 +177,7 @@ namespace OLab.Api.Endpoints
     protected async Task<IList<MapNodesFullDto>> GetNodesAsync(Maps map, bool enableWikiTanslation = true)
     {
       var physList = await dbContext.MapNodes.Where(x => x.MapId == map.Id).ToListAsync();
-      Logger.LogDebug(string.Format("found {0} mapNodes", physList.Count));
+      Logger.LogInformation(string.Format("found {0} mapNodes", physList.Count));
 
       // patch up any malformed nodes that have 0/0 sizes, 
       // whic prevent them from being displayed
