@@ -37,17 +37,17 @@ namespace OLab.Api.ObjectMapper
       OLab.Data.BusinessObjects.DynamicScopedObjects phys,
       DynamicScopedObjectsDto dto)
     {
-      var dtoCountersList = new Counters(Logger).PhysicalToDto(phys.ServerCounters);
+      var dtoCountersList = new CounterMapper(Logger).PhysicalToDto(phys.ServerCounters);
       dto.Server.Counters.AddRange(dtoCountersList);
 
-      dtoCountersList = new Counters(Logger).PhysicalToDto(phys.MapCounters);
+      dtoCountersList = new CounterMapper(Logger).PhysicalToDto(phys.MapCounters);
       dto.Map.Counters.AddRange(dtoCountersList);
 
-      dtoCountersList = new Counters(Logger).PhysicalToDto(phys.NodeCounters);
+      dtoCountersList = new CounterMapper(Logger).PhysicalToDto(phys.NodeCounters);
       dto.Node.Counters.AddRange(dtoCountersList);
 
-      // var dtoConstantsList = new ConstantsObjectMapper(Logger, GetWikiProvider()).PhysicalToDto( server.Constants );
-      // dto.Server.Constants.AddRange(dtoConstantsList);
+      // var dtoConstantsList = new ConstantsObjectMapper(Logger, GetWikiProvider()).PhysicalToDto( server.ConstantsPhys );
+      // dto.Server.ConstantsPhys.AddRange(dtoConstantsList);
 
       // calculate validation
       dto.Checksum = dto.GenerateChecksum();

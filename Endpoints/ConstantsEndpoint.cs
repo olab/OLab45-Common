@@ -65,7 +65,7 @@ namespace OLab.Api.Endpoints
         remaining = total - take.Value - skip.Value;
       }
 
-      Logger.LogDebug(string.Format("found {0} Constants", Constants.Count));
+      Logger.LogDebug(string.Format("found {0} ConstantsPhys", Constants.Count));
 
       var dtoList = new ObjectMapper.Constants(Logger).PhysicalToDto(Constants);
 
@@ -91,7 +91,7 @@ namespace OLab.Api.Endpoints
       Logger.LogDebug($"{auth.UserContext.UserId}: ConstantsEndpoint.ReadAsync");
 
       if (!Exists(id))
-        throw new OLabObjectNotFoundException("Constants", id);
+        throw new OLabObjectNotFoundException("ConstantsPhys", id);
 
       var phys = await dbContext.SystemConstants.FirstAsync(x => x.Id == id);
       var dto = new ObjectMapper.Constants(Logger).PhysicalToDto(phys);
@@ -99,7 +99,7 @@ namespace OLab.Api.Endpoints
       // test if user has access to object
       var accessResult = auth.HasAccess("R", dto);
       if (accessResult is UnauthorizedResult)
-        throw new OLabUnauthorizedException("Constants", id);
+        throw new OLabUnauthorizedException("ConstantsPhys", id);
 
       AttachParentObject(dto);
 
@@ -123,7 +123,7 @@ namespace OLab.Api.Endpoints
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
-        throw new OLabUnauthorizedException("Constants", id);
+        throw new OLabUnauthorizedException("ConstantsPhys", id);
 
       try
       {
@@ -138,7 +138,7 @@ namespace OLab.Api.Endpoints
       catch (DbUpdateConcurrencyException)
       {
         var existingObject = await GetConstantAsync(id)
-          ?? throw new OLabObjectNotFoundException("Constants", id);
+          ?? throw new OLabObjectNotFoundException("ConstantsPhys", id);
       }
 
     }
@@ -159,7 +159,7 @@ namespace OLab.Api.Endpoints
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
-        throw new OLabUnauthorizedException("Constants", 0);
+        throw new OLabUnauthorizedException("ConstantsPhys", 0);
 
       var builder = new ConstantsFull(Logger);
       var phys = builder.DtoToPhysical(dto);
@@ -185,7 +185,7 @@ namespace OLab.Api.Endpoints
       Logger.LogDebug($"{auth.UserContext.UserId}: ConstantsEndpoint.DeleteAsync");
 
       if (!Exists(id))
-        throw new OLabObjectNotFoundException("Constants", id);
+        throw new OLabObjectNotFoundException("ConstantsPhys", id);
 
       try
       {
@@ -195,7 +195,7 @@ namespace OLab.Api.Endpoints
         // test if user has access to object
         var accessResult = auth.HasAccess("W", dto);
         if (accessResult is UnauthorizedResult)
-          throw new OLabUnauthorizedException("Constants", id);
+          throw new OLabUnauthorizedException("ConstantsPhys", id);
 
         dbContext.SystemConstants.Remove(phys);
         await dbContext.SaveChangesAsync();
@@ -204,7 +204,7 @@ namespace OLab.Api.Endpoints
       catch (DbUpdateConcurrencyException)
       {
         var existingObject = await GetConstantAsync(id)
-          ?? throw new OLabObjectNotFoundException("Constants", id);
+          ?? throw new OLabObjectNotFoundException("ConstantsPhys", id);
       }
 
     }

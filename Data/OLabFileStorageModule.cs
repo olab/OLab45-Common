@@ -66,14 +66,16 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     var sb = new StringBuilder();
     for (int i = 0; i < pathParts.Length; i++)
     {
-      sb.Append(pathParts[i].ToString());
+      // remove any extra trailing slashes
+      var part = pathParts[i].ToString();
+      part = part.Trim('/');
+
+      sb.Append(part);
       if (i < pathParts.Length - 1)
         sb.Append(GetFolderSeparator());
     }
 
-    // clean up any double separators
-    var path = sb.ToString().Replace($"{GetFolderSeparator()}{GetFolderSeparator()}", $"{GetFolderSeparator()}");
-    return path;
+    return sb.ToString();
   }
 
   /// <summary>
@@ -95,7 +97,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
           item.ImageableType, 
           item.ImageableId);
 
-        if (FileExists(scopeFolder, item.Path))
+        if (FileExists(BuildPath(FilesRoot, scopeFolder), item.Path))
         {
           item.OriginUrl = GetUrlPath( 
             scopeFolder,

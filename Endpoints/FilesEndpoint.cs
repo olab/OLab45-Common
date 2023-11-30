@@ -67,7 +67,7 @@ namespace OLab.Api.Endpoints
         remaining = total - take.Value - skip.Value;
       }
 
-      Logger.LogDebug(string.Format("found {0} Files", Files.Count));
+      Logger.LogDebug(string.Format("found {0} FilesPhys", Files.Count));
 
       var dtoList = new Files(Logger).PhysicalToDto(Files);
 
@@ -94,7 +94,7 @@ namespace OLab.Api.Endpoints
       Logger.LogDebug($"FilesController.ReadAsync(uint id={id})");
 
       if (!Exists(id))
-        throw new OLabObjectNotFoundException("Files", id);
+        throw new OLabObjectNotFoundException("FilesPhys", id);
 
       var phys = await dbContext.SystemFiles.FirstAsync(x => x.Id == id);
       var dto = new FilesFull(Logger).PhysicalToDto(phys);
@@ -102,7 +102,7 @@ namespace OLab.Api.Endpoints
       // test if user has access to object
       var accessResult = auth.HasAccess("R", dto);
       if (accessResult is UnauthorizedResult)
-        throw new OLabUnauthorizedException("Files", id);
+        throw new OLabUnauthorizedException("FilesPhys", id);
 
       AttachParentObject(dto);
       return dto;
@@ -126,7 +126,7 @@ namespace OLab.Api.Endpoints
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
-        throw new OLabUnauthorizedException("Files", id);
+        throw new OLabUnauthorizedException("FilesPhys", id);
 
       try
       {
@@ -142,7 +142,7 @@ namespace OLab.Api.Endpoints
       {
         var existingObject = await GetConstantAsync(id);
         if (existingObject == null)
-          throw new OLabObjectNotFoundException("Files", id);
+          throw new OLabObjectNotFoundException("FilesPhys", id);
       }
 
     }
@@ -163,7 +163,7 @@ namespace OLab.Api.Endpoints
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
-        throw new OLabUnauthorizedException("Files", 0);
+        throw new OLabUnauthorizedException("FilesPhys", 0);
 
       if (string.IsNullOrEmpty(dto.Mime))
         dto.Mime = MimeTypesMap.GetMimeType(Path.GetFileName(dto.FileName));
@@ -202,7 +202,7 @@ namespace OLab.Api.Endpoints
       Logger.LogDebug($"ConstantsEndpoint.DeleteAsync(uint id={id})");
 
       if (!Exists(id))
-        throw new OLabObjectNotFoundException("Files", id);
+        throw new OLabObjectNotFoundException("FilesPhys", id);
 
       try
       {
@@ -212,7 +212,7 @@ namespace OLab.Api.Endpoints
         // test if user has access to object
         var accessResult = auth.HasAccess("W", dto);
         if (accessResult is UnauthorizedResult)
-          throw new OLabUnauthorizedException("Constants", id);
+          throw new OLabUnauthorizedException("ConstantsPhys", id);
 
         dbContext.SystemFiles.Remove(phys);
         await dbContext.SaveChangesAsync();
@@ -230,7 +230,7 @@ namespace OLab.Api.Endpoints
       {
         var existingObject = await GetFileAsync(id);
         if (existingObject == null)
-          throw new OLabObjectNotFoundException("Files", id);
+          throw new OLabObjectNotFoundException("FilesPhys", id);
       }
 
     }

@@ -19,18 +19,18 @@ namespace OLab.Api.ObjectMapper
     }
   }
 
-  public class Counters : OLabMapper<SystemCounters, CountersDto>
+  public class CounterMapper : OLabMapper<SystemCounters, CountersDto>
   {
-    public Counters(IOLabLogger logger, WikiTagProvider tagProvider) : base(logger, tagProvider)
+    public CounterMapper(IOLabLogger logger, WikiTagProvider tagProvider) : base(logger, tagProvider)
     {
 
     }
 
-    public Counters(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public CounterMapper(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public Counters(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public CounterMapper(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

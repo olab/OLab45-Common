@@ -7,6 +7,7 @@ using OLab.Api.Model;
 using OLab.Api.Model.ReaderWriter;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data;
 using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
@@ -356,16 +357,15 @@ namespace OLab.Api.Endpoints.Designer
       if (map == null)
         return null;
 
-      var scopedObjects = new OLab.Data.BusinessObjects.ScopedObjects(
+      var phys = new ScopedObjects(
         Logger,
-        dbContext,
-        1,
-        map.Id,
-        null);
+        dbContext, 
+        _fileStorageModule);
 
-      var phys = await scopedObjects.ReadAsync(_fileStorageModule);
+      await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelServer, 1);
+      await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelMap, map.Id);
 
-      phys.Constants.Add(new SystemConstants
+      phys.ConstantsPhys.Add(new SystemConstants
       {
         Id = 0,
         Name = Utils.Constants.ReservedConstantMapId,
@@ -375,7 +375,7 @@ namespace OLab.Api.Endpoints.Designer
         Value = Encoding.ASCII.GetBytes(map.Id.ToString())
       });
 
-      phys.Constants.Add(new SystemConstants
+      phys.ConstantsPhys.Add(new SystemConstants
       {
         Id = 0,
         Name = Utils.Constants.ReservedConstantMapName,
@@ -385,7 +385,7 @@ namespace OLab.Api.Endpoints.Designer
         Value = Encoding.ASCII.GetBytes(map.Name)
       });
 
-      phys.Constants.Add(new SystemConstants
+      phys.ConstantsPhys.Add(new SystemConstants
       {
         Id = 0,
         Name = Utils.Constants.ReservedConstantSystemTime,
@@ -395,7 +395,7 @@ namespace OLab.Api.Endpoints.Designer
         Value = Encoding.ASCII.GetBytes(DateTime.UtcNow.ToString() + " UTC")
       });
 
-      var builder = new ObjectMapper.Designer.ScopedObjects(Logger, _wikiTagProvider, enableWikiTranslation);
+      var builder = new ObjectMapper.Designer.ScopedObjectMapper(Logger, _wikiTagProvider, enableWikiTranslation);
       var dto = builder.PhysicalToDto(phys);
 
       var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();

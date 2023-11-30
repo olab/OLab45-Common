@@ -1,5 +1,8 @@
+using DocumentFormat.OpenXml.EMMA;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Model;
+using OLab.Api.Utils;
+using OLab.Data;
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,15 +34,13 @@ namespace OLab.Api.Endpoints.Player
       if (node == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
 
-      var scopedObjects = new OLab.Data.BusinessObjects.ScopedObjects(
+      var phys = new ScopedObjects(
         Logger,
         dbContext,
-        node.Id,
-        Utils.Constants.ScopeLevelNode);
+      _fileStorageModule);
+      await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelNode, node.Id);
 
-      var phys = await scopedObjects.ReadAsync(_fileStorageModule);
-
-      phys.Constants.Add(new SystemConstants
+      phys.ConstantsPhys.Add(new SystemConstants
       {
         Id = 0,
         Name = Utils.Constants.ReservedConstantNodeId,
@@ -49,7 +50,7 @@ namespace OLab.Api.Endpoints.Player
         Value = Encoding.ASCII.GetBytes(node.Id.ToString())
       });
 
-      phys.Constants.Add(new SystemConstants
+      phys.ConstantsPhys.Add(new SystemConstants
       {
         Id = 0,
         Name = Utils.Constants.ReservedConstantNodeName,
@@ -59,7 +60,7 @@ namespace OLab.Api.Endpoints.Player
         Value = Encoding.ASCII.GetBytes(node.Title)
       });
 
-      phys.Constants.Add(new SystemConstants
+      phys.ConstantsPhys.Add(new SystemConstants
       {
         Id = 0,
         Name = Utils.Constants.ReservedConstantSystemTime,

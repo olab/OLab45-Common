@@ -169,7 +169,7 @@ public class Importer : IImporter
     }
     catch (Exception ex)
     {
-      Logger.LogError(ex, $"Load error: {ex.Message}");
+      Logger.LogError(ex, $"Read error: {ex.Message}");
       throw;
     }
 

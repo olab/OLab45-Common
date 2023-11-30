@@ -140,12 +140,12 @@ namespace OLab.Api.Model
 
     // public ICollection<MapNodes> MapNodes { get; set; }
     // public ICollection<SystemCounterActions> SystemCounterActions { get; set; }
-    // public List<SystemConstants> Constants { get; set; }
-    // public List<SystemCounters> Counters { get; set; }
-    // public List<SystemFiles> Files { get; set; }
-    // public List<SystemQuestions> Questions { get; set; }
-    // public List<SystemScripts> Scripts { get; set; }
-    // public List<SystemThemes> Themes { get; set; }
+    // public List<SystemConstants> ConstantsPhys { get; set; }
+    // public List<SystemCounters> CounterMapper { get; set; }
+    // public List<SystemFiles> FilesPhys { get; set; }
+    // public List<SystemQuestions> QuestionsPhys { get; set; }
+    // public List<SystemScripts> ScriptsPhys { get; set; }
+    // public List<SystemThemes> ThemesPhys { get; set; }
     // public ICollection<MapAvatars> MapAvatars { get; set; }
     // public ICollection<MapNodeLinks> MapNodeLinks { get; set; }
 

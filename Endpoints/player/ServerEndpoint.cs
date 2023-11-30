@@ -2,7 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
 using OLab.Api.Model;
+using OLab.Api.ObjectMapper;
+using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data;
 using OLab.Data.Interface;
 using System.Collections.Generic;
 using System.Linq;
@@ -95,16 +98,14 @@ namespace OLab.Api.Endpoints.Player
     {
       Logger.LogDebug($"ServerEndpoint.GetScopedObjectsAsync(uint serverId={serverId})");
 
-      var scopedObjects = new OLab.Data.BusinessObjects.ScopedObjects(
+      var phys = new ScopedObjects(
         Logger,
-        dbContext,
-        serverId,
-        null,
-        null);
+        dbContext, 
+        _fileStorageModule);
 
-      var phys = await scopedObjects.ReadAsync(_fileStorageModule);
+      await phys.AddScopeFromDatabaseAsync(Utils.Constants.ScopeLevelServer, 1);
 
-      var builder = new ObjectMapper.ScopedObjectsMapper(Logger, _wikiTagProvider, enableWikiTranslation);
+      var builder = new ScopedObjectsMapper(Logger, _wikiTagProvider, enableWikiTranslation);
       var dto = builder.PhysicalToDto(phys);
 
       return dto;

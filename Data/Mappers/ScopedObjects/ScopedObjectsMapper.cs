@@ -1,64 +1,101 @@
+using NuGet.Packaging;
 using OLab.Api.Dto;
 using OLab.Common.Interfaces;
+using OLab.Data;
 using System;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class ScopedObjectsMapper : ObjectMapper<OLab.Data.BusinessObjects.ScopedObjects, ScopedObjectsDto>
+    public class ScopedObjectsMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
   {
-    protected readonly bool enableWikiTranslation = true;
-
-    //public ScopedObjectsMapper(IOLabLogger Logger, bool enableWikiTranslation = true) : base(Logger)
-    //{
-    //}
+    private readonly bool _enableWikiTranslation = true;
 
     public ScopedObjectsMapper(
       IOLabLogger logger,
-      IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+      IOLabModuleProvider<IWikiTagModule> wikiTagProvider = null,
       bool enableWikiTranslation = true) : base(logger, wikiTagProvider)
     {
+      _enableWikiTranslation = enableWikiTranslation;
     }
 
     public override ScopedObjectsDto PhysicalToDto(
-      OLab.Data.BusinessObjects.ScopedObjects phys,
+      ScopedObjects phys,
       object source = null)
     {
       var dto = GetDto(source);
 
       var dtoQuestionsList
-        = new ObjectMapper.QuestionsFull(Logger).PhysicalToDto(phys.Questions);
+        = new QuestionsFullMapper(Logger, _enableWikiTranslation).PhysicalToDto(phys.QuestionsPhys);
       dto.Questions.AddRange(dtoQuestionsList);
 
-      var dtCountersList
-        = new ObjectMapper.Counters(Logger).PhysicalToDto(phys.Counters);
-      dto.Counters.AddRange(dtCountersList);
+      var dtoCountersList
+        = new CounterMapper(Logger, _enableWikiTranslation).PhysicalToDto(phys.CountersPhys);
+      dto.Counters.AddRange(dtoCountersList);
 
-      var dtConstantsList
-        = new ObjectMapper.Constants(Logger).PhysicalToDto(phys.Constants);
-      dto.Constants.AddRange(dtConstantsList);
+      var dtoConstantsList
+        = new ConstantsFull(Logger, _enableWikiTranslation).PhysicalToDto(phys.ConstantsPhys);
+      dto.Constants.AddRange(dtoConstantsList);
 
-      var dtFilesList
-        = new ObjectMapper.FilesFull(Logger).PhysicalToDto(phys.Files);
-      dto.Files.AddRange(dtFilesList);
+      var dtoFilesList
+        = new FilesFull(Logger, _enableWikiTranslation).PhysicalToDto(phys.FilesPhys);
+      dto.Files.AddRange(dtoFilesList);
 
-      var dtScriptsList
-        = new ObjectMapper.Scripts(Logger).PhysicalToDto(phys.Scripts);
-      dto.Scripts.AddRange(dtScriptsList);
+      var dtoScriptsList
+        = new Scripts(Logger, _enableWikiTranslation).PhysicalToDto(phys.ScriptsPhys);
+      dto.Scripts.AddRange(dtoScriptsList);
 
-      var dtThemesList
-        = new ThemesFull(Logger, _wikiTagModules).PhysicalToDto(phys.Themes);
-      dto.Themes.AddRange(dtThemesList);
+      if (_wikiTagModules != null)
+      {
+        var dtoThemesList
+          = new ThemesFull(Logger, _wikiTagModules, _enableWikiTranslation).PhysicalToDto(phys.ThemesPhys);
+        dto.Themes.AddRange(dtoThemesList);
+      }
 
-      var dtCounterActionsList
-        = new CounterActionsMapper(Logger).PhysicalToDto(phys.CounterActions);
-      dto.CounterActions.AddRange(dtCounterActionsList);
+      var dtoCounterActionsList
+        = new CounterActionsMapper(Logger).PhysicalToDto(phys.CounterActionsPhys);
+      dto.CounterActions.AddRange(dtoCounterActionsList);
 
       return dto;
     }
 
-    public override OLab.Data.BusinessObjects.ScopedObjects DtoToPhysical(ScopedObjectsDto dto, object source = null)
+    public override ScopedObjects DtoToPhysical(
+      ScopedObjectsDto dto, 
+      object source = null)
     {
-      throw new NotImplementedException();
+      var phys = new ScopedObjects();
+
+      var physQuestions
+        = new QuestionsFullMapper(Logger, _enableWikiTranslation).DtoToPhysical(dto.Questions);
+      phys.QuestionsPhys.AddRange(physQuestions);
+
+      var physCounters
+        = new CounterMapper(Logger, _enableWikiTranslation).DtoToPhysical(dto.Counters);
+      phys.CountersPhys.AddRange(physCounters);
+
+      var physConstants
+        = new ConstantsFull(Logger, _enableWikiTranslation).DtoToPhysical(dto.Constants);
+      phys.ConstantsPhys.AddRange(physConstants);
+
+      var physFiles
+        = new FilesFull(Logger, _enableWikiTranslation).DtoToPhysical(dto.Files);
+      phys.FilesPhys.AddRange(physFiles);
+
+      var physScripts
+        = new Scripts(Logger, _enableWikiTranslation).DtoToPhysical(dto.Scripts);
+      phys.ScriptsPhys.AddRange(physScripts);
+
+      if (_wikiTagModules != null)
+      {
+        var physThemes
+          = new ThemesFull(Logger, _wikiTagModules, _enableWikiTranslation).DtoToPhysical(dto.Themes);
+        phys.ThemesPhys.AddRange(physThemes);
+      }
+
+      var physActions
+        = new CounterActionsMapper(Logger, _enableWikiTranslation).DtoToPhysical(dto.CounterActions);
+      phys.CounterActionsPhys.AddRange(physActions);
+
+      return phys;
     }
 
   }

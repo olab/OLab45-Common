@@ -36,13 +36,13 @@ namespace OLab.Api.Dto
     {
       logger.LogInformation("Result:");
 
-      logger.LogInformation($" Constants {Constants.Count}");
-      logger.LogInformation($" Questions {Questions.Count}");
-      logger.LogInformation($" Counters {Counters.Count}");
-      logger.LogInformation($" Files {Files.Count}");
-      logger.LogInformation($" Scripts {Scripts.Count}");
-      logger.LogInformation($" Themes {Themes.Count}");
-      logger.LogInformation($" CounterActions {CounterActions.Count}");
+      logger.LogInformation($" ConstantsPhys {Constants.Count}");
+      logger.LogInformation($" QuestionsPhys {Questions.Count}");
+      logger.LogInformation($" CounterMapper {Counters.Count}");
+      logger.LogInformation($" FilesPhys {Files.Count}");
+      logger.LogInformation($" ScriptsPhys {Scripts.Count}");
+      logger.LogInformation($" ThemesPhys {Themes.Count}");
+      logger.LogInformation($" CounterActionsPhys {CounterActions.Count}");
 
       foreach (var item in Constants)
         logger.LogInformation($" Constant {item}");

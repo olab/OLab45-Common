@@ -103,7 +103,7 @@ namespace OLab.Api.Endpoints.Player
         else
         {
           // convert to physical object so we can use the counterActions code
-          var phys = new ObjectMapper.Counters(Logger).DtoToPhysical(dto);
+          var phys = new ObjectMapper.CounterMapper(Logger).DtoToPhysical(dto);
 
           // test if there's a counter action to apply
           if (counterAction.ApplyFunctionToCounter(phys))
@@ -111,7 +111,7 @@ namespace OLab.Api.Endpoints.Player
             // remove original counter from list
             orgDtoList.Remove(dto);
 
-            dto = new ObjectMapper.Counters(Logger).PhysicalToDto(phys);
+            dto = new ObjectMapper.CounterMapper(Logger).PhysicalToDto(phys);
             Logger.LogDebug($"Updated counter '{dto.Name}' ({dto.Id}) with function '{counterAction.Expression}'. now = {dto.Value}");
 
             // add updated counter back to list

@@ -9,7 +9,7 @@ namespace OLab.Import.OLab3.Dtos
 
   public class XmlMapCounterDto : XmlImportDto<XmlMapCounters>
   {
-    private readonly Api.ObjectMapper.Counters _mapper;
+    private readonly Api.ObjectMapper.CounterMapper _mapper;
 
     public XmlMapCounterDto(
       IOLabLogger logger,
@@ -19,7 +19,7 @@ namespace OLab.Import.OLab3.Dtos
         Importer.DtoTypes.XmlMapCounterDto,
         "map_counter.xml")
     {
-      _mapper = new Api.ObjectMapper.Counters(logger);
+      _mapper = new Api.ObjectMapper.CounterMapper(logger);
     }
 
     /// <summary>

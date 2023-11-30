@@ -10,10 +10,13 @@ namespace OLab.Api.ObjectMapper
 {
   public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
   {
+    private readonly bool _enableWikiTranslation;
+
     public MapsFullRelationsMapper(
       IOLabLogger logger,
       bool enableWikiTranslation = true) : base(logger)
     {
+      _enableWikiTranslation = enableWikiTranslation;
     }
 
     public MapsFullRelationsMapper(
@@ -21,6 +24,7 @@ namespace OLab.Api.ObjectMapper
       WikiTagProvider tagProvider,
       bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
+      _enableWikiTranslation = enableWikiTranslation;
     }
 
     /// <summary>
@@ -52,11 +56,13 @@ namespace OLab.Api.ObjectMapper
       {
         Map = new MapsFullMapper(
           Logger,
-          _wikiTagModules
+          _wikiTagModules,
+          _enableWikiTranslation
         ).PhysicalToDto(map),
         MapNodes = new MapNodesFullMapper(
           Logger,
-          _wikiTagModules
+          _wikiTagModules,
+          _enableWikiTranslation
         ).PhysicalToDto(map.MapNodes.ToList())
       };
 
@@ -66,7 +72,7 @@ namespace OLab.Api.ObjectMapper
       //foreach (var node in map.MapNodes)
       //  links.AddRange(node.MapNodeLinksNodeId1Navigation);
 
-      dto.MapNodeLinks = new MapNodeLinksMapper(Logger).PhysicalToDto(links);
+      dto.MapNodeLinks = new MapNodeLinksMapper(Logger, _enableWikiTranslation).PhysicalToDto(links);
 
       return dto;
     }

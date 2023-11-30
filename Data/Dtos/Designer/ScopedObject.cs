@@ -11,9 +11,9 @@ namespace OLab.Api.Dto.Designer
     public string Name { get; set; }
     [JsonProperty("description")]
     public string Description { get; set; }
-    [JsonProperty("scopeLevel")]
+    [JsonProperty("ScopeLevel")]
     public string ScopeLevel { get; set; }
-    [JsonProperty("parentId")]
+    [JsonProperty("ScopeId")]
     public uint ParentId { get; set; }
     [JsonProperty("wiki")]
     public string Wiki { get; set; }

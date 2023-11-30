@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.EntityFrameworkCore;
 using OLab.Api.Model;
+using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,16 +52,15 @@ public class DynamicScopedObjects
   /// <returns></returns>
   public async Task GetDynamicScopedObjectsAsync()
   {
-    var scopedObjects = new ScopedObjects(Logger, dbContext, serverId, mapId, nodeId);
+    var phys = new ScopedObjects(Logger, dbContext);
 
-    var phys = await scopedObjects.ReadAsync(Api.Utils.Constants.ScopeLevelServer);
-    ServerCounters = phys.Counters;
+    await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelServer, serverId);
+    await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelMap, mapId);
+    await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelNode, nodeId);
 
-    phys = await scopedObjects.ReadAsync(Api.Utils.Constants.ScopeLevelNode);
-    NodeCounters = phys.Counters;
-
-    phys = await scopedObjects.ReadAsync(Api.Utils.Constants.ScopeLevelMap);
-    MapCounters = phys.Counters;
+    ServerCounters = phys.CountersPhys;
+    NodeCounters = phys.CountersPhys;
+    MapCounters = phys.CountersPhys;
 
     await ProcessNodeCounters(MapCounters);
   }

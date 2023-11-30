@@ -1,11 +1,16 @@
 using Common.Utils;
+using DocumentFormat.OpenXml.EMMA;
 using Humanizer;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using NuGet.Common;
 using OLab.Api.Common;
 using OLab.Api.Dto;
+using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Utils;
+using OLab.Data;
+using OLab.Data.Interface;
 using OLab.Import.Interface;
 using System;
 using System.IO;
@@ -20,6 +25,8 @@ public partial class Importer : IImporter
 {
   // Folder where the xtracted import file resides
   private string ExtractFolderName;
+  private ScopedObjects _scopedObjectPhys;
+  private Maps _mapPhys;
 
   /// <summary>
   /// Run the import process on the data in the stream
@@ -35,19 +42,35 @@ public partial class Importer : IImporter
   {
     try
     {
+
+      _dbContext.Database.BeginTransaction();
+
+      // reset message buffer so we just save the new messages
+      Logger.Clear();
+
       var mapFullDto = await ExtractImportMapDefinition(
         stream,
         fileName,
         token);
 
-      var newMapId = await ProcessMapAsync(mapFullDto, token);
-      await ProcessMapFiles(mapFullDto.Map.Id.Value, newMapId, token);
+      _scopedObjectPhys = new ScopedObjects(Logger, _dbContext);
+
+      _mapPhys = await WriteMapToDatabaseAsync(mapFullDto, token);
+
+      await ProcessMapNodesAsync(mapFullDto, token);
+      await ProcessAttachedImportFiles(token);
+
+      await _scopedObjectPhys.WriteAllToDatabaseAsync(_mapPhys.Id, token);
 
       await CleanupImportAsync();
+
+      await _dbContext.Database.CommitTransactionAsync();
+
     }
     catch (Exception ex)
     {
       Logger.LogError($"Import error {ex.Message}");
+      await _dbContext.Database.RollbackTransactionAsync();
       throw;
     }
   }
@@ -117,73 +140,7 @@ public partial class Importer : IImporter
 
   }
 
-  private async Task<uint> ProcessMapAsync(
-    MapsFullRelationsDto mapFullDto,
-    CancellationToken token)
-  {
-    try
-    {
-      _dbContext.Database.BeginTransaction();
-
-      // reset message buffer so we just save the new messages
-      Logger.Clear();
-
-      // import the map, get new map id
-      _mapId = await ProcessMapRecordAsync(mapFullDto, token);
-
-      // import the map nodes, save the new node ids for
-      // when we import the map node links
-      foreach (var mapNodeDto in mapFullDto.MapNodes)
-      {
-        var nodeId = await ProcessMapNodeRecordAsync(_mapId, mapNodeDto, token);
-        Logger.LogInformation($"  imported map node '{mapNodeDto.Title}' {mapNodeDto.Id.Value} -> {nodeId}");
-
-        _nodeIdTranslation.Add(mapNodeDto.Id.Value, nodeId);
-      }
-
-      // import the map nodes, save the new node ids for
-      // when we import the map node links
-      foreach (var mapNodeLinkDto in mapFullDto.MapNodeLinks)
-      {
-        var nodeLinkId = await ProcessMapNodeLinkRecordAsync(_mapId, mapNodeLinkDto, token);
-        Logger.LogInformation($"  imported map node link {mapNodeLinkDto.Id.Value} -> {nodeLinkId}");
-      }
-
-      // import the map-level scoped objects
-      await ProcessScopedObjects(
-        Api.Utils.Constants.ScopeLevelMap,
-        _mapId,
-        mapFullDto.ScopedObjects,
-        token);
-
-      await _dbContext.Database.CommitTransactionAsync();
-
-      return _mapId;
-    }
-
-    catch (Exception)
-    {
-      await _dbContext.Database.RollbackTransactionAsync();
-      throw;
-    }
-  }
-
-  private async Task ProcessScopedObjects(
-    string scopeLevel,
-    uint owningId,
-    ScopedObjectsDto dto,
-    CancellationToken token)
-  {
-    var scopedObject = new Data.BusinessObjects.ScopedObjects(
-      Logger,
-      _dbContext,
-      owningId,
-      scopeLevel);
-
-    await scopedObject.WriteAsync(dto, token);
-  }
-
-  private async Task<uint> ProcessMapRecordAsync(
+  private async Task<Maps> WriteMapToDatabaseAsync(
     MapsFullRelationsDto dto,
     CancellationToken token)
   {
@@ -197,7 +154,31 @@ public partial class Importer : IImporter
     await _dbContext.SaveChangesAsync(token);
 
     Logger.LogInformation($"  imported map '{mapDto.Name}' {mapDto.Id.Value} -> {phys.Id}");
-    return phys.Id;
+
+    _scopedObjectPhys.AddMapIdCrossReference(mapDto.Id.Value, phys.Id);
+    _scopedObjectPhys.AddScopeFromDto(dto.ScopedObjects);
+
+    return phys;
+  }
+
+  private async Task ProcessMapNodesAsync(MapsFullRelationsDto mapFullDto, CancellationToken token)
+  {
+    // import the map nodes, save the new node ids for
+    // when we import the map node links
+    foreach (var mapNodeDto in mapFullDto.MapNodes)
+    {
+      var nodePhys = await WriteMapNodesDtoToDatabase(_mapPhys.Id, mapNodeDto, token);
+      _scopedObjectPhys.AddMapNodeIdCrossReference(mapNodeDto.Id.Value, nodePhys.Id);
+
+      _scopedObjectPhys.AddScopeFromDto(mapNodeDto.ScopedObjects);
+    }
+
+    // import the map node links
+    foreach (var mapNodeLinkDto in mapFullDto.MapNodeLinks)
+    {
+      var nodeLinkId = await WriteMapNodeLinkToDatabaseAsync(_mapPhys.Id, mapNodeLinkDto, token);
+      Logger.LogInformation($"  imported map node link {mapNodeLinkDto.Id.Value} -> {nodeLinkId}");
+    }
   }
 
   private async Task CleanupImportAsync()
@@ -207,12 +188,11 @@ public partial class Importer : IImporter
     await _fileModule.DeleteFolderAsync(ExtractFolderName);
   }
 
-  private async Task ProcessMapFiles(
-    uint originalMapId,
-    uint newMapId,
+  private async Task ProcessAttachedImportFiles(
     CancellationToken token)
   {
-    // move any map-level files
+    // list and move map-level files
+
     var sourceFolder = _fileModule.BuildPath(
       ExtractFolderName,
       Api.Utils.Constants.ScopeLevelMap);
@@ -221,7 +201,7 @@ public partial class Importer : IImporter
 
     var destinationFolder = _fileModule.BuildPath(
       Api.Utils.Constants.ScopeLevelMap,
-      newMapId);
+      _mapPhys.Id);
 
     foreach (var sourceFile in sourceFiles)
       await _fileModule.MoveFileAsync(
@@ -230,48 +210,31 @@ public partial class Importer : IImporter
         destinationFolder,
         token);
 
-    // move any node-level files
-    sourceFolder = _fileModule.BuildPath(
-      ExtractFolderName,
-      Api.Utils.Constants.ScopeLevelNode,
-      originalMapId);
+    // TODO: processnode-level files
 
-    sourceFiles = _fileModule.GetFiles(sourceFolder, token);
+    // list and move node-level files
 
-    destinationFolder = _fileModule.BuildPath(
-      OLabFileStorageModule.FilesRoot,
-      Api.Utils.Constants.ScopeLevelNode,
-      newMapId);
+    //sourceFolder = _fileModule.BuildPath(
+    //  ExtractFolderName,
+    //  Api.Utils.ConstantsPhys.ScopeLevelNode,
+    //  originalMapId);
 
-    foreach (var sourceFile in sourceFiles)
-      await _fileModule.MoveFileAsync(
-        Path.GetFileName(sourceFile),
-        Path.GetDirectoryName(sourceFolder),
-        destinationFolder,
-        token);
+    //sourceFiles = _fileModule.GetFiles(sourceFolder, token);
+
+    //destinationFolder = _fileModule.BuildPath(
+    //  OLabFileStorageModule.FilesRoot,
+    //  Api.Utils.ConstantsPhys.ScopeLevelNode,
+    //  newMapId);
+
+    //foreach (var sourceFile in sourceFiles)
+    //  await _fileModule.MoveFileAsync(
+    //    Path.GetFileName(sourceFile),
+    //    Path.GetDirectoryName(sourceFolder),
+    //    destinationFolder,
+    //    token);
   }
 
-  private async Task<uint> ProcessMapNodeLinkRecordAsync(
-    uint mapId,
-    MapNodeLinksDto dto,
-    CancellationToken token)
-  {
-    var phys = new MapNodeLinksMapper(
-      Logger,
-      _wikiTagProvider as WikiTagProvider).DtoToPhysical(dto);
-
-    phys.Id = 0;
-    phys.MapId = mapId;
-    phys.NodeId1 = _nodeIdTranslation[dto.SourceId.Value].Value;
-    phys.NodeId2 = _nodeIdTranslation[dto.DestinationId.Value].Value;
-
-    await _dbContext.MapNodeLinks.AddAsync(phys);
-    await _dbContext.SaveChangesAsync(token);
-
-    return phys.Id;
-  }
-
-  private async Task<uint> ProcessMapNodeRecordAsync(
+  private async Task<MapNodes> WriteMapNodesDtoToDatabase(
     uint mapId,
     MapNodesFullDto dto,
     CancellationToken token)
@@ -286,14 +249,64 @@ public partial class Importer : IImporter
     await _dbContext.MapNodes.AddAsync(phys);
     await _dbContext.SaveChangesAsync(token);
 
-    // import the map-level scoped objects
-    await ProcessScopedObjects(
-      Api.Utils.Constants.ScopeLevelNode,
-      phys.Id,
-      dto.ScopedObjects,
-      token);
+    Logger.LogInformation($"  imported map node '{phys.Title}' {dto.Id.Value} -> {phys.Id}");
+
+    return phys;
+  }
+
+  private async Task<uint> WriteMapNodeLinkToDatabaseAsync(
+    uint mapId,
+    MapNodeLinksDto dto,
+    CancellationToken token)
+  {
+    var phys = new MapNodeLinksMapper(
+      Logger,
+      _wikiTagProvider as WikiTagProvider).DtoToPhysical(dto);
+
+    phys.Id = 0;
+    phys.MapId = mapId;
+
+    phys.NodeId1 = _scopedObjectPhys.GetMapNodeIdCrossReference(dto.SourceId.Value);
+    phys.NodeId2 = _scopedObjectPhys.GetMapNodeIdCrossReference(dto.DestinationId.Value);
+
+    await _dbContext.MapNodeLinks.AddAsync(phys);
+    await _dbContext.SaveChangesAsync(token);
 
     return phys.Id;
   }
 
+  //private async Task<uint> ProcessMapAsync(
+  //  MapsFullRelationsDto mapFullDto,
+  //  CancellationToken token)
+  //{
+  //  try
+  //  {
+  //    // import the map, get new map id
+  //    var mapPhys = await WriteMapToDatabaseAsync(mapFullDto, token);
+
+  //    // import the map nodes, save the new node ids for
+  //    // when we import the map node links
+  //    foreach (var mapNodeDto in mapFullDto.MapNodes)
+  //    {
+  //      var nodeId = await WriteMapNodesDtoToDatabase(_mapId, mapNodeDto, token);
+  //      Logger.LogInformation($"  imported map node '{mapNodeDto.Title}' {mapNodeDto.Id.Value} -> {nodeId}");
+  //    }
+
+  //    // import the map nodes, save the new node ids for
+  //    // when we import the map node links
+  //    foreach (var mapNodeLinkDto in mapFullDto.MapNodeLinks)
+  //    {
+  //      var nodeLinkId = await WriteMapNodeLinkToDatabaseAsync(_mapId, mapNodeLinkDto, token);
+  //      Logger.LogInformation($"  imported map node link {mapNodeLinkDto.Id.Value} -> {nodeLinkId}");
+  //    }
+
+  //    return _mapId;
+  //  }
+
+  //  catch (Exception)
+  //  {
+  //    await _dbContext.Database.RollbackTransactionAsync();
+  //    throw;
+  //  }
+  //}
 }

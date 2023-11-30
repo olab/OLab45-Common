@@ -1,10 +1,14 @@
+using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OLab.Api.Common;
 using OLab.Api.Dto;
+using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Utils;
+using OLab.Data;
+using OLab.Data.Interface;
 using OLab.Import.Interface;
 using System;
 using System.IO;
@@ -32,10 +36,10 @@ public partial class Importer : IImporter
     Logger.LogInformation($"Exporting mapId: {mapId} ");
 
     // create map json object
-    var dto = await ExportMapAsync(mapId, token);
+    var dto = await ReadMapDtoFromDatabase(mapId, token);
 
     // add node-level scoped objects
-    await ExportMapNodesScopedObjectsAsync(dto, token);
+    await ReadMapNodeScopedObjectFromDatabase(dto, token);
 
     // serialize the dto into a json string
     var rawJson = JsonConvert.SerializeObject(dto);
@@ -43,8 +47,8 @@ public partial class Importer : IImporter
     // write the json and map media files to 
     // a zip archive file
     using (var zipArchive = new ZipArchive(
-      stream, 
-      ZipArchiveMode.Create, 
+      stream,
+      ZipArchiveMode.Create,
       true))
     {
       var zipEntry = zipArchive.CreateEntry(MapFileName);
@@ -93,11 +97,11 @@ public partial class Importer : IImporter
     }
   }
 
-  private async Task<MapsFullRelationsDto> ExportMapAsync(
+  private async Task<MapsFullRelationsDto> ReadMapDtoFromDatabase(
     uint mapId,
     CancellationToken token)
   {
-    Logger.LogInformation($"  processing map {mapId} ");
+    Logger.LogInformation($"  exporting map {mapId} ");
 
     var map = await _dbContext.Maps
       .Include(map => map.MapNodes)
@@ -109,47 +113,41 @@ public partial class Importer : IImporter
 
     var dto = new MapsFullRelationsMapper(
       Logger,
-      _wikiTagProvider as WikiTagProvider
+      _wikiTagProvider as WikiTagProvider,
+      false
     ).PhysicalToDto(map);
 
-    // apply map-level scoped objects to the map dto
-    var mapScopedObject = new Data.BusinessObjects.ScopedObjects(
+    var phys = new ScopedObjects(
       Logger,
-      _dbContext,
-      mapId,
-      Api.Utils.Constants.ScopeLevelMap);
+      _dbContext);
 
-    var mapScopedObjectPhys = await mapScopedObject.ReadAsync(
-      Api.Utils.Constants.ScopeLevelMap,
-      null);
+    // apply map-level scoped objects to the map dto
+    await phys.AddScopeFromDatabaseAsync(Api.Utils.Constants.ScopeLevelMap, mapId);
 
-    var scopedObjectMapper = new ScopedObjectsMapper(Logger, _wikiTagProvider);
-    dto.ScopedObjects = scopedObjectMapper.PhysicalToDto(mapScopedObjectPhys);
+    var scopedObjectMapper = new ScopedObjectsMapper(Logger, _wikiTagProvider, false);
+    dto.ScopedObjects = scopedObjectMapper.PhysicalToDto(phys);
 
     return dto;
   }
 
-  private async Task ExportMapNodesScopedObjectsAsync(MapsFullRelationsDto dto, CancellationToken token)
+  private async Task ReadMapNodeScopedObjectFromDatabase(MapsFullRelationsDto dto, CancellationToken token)
   {
     // apply node-level scoped objects to the node dtos
     foreach (var nodeDto in dto.MapNodes)
     {
-      var nodeScopedObject = new Data.BusinessObjects.ScopedObjects(
+      var phys = new ScopedObjects(
         Logger,
-        _dbContext,
-        nodeDto.Id.Value,
-        Api.Utils.Constants.ScopeLevelNode);
+        _dbContext);
 
-      Logger.LogInformation($"  processing node {nodeDto.Id} ");
+      // apply node-level scoped objects
+      await phys.AddScopeFromDatabaseAsync(Api.Utils.Constants.ScopeLevelNode, nodeDto.Id.Value);
 
-      var nodeScopedObjectsPhys = await nodeScopedObject.ReadAsync(
-        Api.Utils.Constants.ScopeLevelNode,
-        null );
+      Logger.LogInformation($"  exporting node {nodeDto.Id} ");
 
-      var scopedObjectMapper = new ScopedObjectsMapper(Logger, _wikiTagProvider);
-      nodeDto.ScopedObjects = scopedObjectMapper.PhysicalToDto(nodeScopedObjectsPhys);
+      var scopedObjectMapper = new ScopedObjectsMapper(Logger, _wikiTagProvider, false);
+      nodeDto.ScopedObjects = scopedObjectMapper.PhysicalToDto(phys);
     }
-    
+
   }
 
 }

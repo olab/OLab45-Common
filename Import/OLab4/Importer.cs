@@ -17,7 +17,6 @@ public partial class Importer : IImporter
   private readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
   private readonly IFileStorageModule _fileModule;
   private readonly IDictionary<uint, uint?> _nodeIdTranslation = new Dictionary<uint, uint?>();
-  private uint _mapId;
 
   public IOLabModuleProvider<IWikiTagModule> GetWikiProvider() { return _wikiTagProvider; }
   public IFileStorageModule GetFileStorageModule() { return _fileModule; }

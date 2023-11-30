@@ -99,16 +99,16 @@ namespace OLab.Api.Endpoints
       Logger.LogDebug($"ReadAsync id {id}");
 
       if (!Exists(id))
-        throw new OLabObjectNotFoundException("Questions", id);
+        throw new OLabObjectNotFoundException("QuestionsPhys", id);
 
       var phys = await dbContext.SystemQuestions.Include("SystemQuestionResponses").FirstAsync(x => x.Id == id);
-      var builder = new QuestionsFull(Logger);
+      var builder = new QuestionsFullMapper(Logger);
       var dto = builder.PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = auth.HasAccess("R", dto);
       if (accessResult is UnauthorizedResult)
-        throw new OLabUnauthorizedException("Questions", id);
+        throw new OLabUnauthorizedException("QuestionsPhys", id);
 
       AttachParentObject(dto);
 
@@ -133,11 +133,11 @@ namespace OLab.Api.Endpoints
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
-        throw new OLabUnauthorizedException("Questions", id);
+        throw new OLabUnauthorizedException("QuestionsPhys", id);
 
       try
       {
-        var builder = new QuestionsFull(Logger);
+        var builder = new QuestionsFullMapper(Logger);
         var phys = builder.DtoToPhysical(dto);
 
         phys.UpdatedAt = DateTime.Now;
@@ -149,7 +149,7 @@ namespace OLab.Api.Endpoints
       {
         var existingObject = await GetQuestionAsync(id);
         if (existingObject == null)
-          throw new OLabObjectNotFoundException("Questions", id);
+          throw new OLabObjectNotFoundException("QuestionsPhys", id);
       }
 
     }
@@ -171,9 +171,9 @@ namespace OLab.Api.Endpoints
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
-        throw new OLabUnauthorizedException("Questions", 0);
+        throw new OLabUnauthorizedException("QuestionsPhys", 0);
 
-      var builder = new QuestionsFull(Logger);
+      var builder = new QuestionsFullMapper(Logger);
       var phys = builder.DtoToPhysical(dto);
 
       phys.CreatedAt = DateTime.Now;
