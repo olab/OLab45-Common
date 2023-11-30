@@ -48,8 +48,8 @@ namespace OLab.Api.Dto
       Name = form.Field("name").ToString();
       Description = form.Field("description").ToString();
       Copyright = form.Field("copyright").ToString();
-      ImageableId = Convert.ToUInt32(form.Field("ScopeId"));
-      ImageableType = form.Field("ScopeLevel").ToString();
+      ImageableId = Convert.ToUInt32(form.Field("parentId"));
+      ImageableType = form.Field("scopeLevel").ToString();
       IsMediaResource = Convert.ToBoolean(form.Field("isMediaResource"));
       SelectedFileName = form.Fields["selectedFileName"].ToString();
       CreatedAt = DateTime.UtcNow;

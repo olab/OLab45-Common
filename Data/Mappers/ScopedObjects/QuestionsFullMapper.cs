@@ -38,6 +38,11 @@ namespace OLab.Api.ObjectMapper
 
       phys = DtoToPhysical(dto, phys);
 
+      return phys;
+    }
+
+    public override SystemQuestions DtoToPhysical(QuestionsFullDto dto, SystemQuestions phys)
+    {
       var builder = new QuestionResponses(Logger, GetWikiProvider(), dto);
       phys.SystemQuestionResponses.AddRange(builder.DtoToPhysical(dto.Responses));
 

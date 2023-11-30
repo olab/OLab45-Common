@@ -181,19 +181,6 @@ namespace OLab.Api.Endpoints
       dbContext.SystemQuestions.Add(phys);
       await dbContext.SaveChangesAsync();
 
-      // convert the saved question to a dto so we can use it 
-      // in building the responses dtos.
-      var newDto = builder.PhysicalToDto(phys);
-
-      foreach (var responseDto in dto.Responses)
-      {
-        var responseBuilder = new QuestionResponses(Logger, newDto);
-        var responsePhys = responseBuilder.DtoToPhysical(responseDto);
-        dbContext.SystemQuestionResponses.Add(responsePhys);
-      }
-
-      await dbContext.SaveChangesAsync();
-
       var newPhys = await GetQuestionAsync(phys.Id);
       dto = builder.PhysicalToDto(newPhys);
 
