@@ -68,7 +68,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     {
       // remove any extra trailing slashes
       var part = pathParts[i].ToString();
-      part = part.Trim('/');
+      part = part.TrimEnd('/');
 
       sb.Append(part);
       if (i < pathParts.Length - 1)
