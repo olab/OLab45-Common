@@ -97,7 +97,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
           item.ImageableType, 
           item.ImageableId);
 
-        if (FileExists(BuildPath(FilesRoot, scopeFolder), item.Path))
+        if (FileExists(scopeFolder, item.Path))
         {
           item.OriginUrl = GetUrlPath( 
             scopeFolder,
