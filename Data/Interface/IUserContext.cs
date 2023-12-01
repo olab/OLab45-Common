@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Configuration;
 
 namespace OLab.Api.Data.Interface
 {

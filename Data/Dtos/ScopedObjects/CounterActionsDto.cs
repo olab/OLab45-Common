@@ -9,7 +9,7 @@ namespace OLab.Api.Dto
     [JsonProperty("nodeId")]
     public uint NodeId { get; set; }
     [JsonProperty("counterId")]
-    public int CounterId { get; set; }
+    public uint CounterId { get; set; }
     [JsonProperty("function")]
     public string Function { get; set; }
     [JsonProperty("display")]

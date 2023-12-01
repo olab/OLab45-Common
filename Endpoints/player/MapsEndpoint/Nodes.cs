@@ -1,3 +1,5 @@
+using DocumentFormat.OpenXml.EMMA;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common.Exceptions;
@@ -47,7 +49,7 @@ namespace OLab.Api.Endpoints.Player
     }
 
     /// <summary>
-    /// Get map node with out scoped objects
+    /// ReadAsync map node with out scoped objects
     /// </summary>
     /// <param name="mapId">map id</param>
     /// <param name="nodeId">node id</param>
@@ -59,7 +61,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId,
       bool hideHidden = true)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
 
       var dto = await GetRawNodeAsync(mapId, nodeId, hideHidden);
 
@@ -97,7 +99,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId,
       DynamicScopedObjectsDto body)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
 
       var session = new OLabSession(Logger, dbContext, auth.UserContext);
 
@@ -189,7 +191,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId
     )
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.DeleteNodeAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.DeleteNodeAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
@@ -199,13 +201,19 @@ namespace OLab.Api.Endpoints.Player
 
       try
       {
-        var links = dbContext.MapNodeLinks.Where(x => (x.NodeId1 == nodeId) || (x.NodeId2 == nodeId)).ToArray();
-        Logger.LogDebug($"deleting {links.Count()} links");
+        var links = dbContext.MapNodeLinks.
+          Where(x => (x.NodeId1 == nodeId) || (x.NodeId2 == nodeId)).ToArray();
+
+        Logger.LogInformation($"deleting {links.Count()} links");
         dbContext.MapNodeLinks.RemoveRange(links);
 
         var node = await dbContext.MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
+
+        if (node == null)
+          throw new OLabObjectNotFoundException("MapNodes", nodeId);
+
         dbContext.MapNodes.Remove(node);
-        Logger.LogDebug($"deleting node id: {node.Id}");
+        Logger.LogInformation($"deleting node id: {node.Id}");
 
         await dbContext.SaveChangesAsync();
 
@@ -240,7 +248,7 @@ namespace OLab.Api.Endpoints.Player
       [FromBody] MapNodesFullDto dto
     )
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.PutNodeAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutNodeAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
@@ -278,7 +286,7 @@ namespace OLab.Api.Endpoints.Player
     }
 
     /// <summary>
-    /// Get node for map
+    /// ReadAsync node for map
     /// </summary>
     /// <param name="map">Map object</param>
     /// <returns>MapsNodesFullRelationsDto</returns>
@@ -291,7 +299,13 @@ namespace OLab.Api.Endpoints.Player
       {
         // if no map node by this point, then the map doesn't have a root node
         // defined so take the first one (by id)        
-        phys = await dbContext.MapNodes.Where(x => x.MapId == mapId).OrderBy(x => x.Id).FirstOrDefaultAsync();
+        phys = await dbContext.MapNodes
+          .Where(x => x.MapId == mapId)
+          .OrderBy(x => x.Id)
+          .FirstOrDefaultAsync();
+
+        if (phys == null)
+          throw new OLabObjectNotFoundException("MapNodes", mapId);
       }
 
       return await GetNodeAsync(mapId, phys.Id, hideHidden, true);

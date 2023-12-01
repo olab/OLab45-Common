@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
@@ -17,8 +16,8 @@ namespace OLab.Api.Data
     private readonly IOLabLogger _logger;
 
     public OLabSession(
-      IOLabLogger logger, 
-      OLabDBContext context, 
+      IOLabLogger logger,
+      OLabDBContext context,
       IUserContext userContext)
     {
       _dbContext = context;
@@ -40,7 +39,7 @@ namespace OLab.Api.Data
 
     public void OnStartSession(IUserContext userContext, uint mapId)
     {
-      SetSessionId( IOLabSession.GenerateSessionId() );
+      SetSessionId(IOLabSession.GenerateSessionId());
 
       _logger.LogInformation($"generated a new contextId: {GetSessionId()}");
 

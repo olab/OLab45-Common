@@ -1,6 +1,9 @@
+using DocumentFormat.OpenXml.EMMA;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Model;
+using OLab.Api.Utils;
+using OLab.Data;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,7 +32,7 @@ namespace OLab.Api.Endpoints.Player
     /// Gets scoped objects for a given map
     /// </summary>
     /// <param name="id">Map Id</param>
-    /// <returns>ScopedObjects dto</returns>
+    /// <returns>ScopedObjectsMapper dto</returns>
     public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(IOLabAuthorization auth, uint id)
     {
       // test if user has access to map.
@@ -54,13 +57,14 @@ namespace OLab.Api.Endpoints.Player
       if (map == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 
-      var phys = await GetScopedObjectsAllAsync(
-        map.Id,
-        Utils.Constants.ScopeLevelMap,
+      var phys = new ScopedObjects(
+        Logger,
+        dbContext,
         _fileStorageModule);
+      await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelMap, map.Id);
 
       // add map-level derived constants
-      phys.Constants.Add(new SystemConstants
+      phys.ConstantsPhys.Add(new SystemConstants
       {
         Id = 0,
         Name = Utils.Constants.ReservedConstantMapId,
@@ -70,7 +74,7 @@ namespace OLab.Api.Endpoints.Player
         Value = Encoding.ASCII.GetBytes(map.Id.ToString())
       });
 
-      phys.Constants.Add(new SystemConstants
+      phys.ConstantsPhys.Add(new SystemConstants
       {
         Id = 0,
         Name = Utils.Constants.ReservedConstantMapName,
@@ -80,7 +84,7 @@ namespace OLab.Api.Endpoints.Player
         Value = Encoding.ASCII.GetBytes(map.Name)
       });
 
-      var builder = new ObjectMapper.ScopedObjects(Logger, _wikiTagProvider, enableWikiTranslation);
+      var builder = new ObjectMapper.ScopedObjectsMapper(Logger, _wikiTagProvider, enableWikiTranslation);
 
       var dto = builder.PhysicalToDto(phys);
       dto.Dump(Logger);

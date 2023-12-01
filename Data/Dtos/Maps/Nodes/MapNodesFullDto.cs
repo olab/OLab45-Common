@@ -34,6 +34,7 @@ namespace OLab.Api.Dto
     public uint? LinkStyleId { get; set; }
     public uint? MapId { get; set; }
     public string Color { get; set; }
+    public ScopedObjectsDto ScopedObjects { get; set; }
 
     [JsonProperty("data")]
     public MapNodesFullDto Data { get; set; }

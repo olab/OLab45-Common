@@ -10,10 +10,13 @@ namespace OLab.Api.ObjectMapper
 {
   public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
   {
+    private readonly bool _enableWikiTranslation;
+
     public MapsFullRelationsMapper(
       IOLabLogger logger,
       bool enableWikiTranslation = true) : base(logger)
     {
+      _enableWikiTranslation = enableWikiTranslation;
     }
 
     public MapsFullRelationsMapper(
@@ -21,10 +24,11 @@ namespace OLab.Api.ObjectMapper
       WikiTagProvider tagProvider,
       bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
+      _enableWikiTranslation = enableWikiTranslation;
     }
 
     /// <summary>
-    /// Default (overridable) AutoMapper configuration
+    /// Default (overridable) AutoMapper cfg
     /// </summary>
     /// <returns>MapperConfiguration</returns>
     protected override MapperConfiguration GetConfiguration()
@@ -52,19 +56,23 @@ namespace OLab.Api.ObjectMapper
       {
         Map = new MapsFullMapper(
           Logger,
-          _wikiTagModules
+          _wikiTagModules,
+          _enableWikiTranslation
         ).PhysicalToDto(map),
         MapNodes = new MapNodesFullMapper(
           Logger,
-          _wikiTagModules
+          _wikiTagModules,
+          _enableWikiTranslation
         ).PhysicalToDto(map.MapNodes.ToList())
       };
 
       var links = new List<MapNodeLinks>();
-      foreach (var node in map.MapNodes)
-        links.AddRange(node.MapNodeLinksNodeId1Navigation);
+      links.AddRange(map.MapNodeLinks);
 
-      dto.MapNodeLinks = new MapNodeLinksMapper(Logger).PhysicalToDto(links);
+      //foreach (var node in map.MapNodes)
+      //  links.AddRange(node.MapNodeLinksNodeId1Navigation);
+
+      dto.MapNodeLinks = new MapNodeLinksMapper(Logger, _enableWikiTranslation).PhysicalToDto(links);
 
       return dto;
     }

@@ -1,21 +1,10 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using OLab.Api.Common;
-using OLab.Api.Common.Exceptions;
+﻿using Microsoft.EntityFrameworkCore;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
-using OLab.Api.Dto;
 using OLab.Api.Model;
-using OLab.Api.ObjectMapper;
-using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data;
 using OLab.Data.Dtos.Session;
 using OLab.Data.Mappers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints;
@@ -38,13 +27,13 @@ public partial class SessionEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     string sessionUuid)
   {
-    Logger.LogDebug($"{auth.UserContext.UserId}: SessionEndpoint.GetAsync");
+    Logger.LogInformation($"{auth.UserContext.UserId}: SessionEndpoint.ReadAsync");
 
-    var session = dbContext.UserSessions
+    var session = await dbContext.UserSessions
       .Include(session => session.Statements)
       .Include(session => session.UserBookmarks)
       .Include(session => session.UserSessionTraces)
-      .FirstOrDefault(x => x.Uuid == sessionUuid);
+      .FirstOrDefaultAsync(x => x.Uuid == sessionUuid);
 
     if (session == null)
       throw new OLabObjectNotFoundException("UserSession", sessionUuid);

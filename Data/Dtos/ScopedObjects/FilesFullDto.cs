@@ -1,5 +1,4 @@
-using HttpMultipartParser;
-using Microsoft.AspNetCore.Http;
+using OLab.Common.Interfaces;
 using System;
 using System.IO;
 
@@ -9,7 +8,8 @@ namespace OLab.Api.Dto
   public class FilesFullDto : FilesDto
   {
 
-    public IFormFile FileContents { get; set; }
+    private readonly Stream FileContentsStream;
+
     public int? FileSize { get; set; }
     public int? Height { get; set; }
     public int? IsSystem { get; set; }
@@ -37,38 +37,26 @@ namespace OLab.Api.Dto
 
     public override string ToString()
     {
-      return $" '{Name}({Id})' = {OriginUrl}";
+      return $" '{Name}({Id})' = {FileName}";
     }
 
-    public FilesFullDto(IFormCollection form)
+    public Stream GetStream() { return FileContentsStream; }
+
+    public FilesFullDto(IOLabFormFieldHelper form)
     {
-      Id = Convert.ToUInt32(form["id"]);
-      Name = form["name"];
-      Description = form["description"];
-      Copyright = form["copyright"];
-      ImageableId = Convert.ToUInt32(form["parentId"]);
-      ImageableType = form["scopeLevel"];
-      IsMediaResource = Convert.ToBoolean(form["isMediaResource"]);
-      SelectedFileName = form["selectedFileName"];
-      FileSize = Convert.ToInt32(form["fileSize"]);
+      Id = Convert.ToUInt32(form.Field("id"));
+      Name = form.Field("name").ToString();
+      Description = form.Field("description").ToString();
+      Copyright = form.Field("copyright").ToString();
+      ImageableId = Convert.ToUInt32(form.Field("parentId"));
+      ImageableType = form.Field("scopeLevel").ToString();
+      IsMediaResource = Convert.ToBoolean(form.Field("isMediaResource"));
+      SelectedFileName = form.Fields["selectedFileName"].ToString();
       CreatedAt = DateTime.UtcNow;
-      if (form.Files.Count == 0)
-        throw new Exception("File not received");
-      FileContents = form.Files[0];
-      FileName = FileContents.FileName;
-    }
 
-    public long GetFileContents(MemoryStream stream)
-    {
-      FileContents.CopyTo(stream);
-      stream.Position = 0;
-      return stream.Length;
-    }
-
-    public FilesFullDto(MultipartFormDataParser parser)
-    {
-      Id = Convert.ToUInt32(parser.GetParameterValue("id"));
-      // TODO: complete the rest of the properties
+      FileContentsStream = form.Stream;
+      FileSize = Convert.ToInt32(FileContentsStream.Length);
+      FileName = form.Fields["selectedFileName"].ToString();
     }
 
   }

@@ -44,10 +44,10 @@ namespace OLab.Api.Endpoints
       uint id,
       QuestionResponsesDto dto)
     {
-      Logger.LogDebug($"PutAsync(uint id={id})");
+      Logger.LogInformation($"PutAsync(uint id={id})");
 
       var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
-      var builder = new QuestionsFull(Logger);
+      var builder = new QuestionsFullMapper(Logger);
       var dtoQuestionTemp = builder.PhysicalToDto(physQuestionTemp);
 
       // test if user has access to object
@@ -67,9 +67,7 @@ namespace OLab.Api.Endpoints
       }
       catch (DbUpdateConcurrencyException)
       {
-        var existingObject = await GetConstantAsync(id);
-        if (existingObject == null)
-          throw new OLabObjectNotFoundException("QuestionResponses", id);
+        await GetConstantAsync(id);
       }
 
     }
@@ -83,10 +81,10 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       QuestionResponsesDto dto)
     {
-      Logger.LogDebug($"QuestionResponsesController.PostAsync({dto.Response})");
+      Logger.LogInformation($"QuestionResponsesController.PostAsync({dto.Response})");
 
       var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
-      var questionBuilder = new QuestionsFull(Logger);
+      var questionBuilder = new QuestionsFullMapper(Logger);
       var dtoQuestionTemp = questionBuilder.PhysicalToDto(physQuestionTemp);
 
       // test if user has access to object
@@ -114,7 +112,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       uint id)
     {
-      Logger.LogDebug($"QuestionResponsesController.DeleteAsync(uint id={id})");
+      Logger.LogInformation($"QuestionResponsesController.DeleteAsync(uint id={id})");
 
       if (!Exists(id))
         return OLabNotFoundResult<uint>.Result(id);
@@ -123,7 +121,7 @@ namespace OLab.Api.Endpoints
       {
         var physResponse = await GetQuestionResponseAsync(id);
         var physQuestion = await GetQuestionAsync(physResponse.QuestionId.Value);
-        var questionBuilder = new QuestionsFull(Logger);
+        var questionBuilder = new QuestionsFullMapper(Logger);
         var dtoQuestion = questionBuilder.PhysicalToDto(physQuestion);
 
         // test if user has access to objectdtoQuestion

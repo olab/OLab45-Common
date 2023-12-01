@@ -1,8 +1,11 @@
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common.Exceptions;
+using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
+using OLab.Data.BusinessObjects;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,7 +28,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId,
       uint sinceTime = 0)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsRawAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsRawAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -48,7 +51,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId,
       uint sinceTime = 0)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsTranslatedAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsTranslatedAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -72,18 +75,11 @@ namespace OLab.Api.Endpoints.Player
       uint sinceTime,
       bool enableWikiTranslation)
     {
-      var physServer = new Model.ScopedObjects();
-      var physNode = new Model.ScopedObjects();
-      var physMap = new Model.ScopedObjects();
-
-      physServer.Counters = await GetScopedCountersAsync(Utils.Constants.ScopeLevelServer, serverId);
-      physNode.Counters = await GetScopedCountersAsync(Utils.Constants.ScopeLevelNode, node.Id);
-      physMap.Counters = await GetScopedCountersAsync(Utils.Constants.ScopeLevelMap, node.MapId);
-
-      await ProcessNodeCounters(node, physMap.Counters);
+      var phys = new DynamicScopedObjects(Logger, dbContext, serverId, node.MapId, node.Id);
+      await phys.GetDynamicScopedObjectsAsync();
 
       var builder = new ObjectMapper.DynamicScopedObjects(Logger, enableWikiTranslation);
-      var dto = builder.PhysicalToDto(physServer, physMap, physNode);
+      var dto = builder.PhysicalToDto(phys);
 
       return dto;
     }
@@ -93,12 +89,15 @@ namespace OLab.Api.Endpoints.Player
       var newDtoList = new List<CountersDto>();
       var node = await dbContext.MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
 
+      if (node == null)
+        throw new OLabObjectNotFoundException("MapNodes", nodeId);
+
       var counterActions = await dbContext.SystemCounterActions.Where(x =>
         (x.ImageableId == node.Id) &&
         (x.ImageableType == Utils.Constants.ScopeLevelNode) &&
         (x.OperationType == "open")).ToListAsync();
 
-      Logger.LogDebug($"Found {counterActions.Count} counterActions records for node {node.Id} ");
+      Logger.LogInformation($"Found {counterActions.Count} counterActions records for node {node.Id} ");
 
       foreach (var counterAction in counterActions)
       {
@@ -109,7 +108,7 @@ namespace OLab.Api.Endpoints.Player
         else
         {
           // convert to physical object so we can use the counterActions code
-          var phys = new ObjectMapper.Counters(Logger).DtoToPhysical(dto);
+          var phys = new ObjectMapper.CounterMapper(Logger).DtoToPhysical(dto);
 
           // test if there's a counter action to apply
           if (counterAction.ApplyFunctionToCounter(phys))
@@ -117,8 +116,8 @@ namespace OLab.Api.Endpoints.Player
             // remove original counter from list
             orgDtoList.Remove(dto);
 
-            dto = new ObjectMapper.Counters(Logger).PhysicalToDto(phys);
-            Logger.LogDebug($"Updated counter '{dto.Name}' ({dto.Id}) with function '{counterAction.Expression}'. now = {dto.Value}");
+            dto = new ObjectMapper.CounterMapper(Logger).PhysicalToDto(phys);
+            Logger.LogInformation($"Updated counter '{dto.Name}' ({dto.Id}) with function '{counterAction.Expression}'. now = {dto.Value}");
 
             // add updated counter back to list
             orgDtoList.Add(dto);
@@ -146,7 +145,7 @@ namespace OLab.Api.Endpoints.Player
         (x.ImageableType == Utils.Constants.ScopeLevelNode) &&
         (x.OperationType == "open")).ToListAsync();
 
-      Logger.LogDebug($"Found {counterActions.Count} counterActions records for node {node.Id} ");
+      Logger.LogInformation($"Found {counterActions.Count} counterActions records for node {node.Id} ");
 
       foreach (var counterAction in counterActions)
       {
@@ -155,7 +154,7 @@ namespace OLab.Api.Endpoints.Player
           Logger.LogError($"Enable to lookup counter {counterAction.CounterId} in action {counterAction.Id}");
 
         else if (counterAction.ApplyFunctionToCounter(phys))
-          Logger.LogDebug($"Updated counter '{phys.Name}' ({phys.Id}) with function '{counterAction.Expression}'. now = {phys.Value}");
+          Logger.LogInformation($"Updated counter '{phys.Name}' ({phys.Id}) with function '{counterAction.Expression}'. now = {phys.Value}");
       }
 
       return physList;

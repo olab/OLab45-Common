@@ -33,7 +33,7 @@ namespace OLab.Api.Endpoints.Player
     }
 
     /// <summary>
-    /// Get simple map node, no relations
+    /// ReadAsync simple map node, no relations
     /// </summary>
     /// <param name="context">EF DBContext</param>
     /// <param name="id">Node Id</param>
@@ -58,13 +58,13 @@ namespace OLab.Api.Endpoints.Player
     }
 
     /// <summary>
-    /// Get full map node, with relations
+    /// ReadAsync full map node, with relations
     /// </summary>
     /// <param name="nodeId">Node id (0, if root node)</param>
     /// <returns>MapsNodesFullRelationsDto response</returns>
     public async Task<MapsNodesFullRelationsDto> GetNodeTranslatedAsync(IOLabAuthorization auth, uint nodeId)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: NodesEndpoint.GetNodeTranslatedAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: NodesEndpoint.GetNodeTranslatedAsync");
       return await GetNodeAsync(nodeId, true);
     }
 
@@ -76,7 +76,7 @@ namespace OLab.Api.Endpoints.Player
     /// <returns></returns>
     public async Task PutNodeAsync(IOLabAuthorization auth, uint id, MapNodesFullDto dto)
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: NodesEndpoint.PutNodeAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: NodesEndpoint.PutNodeAsync");
 
       var phys = await GetMapNodeAsync(id);
       if (phys == null)
@@ -107,7 +107,7 @@ namespace OLab.Api.Endpoints.Player
       MapNodeLinksPostDataDto data
     )
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: NodesEndpoint.PostLinkAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: NodesEndpoint.PostLinkAsync");
 
       var node = GetSimple(dbContext, nodeId);
       if (node == null)
@@ -120,7 +120,7 @@ namespace OLab.Api.Endpoints.Player
 
       dbContext.MapNodeLinks.Add(phys);
       await dbContext.SaveChangesAsync();
-      Logger.LogDebug($"created MapNodeLink id = {phys.Id}");
+      Logger.LogInformation($"created MapNodeLink id = {phys.Id}");
 
       var dto = new MapNodeLinksPostResponseDto
       {
@@ -142,7 +142,7 @@ namespace OLab.Api.Endpoints.Player
       [FromBody] MapNodesPostDataDto data
     )
     {
-      Logger.LogDebug($"{auth.UserContext.UserId}: NodesEndpoint.PostNodeAsync");
+      Logger.LogInformation($"{auth.UserContext.UserId}: NodesEndpoint.PostNodeAsync");
 
       using var transaction = dbContext.Database.BeginTransaction();
 
@@ -155,7 +155,7 @@ namespace OLab.Api.Endpoints.Player
 
         dbContext.MapNodes.Add(phys);
         await dbContext.SaveChangesAsync();
-        Logger.LogDebug($"created MapNode id = {phys.Id}");
+        Logger.LogInformation($"created MapNode id = {phys.Id}");
 
         var link = new MapNodeLinks
         {
@@ -166,7 +166,7 @@ namespace OLab.Api.Endpoints.Player
 
         dbContext.MapNodeLinks.Add(link);
         await dbContext.SaveChangesAsync();
-        Logger.LogDebug($"created MapNodeLink id = {link.Id}");
+        Logger.LogInformation($"created MapNodeLink id = {link.Id}");
 
         await transaction.CommitAsync();
 

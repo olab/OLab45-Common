@@ -1,7 +1,5 @@
 using AutoMapper;
-using Humanizer;
 using OLab.Api.Common;
-using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
@@ -25,7 +23,7 @@ namespace OLab.Data.Mappers
     }
 
     /// <summary>
-    /// Default (overridable) AutoMapper configuration
+    /// Default (overridable) AutoMapper cfg
     /// </summary>
     /// <returns>MapperConfiguration</returns>
     protected override MapperConfiguration GetConfiguration()

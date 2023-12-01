@@ -17,10 +17,10 @@ namespace OLab.Api.ObjectMapper
     {
     }
 
-    //public Questions(
-    //  IOLabLogger logger, 
+    //public QuestionsPhys(
+    //  IOLabLogger Logger, 
     //  WikiTagProvider tagProvider, 
-    //  bool enableWikiTranslation = true) : base(logger, tagProvider)
+    //  bool _enableWikiTranslation = true) : base(Logger, tagProvider)
     //{
     //}
 

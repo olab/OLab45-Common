@@ -10,13 +10,13 @@ namespace OLab.Api.ObjectMapper
 {
   public class QuestionResponses : OLabMapper<SystemQuestionResponses, QuestionResponsesDto>
   {
-    protected readonly QuestionsFullDto ParentQuestion;
+    protected readonly QuestionsFullDto ParentQuestionDto;
 
     public QuestionResponses(
       IOLabLogger logger,
-      QuestionsFullDto parentQuestion) : base(logger)
+      QuestionsFullDto parentQuestion = null) : base(logger)
     {
-      ParentQuestion = parentQuestion;
+      ParentQuestionDto = parentQuestion;
     }
 
     public QuestionResponses(
@@ -24,7 +24,7 @@ namespace OLab.Api.ObjectMapper
       IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
       QuestionsFullDto parentQuestion) : base(logger, wikiTagProvider)
     {
-      ParentQuestion = parentQuestion;
+      ParentQuestionDto = parentQuestion;
     }
 
     public QuestionResponses(
@@ -43,6 +43,8 @@ namespace OLab.Api.ObjectMapper
       else
         phys.IsCorrect = dto.IsCorrect.Value;
 
+      phys.QuestionId = ParentQuestionDto.Id;
+
       return phys;
     }
 
@@ -50,12 +52,12 @@ namespace OLab.Api.ObjectMapper
       SystemQuestionResponses phys,
       QuestionResponsesDto dto)
     {
-      if (ParentQuestion != null)
+      if (ParentQuestionDto != null)
       {
         dto.QuestionId = phys.QuestionId.Value;
         dto.IsCorrect = phys.IsCorrect;
 
-        switch (ParentQuestion.EntryTypeId)
+        switch (ParentQuestionDto.EntryTypeId)
         {
           case (int)SystemQuestionTypes.Type.DragAndDrop:
           case (int)SystemQuestionTypes.Type.DropDown:

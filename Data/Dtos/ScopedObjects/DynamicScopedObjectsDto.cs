@@ -145,7 +145,7 @@ namespace OLab.Api.Dto
     }
 
     /// <summary>
-    /// Get counter from scoped object lists
+    /// ReadAsync counter from scoped object lists
     /// </summary>
     /// <param name="id"></param>
     /// <param name="scopeType">(optional) desired scope level</param>

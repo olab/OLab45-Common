@@ -1,3 +1,5 @@
+using System.Net;
+
 namespace OLab.Api.Common
 {
   public class OLabNotFoundResult<D>
@@ -6,7 +8,8 @@ namespace OLab.Api.Common
     {
       return new OLabAPIResponse<D>()
       {
-        Data = value
+        Data = value,
+        ErrorCode = HttpStatusCode.NotFound
       };
     }
 
@@ -15,7 +18,8 @@ namespace OLab.Api.Common
       return new OLabAPIResponse<uint>()
       {
         Message = $"{objectType}",
-        Data = value
+        Data = value,
+        ErrorCode = HttpStatusCode.NotFound
       };
     }
   }

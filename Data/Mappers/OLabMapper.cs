@@ -19,9 +19,9 @@ namespace OLab.Api.ObjectMapper
   {
     public decimal Convert(DateTime source, decimal destination, ResolutionContext context)
     {
-      DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-      TimeSpan diff = source.ToUniversalTime() - origin;
-      return System.Convert.ToDecimal( Math.Floor(diff.TotalSeconds) );
+      var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+      var diff = source.ToUniversalTime() - origin;
+      return System.Convert.ToDecimal(Math.Floor(diff.TotalSeconds));
     }
   }
 
@@ -57,7 +57,7 @@ namespace OLab.Api.ObjectMapper
     }
 
     /// <summary>
-    /// Default (overridable) AutoMapper configuration
+    /// Default (overridable) AutoMapper cfg
     /// </summary>
     /// <returns>MapperConfiguration</returns>
     protected virtual MapperConfiguration GetConfiguration()

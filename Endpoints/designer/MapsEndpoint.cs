@@ -7,6 +7,7 @@ using OLab.Api.Model;
 using OLab.Api.Model.ReaderWriter;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data;
 using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
@@ -53,7 +54,7 @@ namespace OLab.Api.Endpoints.Designer
     /// <returns>IActionResult</returns>
     public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(IOLabAuthorization auth, uint mapId, uint nodeId)
     {
-      Logger.LogDebug($"GetMapNodeAsync(uint mapId={mapId}, nodeId={nodeId})");
+      Logger.LogInformation($"GetMapNodeAsync(uint mapId={mapId}, nodeId={nodeId})");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -73,7 +74,7 @@ namespace OLab.Api.Endpoints.Designer
     }
 
     /// <summary>
-    /// Get non-rendered nodes for a map
+    /// ReadAsync non-rendered nodes for a map
     /// </summary>
     /// <param name="mapId">Map id</param>
     /// <returns>IActionResult</returns>
@@ -81,7 +82,7 @@ namespace OLab.Api.Endpoints.Designer
       IOLabAuthorization auth,
       uint mapId)
     {
-      Logger.LogDebug($"GetMapNodesAsync(uint mapId={mapId})");
+      Logger.LogInformation($"GetMapNodesAsync(uint mapId={mapId})");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -106,7 +107,7 @@ namespace OLab.Api.Endpoints.Designer
       uint nodeId,
       PostNewLinkRequest body)
     {
-      Logger.LogDebug($"PostMapNodeLinkAsync( destinationId = {body.DestinationId})");
+      Logger.LogInformation($"PostMapNodeLinkAsync( destinationId = {body.DestinationId})");
 
       try
       {
@@ -126,8 +127,8 @@ namespace OLab.Api.Endpoints.Designer
         phys.MapId = sourceNode.MapId;
         phys.NodeId1 = sourceNode.Id;
         phys.NodeId2 = destinationNode.Id;
-        dbContext.Entry(phys).State = EntityState.Added;
 
+        dbContext.MapNodeLinks.Add(phys);
         await dbContext.SaveChangesAsync();
 
         var dto = new PostNewLinkResponse
@@ -152,7 +153,7 @@ namespace OLab.Api.Endpoints.Designer
       IOLabAuthorization auth,
       PostNewNodeRequest body)
     {
-      Logger.LogDebug($"PostMapNodesAsync(x = {body.X}, y = {body.Y}, sourceId = {body.SourceId})");
+      Logger.LogInformation($"PostMapNodesAsync(x = {body.X}, y = {body.Y}, sourceId = {body.SourceId})");
 
       using var transaction = dbContext.Database.BeginTransaction();
 
@@ -278,9 +279,9 @@ namespace OLab.Api.Endpoints.Designer
     public async Task<bool> DeleteMapNodeLinkAsync(
       IOLabAuthorization auth,
       uint mapId,
-      uint linkId)
+      uint id)
     {
-      Logger.LogDebug($"DeleteMapNodeLinkAsync(mapId = {mapId}, linkId = {linkId})");
+      Logger.LogInformation($"DeleteMapNodeLinkAsync(mapId = {mapId}, id = {id})");
 
       try
       {
@@ -288,12 +289,12 @@ namespace OLab.Api.Endpoints.Designer
         if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
           throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-        var link = GetLinkSimple(dbContext, linkId);
+        var link = GetLinkSimple(dbContext, id);
 
         if (link == null)
-          throw new OLabObjectNotFoundException("Links", linkId);
+          throw new OLabObjectNotFoundException("Links", id);
 
-        Logger.LogDebug($"deleting link {link.Id} of map {link.MapId}");
+        Logger.LogInformation($"deleting link {link.Id} of map {link.MapId}");
         dbContext.MapNodeLinks.Remove(link);
         await dbContext.SaveChangesAsync();
         return true;
@@ -314,7 +315,7 @@ namespace OLab.Api.Endpoints.Designer
       IOLabAuthorization auth,
       uint id)
     {
-      Logger.LogDebug($"MapsController.GetScopedObjectsRawAsync(uint id={id})");
+      Logger.LogInformation($"MapsController.GetScopedObjectsRawAsync(uint id={id})");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, id))
@@ -332,7 +333,7 @@ namespace OLab.Api.Endpoints.Designer
       IOLabAuthorization auth,
       uint id)
     {
-      Logger.LogDebug($"MapsController.GetScopedObjectsTranslatedAsync(uint id={id})");
+      Logger.LogInformation($"MapsController.GetScopedObjectsTranslatedAsync(uint id={id})");
 
       // test if user has access to map.
       // test if user has access to map.
@@ -356,19 +357,15 @@ namespace OLab.Api.Endpoints.Designer
       if (map == null)
         return null;
 
-      var phys = await GetScopedObjectsAllAsync(
-        map.Id,
-        Utils.Constants.ScopeLevelMap,
+      var phys = new ScopedObjects(
+        Logger,
+        dbContext, 
         _fileStorageModule);
 
-      var physServer = await GetScopedObjectsAllAsync(
-        1,
-        Utils.Constants.ScopeLevelServer,
-        _fileStorageModule);
+      await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelServer, 1);
+      await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelMap, map.Id);
 
-      phys.Combine(physServer);
-
-      phys.Constants.Add(new SystemConstants
+      phys.ConstantsPhys.Add(new SystemConstants
       {
         Id = 0,
         Name = Utils.Constants.ReservedConstantMapId,
@@ -378,7 +375,7 @@ namespace OLab.Api.Endpoints.Designer
         Value = Encoding.ASCII.GetBytes(map.Id.ToString())
       });
 
-      phys.Constants.Add(new SystemConstants
+      phys.ConstantsPhys.Add(new SystemConstants
       {
         Id = 0,
         Name = Utils.Constants.ReservedConstantMapName,
@@ -388,7 +385,7 @@ namespace OLab.Api.Endpoints.Designer
         Value = Encoding.ASCII.GetBytes(map.Name)
       });
 
-      phys.Constants.Add(new SystemConstants
+      phys.ConstantsPhys.Add(new SystemConstants
       {
         Id = 0,
         Name = Utils.Constants.ReservedConstantSystemTime,
@@ -398,7 +395,7 @@ namespace OLab.Api.Endpoints.Designer
         Value = Encoding.ASCII.GetBytes(DateTime.UtcNow.ToString() + " UTC")
       });
 
-      var builder = new ObjectMapper.Designer.ScopedObjects(Logger, _wikiTagProvider, enableWikiTranslation);
+      var builder = new ObjectMapper.Designer.ScopedObjectMapper(Logger, _wikiTagProvider, enableWikiTranslation);
       var dto = builder.PhysicalToDto(phys);
 
       var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
@@ -424,7 +421,7 @@ namespace OLab.Api.Endpoints.Designer
     }
 
     /// <summary>
-    /// Get a list of security users attached to a map
+    /// ReadAsync a list of security users attached to a map
     /// </summary>
     /// <param name="map">Relevent map object</param>
     /// <returns></returns>
@@ -491,7 +488,7 @@ namespace OLab.Api.Endpoints.Designer
     }
 
     /// <summary>
-    /// Get a list of security users attached to a map
+    /// ReadAsync a list of security users attached to a map
     /// </summary>
     /// <param name="map">Relevent map object</param>
     /// <returns></returns>
@@ -603,5 +600,35 @@ namespace OLab.Api.Endpoints.Designer
         return false;
       }
     }
+
+    /// <summary>
+    /// Plays specific map node
+    /// </summary>
+    /// <param name="mapId">map id</param>
+    /// <param name="nodeId">node id</param>
+    /// <returns>IActionResult</returns>
+    public async Task<MapNodeLinksDto> GetMapNodeLinkAsync(IOLabAuthorization auth, uint mapId, uint id)
+    {
+      Logger.LogInformation($"GetMapNodeLinkAsync(uint mapId={mapId}, id={id})");
+
+      // test if user has access to map.
+      if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
+        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+
+      var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).GetSingleAsync(mapId)
+        ?? throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
+
+      var phys = await dbContext.MapNodeLinks.Where(x => x.Id == id).FirstOrDefaultAsync();
+
+      if (phys == null)
+        throw new OLabObjectNotFoundException("MapNodeLink", id);
+
+      var dto = new ObjectMapper.MapNodeLinksMapper(
+        Logger,
+        false).PhysicalToDto(phys);
+
+      return dto;
+    }
+
   }
 }

@@ -64,9 +64,9 @@ namespace OLab.Api.Utils
       _keepMessages = keepMessages;
     }
 
-    public static IOLabLogger CreateNew<T>(IOLabLogger source)
+    public static IOLabLogger CreateNew<T>(IOLabLogger source, bool keepMessages = false)
     {
-      var logger = new OLabLogger(source.GetLoggerFactory(), source.GetLoggerFactory().CreateLogger<T>());
+      var logger = new OLabLogger(source.GetLoggerFactory(), source.GetLoggerFactory().CreateLogger<T>(), keepMessages);
       return logger;
     }
 
@@ -81,6 +81,11 @@ namespace OLab.Api.Utils
     public IList<OLabLogMessage> GetMessages(OLabLogMessage.MessageLevel level = OLabLogMessage.MessageLevel.Debug)
     {
       return _messages.Where(x => x.Level >= level).ToList();
+    }
+
+    public void Clear()
+    {
+      _messages.Clear();
     }
 
     private void Log(OLabLogMessage.MessageLevel level, string message)

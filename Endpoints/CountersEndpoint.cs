@@ -47,7 +47,7 @@ namespace OLab.Api.Endpoints
       int? take,
       int? skip)
     {
-      Logger.LogDebug($"CountersController.GetAsync(int? take={take}, int? skip={skip})");
+      Logger.LogInformation($"ReadAsync take={take} skip={skip}");
 
       var Counters = new List<SystemCounters>();
       var total = 0;
@@ -65,7 +65,7 @@ namespace OLab.Api.Endpoints
         remaining = total - take.Value - skip.Value;
       }
 
-      var dtoList = new ObjectMapper.Counters(Logger).PhysicalToDto(Counters);
+      var dtoList = new ObjectMapper.CounterMapper(Logger).PhysicalToDto(Counters);
 
       var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
       var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
@@ -84,10 +84,10 @@ namespace OLab.Api.Endpoints
     /// <returns></returns>
     public async Task<CountersDto> GetAsync(IOLabAuthorization auth, uint id)
     {
-      Logger.LogDebug($"CountersController.GetAsync(uint id={id})");
+      Logger.LogInformation($"ReadAsync id {id}");
 
       if (!Exists(id))
-        throw new OLabObjectNotFoundException("Counters", id);
+        throw new OLabObjectNotFoundException("CounterMapper", id);
 
       var phys = await GetCounterAsync(id);
       var dto = new CountersFull(Logger).PhysicalToDto(phys);
@@ -95,7 +95,7 @@ namespace OLab.Api.Endpoints
       // test if user has access to object
       var accessResult = auth.HasAccess("R", dto);
       if (accessResult is UnauthorizedResult)
-        throw new OLabUnauthorizedException("Counters", id);
+        throw new OLabUnauthorizedException("CounterMapper", id);
 
       AttachParentObject(dto);
       return dto;
@@ -111,14 +111,14 @@ namespace OLab.Api.Endpoints
       uint id,
       CountersFullDto dto)
     {
-      Logger.LogDebug($"PutAsync(uint id={id})");
+      Logger.LogInformation($"PutAsync id {id}");
 
       dto.ImageableId = dto.ParentInfo.Id;
 
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
-        throw new OLabUnauthorizedException("Counters", id);
+        throw new OLabUnauthorizedException("CounterMapper", id);
 
       try
       {
@@ -134,7 +134,7 @@ namespace OLab.Api.Endpoints
       {
         var existingObject = await GetCounterAsync(id);
         if (existingObject == null)
-          throw new OLabObjectNotFoundException("Counters", id);
+          throw new OLabObjectNotFoundException("CounterMapper", id);
       }
 
     }
@@ -148,7 +148,7 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       CountersFullDto dto)
     {
-      Logger.LogDebug($"CountersController.PostAsync({dto.Name})");
+      Logger.LogInformation($"PostAsync name = {dto.Name}");
 
       dto.ImageableId = dto.ParentInfo.Id;
       dto.Value = dto.StartValue;
@@ -156,7 +156,7 @@ namespace OLab.Api.Endpoints
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
-        throw new OLabUnauthorizedException("Counters", 0);
+        throw new OLabUnauthorizedException("CounterMapper", 0);
 
       var builder = new CountersFull(Logger);
       var phys = builder.DtoToPhysical(dto);
@@ -181,10 +181,10 @@ namespace OLab.Api.Endpoints
       IOLabAuthorization auth,
       uint id)
     {
-      Logger.LogDebug($"CountersController.DeleteAsync(uint id={id})");
+      Logger.LogInformation($"DeleteAsync id {id}");
 
       if (!Exists(id))
-        throw new OLabObjectNotFoundException("Counters", id);
+        throw new OLabObjectNotFoundException("CounterMapper", id);
 
       try
       {
@@ -194,7 +194,7 @@ namespace OLab.Api.Endpoints
         // test if user has access to object
         var accessResult = auth.HasAccess("W", dto);
         if (accessResult is UnauthorizedResult)
-          throw new OLabUnauthorizedException("Counters", id);
+          throw new OLabUnauthorizedException("CounterMapper", id);
 
         dbContext.SystemCounters.Remove(phys);
         await dbContext.SaveChangesAsync();
@@ -204,7 +204,7 @@ namespace OLab.Api.Endpoints
       {
         var existingObject = await GetCounterAsync(id);
         if (existingObject == null)
-          throw new OLabObjectNotFoundException("Counters", id);
+          throw new OLabObjectNotFoundException("CounterMapper", id);
       }
 
     }

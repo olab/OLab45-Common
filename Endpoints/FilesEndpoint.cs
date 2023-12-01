@@ -1,3 +1,4 @@
+using HeyRed.Mime;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
@@ -8,6 +9,7 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
@@ -47,7 +49,7 @@ namespace OLab.Api.Endpoints
     /// <returns></returns>
     public async Task<OLabAPIPagedResponse<FilesDto>> GetAsync(int? take, int? skip)
     {
-      Logger.LogDebug($"FilesController.GetAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
+      Logger.LogInformation($"FilesController.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
 
       var Files = new List<SystemFiles>();
       var total = 0;
@@ -65,7 +67,7 @@ namespace OLab.Api.Endpoints
         remaining = total - take.Value - skip.Value;
       }
 
-      Logger.LogDebug(string.Format("found {0} Files", Files.Count));
+      Logger.LogInformation(string.Format("found {0} FilesPhys", Files.Count));
 
       var dtoList = new Files(Logger).PhysicalToDto(Files);
 
@@ -89,10 +91,10 @@ namespace OLab.Api.Endpoints
       uint id)
     {
 
-      Logger.LogDebug($"FilesController.GetAsync(uint id={id})");
+      Logger.LogInformation($"FilesController.ReadAsync(uint id={id})");
 
       if (!Exists(id))
-        throw new OLabObjectNotFoundException("Files", id);
+        throw new OLabObjectNotFoundException("FilesPhys", id);
 
       var phys = await dbContext.SystemFiles.FirstAsync(x => x.Id == id);
       var dto = new FilesFull(Logger).PhysicalToDto(phys);
@@ -100,7 +102,7 @@ namespace OLab.Api.Endpoints
       // test if user has access to object
       var accessResult = auth.HasAccess("R", dto);
       if (accessResult is UnauthorizedResult)
-        throw new OLabUnauthorizedException("Files", id);
+        throw new OLabUnauthorizedException("FilesPhys", id);
 
       AttachParentObject(dto);
       return dto;
@@ -117,14 +119,14 @@ namespace OLab.Api.Endpoints
       uint id, FilesFullDto dto)
     {
 
-      Logger.LogDebug($"PutAsync(uint id={id})");
+      Logger.LogInformation($"PutAsync(uint id={id})");
 
       dto.ImageableId = dto.ParentInfo.Id;
 
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
-        throw new OLabUnauthorizedException("Files", id);
+        throw new OLabUnauthorizedException("FilesPhys", id);
 
       try
       {
@@ -138,9 +140,7 @@ namespace OLab.Api.Endpoints
       }
       catch (DbUpdateConcurrencyException)
       {
-        var existingObject = await GetConstantAsync(id);
-        if (existingObject == null)
-          throw new OLabObjectNotFoundException("Files", id);
+        await GetConstantAsync(id);
       }
 
     }
@@ -153,15 +153,18 @@ namespace OLab.Api.Endpoints
     public async Task<FilesFullDto> PostAsync(
       IOLabAuthorization auth,
       FilesFullDto dto,
-      CancellationToken cancel)
+      CancellationToken token)
     {
-      Logger.LogDebug($"FilesController.PostAsync()");
+      Logger.LogInformation($"FilesController.PostAsync()");
       var builder = new FilesFull(Logger);
 
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
-        throw new OLabUnauthorizedException("Files", 0);
+        throw new OLabUnauthorizedException("FilesPhys", 0);
+
+      if (string.IsNullOrEmpty(dto.Mime))
+        dto.Mime = MimeTypesMap.GetMimeType(Path.GetFileName(dto.FileName));
 
       var phys = builder.DtoToPhysical(dto);
       phys.CreatedAt = DateTime.Now;
@@ -169,12 +172,16 @@ namespace OLab.Api.Endpoints
       dbContext.SystemFiles.Add(phys);
       await dbContext.SaveChangesAsync();
 
-      using (var stream = new MemoryStream())
-      {
-        dto.GetFileContents(stream);
-        var filePath = $"{dto.ImageableType}{_fileStorageModule.GetFolderSeparator()}{dto.ImageableId}{_fileStorageModule.GetFolderSeparator()}{dto.FileName}";
-        await _fileStorageModule.CopyFiletoStreamAsync(stream, filePath, cancel);
-      }
+      var filePath = _fileStorageModule.BuildPath(
+        OLabFileStorageModule.FilesRoot,
+        dto.ImageableType,
+        dto.ImageableId);
+
+      await _fileStorageModule.WriteFileAsync(
+        dto.GetStream(), 
+        filePath, 
+        dto.FileName, 
+        token);
 
       var newDto = builder.PhysicalToDto(phys);
       return newDto;
@@ -190,10 +197,10 @@ namespace OLab.Api.Endpoints
       uint id)
     {
 
-      Logger.LogDebug($"ConstantsEndpoint.DeleteAsync(uint id={id})");
+      Logger.LogInformation($"ConstantsEndpoint.DeleteAsync(uint id={id})");
 
       if (!Exists(id))
-        throw new OLabObjectNotFoundException("Files", id);
+        throw new OLabObjectNotFoundException("FilesPhys", id);
 
       try
       {
@@ -203,17 +210,25 @@ namespace OLab.Api.Endpoints
         // test if user has access to object
         var accessResult = auth.HasAccess("W", dto);
         if (accessResult is UnauthorizedResult)
-          throw new OLabUnauthorizedException("Constants", id);
+          throw new OLabUnauthorizedException("ConstantsPhys", id);
 
         dbContext.SystemFiles.Remove(phys);
         await dbContext.SaveChangesAsync();
 
+        var filePath = _fileStorageModule.BuildPath(
+          OLabFileStorageModule.FilesRoot,
+          dto.ImageableType,
+          dto.ImageableId);
+
+        await _fileStorageModule.DeleteFileAsync(
+          filePath, 
+          dto.FileName);
       }
       catch (DbUpdateConcurrencyException)
       {
         var existingObject = await GetFileAsync(id);
         if (existingObject == null)
-          throw new OLabObjectNotFoundException("Files", id);
+          throw new OLabObjectNotFoundException("FilesPhys", id);
       }
 
     }
