@@ -10,6 +10,7 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.BusinessObjects.API;
 using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ using Constants = OLab.Api.Utils.Constants;
 
 namespace OLab.Api.Endpoints
 {
-  public class OLabEndpoint
+    public class OLabEndpoint
   {
     protected readonly OLabDBContext dbContext;
     protected IOLabLogger Logger;

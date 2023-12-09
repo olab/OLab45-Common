@@ -1,13 +1,13 @@
 using AutoMapper;
 using OLab.Api.Common;
 using OLab.Api.Dto;
-using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using OLab.Data.BusinessObjects.API;
 using System.Text;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class ConstantsFull : OLabMapper<SystemConstants, ConstantsDto>
+    public class ConstantsFull : OLabMapper<SystemConstants, ConstantsDto>
   {
 
     public ConstantsFull(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)

@@ -1,8 +1,8 @@
-using OLab.Api.Model;
+using OLab.Data.BusinessObjects.API;
 
 namespace OLab.Import.OLab3.Model
 {
-  public class XmlMapAvatars : XmlImportArray<MapAvatars>
+    public class XmlMapAvatars : XmlImportArray<MapAvatars>
   {
   }
 }

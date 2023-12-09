@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
-using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using OLab.Data.BusinessObjects.API;
 using OLab.Data.Dtos.Session;
 using OLab.Data.Mappers;
 using System.Threading.Tasks;

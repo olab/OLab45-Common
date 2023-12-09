@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OLab.Api.Utils;
+using OLab.Data.BusinessObjects.API;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Model.ReaderWriter
 {
-  public partial class MapsReaderWriter
+    public partial class MapsReaderWriter
   {
     private readonly OLabDBContext _context;
     private readonly ILogger _logger;

@@ -4,6 +4,7 @@ using OLab.Api.Data.Interface;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Data;
+using OLab.Data.BusinessObjects.API;
 using System.Text;
 using System.Threading.Tasks;
 

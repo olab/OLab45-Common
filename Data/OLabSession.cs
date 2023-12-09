@@ -1,15 +1,15 @@
 using Newtonsoft.Json;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
-using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.BusinessObjects.API;
 using System.Linq;
 using System.Text;
 
 namespace OLab.Api.Data
 {
-  public class OLabSession : IOLabSession
+    public class OLabSession : IOLabSession
   {
     private readonly OLabDBContext _dbContext;
     private readonly IUserContext _userContext;

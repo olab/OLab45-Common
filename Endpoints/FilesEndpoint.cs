@@ -10,6 +10,7 @@ using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
 using OLab.Common.Utils;
+using OLab.Data.BusinessObjects.API;
 using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
 {
-  public partial class FilesEndpoint : OLabEndpoint
+    public partial class FilesEndpoint : OLabEndpoint
   {
     public FilesEndpoint(
       IOLabLogger logger,

@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using OLab.Data.BusinessObjects.API;
 
 namespace OLab.Api.Model
 {
-  public partial class SystemQuestions
+    public partial class SystemQuestions
   {
     public string GetWikiTag()
     {

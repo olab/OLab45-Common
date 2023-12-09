@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
-using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using OLab.Data;
+using OLab.Data.BusinessObjects.API;
 using OLab.Data.Interface;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints.Player
 {
-  public partial class ServerEndpoint : OLabEndpoint
+    public partial class ServerEndpoint : OLabEndpoint
   {
     public ServerEndpoint(
       IOLabLogger logger,

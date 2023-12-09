@@ -1,6 +1,6 @@
 using OLab.Api.Importer;
-using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using OLab.Data.BusinessObjects.API;
 using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
@@ -10,11 +10,11 @@ using static OLab.Import.OLab3.Importer;
 
 namespace OLab.Import.OLab3.Dtos
 {
-  /// <summary>
-  /// Xml import base object
-  /// </summary>
-  /// <typeparam name="P">Model (physical) class</typeparam>
-  public abstract class XmlImportDto<P> : XmlDto where P : new()
+    /// <summary>
+    /// Xml import base object
+    /// </summary>
+    /// <typeparam name="P">Model (physical) class</typeparam>
+    public abstract class XmlImportDto<P> : XmlDto where P : new()
   {
     protected dynamic _phys;
     private readonly string _fileName;

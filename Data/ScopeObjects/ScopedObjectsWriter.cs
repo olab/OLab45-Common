@@ -1,22 +1,6 @@
-using AutoMapper.Internal.Mappers;
-using Common.Utils;
-using Dawn;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using HeyRed.Mime;
-using Humanizer;
-using Microsoft.EntityFrameworkCore;
-using OLab.Api.Common;
-using OLab.Api.Dto;
 using OLab.Api.Model;
-using OLab.Api.ObjectMapper;
-using OLab.Common.Interfaces;
-using OLab.Data.Interface;
-using System;
+using OLab.Data.BusinessObjects.API;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -55,6 +39,11 @@ public partial class ScopedObjects
       await WriteCounterToDatabaseAsync(
         counterPhys,
         token);
+
+    foreach (var actionPhys in CounterActionsPhys)
+      await WriteActionToDatabaseAsync(
+        actionPhys,
+        token);
   }
 
   private async Task WriteActionToDatabaseAsync(
@@ -74,7 +63,7 @@ public partial class ScopedObjects
     await _dbContext.SystemCounterActions.AddAsync(phys);
     await _dbContext.SaveChangesAsync(token);
 
-    Logger.LogInformation($"  imported action for counter '{phys.CounterId}', {oldId}  ->  {phys.Id}");
+    Logger.LogInformation($"  imported action for counter '{phys.CounterId}', {oldId}  ->  {phys.Id}. scope type: {phys.ImageableType} id: {phys.ImageableId}");
   }
 
   private async Task WriteCounterToDatabaseAsync(

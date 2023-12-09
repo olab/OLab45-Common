@@ -1,13 +1,13 @@
 using OLab.Api.Dto;
-using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using OLab.Data.BusinessObjects.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class MapVpd : OLabMapper<MapVpds, MapVpdsDto>
+    public class MapVpd : OLabMapper<MapVpds, MapVpdsDto>
   {
     public MapVpd(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {

@@ -1,8 +1,8 @@
 using OLab.Api.Dto;
-using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using OLab.Common.Utils;
+using OLab.Data.BusinessObjects.API;
 using OLab.Data.Interface;
 using OLab.Import.Interface;
 using OLab.Import.OLab3.Dtos;

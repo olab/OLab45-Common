@@ -3,14 +3,14 @@ using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
-using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
+using OLab.Data.BusinessObjects.API;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints.Player
 {
-  public partial class MapsEndpoint : OLabEndpoint
+    public partial class MapsEndpoint : OLabEndpoint
   {
     /// <summary>
     /// 

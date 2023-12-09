@@ -2,12 +2,13 @@ using OLab.Api.Common.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using OLab.Data.BusinessObjects.API;
 using System;
 using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints.Player
 {
-  public partial class ResponseEndpoint : OLabEndpoint
+    public partial class ResponseEndpoint : OLabEndpoint
   {
 
     public ResponseEndpoint(

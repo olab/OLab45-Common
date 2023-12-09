@@ -10,6 +10,7 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
+using OLab.Data.BusinessObjects.API;
 using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
@@ -71,7 +72,7 @@ public partial class ScopedObjects
   }
 
   /// <summary>
-  /// 
+  /// Load constants from database
   /// </summary>
   /// <param name="parentId"></param>
   /// <param name="scopeLevel"></param>
@@ -93,7 +94,7 @@ public partial class ScopedObjects
   }
 
   /// <summary>
-  /// Gets question scoped objects
+  /// Loads questions from database
   /// </summary>
   /// <returns></returns>
   private async Task<List<SystemQuestions>> LoadQuestionsFromDatabaseAsync(
@@ -119,7 +120,7 @@ public partial class ScopedObjects
   }
 
   /// <summary>
-  /// Gets file scoped objects
+  /// Loads files from database
   /// </summary>
   /// <param name="fileStorageModule">File storage module that provides URL</param>
   /// <returns></returns>
@@ -150,7 +151,7 @@ public partial class ScopedObjects
   }
 
   /// <summary>
-  /// Gets thems scoped objects
+  /// Loads themes from database
   /// </summary>
   /// <returns></returns>
   private async Task<List<SystemThemes>> LoadThemesFromDatabaseAsync(
@@ -170,7 +171,7 @@ public partial class ScopedObjects
   }
 
   /// <summary>
-  /// Gets script scoped objects
+  /// Loads script objects form database
   /// </summary>
   /// <returns>List of SystemScripts</returns>
   private async Task<List<SystemScripts>> LoadScriptsFromDatabaseAsync(
@@ -190,7 +191,7 @@ public partial class ScopedObjects
   }
 
   /// <summary>
-  /// ReadAsync counters associated with a 'parent' object 
+  /// Loads counters from database
   /// </summary>
   /// <param name="sinceTime">(optional) looks for values changed since a (unix) time</param>
   /// <returns>List of counters</returns>

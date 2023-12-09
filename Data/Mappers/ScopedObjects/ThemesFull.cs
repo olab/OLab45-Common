@@ -1,11 +1,11 @@
 using Newtonsoft.Json;
 using OLab.Api.Dto;
-using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using OLab.Data.BusinessObjects.API;
 
 namespace OLab.Api.ObjectMapper
 {
-  public class ThemesFull : OLabMapper<SystemThemes, ThemesFullDto>
+    public class ThemesFull : OLabMapper<SystemThemes, ThemesFullDto>
   {
     protected readonly bool enableWikiTranslation;
 

@@ -8,6 +8,7 @@ using OLab.Api.Model.ReaderWriter;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using OLab.Data;
+using OLab.Data.BusinessObjects.API;
 using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints.Designer
 {
-  public partial class MapsEndpoint : OLabEndpoint
+    public partial class MapsEndpoint : OLabEndpoint
   {
     public MapsEndpoint(
       IOLabLogger logger,
