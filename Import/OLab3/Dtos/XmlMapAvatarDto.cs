@@ -1,7 +1,7 @@
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects.API;
+using OLab.Data.BusinessObjects;
 using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;

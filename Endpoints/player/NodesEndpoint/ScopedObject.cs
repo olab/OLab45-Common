@@ -3,7 +3,7 @@ using OLab.Api.Data.Exceptions;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Data;
-using OLab.Data.BusinessObjects.API;
+using OLab.Data.BusinessObjects;
 using System;
 using System.Text;
 using System.Threading.Tasks;

@@ -1,7 +1,7 @@
 using AutoMapper;
 using OLab.Api.Dto.Designer;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects.API;
+using OLab.Data.BusinessObjects;
 
 namespace OLab.Api.ObjectMapper.Designer
 {

@@ -1,6 +1,6 @@
 using OLab.Api.Dto;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects.API;
+using OLab.Data.BusinessObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;

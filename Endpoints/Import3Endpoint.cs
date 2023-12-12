@@ -1,6 +1,6 @@
 ﻿using OLab.Api.Endpoints;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects.API;
+using OLab.Data.BusinessObjects;
 using OLab.Data.Interface;
 using OLab.Import.OLab3;
 using System.IO;

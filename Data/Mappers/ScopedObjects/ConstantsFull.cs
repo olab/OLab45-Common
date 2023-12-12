@@ -2,7 +2,7 @@ using AutoMapper;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects.API;
+using OLab.Data.BusinessObjects;
 using System.Text;
 
 namespace OLab.Api.ObjectMapper

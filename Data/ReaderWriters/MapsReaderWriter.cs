@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OLab.Api.Utils;
-using OLab.Data.BusinessObjects.API;
+using OLab.Data.BusinessObjects;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

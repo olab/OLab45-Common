@@ -1,8 +1,9 @@
 using System;
+using OLab.Data.BusinessObjectsEx.API;
 
 namespace OLab.Api.Model
 {
-  public class AuthenticateResponse
+    public class AuthenticateResponse
   {
     public DateTime CreatedAt { get; set; }
     public string UserName { get; set; }

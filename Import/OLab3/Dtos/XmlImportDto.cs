@@ -1,6 +1,6 @@
 using OLab.Api.Importer;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects.API;
+using OLab.Data.BusinessObjects;
 using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;

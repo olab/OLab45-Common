@@ -1,8 +1,8 @@
-using OLab.Api.Model;
+using OLab.Data.BusinessObjectsEx.API;
 
 namespace OLab.Api.Dto
 {
-  public class LoginResponseDto
+    public class LoginResponseDto
   {
     public LoginResponseDto()
     {

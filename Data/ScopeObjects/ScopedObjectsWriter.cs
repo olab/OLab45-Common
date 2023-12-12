@@ -1,5 +1,5 @@
 using OLab.Api.Model;
-using OLab.Data.BusinessObjects.API;
+using OLab.Data.BusinessObjects;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;

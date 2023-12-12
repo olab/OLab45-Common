@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using OLab.Api.Dto;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects.API;
+using OLab.Data.BusinessObjects;
 
 namespace OLab.Api.ObjectMapper
 {

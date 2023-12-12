@@ -1,4 +1,4 @@
-using OLab.Data.BusinessObjects.API;
+using OLab.Data.BusinessObjects;
 
 namespace OLab.Import.OLab3.Model
 {

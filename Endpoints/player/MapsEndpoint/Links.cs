@@ -4,7 +4,7 @@ using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.ObjectMapper;
-using OLab.Data.BusinessObjects.API;
+using OLab.Data.BusinessObjects;
 using System.Linq;
 using System.Threading.Tasks;
 

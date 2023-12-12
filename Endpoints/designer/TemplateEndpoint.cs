@@ -6,7 +6,7 @@ using OLab.Api.Dto.Designer;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects.API;
+using OLab.Data.BusinessObjects;
 using OLab.Data.Interface;
 using System.Collections.Generic;
 using System.Linq;

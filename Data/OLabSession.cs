@@ -3,7 +3,7 @@ using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects.API;
+using OLab.Data.BusinessObjects;
 using System.Linq;
 using System.Text;
 

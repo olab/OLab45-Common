@@ -24,7 +24,7 @@
     <ProjectReference Include="..\WikiTags\OLab.WikiTags.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="BusinessObjects\TTalk\" />
+    <Folder Include="BusinessObjects\API\" />
     <Folder Include="Dtos\Reporting\" />
   </ItemGroup>
   <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
