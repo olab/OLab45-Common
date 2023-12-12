@@ -1,4 +1,5 @@
 using System;
+using System.Configuration;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -30,6 +31,11 @@ namespace OLab.Api.Utils
 
     public static string EncryptString(string key, string plainText)
     {
+      // ensure key is 32 bytes
+      while (key.Length < 32)
+        key += key;
+      key = key[..32];
+
       var iv = new byte[16];
       byte[] array;
 
@@ -59,6 +65,11 @@ namespace OLab.Api.Utils
 
     public static string DecryptString(string key, string cipherText)
     {
+      // ensure key is 32 bytes
+      while (key.Length < 32)
+        key += key;
+      key = key[..32];
+
       var iv = new byte[16];
       var buffer = Convert.FromBase64String(cipherText);
 
