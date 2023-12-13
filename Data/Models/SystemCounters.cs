@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Api.Model
+namespace OLab.Api.Models
 {
   [Table("system_counters")]
   public partial class SystemCounters

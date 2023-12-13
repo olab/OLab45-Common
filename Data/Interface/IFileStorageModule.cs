@@ -1,4 +1,4 @@
-﻿using OLab.Api.Model;
+﻿using OLab.Api.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;

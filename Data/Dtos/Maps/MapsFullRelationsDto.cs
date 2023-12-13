@@ -1,7 +1,9 @@
 using Newtonsoft.Json;
+using OLab.Data.Dtos;
+
 using System.Collections.Generic;
 
-namespace OLab.Api.Dto
+namespace OLab.Data.Dtos
 {
   public class MapsFullRelationsDto
   {

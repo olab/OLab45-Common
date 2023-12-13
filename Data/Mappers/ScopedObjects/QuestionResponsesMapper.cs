@@ -1,26 +1,26 @@
-using OLab.Api.Dto;
-using OLab.Api.Model;
+using OLab.Api.Models;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects;
+using OLab.Data.Dtos;
+using OLab.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
-    public class QuestionResponses : OLabMapper<SystemQuestionResponses, QuestionResponsesDto>
+  public class QuestionResponsesMapper : OLabMapper<SystemQuestionResponses, QuestionResponsesDto>
   {
     protected readonly QuestionsFullDto ParentQuestionDto;
 
-    public QuestionResponses(
+    public QuestionResponsesMapper(
       IOLabLogger logger,
       QuestionsFullDto parentQuestion = null) : base(logger)
     {
       ParentQuestionDto = parentQuestion;
     }
 
-    public QuestionResponses(
+    public QuestionResponsesMapper(
       IOLabLogger logger,
       IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
       QuestionsFullDto parentQuestion) : base(logger, wikiTagProvider)
@@ -28,7 +28,7 @@ namespace OLab.Api.ObjectMapper
       ParentQuestionDto = parentQuestion;
     }
 
-    public QuestionResponses(
+    public QuestionResponsesMapper(
       IOLabLogger logger,
       IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
       bool enableWikiTranslation = true) : base(logger, wikiTagProvider)
@@ -81,7 +81,7 @@ namespace OLab.Api.ObjectMapper
 
     public override SystemQuestionResponses ElementsToPhys(
       IEnumerable<dynamic> elements,
-      Object source = null)
+      object source = null)
     {
       var phys = GetPhys(source);
 

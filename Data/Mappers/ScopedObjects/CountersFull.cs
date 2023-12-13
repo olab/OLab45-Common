@@ -1,13 +1,13 @@
 using AutoMapper;
 using OLab.Api.Common;
-using OLab.Api.Dto;
-using OLab.Api.Model;
+using OLab.Api.Models;
 using OLab.Common.Interfaces;
+using OLab.Data.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
   public class CountersFull : OLabMapper<SystemCounters, CountersFullDto>
   {

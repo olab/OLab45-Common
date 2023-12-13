@@ -1,7 +1,8 @@
+using OLab.Data.Contracts;
 using System;
 using System.Linq;
 
-namespace OLab.Api.Model
+namespace OLab.Api.Models
 {
   public partial class Users
   {

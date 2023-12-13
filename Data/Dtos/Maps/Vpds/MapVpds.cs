@@ -1,8 +1,8 @@
-using OLab.Data.BusinessObjects;
+using OLab.Data.Models;
 
-namespace OLab.Api.Dto
+namespace OLab.Data.Dtos
 {
-    public partial class MapVpdsDto
+  public partial class MapVpdsDto
   {
     public uint Id { get; set; }
     public uint MapId { get; set; }

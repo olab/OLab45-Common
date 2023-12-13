@@ -1,10 +1,10 @@
 using AutoMapper;
 using OLab.Api.Common;
-using OLab.Api.Dto.Designer;
-using OLab.Api.Model;
+using OLab.Api.Models;
 using OLab.Common.Interfaces;
+using OLab.Data.Dtos.Designer;
 
-namespace OLab.Api.ObjectMapper.Designer
+namespace OLab.Data.Mappers.Designer
 {
   public class Questions : OLabMapper<SystemQuestions, ScopedObjectDto>
   {

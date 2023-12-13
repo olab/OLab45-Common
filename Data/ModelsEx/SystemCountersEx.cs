@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OLab.Api.Model
+namespace OLab.Api.Models
 {
   public partial class SystemCounters
   {

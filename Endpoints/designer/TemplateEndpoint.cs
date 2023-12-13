@@ -1,20 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
-using OLab.Api.Dto;
-using OLab.Api.Dto.Designer;
-using OLab.Api.Model;
-using OLab.Api.ObjectMapper;
+using OLab.Api.Models;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects;
+using OLab.Data.Dtos.Designer;
+using OLab.Data.Dtos;
 using OLab.Data.Interface;
+using OLab.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OLab.Data.Mappers;
+using OLab.Data.Mappers.Designer;
 
 namespace OLab.Api.Endpoints.Designer
 {
-    public partial class TemplateEndpoint : OLabEndpoint
+  public partial class TemplateEndpoint : OLabEndpoint
   {
     public TemplateEndpoint(
       IOLabLogger logger,
@@ -41,7 +42,7 @@ namespace OLab.Api.Endpoints.Designer
     {
       Logger.LogInformation($"TemplatesController.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
 
-      var items = new List<Model.Maps>();
+      var items = new List<Maps>();
       var total = 0;
       var remaining = 0;
 
@@ -96,7 +97,7 @@ namespace OLab.Api.Endpoints.Designer
 
       var phys = MapNodeLinks.CreateDefault();
 
-      var dto = new ObjectMapper.MapNodeLinkTemplate(Logger).PhysicalToDto(phys);
+      var dto = new MapNodeLinkTemplateMapper(Logger).PhysicalToDto(phys);
       return dto;
     }
 
@@ -108,8 +109,8 @@ namespace OLab.Api.Endpoints.Designer
     {
       Logger.LogInformation($"TemplatesController.Nodes()");
 
-      var phys = Model.MapNodes.CreateDefault();
-      var dto = new ObjectMapper.MapNodeTemplate(Logger).PhysicalToDto(phys);
+      var phys = MapNodes.CreateDefault();
+      var dto = new MapNodeTemplate(Logger).PhysicalToDto(phys);
       return dto;
     }
   }

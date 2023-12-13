@@ -1,7 +1,7 @@
 using OLab.Api.Utils;
 using System.Collections.Generic;
 
-namespace OLab.Api.Model
+namespace OLab.Data.Contracts
 {
   public class ImportResponse
   {

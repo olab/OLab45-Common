@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Api.Model
+namespace OLab.Api.Models
 {
   [Table("system_files")]
   public partial class SystemFiles

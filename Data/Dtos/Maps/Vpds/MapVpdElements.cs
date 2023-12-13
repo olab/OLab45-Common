@@ -1,4 +1,4 @@
-namespace OLab.Api.Dto
+namespace OLab.Data.Dtos
 {
   public partial class MapVpdElementsDto
   {

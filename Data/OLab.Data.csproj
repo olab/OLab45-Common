@@ -3,6 +3,11 @@
     <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="BusinessObjects\**" />
+    <EmbeddedResource Remove="BusinessObjects\**" />
+    <None Remove="BusinessObjects\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="Dawn.Guard" Version="1.12.0" />
     <PackageReference Include="HttpMultipartParser" Version="8.2.0" />
@@ -24,7 +29,6 @@
     <ProjectReference Include="..\WikiTags\OLab.WikiTags.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="BusinessObjects\API\" />
     <Folder Include="Dtos\Reporting\" />
   </ItemGroup>
   <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">

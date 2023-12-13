@@ -3,15 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
-using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
-using OLab.Api.Dto;
-using OLab.Api.Model;
-using OLab.Api.ObjectMapper;
+using OLab.Api.Models;
 using OLab.Common.Interfaces;
-using OLab.Common.Utils;
-using OLab.Data.BusinessObjects;
+using OLab.Data;
+using OLab.Data.Dtos;
+using OLab.Data.Exceptions;
 using OLab.Data.Interface;
+using OLab.Data.Mappers;
+using OLab.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
 {
-    public partial class FilesEndpoint : OLabEndpoint
+  public partial class FilesEndpoint : OLabEndpoint
   {
     public FilesEndpoint(
       IOLabLogger logger,
@@ -70,7 +70,7 @@ namespace OLab.Api.Endpoints
 
       Logger.LogInformation(string.Format("found {0} FilesPhys", Files.Count));
 
-      var dtoList = new Files(Logger).PhysicalToDto(Files);
+      var dtoList = new FilesMapper(Logger).PhysicalToDto(Files);
 
       var maps = GetMapIdNames();
       var nodes = GetNodeIdNames();
@@ -98,7 +98,7 @@ namespace OLab.Api.Endpoints
         throw new OLabObjectNotFoundException("FilesPhys", id);
 
       var phys = await dbContext.SystemFiles.FirstAsync(x => x.Id == id);
-      var dto = new FilesFull(Logger).PhysicalToDto(phys);
+      var dto = new FilesFullMapper(Logger).PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = auth.HasAccess("R", dto);
@@ -131,7 +131,7 @@ namespace OLab.Api.Endpoints
 
       try
       {
-        var builder = new FilesFull(Logger);
+        var builder = new FilesFullMapper(Logger);
         var phys = builder.DtoToPhysical(dto);
 
         phys.UpdatedAt = DateTime.Now;
@@ -157,7 +157,7 @@ namespace OLab.Api.Endpoints
       CancellationToken token)
     {
       Logger.LogInformation($"FilesController.PostAsync()");
-      var builder = new FilesFull(Logger);
+      var builder = new FilesFullMapper(Logger);
 
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);
@@ -206,7 +206,7 @@ namespace OLab.Api.Endpoints
       try
       {
         var phys = await GetFileAsync(id);
-        var dto = new FilesFull(Logger).PhysicalToDto(phys);
+        var dto = new FilesFullMapper(Logger).PhysicalToDto(phys);
 
         // test if user has access to object
         var accessResult = auth.HasAccess("W", dto);

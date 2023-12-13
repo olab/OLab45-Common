@@ -1,10 +1,9 @@
 using OLab.Api.Common;
-using OLab.Api.Dto.Designer;
 using OLab.Common.Interfaces;
-using OLab.Data;
+using OLab.Data.Dtos.Designer;
 using System;
 
-namespace OLab.Api.ObjectMapper.Designer
+namespace OLab.Data.Mappers.Designer
 {
     public class ScopedObjectMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
   {
@@ -27,16 +26,16 @@ namespace OLab.Api.ObjectMapper.Designer
     {
       var dto = GetDto(source);
 
-      var dtConstantsList = new Constants(Logger).PhysicalToDto(phys.ConstantsPhys);
+      var dtConstantsList = new ConstantsMapper(Logger).PhysicalToDto(phys.ConstantsPhys);
       dto.Constants.AddRange(dtConstantsList);
 
       var dtoQuestionsList = new Questions(Logger).PhysicalToDto(phys.QuestionsPhys);
       dto.Questions.AddRange(dtoQuestionsList);
 
-      var dtCountersList = new Counters(Logger).PhysicalToDto(phys.CountersPhys);
+      var dtCountersList = new CountersMapper(Logger).PhysicalToDto(phys.CountersPhys);
       dto.Counters.AddRange(dtCountersList);
 
-      var dtFilesList = new Files(Logger).PhysicalToDto(phys.FilesPhys);
+      var dtFilesList = new FilesMapper(Logger).PhysicalToDto(phys.FilesPhys);
       dto.Files.AddRange(dtFilesList);
 
       return dto;

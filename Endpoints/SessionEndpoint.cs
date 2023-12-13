@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects;
 using OLab.Data.Dtos.Session;
+using OLab.Data.Exceptions;
 using OLab.Data.Mappers;
+using OLab.Data.Models;
 using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints;

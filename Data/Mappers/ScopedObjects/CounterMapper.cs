@@ -1,15 +1,15 @@
 using AutoMapper;
 using OLab.Api.Common;
-using OLab.Api.Dto;
-using OLab.Api.Model;
+using OLab.Api.Models;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
   public class CounterValueResolver : IValueResolver<SystemCounters, CountersDto, string>
   {
@@ -64,7 +64,7 @@ namespace OLab.Api.ObjectMapper
       return phys;
     }
 
-    public override SystemCounters ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
+    public override SystemCounters ElementsToPhys(IEnumerable<dynamic> elements, object source = null)
     {
       var phys = GetPhys(source);
 

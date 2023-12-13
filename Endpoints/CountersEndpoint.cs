@@ -2,14 +2,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
-using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
-using OLab.Api.Dto;
-using OLab.Api.Model;
-using OLab.Api.ObjectMapper;
+using OLab.Api.Models;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects;
+using OLab.Data.Dtos;
+using OLab.Data.Exceptions;
+using OLab.Data.Mappers;
+using OLab.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
 {
-    public partial class CountersEndpoint : OLabEndpoint
+  public partial class CountersEndpoint : OLabEndpoint
   {
 
     public CountersEndpoint(
@@ -66,7 +66,7 @@ namespace OLab.Api.Endpoints
         remaining = total - take.Value - skip.Value;
       }
 
-      var dtoList = new ObjectMapper.CounterMapper(Logger).PhysicalToDto(Counters);
+      var dtoList = new CounterMapper(Logger).PhysicalToDto(Counters);
 
       var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
       var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();

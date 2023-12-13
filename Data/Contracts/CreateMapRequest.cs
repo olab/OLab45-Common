@@ -1,4 +1,4 @@
-namespace OLab.Api.Model
+namespace OLab.Data.Contracts
 {
   public class CreateMapRequest
   {

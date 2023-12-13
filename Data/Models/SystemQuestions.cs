@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using OLab.Data.BusinessObjects;
+using OLab.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,9 +7,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Api.Model
+namespace OLab.Api.Models
 {
-    [Table("system_questions")]
+  [Table("system_questions")]
   [Index(nameof(ParentId), Name = "parent_id")]
   public partial class SystemQuestions
   {

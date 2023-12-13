@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Api.Model
+namespace OLab.Api.Models
 {
   [Table("system_counter_actions")]
   [Index(nameof(CounterId), Name = "fk_counter_action_counter_idx")]

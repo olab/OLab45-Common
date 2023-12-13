@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OLab.Api.Data.Interface
+namespace OLab.Data.Interface
 {
   public interface IUserContext
   {

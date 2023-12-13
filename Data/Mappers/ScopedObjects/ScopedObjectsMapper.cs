@@ -1,12 +1,14 @@
 using NuGet.Packaging;
-using OLab.Api.Dto;
+
 using OLab.Common.Interfaces;
 using OLab.Data;
+using OLab.Data.Dtos;
+using OLab.Data.Mappers;
 using System;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
-    public class ScopedObjectsMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
+  public class ScopedObjectsMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
   {
     private readonly bool _enableWikiTranslation = true;
 
@@ -37,7 +39,7 @@ namespace OLab.Api.ObjectMapper
       dto.Constants.AddRange(dtoConstantsList);
 
       var dtoFilesList
-        = new FilesFull(Logger, _enableWikiTranslation).PhysicalToDto(phys.FilesPhys);
+        = new FilesFullMapper(Logger, _enableWikiTranslation).PhysicalToDto(phys.FilesPhys);
       dto.Files.AddRange(dtoFilesList);
 
       var dtoScriptsList
@@ -59,7 +61,7 @@ namespace OLab.Api.ObjectMapper
     }
 
     public override ScopedObjects DtoToPhysical(
-      ScopedObjectsDto dto, 
+      ScopedObjectsDto dto,
       object source = null)
     {
       var phys = new ScopedObjects();
@@ -77,7 +79,7 @@ namespace OLab.Api.ObjectMapper
       phys.ConstantsPhys.AddRange(physConstants);
 
       var physFiles
-        = new FilesFull(Logger, _enableWikiTranslation).DtoToPhysical(dto.Files);
+        = new FilesFullMapper(Logger, _enableWikiTranslation).DtoToPhysical(dto.Files);
       phys.FilesPhys.AddRange(physFiles);
 
       var physScripts

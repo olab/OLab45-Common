@@ -1,4 +1,5 @@
-using OLab.Api.Model;
+using OLab.Api.Models;
+using OLab.Data.Contracts;
 using System.Collections.Generic;
 
 namespace OLab.Data.Interface;

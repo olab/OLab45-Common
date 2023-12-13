@@ -4,10 +4,11 @@ using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OLab.Data.Dtos;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
-  public class MapsMapper : OLabMapper<Model.Maps, Dto.MapsDto>
+  public class MapsMapper : OLabMapper<Api.Models.Maps, MapsDto>
   {
     public MapsMapper(
       IOLabLogger logger,
@@ -22,13 +23,13 @@ namespace OLab.Api.ObjectMapper
     protected override MapperConfiguration GetConfiguration()
     {
       return new MapperConfiguration(cfg =>
-       cfg.CreateMap<Model.Maps, Dto.MapsDto>()
+       cfg.CreateMap<Api.Models.Maps, MapsDto>()
         .ForMember(dest => dest.Description, act => act.MapFrom(src => src.Abstract))
         .ReverseMap()
       );
     }
 
-    public override Model.Maps ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
+    public override Api.Models.Maps ElementsToPhys(IEnumerable<dynamic> elements, object source = null)
     {
       var phys = base.GetPhys(source);
 

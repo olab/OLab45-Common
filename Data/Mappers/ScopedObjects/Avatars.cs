@@ -1,14 +1,14 @@
-using OLab.Api.Dto;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects;
+using OLab.Data.Dtos;
+using OLab.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
-    public class AvatarsMapper : OLabMapper<MapAvatars, AvatarsDto>
+  public class AvatarsMapper : OLabMapper<MapAvatars, AvatarsDto>
   {
     public AvatarsMapper(
       IOLabLogger logger,
@@ -16,7 +16,7 @@ namespace OLab.Api.ObjectMapper
     {
     }
 
-    public override MapAvatars ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
+    public override MapAvatars ElementsToPhys(IEnumerable<dynamic> elements, object source = null)
     {
       var phys = GetPhys(source);
 

@@ -1,14 +1,13 @@
 using AutoMapper;
 using OLab.Api.Common;
-using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects;
 using OLab.Data.Dtos.Session;
+using OLab.Data.Models;
 using System;
 
 namespace OLab.Data.Mappers
 {
-    public class SessionMapper : OLabMapper<UserSessions, SessionDto>
+  public class SessionMapper : OLabMapper<UserSessions, SessionDto>
   {
     public SessionMapper(
       IOLabLogger logger,

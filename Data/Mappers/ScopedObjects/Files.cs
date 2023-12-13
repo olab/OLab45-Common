@@ -1,25 +1,25 @@
 using OLab.Api.Common;
-using OLab.Api.Dto;
-using OLab.Api.Model;
+using OLab.Api.Models;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
-  public class Files : OLabMapper<SystemFiles, FilesDto>
+  public class FilesMapper : OLabMapper<SystemFiles, FilesDto>
   {
-    public Files(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public FilesMapper(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public Files(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public FilesMapper(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 
-    public override SystemFiles ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
+    public override SystemFiles ElementsToPhys(IEnumerable<dynamic> elements, object source = null)
     {
       var phys = GetPhys(source);
 

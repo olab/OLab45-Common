@@ -1,11 +1,11 @@
 using OLab.Api.Common;
-using OLab.Api.Dto;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects;
+using OLab.Data.Dtos;
+using OLab.Data.Models;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
-    public class Themes : OLabMapper<SystemThemes, ThemesDto>
+  public class Themes : OLabMapper<SystemThemes, ThemesDto>
   {
     public Themes(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {

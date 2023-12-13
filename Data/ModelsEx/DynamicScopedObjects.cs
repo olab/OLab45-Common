@@ -1,13 +1,15 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.EntityFrameworkCore;
-using OLab.Api.Model;
+using OLab.Api.Models;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data;
+using OLab.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OLab.Data.BusinessObjects;
+namespace OLab.Api.Models;
 
 public class DynamicScopedObjects
 {
@@ -54,9 +56,9 @@ public class DynamicScopedObjects
   {
     var phys = new ScopedObjects(Logger, dbContext);
 
-    await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelServer, serverId);
-    await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelMap, mapId);
-    await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelNode, nodeId);
+    await phys.AddScopeFromDatabaseAsync(ConstantStrings.ScopeLevelServer, serverId);
+    await phys.AddScopeFromDatabaseAsync(ConstantStrings.ScopeLevelMap, mapId);
+    await phys.AddScopeFromDatabaseAsync(ConstantStrings.ScopeLevelNode, nodeId);
 
     ServerCounters = phys.CountersPhys;
     NodeCounters = phys.CountersPhys;
@@ -74,9 +76,9 @@ public class DynamicScopedObjects
   private async Task<IList<SystemCounters>> ProcessNodeCounters(IList<SystemCounters> physList)
   {
     var counterActions = await dbContext.SystemCounterActions.Where(x =>
-      (x.ImageableId == nodeId) &&
-      (x.ImageableType == Api.Utils.Constants.ScopeLevelNode) &&
-      (x.OperationType == "open")).ToListAsync();
+      x.ImageableId == nodeId &&
+      x.ImageableType == ConstantStrings.ScopeLevelNode &&
+      x.OperationType == "open").ToListAsync();
 
     Logger.LogDebug($"Found {counterActions.Count} counterActions records for node {nodeId} ");
 

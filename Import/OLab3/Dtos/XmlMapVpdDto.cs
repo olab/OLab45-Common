@@ -1,5 +1,6 @@
 using OLab.Api.Importer;
 using OLab.Common.Interfaces;
+using OLab.Data.Mappers;
 using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace OLab.Import.OLab3.Dtos
 
   public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
   {
-    private readonly Api.ObjectMapper.MapVpd _mapper;
+    private readonly MapVpdMapper _mapper;
 
     public XmlMapVpdDto(
       IOLabLogger logger,
@@ -21,7 +22,7 @@ namespace OLab.Import.OLab3.Dtos
         Importer.DtoTypes.XmlMapVpdDto,
         "map_vpd.xml")
     {
-      _mapper = new Api.ObjectMapper.MapVpd(logger);
+      _mapper = new MapVpdMapper(logger);
     }
 
     /// <summary>
@@ -42,7 +43,7 @@ namespace OLab.Import.OLab3.Dtos
           var moduleFileName = $"{importFileFolder}{GetFileModule().GetFolderSeparator()}{GetFileName()}";
           using (var moduleFileStream = new FileStream(moduleFileName, FileMode.Open, FileAccess.Read))
           {
-            _phys = DynamicXml.Load(moduleFileStream);
+            _phys = Api.Importer.DynamicXml.Load(moduleFileStream);
           }
         }
 

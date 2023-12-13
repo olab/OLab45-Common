@@ -1,19 +1,19 @@
 using OLab.Api.Common;
-using OLab.Api.Dto;
-using OLab.Api.Model;
+using OLab.Api.Models;
 using OLab.Common.Interfaces;
+using OLab.Data.Dtos;
 using System.IO;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
-  public class FilesFull : OLabMapper<SystemFiles, FilesFullDto>
+  public class FilesFullMapper : OLabMapper<SystemFiles, FilesFullDto>
   {
 
-    public FilesFull(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public FilesFullMapper(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public FilesFull(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public FilesFullMapper(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

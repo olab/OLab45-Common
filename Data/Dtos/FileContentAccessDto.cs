@@ -1,8 +1,9 @@
-using OLab.Data.BusinessObjectsEx.API;
+using OLab.Api.Contracts;
+using OLab.Data.Models;
 
-namespace OLab.Api.Dto
+namespace OLab.Data.Dtos
 {
-    public class FileContentAccessDto
+  public class FileContentAccessDto
   {
     public FileContentAccessDto()
     {

@@ -3,11 +3,14 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common.Exceptions;
-using OLab.Api.Data;
-using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
-using OLab.Api.Dto;
-using OLab.Api.Model.ReaderWriter;
+using OLab.Api.Models;
+using OLab.Api.Utils;
+using OLab.Data;
+using OLab.Data.Dtos;
+using OLab.Data.Exceptions;
+using OLab.Data.Mappers;
+using OLab.Data.ReaderWriters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +39,7 @@ namespace OLab.Api.Endpoints.Player
       {
         dto = await GetNodeAsync(mapId, nodeId, hideHidden, true);
         if (!dto.Id.HasValue)
-          throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, nodeId);
+          throw new OLabObjectNotFoundException(ConstantStrings.ScopeLevelNode, nodeId);
       }
       else
       {
@@ -66,15 +69,15 @@ namespace OLab.Api.Endpoints.Player
       var dto = await GetRawNodeAsync(mapId, nodeId, hideHidden);
 
       // now that we had a real node id, test if user has explicit no access to node.
-      if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, nodeId))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, nodeId);
+      if (auth.HasAccess("-", ConstantStrings.ScopeLevelNode, nodeId))
+        throw new OLabUnauthorizedException(ConstantStrings.ScopeLevelNode, nodeId);
 
       // filter out any destination links the user
       // does not have access to 
       var filteredLinks = new List<MapNodeLinksDto>();
       foreach (var mapNodeLink in dto.MapNodeLinks)
       {
-        if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
+        if (auth.HasAccess("-", ConstantStrings.ScopeLevelNode, mapNodeLink.DestinationId))
           continue;
 
         filteredLinks.Add(mapNodeLink);
@@ -104,8 +107,8 @@ namespace OLab.Api.Endpoints.Player
       var session = new OLabSession(Logger, dbContext, auth.UserContext);
 
       // test if user has access to map.
-      if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+      if (!auth.HasAccess("R", ConstantStrings.ScopeLevelMap, mapId))
+        throw new OLabUnauthorizedException(ConstantStrings.ScopeLevelMap, mapId);
 
       // dump out original dynamic objects for logging
       body.Dump(Logger, "Original");
@@ -116,20 +119,20 @@ namespace OLab.Api.Endpoints.Player
 
       var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).GetSingleAsync(mapId);
       if (map == null)
-        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
+        throw new OLabObjectNotFoundException(ConstantStrings.ScopeLevelMap, mapId);
 
       var dto = await GetRawNodeAsync(mapId, nodeId, true);
 
       // now that we had a real node id, test if user has explicit no access to node.
-      if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, dto.Id.Value))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, dto.Id.Value);
+      if (auth.HasAccess("-", ConstantStrings.ScopeLevelNode, dto.Id.Value))
+        throw new OLabUnauthorizedException(ConstantStrings.ScopeLevelNode, dto.Id.Value);
 
       // filter out any destination links the user
       // does not have access to 
       var filteredLinks = new List<MapNodeLinksDto>();
       foreach (var mapNodeLink in dto.MapNodeLinks)
       {
-        if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
+        if (auth.HasAccess("-", ConstantStrings.ScopeLevelNode, mapNodeLink.DestinationId))
           continue;
 
         filteredLinks.Add(mapNodeLink);
@@ -194,8 +197,8 @@ namespace OLab.Api.Endpoints.Player
       Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.DeleteNodeAsync");
 
       // test if user has access to map.
-      if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+      if (!auth.HasAccess("W", ConstantStrings.ScopeLevelMap, mapId))
+        throw new OLabUnauthorizedException(ConstantStrings.ScopeLevelMap, mapId);
 
       using var transaction = dbContext.Database.BeginTransaction();
 
@@ -251,14 +254,14 @@ namespace OLab.Api.Endpoints.Player
       Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutNodeAsync");
 
       // test if user has access to map.
-      if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+      if (!auth.HasAccess("W", ConstantStrings.ScopeLevelMap, mapId))
+        throw new OLabUnauthorizedException(ConstantStrings.ScopeLevelMap, mapId);
 
       using var transaction = dbContext.Database.BeginTransaction();
 
       try
       {
-        var builder = new ObjectMapper.MapNodesFullMapper(Logger);
+        var builder = new MapNodesFullMapper(Logger);
         var phys = builder.DtoToPhysical(dto);
 
         // patch up node size, just in case it's not set properly
@@ -293,7 +296,7 @@ namespace OLab.Api.Endpoints.Player
     private async Task<MapsNodesFullRelationsDto> GetRootNodeAsync(uint mapId, bool hideHidden)
     {
       var phys = await dbContext.MapNodes
-        .FirstOrDefaultAsync(x => x.MapId == mapId && x.TypeId.Value == (int)Model.MapNodes.NodeType.RootNode);
+        .FirstOrDefaultAsync(x => x.MapId == mapId && x.TypeId.Value == (int)MapNodes.NodeType.RootNode);
 
       if (phys == null)
       {

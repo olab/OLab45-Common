@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace OLab.Api.Model
+namespace OLab.Data.Contracts
 {
   public class AssignSecurityUserRequest
   {
@@ -14,10 +14,8 @@ namespace OLab.Api.Model
     public void CheckAcl()
     {
       foreach (var part in Acl)
-      {
         if (!AllowedAcls.Any(val => part.ToString() == val))
           throw new System.Exception("Bad ACL value");
-      }
     }
   }
 }

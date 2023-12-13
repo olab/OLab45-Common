@@ -1,22 +1,22 @@
 using OLab.Api.Common;
-using OLab.Api.Dto;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects;
+using OLab.Data.Dtos;
+using OLab.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
-    public class Constants : OLabMapper<SystemConstants, ConstantsDto>
+  public class ConstantsMapper : OLabMapper<SystemConstants, ConstantsDto>
   {
-    public Constants(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public ConstantsMapper(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public Constants(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public ConstantsMapper(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 
@@ -38,7 +38,7 @@ namespace OLab.Api.ObjectMapper
     /// <param name="elements">List of elements</param>
     /// <param name="source">Physical object</param>
     /// <returns>Physical object</returns>
-    public override SystemConstants ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
+    public override SystemConstants ElementsToPhys(IEnumerable<dynamic> elements, object source = null)
     {
       var phys = GetPhys(source);
 
@@ -47,7 +47,7 @@ namespace OLab.Api.ObjectMapper
 
       if (uint.TryParse(elements.FirstOrDefault(x => x.Name == "map_id").Value, out uint id))
         phys.ImageableId = id;
-      phys.ImageableType = Utils.Constants.ScopeLevelMap;
+      phys.ImageableType = ConstantStrings.ScopeLevelMap;
 
       dynamic value = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "mime"));
       phys.Name = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "name"));

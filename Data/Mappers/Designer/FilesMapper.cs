@@ -1,18 +1,18 @@
 using AutoMapper;
 using OLab.Api.Common;
-using OLab.Api.Dto.Designer;
-using OLab.Api.Model;
+using OLab.Api.Models;
 using OLab.Common.Interfaces;
+using OLab.Data.Dtos.Designer;
 
-namespace OLab.Api.ObjectMapper.Designer
+namespace OLab.Data.Mappers.Designer
 {
-  public class Files : OLabMapper<SystemFiles, ScopedObjectDto>
+  public class FilesMapper : OLabMapper<SystemFiles, ScopedObjectDto>
   {
-    public Files(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public FilesMapper(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public Files(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public FilesMapper(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

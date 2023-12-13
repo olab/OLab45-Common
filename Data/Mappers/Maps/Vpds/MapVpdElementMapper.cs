@@ -1,20 +1,20 @@
-using OLab.Api.Dto;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects;
+using OLab.Data.Dtos;
+using OLab.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
-    public class MapVpdElement : OLabMapper<MapVpdElements, MapVpdElementsDto>
+  public class MapVpdElementMapper : OLabMapper<MapVpdElements, MapVpdElementsDto>
   {
-    public MapVpdElement(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public MapVpdElementMapper(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public override MapVpdElements ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
+    public override MapVpdElements ElementsToPhys(IEnumerable<dynamic> elements, object source = null)
     {
       var phys = GetPhys(source);
 

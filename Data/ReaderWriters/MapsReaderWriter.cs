@@ -1,16 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using OLab.Api.Models;
 using OLab.Api.Utils;
-using OLab.Data.BusinessObjects;
+using OLab.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OLab.Api.Model.ReaderWriter
+namespace OLab.Data.ReaderWriters
 {
-    public partial class MapsReaderWriter
+  public partial class MapsReaderWriter
   {
     private readonly OLabDBContext _context;
     private readonly ILogger _logger;
@@ -141,7 +142,7 @@ namespace OLab.Api.Model.ReaderWriter
 
         // if template node is a root node AND we are adding to an existing
         // map, then clear the root node flag for this node
-        if (!mapBoundingBox.IsEmpty() && (node.TypeId == 1))
+        if (!mapBoundingBox.IsEmpty() && node.TypeId == 1)
           node.TypeId = 2;
 
         // transform position of node using the transform vector

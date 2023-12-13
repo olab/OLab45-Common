@@ -1,9 +1,9 @@
 using OLab.Api.Common;
-using OLab.Api.Dto;
-using OLab.Api.Model;
+using OLab.Api.Models;
 using OLab.Common.Interfaces;
+using OLab.Data.Dtos;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
   public class MapNodesFullMapper : OLabMapper<MapNodes, MapNodesFullDto>
   {

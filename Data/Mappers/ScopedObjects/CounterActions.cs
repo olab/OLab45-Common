@@ -1,12 +1,13 @@
 using AutoMapper;
-using OLab.Api.Dto;
-using OLab.Api.Model;
+using OLab.Api.Models;
+using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
   public class CounterActionsMapper : OLabMapper<SystemCounterActions, CounterActionsDto>
   {
@@ -34,14 +35,14 @@ namespace OLab.Api.ObjectMapper
       );
     }
 
-    public override SystemCounterActions ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
+    public override SystemCounterActions ElementsToPhys(IEnumerable<dynamic> elements, object source = null)
     {
       var phys = GetPhys(source);
 
       phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
       phys.OperationType = "open";
       phys.ImageableId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "node_id").Value);
-      phys.ImageableType = Utils.Constants.ScopeLevelNode;
+      phys.ImageableType = ConstantStrings.ScopeLevelNode;
       phys.CounterId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "counter_id").Value);
       phys.Expression = elements.FirstOrDefault(x => x.Name == "function").Value;
       phys.Visible = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "display").Value);

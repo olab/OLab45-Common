@@ -1,12 +1,12 @@
 using AutoMapper;
 using NuGet.Packaging;
 using OLab.Api.Common;
-using OLab.Api.Dto;
-using OLab.Api.Model;
+using OLab.Api.Models;
 using OLab.Common.Interfaces;
+using OLab.Data.Dtos;
 using System.Linq;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
   public class QuestionsFullMapper : OLabMapper<SystemQuestions, QuestionsFullDto>
   {
@@ -43,7 +43,7 @@ namespace OLab.Api.ObjectMapper
 
     public override SystemQuestions DtoToPhysical(QuestionsFullDto dto, SystemQuestions phys)
     {
-      var builder = new QuestionResponses(Logger, GetWikiProvider(), dto);
+      var builder = new QuestionResponsesMapper(Logger, GetWikiProvider(), dto);
       phys.SystemQuestionResponses.AddRange(builder.DtoToPhysical(dto.Responses));
 
       return phys;
@@ -58,7 +58,7 @@ namespace OLab.Api.ObjectMapper
       dto.Wiki = phys.GetWikiTag();
       dto.Value = null;
 
-      var builder = new QuestionResponses(Logger, GetWikiProvider(), dto);
+      var builder = new QuestionResponsesMapper(Logger, GetWikiProvider(), dto);
       dto.Responses.AddRange(builder.PhysicalToDto(phys.SystemQuestionResponses.ToList()));
 
       return dto;

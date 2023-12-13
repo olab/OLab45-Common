@@ -1,5 +1,6 @@
-using OLab.Api.Model;
+using OLab.Api.Models;
 using OLab.Common.Interfaces;
+using OLab.Data.Mappers;
 using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
@@ -9,12 +10,12 @@ namespace OLab.Import.OLab3.Dtos
 
   public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
   {
-    private readonly Api.ObjectMapper.MapNodesMapper _mapper;
+    private readonly MapNodesMapper _mapper;
     private readonly IOLabConfiguration _configuration;
 
     public XmlMapNodeDto(IOLabLogger logger, Importer importer) : base(logger, importer, Importer.DtoTypes.XmlMapNodeDto, "map_node.xml")
     {
-      _mapper = new Api.ObjectMapper.MapNodesMapper(logger);
+      _mapper = new MapNodesMapper(logger);
       _configuration = importer.GetConfiguration();
     }
 

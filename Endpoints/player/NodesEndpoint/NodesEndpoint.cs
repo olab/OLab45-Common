@@ -2,21 +2,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
-using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
-using OLab.Api.Dto;
-using OLab.Api.Model;
+using OLab.Api.Models;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects;
+using OLab.Data.Dtos;
+using OLab.Data.Exceptions;
 using OLab.Data.Interface;
+using OLab.Data.Mappers;
+using OLab.Data.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints.Player
 {
-    public partial class NodesEndpoint : OLabEndpoint
+  public partial class NodesEndpoint : OLabEndpoint
   {
     public NodesEndpoint(
       IOLabLogger logger,
@@ -39,7 +40,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="context">EF DBContext</param>
     /// <param name="id">Node Id</param>
     /// <returns>MapNodes</returns>
-    private static Model.MapNodes GetSimple(OLabDBContext context, uint id)
+    private static MapNodes GetSimple(OLabDBContext context, uint id)
     {
       var phys = context.MapNodes.FirstOrDefault(x => x.Id == id);
       return phys;
@@ -49,7 +50,7 @@ namespace OLab.Api.Endpoints.Player
     {
       var phys = await GetMapNodeAsync(id);
 
-      var builder = new ObjectMapper.MapsNodesFullRelationsMapper(
+      var builder = new MapsNodesFullRelationsMapper(
         Logger,
         _wikiTagProvider as WikiTagProvider,
         enableWikiTranslation);
@@ -81,13 +82,13 @@ namespace OLab.Api.Endpoints.Player
 
       var phys = await GetMapNodeAsync(id);
       if (phys == null)
-        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
+        throw new OLabObjectNotFoundException(ConstantStrings.ScopeLevelNode, id);
 
       // test if user has access to map.
-      if (!auth.HasAccess("W", Utils.Constants.ScopeLevelNode, id))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, id);
+      if (!auth.HasAccess("W", ConstantStrings.ScopeLevelNode, id))
+        throw new OLabUnauthorizedException(ConstantStrings.ScopeLevelNode, id);
 
-      var builder = new ObjectMapper.MapNodesFullMapper(Logger);
+      var builder = new MapNodesFullMapper(Logger);
       phys = builder.DtoToPhysical(dto);
 
       dbContext.Entry(phys).State = EntityState.Modified;
@@ -112,7 +113,7 @@ namespace OLab.Api.Endpoints.Player
 
       var node = GetSimple(dbContext, nodeId);
       if (node == null)
-        throw new OLabObjectNotFoundException(Constants.ScopeLevelNode, nodeId);
+        throw new OLabObjectNotFoundException(ConstantStrings.ScopeLevelNode, nodeId);
 
       var phys = MapNodeLinks.CreateDefault();
       phys.NodeId1 = nodeId;
@@ -149,7 +150,7 @@ namespace OLab.Api.Endpoints.Player
 
       try
       {
-        var phys = Model.MapNodes.CreateDefault();
+        var phys = MapNodes.CreateDefault();
         phys.X = data.X;
         phys.Y = data.Y;
         phys.MapId = mapId;

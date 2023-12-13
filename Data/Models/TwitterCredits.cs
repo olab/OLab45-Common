@@ -3,25 +3,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Data.BusinessObjects
+namespace OLab.Data.Models
 {
-    [Table("twitter_credits")]
-    public partial class TwitterCredits
-    {
-        [Key]
-        [Column("id", TypeName = "int(10) unsigned")]
-        public uint Id { get; set; }
-        [Required]
-        [Column("API_key", TypeName = "text")]
-        public string ApiKey { get; set; }
-        [Required]
-        [Column("API_secret", TypeName = "text")]
-        public string ApiSecret { get; set; }
-        [Required]
-        [Column("Access_token", TypeName = "text")]
-        public string AccessToken { get; set; }
-        [Required]
-        [Column("Access_token_secret", TypeName = "text")]
-        public string AccessTokenSecret { get; set; }
-    }
+  [Table("twitter_credits")]
+  public partial class TwitterCredits
+  {
+    [Key]
+    [Column("id", TypeName = "int(10) unsigned")]
+    public uint Id { get; set; }
+    [Required]
+    [Column("API_key", TypeName = "text")]
+    public string ApiKey { get; set; }
+    [Required]
+    [Column("API_secret", TypeName = "text")]
+    public string ApiSecret { get; set; }
+    [Required]
+    [Column("Access_token", TypeName = "text")]
+    public string AccessToken { get; set; }
+    [Required]
+    [Column("Access_token_secret", TypeName = "text")]
+    public string AccessTokenSecret { get; set; }
+  }
 }

@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
-namespace OLab.Api.Model
+namespace OLab.Data.Contracts
 {
   public class AddUserRequest
   {
@@ -31,9 +31,7 @@ namespace OLab.Api.Model
     {
       var parts = userRequestText.Split("\t");
       if (parts.Length != 6)
-      {
         throw new System.Exception("Bad user request record");
-      }
 
       Username = parts[0];
       if (parts[1].Length > 0)

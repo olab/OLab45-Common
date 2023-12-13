@@ -6,12 +6,11 @@ using HeyRed.Mime;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
-using OLab.Api.Dto;
-using OLab.Api.Model;
-using OLab.Api.ObjectMapper;
+using OLab.Api.Models;
+
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects;
 using OLab.Data.Interface;
+using OLab.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;

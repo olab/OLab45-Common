@@ -1,11 +1,12 @@
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common.Exceptions;
-using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
-using OLab.Api.Dto;
-using OLab.Api.Model;
-using OLab.Data.BusinessObjects;
+using OLab.Api.Models;
+using OLab.Api.Utils;
+using OLab.Data.Dtos;
+using OLab.Data.Exceptions;
+using OLab.Data.Mappers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,8 +32,8 @@ namespace OLab.Api.Endpoints.Player
       Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsRawAsync");
 
       // test if user has access to map.
-      if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+      if (!auth.HasAccess("R", ConstantStrings.ScopeLevelMap, mapId))
+        throw new OLabUnauthorizedException(ConstantStrings.ScopeLevelMap, mapId);
 
       var node = await GetMapRootNode(mapId, nodeId);
       return await GetDynamicScopedObjectsAsync(1, node, sinceTime, false);
@@ -54,8 +55,8 @@ namespace OLab.Api.Endpoints.Player
       Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsTranslatedAsync");
 
       // test if user has access to map.
-      if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+      if (!auth.HasAccess("R", ConstantStrings.ScopeLevelMap, mapId))
+        throw new OLabUnauthorizedException(ConstantStrings.ScopeLevelMap, mapId);
 
       var node = await GetMapRootNode(mapId, nodeId);
       return await GetDynamicScopedObjectsAsync(1, node, sinceTime, true);
@@ -71,14 +72,14 @@ namespace OLab.Api.Endpoints.Player
     /// <returns></returns>
     public async Task<DynamicScopedObjectsDto> GetDynamicScopedObjectsAsync(
       uint serverId,
-      Model.MapNodes node,
+      MapNodes node,
       uint sinceTime,
       bool enableWikiTranslation)
     {
       var phys = new DynamicScopedObjects(Logger, dbContext, serverId, node.MapId, node.Id);
       await phys.GetDynamicScopedObjectsAsync();
 
-      var builder = new ObjectMapper.DynamicScopedObjects(Logger, enableWikiTranslation);
+      var builder = new DynamicScopedObjectsMapper(Logger, enableWikiTranslation);
       var dto = builder.PhysicalToDto(phys);
 
       return dto;
@@ -94,7 +95,7 @@ namespace OLab.Api.Endpoints.Player
 
       var counterActions = await dbContext.SystemCounterActions.Where(x =>
         (x.ImageableId == node.Id) &&
-        (x.ImageableType == Utils.Constants.ScopeLevelNode) &&
+        (x.ImageableType == ConstantStrings.ScopeLevelNode) &&
         (x.OperationType == "open")).ToListAsync();
 
       Logger.LogInformation($"Found {counterActions.Count} counterActions records for node {node.Id} ");
@@ -108,7 +109,7 @@ namespace OLab.Api.Endpoints.Player
         else
         {
           // convert to physical object so we can use the counterActions code
-          var phys = new ObjectMapper.CounterMapper(Logger).DtoToPhysical(dto);
+          var phys = new CounterMapper(Logger).DtoToPhysical(dto);
 
           // test if there's a counter action to apply
           if (counterAction.ApplyFunctionToCounter(phys))
@@ -116,7 +117,7 @@ namespace OLab.Api.Endpoints.Player
             // remove original counter from list
             orgDtoList.Remove(dto);
 
-            dto = new ObjectMapper.CounterMapper(Logger).PhysicalToDto(phys);
+            dto = new CounterMapper(Logger).PhysicalToDto(phys);
             Logger.LogInformation($"Updated counter '{dto.Name}' ({dto.Id}) with function '{counterAction.Expression}'. now = {dto.Value}");
 
             // add updated counter back to list
@@ -138,11 +139,11 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="node">Current node</param>
     /// <param name="physList">Raw system (map-level) orgDtoList</param>
     /// <returns>void</returns>
-    private async Task<IList<SystemCounters>> ProcessNodeCounters(Model.MapNodes node, IList<SystemCounters> physList)
+    private async Task<IList<SystemCounters>> ProcessNodeCounters(MapNodes node, IList<SystemCounters> physList)
     {
       var counterActions = await dbContext.SystemCounterActions.Where(x =>
         (x.ImageableId == node.Id) &&
-        (x.ImageableType == Utils.Constants.ScopeLevelNode) &&
+        (x.ImageableType == ConstantStrings.ScopeLevelNode) &&
         (x.OperationType == "open")).ToListAsync();
 
       Logger.LogInformation($"Found {counterActions.Count} counterActions records for node {node.Id} ");

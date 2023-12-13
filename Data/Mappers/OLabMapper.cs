@@ -5,13 +5,13 @@ using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
   public class DateTimeTypeConverter : ITypeConverter<decimal, DateTime>
   {
     public DateTime Convert(decimal source, DateTime destination, ResolutionContext context)
     {
-      return new System.DateTime(1970, 1, 1).AddSeconds(System.Convert.ToDouble(source));
+      return new DateTime(1970, 1, 1).AddSeconds(System.Convert.ToDouble(source));
     }
   }
 
@@ -35,7 +35,7 @@ namespace OLab.Api.ObjectMapper
     // used to hold on to id translation between origin system and new one
     protected IDictionary<uint, uint?> _idTranslation = new Dictionary<uint, uint?>();
 
-    public virtual P ElementsToPhys(IEnumerable<dynamic> elements, Object source = null) { return default; }
+    public virtual P ElementsToPhys(IEnumerable<dynamic> elements, object source = null) { return default; }
     public WikiTagProvider GetWikiProvider() { return _wikiTagModules; }
 
 
@@ -171,7 +171,7 @@ namespace OLab.Api.ObjectMapper
     /// </summary>
     /// <param name="source"></param>
     /// <returns>Dto</returns>
-    public virtual D GetDto(Object source = null)
+    public virtual D GetDto(object source = null)
     {
       if (source == null)
         return new D();
@@ -184,7 +184,7 @@ namespace OLab.Api.ObjectMapper
     /// </summary>
     /// <param name="source"></param>
     /// <returns>Physical</returns>
-    public virtual P GetPhys(Object source = null)
+    public virtual P GetPhys(object source = null)
     {
       if (source == null)
         return new P();

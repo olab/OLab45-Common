@@ -1,16 +1,16 @@
-using OLab.Api.Dto;
-using OLab.Api.Model;
+using OLab.Api.Models;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
-  public class Questions : OLabMapper<SystemQuestions, QuestionsDto>
+  public class QuestionsMapper : OLabMapper<SystemQuestions, QuestionsDto>
   {
-    public Questions(
+    public QuestionsMapper(
       IOLabLogger logger,
       IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
       bool enableWikiTranslation = true) : base(logger, wikiTagProvider)
@@ -24,7 +24,7 @@ namespace OLab.Api.ObjectMapper
     //{
     //}
 
-    public override SystemQuestions ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
+    public override SystemQuestions ElementsToPhys(IEnumerable<dynamic> elements, object source = null)
     {
       var phys = GetPhys(source);
 

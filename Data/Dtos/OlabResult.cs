@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using OLab.Api.Common;
 using System.Collections.Generic;
 
-namespace OLab.Api.Dto
+namespace OLab.Data.Dtos
 {
   public class OlabResult : ActionResult
   {

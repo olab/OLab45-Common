@@ -1,16 +1,18 @@
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common.Exceptions;
-using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
-using OLab.Api.Dto;
-using OLab.Api.ObjectMapper;
-using OLab.Data.BusinessObjects;
+using OLab.Api.Models;
+using OLab.Api.Utils;
+using OLab.Data.Dtos;
+using OLab.Data.Exceptions;
+using OLab.Data.Mappers;
+using OLab.Data.Models;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints.Player
 {
-    public partial class MapsEndpoint : OLabEndpoint
+  public partial class MapsEndpoint : OLabEndpoint
   {
     /// <summary>
     /// 
@@ -18,7 +20,7 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="context"></param>
     /// <param name="id"></param>
     /// <returns></returns>
-    public Model.MapNodeLinks GetLinkSimple(OLabDBContext context, uint id)
+    public MapNodeLinks GetLinkSimple(OLabDBContext context, uint id)
     {
       var phys = context.MapNodeLinks.FirstOrDefault(x => x.Id == id);
       return phys;
@@ -41,8 +43,8 @@ namespace OLab.Api.Endpoints.Player
       Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutMapNodeLinksAsync");
 
       // test if user has access to map.
-      if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+      if (!auth.HasAccess("W", ConstantStrings.ScopeLevelMap, mapId))
+        throw new OLabUnauthorizedException(ConstantStrings.ScopeLevelMap, mapId);
 
       try
       {
@@ -56,7 +58,7 @@ namespace OLab.Api.Endpoints.Player
       {
         var existingMap = GetLinkSimple(dbContext, linkId);
         if (existingMap == null)
-          throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
+          throw new OLabObjectNotFoundException(ConstantStrings.ScopeLevelMap, mapId);
       }
 
     }

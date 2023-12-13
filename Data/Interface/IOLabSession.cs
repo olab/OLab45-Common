@@ -1,7 +1,8 @@
-using OLab.Api.Dto;
+
+using OLab.Data.Dtos;
 using System;
 
-namespace OLab.Api.Data.Interface
+namespace OLab.Data.Interface
 {
   public interface IOLabSession
   {

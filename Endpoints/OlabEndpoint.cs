@@ -4,24 +4,23 @@ using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
-using OLab.Api.Data.Exceptions;
-using OLab.Api.Data.Interface;
-using OLab.Api.Dto;
-using OLab.Api.Model;
+using OLab.Api.Models;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects;
+using OLab.Data.Dtos;
+using OLab.Data.Exceptions;
 using OLab.Data.Interface;
+using OLab.Data.Mappers;
+using OLab.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
-using Constants = OLab.Api.Utils.Constants;
 
 namespace OLab.Api.Endpoints
 {
-    public class OLabEndpoint
+  public class OLabEndpoint
   {
     protected readonly OLabDBContext dbContext;
     protected IOLabLogger Logger;
@@ -85,7 +84,7 @@ namespace OLab.Api.Endpoints
     [NonAction]
     protected void AttachParentObject(ScopedObjectDto dto)
     {
-      if (dto.ImageableType == Constants.ScopeLevelServer)
+      if (dto.ImageableType == ConstantStrings.ScopeLevelServer)
       {
         var obj = dbContext.Servers.FirstOrDefault(x => x.Id == dto.ImageableId);
         if (obj == null)
@@ -94,7 +93,7 @@ namespace OLab.Api.Endpoints
         dto.ParentInfo.Name = obj.Name;
       }
 
-      else if (dto.ImageableType == Constants.ScopeLevelMap)
+      else if (dto.ImageableType == ConstantStrings.ScopeLevelMap)
       {
         var obj = dbContext.Maps.FirstOrDefault(x => x.Id == dto.ImageableId);
         if (obj == null)
@@ -103,7 +102,7 @@ namespace OLab.Api.Endpoints
         dto.ParentInfo.Name = obj.Name;
       }
 
-      else if (dto.ImageableType == Constants.ScopeLevelNode)
+      else if (dto.ImageableType == ConstantStrings.ScopeLevelNode)
       {
         var obj = dbContext.MapNodes.FirstOrDefault(x => x.Id == dto.ImageableId);
         if (obj == null)
@@ -159,13 +158,13 @@ namespace OLab.Api.Endpoints
       IList<IdName> nodes,
       IList<IdName> servers)
     {
-      if (scopeLevel == Utils.Constants.ScopeLevelServer)
+      if (scopeLevel == ConstantStrings.ScopeLevelServer)
         return servers.FirstOrDefault(x => x.Id == parentId);
 
-      if (scopeLevel == Utils.Constants.ScopeLevelMap)
+      if (scopeLevel == ConstantStrings.ScopeLevelMap)
         return maps.FirstOrDefault(x => x.Id == parentId);
 
-      if (scopeLevel == Utils.Constants.ScopeLevelNode)
+      if (scopeLevel == ConstantStrings.ScopeLevelNode)
         return nodes.FirstOrDefault(x => x.Id == parentId);
 
       return null;
@@ -192,7 +191,7 @@ namespace OLab.Api.Endpoints
         physNode.Width = 300;
       }
 
-      var dtoList = new ObjectMapper.MapNodesFullMapper(
+      var dtoList = new MapNodesFullMapper(
         Logger,
         enableWikiTanslation).PhysicalToDto(physList);
       return dtoList;
@@ -225,7 +224,7 @@ namespace OLab.Api.Endpoints
       // explicitly load the related objects.
       dbContext.Entry(phys).Collection(b => b.MapNodeLinksNodeId1Navigation).Load();
 
-      var builder = new ObjectMapper.MapsNodesFullRelationsMapper(
+      var builder = new MapsNodesFullRelationsMapper(
         Logger,
         _wikiTagProvider as WikiTagProvider,
         enableWikiTanslation);

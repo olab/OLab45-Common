@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using NuGet.Common;
 using OLab.Api.Common;
-using OLab.Api.Dto;
-using OLab.Api.Model;
-using OLab.Api.ObjectMapper;
-using OLab.Common.Utils;
+using OLab.Api.Models;
+using OLab.Api.Utils;
 using OLab.Data;
+using OLab.Data.Dtos;
 using OLab.Data.Interface;
+using OLab.Data.Mappers;
 using OLab.Import.Interface;
 using System;
 using System.IO;
@@ -195,12 +195,12 @@ public partial class Importer : IImporter
 
     var sourceFolder = _fileModule.BuildPath(
       ExtractFolderName,
-      Api.Utils.Constants.ScopeLevelMap);
+      ConstantStrings.ScopeLevelMap);
 
     var sourceFiles = _fileModule.GetFiles(sourceFolder, token);
 
     var destinationFolder = _fileModule.BuildPath(
-      Api.Utils.Constants.ScopeLevelMap,
+      ConstantStrings.ScopeLevelMap,
       _mapPhys.Id);
 
     foreach (var sourceFile in sourceFiles)

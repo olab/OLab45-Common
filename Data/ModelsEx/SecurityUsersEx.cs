@@ -1,9 +1,9 @@
-using OLab.Api.Data.Interface;
 using OLab.Api.Utils;
+using OLab.Data.Interface;
 
 #nullable disable
 
-namespace OLab.Api.Model
+namespace OLab.Api.Models
 {
   public partial class SecurityUsers
   {
@@ -13,7 +13,7 @@ namespace OLab.Api.Model
       acl.UserId = userContext.UserId;
       acl.Issuer = userContext.Issuer;
       acl.ImageableId = map.Id;
-      acl.ImageableType = Constants.ScopeLevelMap;
+      acl.ImageableType = ConstantStrings.ScopeLevelMap;
       acl.Acl = "RXWD";
 
       return acl;

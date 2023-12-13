@@ -1,5 +1,6 @@
-using OLab.Api.Model;
-using OLab.Data.BusinessObjects;
+using OLab.Api.Models;
+using OLab.Api.Utils;
+using OLab.Data.Models;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,9 +56,9 @@ public partial class ScopedObjects
     phys.Id = 0;
     phys.CounterId = GetCounterIdCrossReference(phys.Id);
 
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
+    if ( phys.ImageableType == ConstantStrings.ScopeLevelMap )
       phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelNode )
+    if ( phys.ImageableType == ConstantStrings.ScopeLevelNode )
       phys.ImageableId = GetMapNodeIdCrossReference( phys.ImageableId );
 
     await _dbContext.SystemCounterActions.AddAsync(phys);
@@ -73,9 +74,9 @@ public partial class ScopedObjects
     var oldId = phys.Id;
     phys.Id = 0;
 
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
+    if ( phys.ImageableType == ConstantStrings.ScopeLevelMap )
       phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelNode )
+    if ( phys.ImageableType == ConstantStrings.ScopeLevelNode )
       phys.ImageableId = GetMapNodeIdCrossReference( phys.ImageableId );
 
     await _dbContext.SystemCounters.AddAsync(phys);
@@ -95,9 +96,9 @@ public partial class ScopedObjects
     var oldId = phys.Id;
     phys.Id = 0;
 
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
+    if ( phys.ImageableType == ConstantStrings.ScopeLevelMap )
       phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelNode )
+    if ( phys.ImageableType == ConstantStrings.ScopeLevelNode )
       phys.ImageableId = GetMapNodeIdCrossReference( phys.ImageableId );
 
 
@@ -114,9 +115,9 @@ public partial class ScopedObjects
     var oldId = phys.Id;
     phys.Id = 0;
 
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
+    if ( phys.ImageableType == ConstantStrings.ScopeLevelMap )
       phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelNode )
+    if ( phys.ImageableType == ConstantStrings.ScopeLevelNode )
       phys.ImageableId = GetMapNodeIdCrossReference( phys.ImageableId );
 
     await _dbContext.SystemConstants.AddAsync(phys);
@@ -134,9 +135,9 @@ public partial class ScopedObjects
     var oldId = phys.Id;
     phys.Id = 0;
 
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
+    if ( phys.ImageableType == ConstantStrings.ScopeLevelMap )
       phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelNode )
+    if ( phys.ImageableType == ConstantStrings.ScopeLevelNode )
       phys.ImageableId = GetMapNodeIdCrossReference( phys.ImageableId );
 
     foreach (var responsePhys in phys.SystemQuestionResponses)

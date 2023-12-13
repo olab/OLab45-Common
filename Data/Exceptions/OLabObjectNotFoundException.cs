@@ -1,6 +1,6 @@
 using System;
 
-namespace OLab.Api.Data.Exceptions
+namespace OLab.Data.Exceptions
 {
   public class OLabObjectNotFoundException : Exception
   {

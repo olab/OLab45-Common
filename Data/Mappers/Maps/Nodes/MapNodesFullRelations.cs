@@ -1,11 +1,13 @@
 using OLab.Api.Common;
-using OLab.Api.Dto;
+using OLab.Api.Models;
 using OLab.Common.Interfaces;
+using OLab.Data.Dtos;
+using OLab.Data.Mappers;
 using System.Linq;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
-  public class MapsNodesFullRelationsMapper : OLabMapper<Model.MapNodes, MapsNodesFullRelationsDto>
+  public class MapsNodesFullRelationsMapper : OLabMapper<MapNodes, MapsNodesFullRelationsDto>
   {
     protected readonly bool enableWikiTranslation = false;
 
@@ -17,7 +19,7 @@ namespace OLab.Api.ObjectMapper
       this.enableWikiTranslation = enableWikiTranslation;
     }
 
-    public override MapsNodesFullRelationsDto PhysicalToDto(Model.MapNodes phys, MapsNodesFullRelationsDto dto)
+    public override MapsNodesFullRelationsDto PhysicalToDto(MapNodes phys, MapsNodesFullRelationsDto dto)
     {
       dto.Height = phys.Height.HasValue ? phys.Height : MapNodesMapper.DefaultHeight;
 
@@ -26,7 +28,7 @@ namespace OLab.Api.ObjectMapper
       else
         dto.Text = phys.Text;
 
-      dto.Width = phys.Width.HasValue ? phys.Width : ObjectMapper.MapNodesMapper.DefaultWidth;
+      dto.Width = phys.Width.HasValue ? phys.Width : MapNodesMapper.DefaultWidth;
       dto.MapNodeLinks = new MapNodeLinksMapper(
         Logger,
         GetWikiProvider()).PhysicalToDto(phys.MapNodeLinksNodeId1Navigation.ToList());

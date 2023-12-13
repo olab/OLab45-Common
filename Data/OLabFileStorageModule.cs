@@ -1,4 +1,4 @@
-﻿using OLab.Api.Model;
+﻿using OLab.Api.Models;
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OLab.Common.Utils;
+namespace OLab.Data;
 public abstract class OLabFileStorageModule : IFileStorageModule
 {
   public const string FilesRoot = "files";
@@ -23,12 +23,12 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   protected OLabFileStorageModule(IOLabLogger logger, IOLabConfiguration configuration)
   {
     this.logger = logger;
-    this.cfg = configuration;
+    cfg = configuration;
   }
 
   public string GetModuleName()
   {
-    var attrib = this.GetType().GetCustomAttributes(typeof(OLabModuleAttribute), true).FirstOrDefault() as OLabModuleAttribute;
+    var attrib = GetType().GetCustomAttributes(typeof(OLabModuleAttribute), true).FirstOrDefault() as OLabModuleAttribute;
     if (attrib == null)
       throw new Exception("Missing OLabModule attribute");
 
@@ -37,7 +37,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
 
   public string GetUrlPath(string path, string fileName = null)
   {
-    return BuildPath(cfg.GetAppSettings().FileStorageUrl, path, fileName).Replace( "\\", "/" );
+    return BuildPath(cfg.GetAppSettings().FileStorageUrl, path, fileName).Replace("\\", "/");
   }
 
   public string GetPhysicalPath(string path, string fileName)
@@ -64,7 +64,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   public string BuildPath(params object[] pathParts)
   {
     var sb = new StringBuilder();
-    for (int i = 0; i < pathParts.Length; i++)
+    for (var i = 0; i < pathParts.Length; i++)
     {
       // remove any extra trailing slashes
       var part = pathParts[i].ToString();
@@ -90,16 +90,15 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     logger.LogInformation($"Attaching URLs for {items.Count} file records");
 
     foreach (var item in items)
-    {
       try
       {
         var scopeFolder = GetScopedFolderName(
-          item.ImageableType, 
+          item.ImageableType,
           item.ImageableId);
 
         if (FileExists(scopeFolder, item.Path))
         {
-          item.OriginUrl = GetUrlPath( 
+          item.OriginUrl = GetUrlPath(
             scopeFolder,
             item.Path
           );
@@ -112,8 +111,6 @@ public abstract class OLabFileStorageModule : IFileStorageModule
       {
         logger.LogError(ex, $"AttachUrls error on '{item.Path}' id = {item.Id}");
       }
-
-    }
   }
 
   public abstract Task<bool> CopyFolderToArchiveAsync(

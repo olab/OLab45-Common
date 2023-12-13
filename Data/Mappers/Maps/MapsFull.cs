@@ -1,11 +1,13 @@
 using AutoMapper;
 using OLab.Api.Common;
-using OLab.Api.Dto;
 using OLab.Common.Interfaces;
+using OLab.Data.Dtos;
+using OLab.Data.Models;
+using OLab.Data.Mappers;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
-  public class MapsFullMapper : OLabMapper<Model.Maps, MapsFullDto>
+  public class MapsFullMapper : OLabMapper<Api.Models.Maps, MapsFullDto>
   {
     public MapsFullMapper(
       IOLabLogger logger,
@@ -26,7 +28,7 @@ namespace OLab.Api.ObjectMapper
     protected override MapperConfiguration GetConfiguration()
     {
       return new MapperConfiguration(cfg =>
-       cfg.CreateMap<Model.Maps, Dto.MapsFullDto>()
+       cfg.CreateMap<Api.Models.Maps, MapsFullDto>()
         .ForMember(dest => dest.Description, act => act.MapFrom(src => src.Abstract))
         .ReverseMap()
       );

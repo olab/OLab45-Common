@@ -1,15 +1,16 @@
 using Newtonsoft.Json;
-using OLab.Api.Data.Interface;
-using OLab.Api.Dto;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects;
+using OLab.Data.Models;
+
+using OLab.Data.Interface;
 using System.Linq;
 using System.Text;
+using OLab.Data.Dtos;
 
-namespace OLab.Api.Data
+namespace OLab.Data
 {
-    public class OLabSession : IOLabSession
+  public class OLabSession : IOLabSession
   {
     private readonly OLabDBContext _dbContext;
     private readonly IUserContext _userContext;
@@ -105,7 +106,7 @@ namespace OLab.Api.Data
         return;
 
       // truncate the message in case it's too long
-      if (string.IsNullOrEmpty(value) && (value.Length > 1000))
+      if (string.IsNullOrEmpty(value) && value.Length > 1000)
         value = value[997..] + "...";
 
       var userResponse = new UserResponses

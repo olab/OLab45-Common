@@ -3,13 +3,14 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OLab.Api.Common;
-using OLab.Api.Data.Exceptions;
-using OLab.Api.Dto;
-using OLab.Api.Model;
-using OLab.Api.ObjectMapper;
+using OLab.Api.Models;
+using OLab.Api.Utils;
 using OLab.Common.Utils;
 using OLab.Data;
+using OLab.Data.Dtos;
+using OLab.Data.Exceptions;
 using OLab.Data.Interface;
+using OLab.Data.Mappers;
 using OLab.Import.Interface;
 using System;
 using System.IO;
@@ -91,9 +92,9 @@ public partial class Importer : IImporter
       await _fileModule.CopyFolderToArchiveAsync(
         zipArchive,
         _fileModule.BuildPath(
-          Api.Utils.Constants.ScopeLevelMap,
+          ConstantStrings.ScopeLevelMap,
           dto.Map.Id),
-        Api.Utils.Constants.ScopeLevelMap,
+        ConstantStrings.ScopeLevelMap,
         true,
         token);
 
@@ -103,10 +104,10 @@ public partial class Importer : IImporter
         await _fileModule.CopyFolderToArchiveAsync(
           zipArchive,
           _fileModule.BuildPath(
-            Api.Utils.Constants.ScopeLevelNode,
+            ConstantStrings.ScopeLevelNode,
             nodeDto.Id),
           _fileModule.BuildPath(
-            Api.Utils.Constants.ScopeLevelNode,
+            ConstantStrings.ScopeLevelNode,
             nodeDto.Id),
           true,
           token);
@@ -142,7 +143,7 @@ public partial class Importer : IImporter
       _dbContext);
 
     // apply map-level scoped objects to the map dto
-    await phys.AddScopeFromDatabaseAsync(Api.Utils.Constants.ScopeLevelMap, mapId);
+    await phys.AddScopeFromDatabaseAsync(ConstantStrings.ScopeLevelMap, mapId);
 
     var scopedObjectMapper = new ScopedObjectsMapper(Logger, _wikiTagProvider, false);
     dto.ScopedObjects = scopedObjectMapper.PhysicalToDto(phys);
@@ -160,7 +161,7 @@ public partial class Importer : IImporter
         _dbContext);
 
       // apply node-level scoped objects
-      await phys.AddScopeFromDatabaseAsync(Api.Utils.Constants.ScopeLevelNode, nodeDto.Id.Value);
+      await phys.AddScopeFromDatabaseAsync(ConstantStrings.ScopeLevelNode, nodeDto.Id.Value);
 
       Logger.LogInformation($"  exporting node {nodeDto.Id} ");
 

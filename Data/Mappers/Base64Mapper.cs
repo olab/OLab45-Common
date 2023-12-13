@@ -1,6 +1,6 @@
 using AutoMapper;
 
-namespace OLabWeOLabWebAPI.ObjectMapper
+namespace OLab.Data.Mappers
 {
   public class Base64Converter : ITypeConverter<string, byte[]>, ITypeConverter<byte[], string>
   {

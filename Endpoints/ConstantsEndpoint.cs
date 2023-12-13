@@ -2,13 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
-using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
-using OLab.Api.Dto;
-using OLab.Api.ObjectMapper;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects;
+using OLab.Data.Dtos;
+using OLab.Data.Exceptions;
+using OLab.Data.Mappers;
+using OLab.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
 {
-    public partial class ConstantsEndpoint : OLabEndpoint
+  public partial class ConstantsEndpoint : OLabEndpoint
   {
 
     public ConstantsEndpoint(
@@ -67,7 +67,7 @@ namespace OLab.Api.Endpoints
 
       Logger.LogInformation(string.Format("found {0} ConstantsPhys", Constants.Count));
 
-      var dtoList = new ObjectMapper.Constants(Logger).PhysicalToDto(Constants);
+      var dtoList = new ConstantsMapper(Logger).PhysicalToDto(Constants);
 
       var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
       var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
@@ -94,7 +94,7 @@ namespace OLab.Api.Endpoints
         throw new OLabObjectNotFoundException("ConstantsPhys", id);
 
       var phys = await dbContext.SystemConstants.FirstAsync(x => x.Id == id);
-      var dto = new ObjectMapper.Constants(Logger).PhysicalToDto(phys);
+      var dto = new ConstantsMapper(Logger).PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = auth.HasAccess("R", dto);

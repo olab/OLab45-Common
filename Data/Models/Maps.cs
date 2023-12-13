@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using OLab.Data.BusinessObjects;
+using OLab.Data.Models;
 
 
 #nullable disable
 
-namespace OLab.Api.Model
+namespace OLab.Api.Models
 {
-    [Table("maps")]
+  [Table("maps")]
   public partial class Maps
   {
     public Maps()

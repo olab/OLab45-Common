@@ -2,19 +2,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
-using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
-using OLab.Api.Dto;
-using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects;
+using OLab.Data.Dtos;
+using OLab.Data.Mappers;
+using OLab.Data.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints
 {
-    public partial class QuestionResponsesEndpoint : OLabEndpoint
+  public partial class QuestionResponsesEndpoint : OLabEndpoint
   {
 
     public QuestionResponsesEndpoint(
@@ -57,7 +56,7 @@ namespace OLab.Api.Endpoints
 
       try
       {
-        var responsebuilder = new QuestionResponses(Logger, dtoQuestionTemp);
+        var responsebuilder = new QuestionResponsesMapper(Logger, dtoQuestionTemp);
         var physResponse = responsebuilder.DtoToPhysical(dto);
 
         physResponse.UpdatedAt = DateTime.Now;
@@ -92,7 +91,7 @@ namespace OLab.Api.Endpoints
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("QuestionResponses", 0);
 
-      var responsebuilder = new QuestionResponses(Logger, dtoQuestionTemp);
+      var responsebuilder = new QuestionResponsesMapper(Logger, dtoQuestionTemp);
       var physResponse = responsebuilder.DtoToPhysical(dto);
 
       dbContext.SystemQuestionResponses.Add(physResponse);

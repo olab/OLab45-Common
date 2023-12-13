@@ -3,7 +3,7 @@ using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
   public abstract class ObjectMapper<P, D> : object where P : new() where D : new()
   {
@@ -13,9 +13,9 @@ namespace OLab.Api.ObjectMapper
     // used to hold on to id translation between origin system and new one
     protected IDictionary<uint, uint?> _idTranslation = new Dictionary<uint, uint?>();
 
-    public abstract D PhysicalToDto(P phys, Object source = null);
-    public abstract P DtoToPhysical(D dto, Object source = null);
-    public virtual P ElementsToPhys(IEnumerable<dynamic> elements, Object source = null) { return default; }
+    public abstract D PhysicalToDto(P phys, object source = null);
+    public abstract P DtoToPhysical(D dto, object source = null);
+    public virtual P ElementsToPhys(IEnumerable<dynamic> elements, object source = null) { return default; }
 
     public ObjectMapper(
       IOLabLogger logger)
@@ -31,7 +31,7 @@ namespace OLab.Api.ObjectMapper
       _wikiTagModules = wikiTagProvider;
     }
 
-    public virtual D GetDto(Object source = null)
+    public virtual D GetDto(object source = null)
     {
       if (source == null)
         return new D();
@@ -39,7 +39,7 @@ namespace OLab.Api.ObjectMapper
       return (D)source;
     }
 
-    public virtual P GetPhys(Object source = null)
+    public virtual P GetPhys(object source = null)
     {
       if (source == null)
         return new P();

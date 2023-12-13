@@ -1,19 +1,19 @@
-using OLab.Api.Dto;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects;
+using OLab.Data.Dtos;
+using OLab.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
-    public class MapVpd : OLabMapper<MapVpds, MapVpdsDto>
+  public class MapVpdMapper : OLabMapper<MapVpds, MapVpdsDto>
   {
-    public MapVpd(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public MapVpdMapper(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public override MapVpds ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
+    public override MapVpds ElementsToPhys(IEnumerable<dynamic> elements, object source = null)
     {
       var phys = GetPhys(source);
 

@@ -1,7 +1,7 @@
-using OLab.Api.Model;
-using OLab.Api.ObjectMapper;
+using OLab.Api.Models;
 using OLab.Common.Interfaces;
-using OLab.Data.BusinessObjects;
+using OLab.Data.Mappers;
+using OLab.Data.Models;
 using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
@@ -10,10 +10,10 @@ using System.IO;
 namespace OLab.Import.OLab3.Dtos
 {
 
-    public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
+  public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
   {
     private readonly AvatarsMapper _avMapper;
-    private readonly Api.ObjectMapper.Files _fileMapper;
+    private readonly FilesMapper _fileMapper;
 
     public XmlMapAvatarDto(
       IOLabLogger logger,
@@ -24,7 +24,7 @@ namespace OLab.Import.OLab3.Dtos
         "map_avatar.xml")
     {
       _avMapper = new AvatarsMapper(logger);
-      _fileMapper = new Files(logger);
+      _fileMapper = new FilesMapper(logger);
     }
 
     /// <summary>

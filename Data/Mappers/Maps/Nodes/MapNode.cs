@@ -1,14 +1,15 @@
 using OLab.Api.Common;
-using OLab.Api.Dto;
+using OLab.Api.Models;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Data.Mappers
 {
-  public class MapNodesMapper : OLabMapper<Model.MapNodes, MapNodesDto>
+  public class MapNodesMapper : OLabMapper<MapNodes, MapNodesDto>
   {
     public static int DefaultWidth = 400;
     public static int DefaultHeight = 300;
@@ -26,7 +27,7 @@ namespace OLab.Api.ObjectMapper
     {
     }
 
-    public override Model.MapNodes ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
+    public override MapNodes ElementsToPhys(IEnumerable<dynamic> elements, object source = null)
     {
       var phys = GetPhys(source);
 

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace OLab.Api.Model
+namespace OLab.Api.Models
 {
   public partial class MapNodeLinks
   {
