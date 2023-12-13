@@ -35,7 +35,7 @@ namespace OLab.Data.Mappers
       dto.Counters.AddRange(dtoCountersList);
 
       var dtoConstantsList
-        = new ConstantsFull(Logger, _enableWikiTranslation).PhysicalToDto(phys.ConstantsPhys);
+        = new ConstantsFullMapper(Logger, _enableWikiTranslation).PhysicalToDto(phys.ConstantsPhys);
       dto.Constants.AddRange(dtoConstantsList);
 
       var dtoFilesList
@@ -43,7 +43,7 @@ namespace OLab.Data.Mappers
       dto.Files.AddRange(dtoFilesList);
 
       var dtoScriptsList
-        = new Scripts(Logger, _enableWikiTranslation).PhysicalToDto(phys.ScriptsPhys);
+        = new ScriptsMapper(Logger, _enableWikiTranslation).PhysicalToDto(phys.ScriptsPhys);
       dto.Scripts.AddRange(dtoScriptsList);
 
       if (_wikiTagModules != null)
@@ -75,7 +75,7 @@ namespace OLab.Data.Mappers
       phys.CountersPhys.AddRange(physCounters);
 
       var physConstants
-        = new ConstantsFull(Logger, _enableWikiTranslation).DtoToPhysical(dto.Constants);
+        = new ConstantsFullMapper(Logger, _enableWikiTranslation).DtoToPhysical(dto.Constants);
       phys.ConstantsPhys.AddRange(physConstants);
 
       var physFiles
@@ -83,7 +83,7 @@ namespace OLab.Data.Mappers
       phys.FilesPhys.AddRange(physFiles);
 
       var physScripts
-        = new Scripts(Logger, _enableWikiTranslation).DtoToPhysical(dto.Scripts);
+        = new ScriptsMapper(Logger, _enableWikiTranslation).DtoToPhysical(dto.Scripts);
       phys.ScriptsPhys.AddRange(physScripts);
 
       if (_wikiTagModules != null)

@@ -127,7 +127,7 @@ namespace OLab.Api.Endpoints
 
       try
       {
-        var builder = new ConstantsFull(Logger);
+        var builder = new ConstantsFullMapper(Logger);
         var phys = builder.DtoToPhysical(dto);
 
         phys.UpdatedAt = DateTime.Now;
@@ -160,7 +160,7 @@ namespace OLab.Api.Endpoints
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("ConstantsPhys", 0);
 
-      var builder = new ConstantsFull(Logger);
+      var builder = new ConstantsFullMapper(Logger);
       var phys = builder.DtoToPhysical(dto);
 
       phys.CreatedAt = DateTime.Now;
@@ -189,7 +189,7 @@ namespace OLab.Api.Endpoints
       try
       {
         var phys = await GetConstantAsync(id);
-        var dto = new ConstantsFull(Logger).PhysicalToDto(phys);
+        var dto = new ConstantsFullMapper(Logger).PhysicalToDto(phys);
 
         // test if user has access to object
         var accessResult = auth.HasAccess("W", dto);

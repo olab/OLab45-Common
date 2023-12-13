@@ -8,14 +8,14 @@ using System.Text;
 
 namespace OLab.Data.Mappers
 {
-  public class ConstantsFull : OLabMapper<SystemConstants, ConstantsDto>
+  public class ConstantsFullMapper : OLabMapper<SystemConstants, ConstantsDto>
   {
 
-    public ConstantsFull(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public ConstantsFullMapper(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public ConstantsFull(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public ConstantsFullMapper(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

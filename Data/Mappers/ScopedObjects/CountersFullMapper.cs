@@ -9,14 +9,14 @@ using System.Text;
 
 namespace OLab.Data.Mappers
 {
-  public class CountersFull : OLabMapper<SystemCounters, CountersFullDto>
+  public class CountersFullMapper : OLabMapper<SystemCounters, CountersFullDto>
   {
 
-    public CountersFull(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+    public CountersFullMapper(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
     {
     }
 
-    public CountersFull(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    public CountersFullMapper(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
     }
 

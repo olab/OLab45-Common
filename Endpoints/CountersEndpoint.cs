@@ -91,7 +91,7 @@ namespace OLab.Api.Endpoints
         throw new OLabObjectNotFoundException("CounterMapper", id);
 
       var phys = await GetCounterAsync(id);
-      var dto = new CountersFull(Logger).PhysicalToDto(phys);
+      var dto = new CountersFullMapper(Logger).PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = auth.HasAccess("R", dto);
@@ -123,7 +123,7 @@ namespace OLab.Api.Endpoints
 
       try
       {
-        var builder = new CountersFull(Logger);
+        var builder = new CountersFullMapper(Logger);
         var phys = builder.DtoToPhysical(dto);
 
         phys.UpdatedAt = DateTime.Now;
@@ -159,7 +159,7 @@ namespace OLab.Api.Endpoints
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("CounterMapper", 0);
 
-      var builder = new CountersFull(Logger);
+      var builder = new CountersFullMapper(Logger);
       var phys = builder.DtoToPhysical(dto);
 
       phys.CreatedAt = DateTime.Now;
@@ -190,7 +190,7 @@ namespace OLab.Api.Endpoints
       try
       {
         var phys = await GetCounterAsync(id);
-        var dto = new CountersFull(Logger).PhysicalToDto(phys);
+        var dto = new CountersFullMapper(Logger).PhysicalToDto(phys);
 
         // test if user has access to object
         var accessResult = auth.HasAccess("W", dto);
