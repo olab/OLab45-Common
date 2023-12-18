@@ -6,6 +6,7 @@ namespace OLab.Data.Contracts
   public class ImportResponse
   {
     public IList<OLabLogMessage> Messages { get; set; }
+    public uint MapId {  get; set; }
 
     public ImportResponse()
     {

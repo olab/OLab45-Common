@@ -119,13 +119,15 @@ public class Importer : IImporter
 
   }
 
-  public async Task Import(
+  public async Task<uint> Import(
     Stream archiveFileStream,
     string archiveFileName,
     CancellationToken token = default)
   {
-    if (await ProcessImportFileAsync(archiveFileStream, archiveFileName, token))
+    var mapId = await ProcessImportFileAsync(archiveFileStream, archiveFileName, token);
+    if ( mapId > 0 )
       WriteImportToDatabase();
+    return mapId;
   }
 
   /// <summary>
@@ -134,12 +136,12 @@ public class Importer : IImporter
   /// <param name="stream">Stream to write file to</param>
   /// <param name="fileName">ExportAsync ZIP file name</param>
   /// <returns>true</returns>
-  public async Task<bool> ProcessImportFileAsync(
+  public async Task<uint> ProcessImportFileAsync(
     Stream stream,
     string fileName,
     CancellationToken token = default)
   {
-    var importStatus = true;
+    uint mapId = 0;
 
     try
     {
@@ -174,17 +176,15 @@ public class Importer : IImporter
       throw;
     }
 
-    return importStatus;
+    return mapId;
   }
 
   /// <summary>
   /// WRite import dtos to database
   /// </summary>
   /// <returns>true</returns>
-  public bool WriteImportToDatabase()
+  public uint WriteImportToDatabase()
   {
-    var rc = true;
-
     using (var transaction = _dbContext.Database.BeginTransaction())
     {
       try
@@ -198,6 +198,8 @@ public class Importer : IImporter
         var xmlMapDto = _dtos[DtoTypes.XmlMapDto] as XmlMapDto;
         var xmlMap = (XmlMap)xmlMapDto.GetDbPhys();
         Logger.LogInformation($"Loaded map '{xmlMap.Data[0].Name}'. id = {xmlMap.Data[0].Id}");
+
+        return xmlMap.Data[0].Id;
       }
       catch (Exception ex)
       {
@@ -207,7 +209,7 @@ public class Importer : IImporter
 
     }
 
-    return rc;
+    return 0;
   }
 
   public Task ExportAsync(Stream stream, uint mapId, CancellationToken token = default)

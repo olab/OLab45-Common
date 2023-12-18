@@ -36,7 +36,7 @@ namespace OLab.Data.Mappers
     {
       return new MapperConfiguration(cfg =>
       {
-        cfg.CreateMap<Api.Models.Maps, MapsFullRelationsDto>().ReverseMap();
+        cfg.CreateMap<Maps, MapsFullRelationsDto>().ReverseMap();
         cfg.CreateMap<MapNodes, MapNodesFullDto>().ReverseMap();
         cfg.CreateMap<MapNodeLinks, MapNodeLinksFullDto>().ReverseMap();
       });
