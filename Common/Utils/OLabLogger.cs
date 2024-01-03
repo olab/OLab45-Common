@@ -142,6 +142,8 @@ namespace OLab.Api.Utils
     public void LogError(Exception ex, string message)
     {
       _logger?.LogError(ex.Message);
+      _logger?.LogError(ex.StackTrace);
+
       Log(OLabLogMessage.MessageLevel.Error, message);
 
       if ( ex.InnerException != null )

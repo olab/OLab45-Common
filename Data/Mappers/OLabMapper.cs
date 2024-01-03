@@ -76,6 +76,9 @@ namespace OLab.Data.Mappers
     /// <returns>Dto object</returns>
     public virtual D PhysicalToDto(P phys)
     {
+      if (phys == null)
+        return default(D);
+
       var dto = _mapper.Map<D>(phys);
       dto = PhysicalToDto(phys, dto);
       return dto;
