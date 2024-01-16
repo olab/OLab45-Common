@@ -22,6 +22,7 @@ namespace OLab.Api.Common
   public class OLabAPIResponse<D> : ActionResult
   {
     public const string MessageSuccess = "success";
+    private HttpStatusCode _errorCode = HttpStatusCode.OK;
 
     public OLabAPIResponse()
     {
@@ -35,7 +36,11 @@ namespace OLab.Api.Common
     [JsonProperty("message")]
     public string Message { get; set; }
     [JsonProperty("error_code")]
-    public HttpStatusCode ErrorCode { get; set; }
+    public HttpStatusCode ErrorCode 
+    { 
+      get { return _errorCode; } 
+      set { _errorCode = value; Message = value.ToString(); }
+    }
     [JsonProperty("diagnostics")]
     public IList<Diagnostics> Diagnostics { get; set; }
     [JsonProperty("data")]

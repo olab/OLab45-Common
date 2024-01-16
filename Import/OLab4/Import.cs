@@ -2,6 +2,7 @@ using Common.Utils;
 using DocumentFormat.OpenXml.EMMA;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Newtonsoft.Json;
 using NuGet.Common;
 using OLab.Api.Common;
@@ -43,7 +44,7 @@ public partial class Importer : IImporter
     try
     {
 
-      _dbContext.Database.BeginTransaction();
+      var transaction = _dbContext.Database.BeginTransaction();
 
       // reset message buffer so we just save the new messages
       Logger.Clear();
@@ -60,18 +61,21 @@ public partial class Importer : IImporter
       await ProcessMapNodesAsync(mapFullDto, token);
       await ProcessAttachedImportFiles(token);
 
-      await _scopedObjectPhys.WriteAllToDatabaseAsync(_newMapPhys.Id, token);
+      await _scopedObjectPhys.WriteAllToDatabaseAsync(transaction, _newMapPhys.Id, token);
 
       await CleanupImportAsync();
 
-      await _dbContext.Database.CommitTransactionAsync();
+
+      if ( Logger.HasErrorMessage() )
+        await _dbContext.Database.RollbackTransactionAsync();
+      else
+        await _dbContext.Database.CommitTransactionAsync();
 
       return _newMapPhys.Id;
 
     }
-    catch (Exception ex)
-    {
-      Logger.LogError($"Import error {ex.Message}");
+    catch (Exception)
+    {      
       await _dbContext.Database.RollbackTransactionAsync();
       throw;
     }

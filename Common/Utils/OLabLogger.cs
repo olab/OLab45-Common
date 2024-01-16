@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using OLab.Common.Interfaces;
@@ -78,9 +79,9 @@ namespace OLab.Api.Utils
 
     public bool HaveFatalError => _messages.Any(x => x.Level == OLabLogMessage.MessageLevel.Fatal);
 
-    public IList<OLabLogMessage> GetMessages(OLabLogMessage.MessageLevel level = OLabLogMessage.MessageLevel.Debug)
+    public IList<string> GetMessages(OLabLogMessage.MessageLevel level = OLabLogMessage.MessageLevel.Debug)
     {
-      return _messages.Where(x => x.Level >= level).ToList();
+      return _messages.Where(x => x.Level >= level).Select(x => x.Message).ToList();
     }
 
     public void Clear()
@@ -139,15 +140,21 @@ namespace OLab.Api.Utils
       Log(OLabLogMessage.MessageLevel.Fatal, type, index, message);
     }
 
-    public void LogError(Exception ex, string message)
+    public void LogError(Exception ex, string message = null)
     {
-      _logger?.LogError(ex.Message);
-      _logger?.LogError(ex.StackTrace);
+      if (string.IsNullOrEmpty(message))
+        LogError($"ERROR: {ex.Message}");
+      else
+        LogError($"ERROR: {message} {ex.Message}");
 
-      Log(OLabLogMessage.MessageLevel.Error, message);
+      var inner = ex.InnerException;
+      while (inner != null)
+      {
+        LogError($"ERROR: {inner.Message}");
+        inner = inner.InnerException;
+      }
 
-      if ( ex.InnerException != null )
-        LogError(ex.InnerException, message);
+      _logger.LogError($"{ex.StackTrace}");
     }
 
     public void LogError(string type, int index, Exception ex, string message)
@@ -192,6 +199,10 @@ namespace OLab.Api.Utils
       Log(OLabLogMessage.MessageLevel.Warn, type, index, message);
     }
 
+    public bool HasErrorMessage()
+    {
+      return _messages.Any(x => x.Level >= OLabLogMessage.MessageLevel.Error);
+    }
   }
 
 }

@@ -11,10 +11,11 @@ namespace OLab.Common.Interfaces
     void Clear();
     ILogger GetLogger();
     ILoggerFactory GetLoggerFactory();
-    IList<OLabLogMessage> GetMessages(OLabLogMessage.MessageLevel level = OLabLogMessage.MessageLevel.Debug);
+    IList<string> GetMessages(OLabLogMessage.MessageLevel level = OLabLogMessage.MessageLevel.Debug);
+    bool HasErrorMessage();
     void LogDebug(string message);
     void LogDebug(string type, int index, string message);
-    void LogError(Exception ex, string message);
+    void LogError(Exception ex, string message = "");
     void LogError(string message);
     void LogError(string type, int index, Exception ex, string message);
     void LogError(string type, int index, string message);
