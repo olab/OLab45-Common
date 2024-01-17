@@ -1,12 +1,11 @@
 using OLab.Data.Models;
 
-namespace OLab.Data.Dtos
+namespace OLab.Data.Dtos;
+
+public partial class MapVpdsDto
 {
-  public partial class MapVpdsDto
-  {
-    public uint Id { get; set; }
-    public uint MapId { get; set; }
-    public uint VpdTypeId { get; set; }
-    public virtual MapVpdTypes VpdType { get; set; }
-  }
+  public uint Id { get; set; }
+  public uint MapId { get; set; }
+  public uint VpdTypeId { get; set; }
+  public virtual MapVpdTypes VpdType { get; set; }
 }

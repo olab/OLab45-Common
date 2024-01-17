@@ -1,10 +1,10 @@
 using AutoMapper;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OLab.Data.Dtos;
 
 namespace OLab.Data.Mappers;
 

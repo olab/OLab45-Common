@@ -1,7 +1,6 @@
-namespace OLab.Data.Contracts
+namespace OLab.Data.Contracts;
+
+public class CreateMapRequest
 {
-  public class CreateMapRequest
-  {
-    public uint? TemplateId { get; set; }
-  }
+  public uint? TemplateId { get; set; }
 }

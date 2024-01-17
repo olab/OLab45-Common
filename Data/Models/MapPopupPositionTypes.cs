@@ -3,17 +3,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Data.Models
+namespace OLab.Data.Models;
+
+[Table("map_popup_position_types")]
+public partial class MapPopupPositionTypes
 {
-  [Table("map_popup_position_types")]
-  public partial class MapPopupPositionTypes
-  {
-    [Key]
-    [Column("id", TypeName = "int(10) unsigned")]
-    public uint Id { get; set; }
-    [Required]
-    [Column("title")]
-    [StringLength(200)]
-    public string Title { get; set; }
-  }
+  [Key]
+  [Column("id", TypeName = "int(10) unsigned")]
+  public uint Id { get; set; }
+  [Required]
+  [Column("title")]
+  [StringLength(200)]
+  public string Title { get; set; }
 }

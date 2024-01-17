@@ -1,14 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OLab.Data.Contracts
+namespace OLab.Data.Contracts;
+
+public class ChangePasswordRequest
 {
-  public class ChangePasswordRequest
-  {
-    [Required]
-    public string Username { get; set; }
-    [Required]
-    public string Password { get; set; }
-    [Required]
-    public string NewPassword { get; set; }
-  }
+  [Required]
+  public string Username { get; set; }
+  [Required]
+  public string Password { get; set; }
+  [Required]
+  public string NewPassword { get; set; }
 }

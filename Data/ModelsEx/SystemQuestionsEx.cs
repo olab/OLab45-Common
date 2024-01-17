@@ -1,76 +1,75 @@
+using OLab.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
-using OLab.Data.Models;
 
-namespace OLab.Api.Models
+namespace OLab.Api.Models;
+
+public partial class SystemQuestions
 {
-  public partial class SystemQuestions
+  public string GetWikiTag()
   {
-    public string GetWikiTag()
+    if (string.IsNullOrEmpty(Name))
+      return $"[[QU:{Id}]]";
+    return $"[[QU:{Name}]]";
+  }
+
+  public int GetScoreFromResponses(uint? id)
+  {
+    if (id.HasValue)
+      return GetScoreFromResponses(id.Value);
+
+    return 0;
+  }
+
+  public int GetScoreFromResponses(uint id)
+  {
+    return GetScoreFromResponses(new List<uint> { id });
+  }
+
+  public int GetScoreFromResponses(string idList)
+  {
+    var ids = idList.Split(",").ToList();
+    var iduints = new List<uint>();
+
+    // convert list of strings to list of uints
+    foreach (var id in ids)
     {
-      if (string.IsNullOrEmpty(Name))
-        return $"[[QU:{Id}]]";
-      return $"[[QU:{Name}]]";
+      if (uint.TryParse(id, out var iduint))
+        iduints.Add(iduint);
     }
 
-    public int GetScoreFromResponses(uint? id)
+    return GetScoreFromResponses(iduints);
+  }
+
+  public int GetScoreFromResponses(IList<uint> ids)
+  {
+    var score = 0;
+    foreach (var id in ids)
     {
-      if (id.HasValue)
-        return GetScoreFromResponses(id.Value);
-
-      return 0;
-    }
-
-    public int GetScoreFromResponses(uint id)
-    {
-      return GetScoreFromResponses(new List<uint> { id });
-    }
-
-    public int GetScoreFromResponses(string idList)
-    {
-      var ids = idList.Split(",").ToList();
-      var iduints = new List<uint>();
-
-      // convert list of strings to list of uints
-      foreach (var id in ids)
+      var response = GetResponse(id);
+      if (response != null)
       {
-        if (uint.TryParse(id, out var iduint))
-          iduints.Add(iduint);
+        if (response.Score.HasValue)
+          score += response.Score.Value;
       }
-
-      return GetScoreFromResponses(iduints);
     }
 
-    public int GetScoreFromResponses(IList<uint> ids)
+    return score;
+  }
+
+  public SystemQuestionResponses GetResponse(uint id)
+  {
+    foreach (var item in SystemQuestionResponses)
     {
-      var score = 0;
-      foreach (var id in ids)
-      {
-        var response = GetResponse(id);
-        if (response != null)
-        {
-          if (response.Score.HasValue)
-            score += response.Score.Value;
-        }
-      }
-
-      return score;
+      if (item.Id == id)
+        return item;
     }
 
-    public SystemQuestionResponses GetResponse(uint id)
-    {
-      foreach (var item in SystemQuestionResponses)
-      {
-        if (item.Id == id)
-          return item;
-      }
+    return null;
+  }
 
-      return null;
-    }
-
-    public override string ToString()
-    {
-      return $"({Id}) {Stem}";
-    }
+  public override string ToString()
+  {
+    return $"({Id}) {Stem}";
   }
 }

@@ -2,15 +2,14 @@
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 
-namespace OLab.Data
+namespace OLab.Data;
+
+public class FileStorageProvider : OLabModuleProvider<IFileStorageModule>
 {
-  public class FileStorageProvider : OLabModuleProvider<IFileStorageModule>
+  public FileStorageProvider(
+    IOLabLogger logger,
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
-    public FileStorageProvider(
-      IOLabLogger logger,
-      IOLabConfiguration configuration) : base(logger, configuration)
-    {
-      Load("OLab.Files.*.dll");
-    }
+    Load("OLab.Files.*.dll");
   }
 }

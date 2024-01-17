@@ -1,8 +1,7 @@
 using OLab.Api.Models;
 
-namespace OLab.Import.OLab3.Model
+namespace OLab.Import.OLab3.Model;
+
+public class XmlMap : XmlImportArray<Maps>
 {
-  public class XmlMap : XmlImportArray<Maps>
-  {
-  }
 }

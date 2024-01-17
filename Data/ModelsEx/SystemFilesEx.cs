@@ -1,12 +1,11 @@
 #nullable disable
 
-namespace OLab.Api.Models
+namespace OLab.Api.Models;
+
+public partial class SystemFiles
 {
-  public partial class SystemFiles
+  public override string ToString()
   {
-    public override string ToString()
-    {
-      return $"{Name}({Id}): {Path}";
-    }
+    return $"{Name}({Id}): {Path}";
   }
 }

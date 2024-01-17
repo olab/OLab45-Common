@@ -125,7 +125,7 @@ public class Importer : IImporter
     CancellationToken token = default)
   {
     var mapId = await ProcessImportFileAsync(archiveFileStream, archiveFileName, token);
-    if ( mapId > 0 )
+    if (mapId > 0)
       WriteImportToDatabase();
     return mapId;
   }
@@ -148,9 +148,9 @@ public class Importer : IImporter
       Logger.LogInformation($"Module archive file: {FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, fileName)}");
 
       await FileStorageModule.WriteFileAsync(
-        stream, 
-        FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, fileName), 
-        fileName, 
+        stream,
+        FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, fileName),
+        fileName,
         token);
 
       var extractFolderName = Path.GetFileNameWithoutExtension(fileName);
@@ -167,7 +167,7 @@ public class Importer : IImporter
 
       // delete source import file
       await GetFileStorageModule().DeleteFileAsync(
-        OLabFileStorageModule.ImportRoot, 
+        OLabFileStorageModule.ImportRoot,
         fileName);
     }
     catch (Exception ex)

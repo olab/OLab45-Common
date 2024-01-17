@@ -1,12 +1,11 @@
 using Newtonsoft.Json;
 
-namespace OLab.Data.Dtos
+namespace OLab.Data.Dtos;
+
+public class ThemesFullDto : ThemesDto
 {
-  public class ThemesFullDto : ThemesDto
-  {
-    [JsonProperty("header")]
-    public string HeaderText { get; set; }
-    [JsonProperty("footer")]
-    public string FooterText { get; set; }
-  }
+  [JsonProperty("header")]
+  public string HeaderText { get; set; }
+  [JsonProperty("footer")]
+  public string FooterText { get; set; }
 }

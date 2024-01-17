@@ -1,6 +1,5 @@
-namespace OLab.Data.Dtos
+namespace OLab.Data.Dtos;
+
+public class ThemesDto : ScopedObjectDto
 {
-  public class ThemesDto : ScopedObjectDto
-  {
-  }
 }

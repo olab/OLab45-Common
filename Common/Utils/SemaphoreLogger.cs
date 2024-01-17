@@ -1,16 +1,11 @@
-﻿using OLab.Api.Utils;
-using OLab.Common.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using OLab.Common.Interfaces;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace OLab.Common.Utils;
 public static class SemaphoreLogger
 {
-  public async static Task WaitAsync( 
+  public static async Task WaitAsync(
     IOLabLogger logger,
     string key,
     SemaphoreSlim semaphore)
@@ -20,7 +15,7 @@ public static class SemaphoreLogger
     logger.LogInformation($"key {key} lock granted. remaining threads = {semaphore.CurrentCount}");
   }
 
-  public static void Release( 
+  public static void Release(
     IOLabLogger logger,
     string key,
     SemaphoreSlim semaphore)

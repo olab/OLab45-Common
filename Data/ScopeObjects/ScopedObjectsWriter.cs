@@ -1,8 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using OLab.Api.Models;
 using OLab.Api.Utils;
-using OLab.Common.Exceptions;
 using OLab.Data.Models;
 using System;
 using System.Collections.Generic;

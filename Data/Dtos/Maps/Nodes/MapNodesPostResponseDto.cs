@@ -1,24 +1,23 @@
 using Newtonsoft.Json;
 
-namespace OLab.Data.Dtos
+namespace OLab.Data.Dtos;
+
+public class LinksDto
 {
-  public class LinksDto
+  [JsonProperty("id")]
+  public uint Id { get; set; }
+}
+
+public class MapNodesPostResponseDto
+{
+  public MapNodesPostResponseDto()
   {
-    [JsonProperty("id")]
-    public uint Id { get; set; }
+    Links = new LinksDto();
   }
 
-  public class MapNodesPostResponseDto
-  {
-    public MapNodesPostResponseDto()
-    {
-      Links = new LinksDto();
-    }
+  [JsonProperty("id")]
+  public uint Id { get; set; }
+  [JsonProperty("links")]
+  public LinksDto Links { get; set; }
 
-    [JsonProperty("id")]
-    public uint Id { get; set; }
-    [JsonProperty("links")]
-    public LinksDto Links { get; set; }
-
-  }
 }

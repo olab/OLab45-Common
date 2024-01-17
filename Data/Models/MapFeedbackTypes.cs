@@ -3,18 +3,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Data.Models
+namespace OLab.Data.Models;
+
+[Table("map_feedback_types")]
+public partial class MapFeedbackTypes
 {
-  [Table("map_feedback_types")]
-  public partial class MapFeedbackTypes
-  {
-    [Key]
-    [Column("id", TypeName = "int(10) unsigned")]
-    public uint Id { get; set; }
-    [Column("name")]
-    [StringLength(100)]
-    public string Name { get; set; }
-    [Column("description", TypeName = "text")]
-    public string Description { get; set; }
-  }
+  [Key]
+  [Column("id", TypeName = "int(10) unsigned")]
+  public uint Id { get; set; }
+  [Column("name")]
+  [StringLength(100)]
+  public string Name { get; set; }
+  [Column("description", TypeName = "text")]
+  public string Description { get; set; }
 }

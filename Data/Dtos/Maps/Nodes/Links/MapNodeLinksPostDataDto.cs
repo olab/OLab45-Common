@@ -1,10 +1,9 @@
 using Newtonsoft.Json;
 
-namespace OLab.Data.Dtos
+namespace OLab.Data.Dtos;
+
+public class MapNodeLinksPostDataDto
 {
-  public class MapNodeLinksPostDataDto
-  {
-    [JsonProperty("destinationId")]
-    public uint DestinationId { get; set; }
-  }
+  [JsonProperty("destinationId")]
+  public uint DestinationId { get; set; }
 }

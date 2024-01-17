@@ -1,21 +1,13 @@
-using Common.Utils;
-using DocumentFormat.OpenXml.EMMA;
-using Humanizer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Newtonsoft.Json;
-using NuGet.Common;
 using OLab.Api.Common;
 using OLab.Api.Models;
 using OLab.Api.Utils;
 using OLab.Data;
 using OLab.Data.Dtos;
-using OLab.Data.Interface;
 using OLab.Data.Mappers;
 using OLab.Import.Interface;
 using System;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,7 +58,7 @@ public partial class Importer : IImporter
       await CleanupImportAsync();
 
 
-      if ( Logger.HasErrorMessage() )
+      if (Logger.HasErrorMessage())
         await _dbContext.Database.RollbackTransactionAsync();
       else
         await _dbContext.Database.CommitTransactionAsync();
@@ -75,7 +67,7 @@ public partial class Importer : IImporter
 
     }
     catch (Exception)
-    {      
+    {
       await _dbContext.Database.RollbackTransactionAsync();
       throw;
     }

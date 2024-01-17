@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OLab.Data.Contracts
+namespace OLab.Data.Contracts;
+
+public class ExternalLoginRequest
 {
-  public class ExternalLoginRequest
-  {
-    [Required]
-    public string ExternalToken { get; set; }
-  }
+  [Required]
+  public string ExternalToken { get; set; }
 }

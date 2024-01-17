@@ -1,7 +1,6 @@
-namespace OLab.Data.Dtos
+namespace OLab.Data.Dtos;
+
+public class MapsTestAccessDto : MapsDto
 {
-  public class MapsTestAccessDto : MapsDto
-  {
-    public uint SecurityId { get; set; }
-  }
+  public uint SecurityId { get; set; }
 }
