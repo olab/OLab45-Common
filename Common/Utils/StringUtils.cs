@@ -1,3 +1,4 @@
+using Dawn;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -30,6 +31,9 @@ public class StringUtils
 
   public static string EncryptString(string key, string plainText)
   {
+    Guard.Argument(key).NotNull(nameof(key));
+    Guard.Argument(plainText).NotNull(nameof(plainText));
+
     // ensure key is 32 bytes
     while (key.Length < 32)
       key += key;
@@ -64,6 +68,10 @@ public class StringUtils
 
   public static string DecryptString(string key, string cipherText)
   {
+
+    Guard.Argument(key).NotNull(nameof(key));
+    Guard.Argument(cipherText).NotNull(nameof(cipherText));
+
     // ensure key is 32 bytes
     while (key.Length < 32)
       key += key;
