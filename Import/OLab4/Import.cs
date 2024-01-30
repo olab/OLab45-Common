@@ -26,7 +26,7 @@ public partial class Importer : IImporter
   // Folder where the xtracted import file resides
   private string ExtractFolderName;
   private ScopedObjects _scopedObjectPhys;
-  private Maps _mapPhys;
+  private Maps _newMapPhys;
 
   /// <summary>
   /// Run the import process on the data in the stream
@@ -35,7 +35,7 @@ public partial class Importer : IImporter
   /// <param name="fileName">File name of improt file</param>
   /// <param name="token"></param>
   /// <returns></returns>
-  public async Task Import(
+  public async Task<uint> Import(
     Stream stream,
     string fileName,
     CancellationToken token = default)
@@ -43,7 +43,7 @@ public partial class Importer : IImporter
     try
     {
 
-      _dbContext.Database.BeginTransaction();
+      var transaction = _dbContext.Database.BeginTransaction();
 
       // reset message buffer so we just save the new messages
       Logger.Clear();
@@ -55,16 +55,21 @@ public partial class Importer : IImporter
 
       _scopedObjectPhys = new ScopedObjects(Logger, _dbContext);
 
-      _mapPhys = await WriteMapToDatabaseAsync(mapFullDto, token);
+      _newMapPhys = await WriteMapToDatabaseAsync(mapFullDto, token);
 
       await ProcessMapNodesAsync(mapFullDto, token);
       await ProcessAttachedImportFiles(token);
 
-      await _scopedObjectPhys.WriteAllToDatabaseAsync(_mapPhys.Id, token);
+      await _scopedObjectPhys.WriteAllToDatabaseAsync(_newMapPhys.Id, token);
 
       await CleanupImportAsync();
 
-      await _dbContext.Database.CommitTransactionAsync();
+      if (Logger.HasErrorMessage())
+        await _dbContext.Database.RollbackTransactionAsync();
+      else
+        await _dbContext.Database.CommitTransactionAsync();
+
+      return _newMapPhys.Id;
 
     }
     catch (Exception ex)
@@ -167,7 +172,7 @@ public partial class Importer : IImporter
     // when we import the map node links
     foreach (var mapNodeDto in mapFullDto.MapNodes)
     {
-      var nodePhys = await WriteMapNodesDtoToDatabase(_mapPhys.Id, mapNodeDto, token);
+      var nodePhys = await WriteMapNodesDtoToDatabase(_newMapPhys.Id, mapNodeDto, token);
       _scopedObjectPhys.AddMapNodeIdCrossReference(mapNodeDto.Id.Value, nodePhys.Id);
 
       _scopedObjectPhys.AddScopeFromDto(mapNodeDto.ScopedObjects);
@@ -176,7 +181,7 @@ public partial class Importer : IImporter
     // import the map node links
     foreach (var mapNodeLinkDto in mapFullDto.MapNodeLinks)
     {
-      var nodeLinkId = await WriteMapNodeLinkToDatabaseAsync(_mapPhys.Id, mapNodeLinkDto, token);
+      var nodeLinkId = await WriteMapNodeLinkToDatabaseAsync(_newMapPhys.Id, mapNodeLinkDto, token);
       Logger.LogInformation($"  imported map node link {mapNodeLinkDto.Id.Value} -> {nodeLinkId}");
     }
   }
@@ -201,7 +206,7 @@ public partial class Importer : IImporter
 
     var destinationFolder = _fileModule.BuildPath(
       Api.Utils.Constants.ScopeLevelMap,
-      _mapPhys.Id);
+      _newMapPhys.Id);
 
     foreach (var sourceFile in sourceFiles)
       await _fileModule.MoveFileAsync(

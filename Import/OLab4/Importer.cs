@@ -34,7 +34,7 @@ public partial class Importer : IImporter
     _dbContext = context;
     _configuration = configuration;
 
-    Logger = OLabLogger.CreateNew<Importer>(logger, true);
+    Logger = logger; // OLabLogger.CreateNew<Importer>(logger, true);
 
     _wikiTagProvider = wikiTagProvider;
     _fileModule = fileStorageModule;
