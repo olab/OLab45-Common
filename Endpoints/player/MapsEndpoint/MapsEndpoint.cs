@@ -193,7 +193,7 @@ namespace OLab.Api.Endpoints.Player
       var linksDto = new MapNodeLinksMapper(Logger).PhysicalToDto(mapLinks);
 
       var mapNodes = dbContext.MapNodes.AsNoTracking().Where(x => x.MapId == map.Id).ToList();
-      var nodesDto = new MapNodesFullMapper(Logger).PhysicalToDto(mapNodes);
+      var nodesDto = new MapNodesFullMapper(Logger, _wikiTagProvider).PhysicalToDto(mapNodes);
 
       var dto = new ExtendMapResponse
       {

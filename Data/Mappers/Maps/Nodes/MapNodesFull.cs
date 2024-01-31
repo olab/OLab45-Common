@@ -18,7 +18,7 @@ namespace OLab.Api.ObjectMapper
 
     public MapNodesFullMapper(
       IOLabLogger logger,
-      WikiTagProvider tagProvider,
+      IOLabModuleProvider<IWikiTagModule> tagProvider,
       bool enableWikiTranslation = true) : base(logger, tagProvider)
     {
       this.enableWikiTranslation = enableWikiTranslation;
