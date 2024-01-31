@@ -23,6 +23,14 @@ namespace OLab.Api.Endpoints.Player
   {
     public MapsEndpoint(
       IOLabLogger logger,
+      OLabDBContext dbContext) : base(
+      logger,
+      dbContext)
+    {
+    }
+
+    public MapsEndpoint(
+      IOLabLogger logger,
       IOLabConfiguration configuration,
       OLabDBContext dbContext,
       IOLabSession session)

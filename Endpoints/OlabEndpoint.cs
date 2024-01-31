@@ -32,6 +32,17 @@ namespace OLab.Api.Endpoints
 
     public OLabEndpoint(
       IOLabLogger logger,
+      OLabDBContext context)
+    {
+      Guard.Argument(logger).NotNull(nameof(logger));
+      Guard.Argument(context).NotNull(nameof(context));
+
+      dbContext = context;
+      Logger = logger;
+    }
+
+    public OLabEndpoint(
+      IOLabLogger logger,
       IOLabConfiguration configuration,
       OLabDBContext context)
     {
