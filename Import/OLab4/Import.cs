@@ -57,7 +57,6 @@ public partial class Importer : IImporter
 
       await CleanupImportAsync();
 
-
       if (Logger.HasErrorMessage())
         await _dbContext.Database.RollbackTransactionAsync();
       else

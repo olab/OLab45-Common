@@ -47,11 +47,14 @@ public partial class Import4Endpoint : OLabEndpoint
   }
 
   public async Task<uint> ImportAsync(
-    Stream archvieFileStream,
+    Stream archiveFileStream,
     string archiveFileName,
     CancellationToken token)
   {
-    return await _importer.Import(archvieFileStream, archiveFileName, token);
+    return await _importer.Import(
+      archiveFileStream, 
+      archiveFileName, 
+      token);
   }
 
   public async Task ExportAsync(
