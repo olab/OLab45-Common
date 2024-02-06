@@ -53,7 +53,7 @@ public partial class Importer : IImporter
       await ProcessMapNodesAsync(mapFullDto, token);
       await ProcessAttachedImportFiles(token);
 
-      await _scopedObjectPhys.WriteAllToDatabaseAsync(transaction, _newMapPhys.Id, token);
+      await _scopedObjectPhys.WriteAllToDatabaseAsync(_newMapPhys.Id, token);
 
       await CleanupImportAsync();
 
@@ -197,7 +197,7 @@ public partial class Importer : IImporter
     var sourceFiles = _fileModule.GetFiles(sourceFolder, token);
 
     var destinationFolder = _fileModule.BuildPath(
-      ConstantStrings.ScopeLevelMap,
+      Api.Utils.Constants.ScopeLevelMap,
       _newMapPhys.Id);
 
     foreach (var sourceFile in sourceFiles)

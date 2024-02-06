@@ -18,15 +18,28 @@ using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints;
 
-public class OLabEndpoint
+namespace OLab.Api.Endpoints
 {
-  protected readonly OLabDBContext dbContext;
-  protected IOLabLogger Logger;
-  protected string token;
-  protected IUserContext _userContext;
-  protected readonly IOLabConfiguration _configuration;
-  protected readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
-  protected readonly IFileStorageModule _fileStorageModule;
+  public class OLabEndpoint
+  {
+    protected readonly OLabDBContext dbContext;
+    protected IOLabLogger Logger;
+    protected string token;
+    protected IUserContext _userContext;
+    protected readonly IOLabConfiguration _configuration;
+    protected readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
+    protected readonly IFileStorageModule _fileStorageModule;
+
+    public OLabEndpoint(
+      IOLabLogger logger,
+      OLabDBContext context)
+    {
+      Guard.Argument(logger).NotNull(nameof(logger));
+      Guard.Argument(context).NotNull(nameof(context));
+
+      dbContext = context;
+      Logger = logger;
+    }
 
   public OLabEndpoint(
     IOLabLogger logger,

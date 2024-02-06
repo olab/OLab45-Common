@@ -19,21 +19,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OLab.Api.Endpoints.Player;
-
-public partial class MapsEndpoint : OLabEndpoint
+namespace OLab.Api.Endpoints.Player
 {
-  public MapsEndpoint(
-    IOLabLogger logger,
-    IOLabConfiguration configuration,
-    OLabDBContext dbContext,
-    IOLabSession session)
-    : base(
-        logger,
-        configuration,
-        dbContext)
+  public partial class MapsEndpoint : OLabEndpoint
   {
-  }
+    public MapsEndpoint(
+      IOLabLogger logger,
+      OLabDBContext dbContext) : base(
+      logger,
+      dbContext)
+    {
+    }
+
+    public MapsEndpoint(
+      IOLabLogger logger,
+      IOLabConfiguration configuration,
+      OLabDBContext dbContext,
+      IOLabSession session)
+      : base(
+          logger,
+          configuration,
+          dbContext)
+    {
+    }
 
   public MapsEndpoint(
     IOLabLogger logger,
@@ -194,8 +202,8 @@ public partial class MapsEndpoint : OLabEndpoint
     var mapLinks = dbContext.MapNodeLinks.AsNoTracking().Where(x => x.MapId == map.Id).ToList();
     var linksDto = new MapNodeLinksMapper(Logger).PhysicalToDto(mapLinks);
 
-    var mapNodes = dbContext.MapNodes.AsNoTracking().Where(x => x.MapId == map.Id).ToList();
-    var nodesDto = new MapNodesFullMapper(Logger).PhysicalToDto(mapNodes);
+      var mapNodes = dbContext.MapNodes.AsNoTracking().Where(x => x.MapId == map.Id).ToList();
+      var nodesDto = new MapNodesFullMapper(Logger, _wikiTagProvider).PhysicalToDto(mapNodes);
 
     var dto = new ExtendMapResponse
     {

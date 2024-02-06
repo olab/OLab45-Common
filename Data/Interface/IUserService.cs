@@ -1,6 +1,7 @@
 using OLab.Api.Models;
 using OLab.Data.Contracts;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OLab.Data.Interface;
 
@@ -9,7 +10,10 @@ public interface IUserService
   Users Authenticate(LoginRequest model);
   void ChangePassword(Users user, ChangePasswordRequest model);
 
-  void AddUser(Users newUser);
+  Task<List<AddUserResponse>> AddUsersAsync(List<AddUserRequest> items);
+  Task<List<AddUserResponse>> DeleteUsersAsync(List<AddUserRequest> items);
+  Task<AddUserResponse> AddUserAsync(AddUserRequest item);
+
   IEnumerable<Users> GetAll();
   Users GetById(int id);
   Users GetByUserName(string userName);

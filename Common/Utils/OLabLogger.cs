@@ -17,6 +17,18 @@ public class OLabLogMessage
     Error,
     Fatal
   };
+namespace OLab.Api.Utils;
+
+public class OLabLogMessage
+{
+  public enum MessageLevel
+  {
+    Debug = 0,
+    Info,
+    Warn,
+    Error,
+    Fatal
+  };
 
   public string ObjectType;
   public int ObjectIndex;

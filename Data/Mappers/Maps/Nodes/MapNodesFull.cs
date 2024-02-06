@@ -16,13 +16,13 @@ public class MapNodesFullMapper : OLabMapper<MapNodes, MapNodesFullDto>
     this.enableWikiTranslation = enableWikiTranslation;
   }
 
-  public MapNodesFullMapper(
-    IOLabLogger logger,
-    WikiTagProvider tagProvider,
-    bool enableWikiTranslation = true) : base(logger, tagProvider)
-  {
-    this.enableWikiTranslation = enableWikiTranslation;
-  }
+    public MapNodesFullMapper(
+      IOLabLogger logger,
+      IOLabModuleProvider<IWikiTagModule> tagProvider,
+      bool enableWikiTranslation = true) : base(logger, tagProvider)
+    {
+      this.enableWikiTranslation = enableWikiTranslation;
+    }
 
   public override MapNodes DtoToPhysical(MapNodesFullDto dto, MapNodes source)
   {
