@@ -214,14 +214,14 @@ namespace OLab.Api.Endpoints
     /// <param name="map">Map object</param>
     /// <param name="nodeId">Node id</param>
     /// <param name="hideHidden">flag to hide hidden links</param>
-    /// <param name="enableWikiTanslation">PErform Name translation</param>
+    /// <param name="enableWikiTranslation">PErform Name translation</param>
     /// <returns>MapsNodesFullRelationsDto</returns>
     [NonAction]
     protected async Task<MapsNodesFullRelationsDto> GetNodeAsync(
       uint mapId,
       uint nodeId,
       bool hideHidden,
-      bool enableWikiTanslation)
+      bool enableWikiTranslation)
     {
       var phys = await dbContext.MapNodes
         .FirstOrDefaultAsync(x => x.MapId == mapId && x.Id == nodeId);
@@ -238,7 +238,7 @@ namespace OLab.Api.Endpoints
       var builder = new ObjectMapper.MapsNodesFullRelationsMapper(
         Logger,
         _wikiTagProvider as WikiTagProvider,
-        enableWikiTanslation);
+        enableWikiTranslation);
       var dto = builder.PhysicalToDto(phys);
 
       var linkedIds =

@@ -14,6 +14,7 @@ namespace OLab.Api.Data
     private readonly OLabDBContext _dbContext;
     private readonly IUserContext _userContext;
     private readonly IOLabLogger _logger;
+    private string _sessionId;
 
     public OLabSession(
       IOLabLogger logger,
@@ -23,18 +24,16 @@ namespace OLab.Api.Data
       _dbContext = context;
       _userContext = userContext;
       _logger = logger;
-
-      _logger.LogInformation($"Session id = '{GetSessionId()}'");
     }
 
     public void SetSessionId(string sessionId)
     {
-      _userContext.SessionId = sessionId;
+      _sessionId = sessionId;
     }
 
     public string GetSessionId()
     {
-      return _userContext.SessionId;
+      return _sessionId;
     }
 
     public void OnStartSession(IUserContext userContext, uint mapId)

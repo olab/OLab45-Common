@@ -23,18 +23,20 @@ namespace OLab.Api.Endpoints.Player
     /// <param name="mapId">Map Id</param>
     /// <param name="nodeId">Node Id</param>
     /// <param name="hideHidden">Flag to hide hidden links</param>
+    /// <param name="enableWikiTranslation">Flag to (dis)able wiki tag translation</param>
     /// <returns>MapsNodesFullRelationsDto</returns>
     /// <exception cref="OLabObjectNotFoundException"></exception>
     /// <exception cref="OLabGeneralException"></exception>
     public async Task<MapsNodesFullRelationsDto> GetRawNodeAsync(
       uint mapId,
       uint nodeId,
-      bool hideHidden)
+      bool hideHidden,
+      bool enableWikiTranslation = true)
     {
       MapsNodesFullRelationsDto dto;
       if (nodeId > 0)
       {
-        dto = await GetNodeAsync(mapId, nodeId, hideHidden, true);
+        dto = await GetNodeAsync(mapId, nodeId, hideHidden, enableWikiTranslation);
         if (!dto.Id.HasValue)
           throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, nodeId);
       }
