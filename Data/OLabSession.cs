@@ -102,7 +102,10 @@ namespace OLab.Api.Data
 
       var session = GetSession(GetSessionId());
       if (session == null)
+      {
+        _logger.LogError($"OnQuestionResponse: session {GetSessionId()} Map: {mapId} Node: {nodeId} Question: {questionId}. Session not found. ");
         return;
+      }
 
       // truncate the message in case it's too long
       if (string.IsNullOrEmpty(value) && (value.Length > 1000))
