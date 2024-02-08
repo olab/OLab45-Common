@@ -24,6 +24,7 @@ namespace OLab.Api.Data
       _dbContext = context;
       _userContext = userContext;
       _logger = logger;
+      _sessionId = userContext.SessionId;
     }
 
     public void SetSessionId(string sessionId)
