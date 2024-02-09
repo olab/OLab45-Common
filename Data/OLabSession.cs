@@ -97,14 +97,14 @@ namespace OLab.Api.Data
 
     public void OnQuestionResponse(uint mapId, uint nodeId, uint questionId, string value)
     {
-      _logger.LogInformation($"OnQuestionResponse: session {GetSessionId()} Map: {mapId} Node: {nodeId} Question: {questionId} = {value} ");
-
       var session = GetSession(GetSessionId());
       if (session == null)
       {
         _logger.LogError($"OnQuestionResponse: session {GetSessionId()} Map: {mapId} Node: {nodeId} Question: {questionId}. Session not found. ");
         return;
       }
+
+      _logger.LogInformation($"OnQuestionResponse: session {GetSessionId()} Map: {mapId} Node: {nodeId} Question: {questionId} = {value} ");
 
       // truncate the message in case it's too long
       if (string.IsNullOrEmpty(value) && (value.Length > 1000))
@@ -121,6 +121,9 @@ namespace OLab.Api.Data
 
       _dbContext.UserResponses.Add(userResponse);
       _dbContext.SaveChanges();
+
+      _logger.LogInformation($"OnQuestionResponse: saved user response");
+
     }
 
     public void SaveSessionState(uint mapId, uint nodeId, DynamicScopedObjectsDto dynamicObjects)
