@@ -101,9 +101,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId,
       DynamicScopedObjectsDto body)
     {
-      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
-
-      var session = new OLabSession(Logger, dbContext, auth.UserContext);
+      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync. new play? {body.NewPlay}");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -140,18 +138,18 @@ namespace OLab.Api.Endpoints.Player
       // replace original map node links with acl-filtered links
       dto.MapNodeLinks = filteredLinks;
 
+      var session = new OLabSession(Logger, dbContext, auth.UserContext);
+      session.SetMapId(mapId);
+
       // if browser signals a new play, then start a new session
       if (body.NewPlay)
-      {
-        session.OnStartSession(auth.UserContext, mapId);
-        dto.ContextId = session.GetSessionId();
-        session.SetSessionId(dto.ContextId);
-      }
+        session.OnStartSession();
 
-      session.OnPlayNode(mapId, dto.Id.Value);
+      dto.ContextId = session.GetSessionId();
+      session.OnPlayNode(dto.Id.Value);
 
       // extend the session into the new node
-      session.OnExtendSession(mapId, nodeId);
+      session.OnExtendSessionEnd(nodeId);
 
       UpdateNodeCounter();
 
@@ -171,7 +169,7 @@ namespace OLab.Api.Endpoints.Player
       }
 
       // save current session state to database
-      session.SaveSessionState(mapId, dto.Id.Value, dto.DynamicObjects);
+      session.SaveSessionState(dto.Id.Value, dto.DynamicObjects);
 
       dto.DynamicObjects.RefreshChecksum();
 

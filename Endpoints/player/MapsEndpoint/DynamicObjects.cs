@@ -28,7 +28,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId,
       uint sinceTime = 0)
     {
-      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsRawAsync");
+      Logger.LogInformation($"userid: {auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsRawAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -51,7 +51,7 @@ namespace OLab.Api.Endpoints.Player
       uint nodeId,
       uint sinceTime = 0)
     {
-      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsTranslatedAsync");
+      Logger.LogInformation($"userid: {auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsTranslatedAsync");
 
       // test if user has access to map.
       if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
