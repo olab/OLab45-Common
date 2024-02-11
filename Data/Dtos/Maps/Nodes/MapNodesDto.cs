@@ -1,16 +1,15 @@
 using Newtonsoft.Json;
 
-namespace OLab.Api.Dto
+namespace OLab.Api.Dto;
+
+public class MapNodesDto
 {
-  public class MapNodesDto
-  {
-    [JsonProperty("contextId")]
-    public string ContextId { get; set; }
-    [JsonProperty("title")]
-    public string Title { get; set; }
-    [JsonProperty("url")]
-    public string Url { get; set; }
-    [JsonProperty("id")]
-    public uint? Id { get; set; }
-  }
+  [JsonProperty("contextId")]
+  public string ContextId { get; set; }
+  [JsonProperty("title")]
+  public string Title { get; set; }
+  [JsonProperty("url")]
+  public string Url { get; set; }
+  [JsonProperty("id")]
+  public uint? Id { get; set; }
 }

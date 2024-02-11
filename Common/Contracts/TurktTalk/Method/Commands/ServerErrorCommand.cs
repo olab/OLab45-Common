@@ -1,14 +1,13 @@
 using OLab.Api.TurkTalk.Methods;
 
-namespace OLab.Api.TurkTalk.Commands
-{
-  public class ServerErrorCommand : CommandMethod
-  {
-    public string Data { get; set; }
+namespace OLab.Api.TurkTalk.Commands;
 
-    public ServerErrorCommand(string connectionId, string message) : base(connectionId, "servererror")
-    {
-      Data = message;
-    }
+public class ServerErrorCommand : CommandMethod
+{
+  public string Data { get; set; }
+
+  public ServerErrorCommand(string connectionId, string message) : base(connectionId, "servererror")
+  {
+    Data = message;
   }
 }

@@ -37,7 +37,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
 
   public string GetUrlPath(string path, string fileName = null)
   {
-    return BuildPath(cfg.GetAppSettings().FileStorageUrl, path, fileName).Replace( "\\", "/" );
+    return BuildPath(cfg.GetAppSettings().FileStorageUrl, path, fileName).Replace("\\", "/");
   }
 
   public string GetPhysicalPath(string path, string fileName)
@@ -94,12 +94,12 @@ public abstract class OLabFileStorageModule : IFileStorageModule
       try
       {
         var scopeFolder = GetScopedFolderName(
-          item.ImageableType, 
+          item.ImageableType,
           item.ImageableId);
 
         if (FileExists(scopeFolder, item.Path))
         {
-          item.OriginUrl = GetUrlPath( 
+          item.OriginUrl = GetUrlPath(
             scopeFolder,
             item.Path
           );

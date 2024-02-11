@@ -1,6 +1,5 @@
-namespace OLab.Import.OLab3.Model
+namespace OLab.Import.OLab3.Model;
+
+public class XmlMetadata : XmlImportArray<string>
 {
-  public class XmlMetadata : XmlImportArray<string>
-  {
-  }
 }

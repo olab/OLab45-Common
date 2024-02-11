@@ -1,7 +1,6 @@
-﻿namespace OLab.Common.Interfaces
+﻿namespace OLab.Common.Interfaces;
+
+public interface IOLabModuleProvider<T> where T : class
 {
-  public interface IOLabModuleProvider<T> where T : class
-  {
-    T GetModule(string name);
-  }
+  T GetModule(string name);
 }

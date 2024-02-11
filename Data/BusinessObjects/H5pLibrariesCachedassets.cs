@@ -3,17 +3,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Api.Model
+namespace OLab.Api.Model;
+
+[Table("h5p_libraries_cachedassets")]
+public partial class H5pLibrariesCachedassets
 {
-  [Table("h5p_libraries_cachedassets")]
-  public partial class H5pLibrariesCachedassets
-  {
-    [Key]
-    [Column("library_id", TypeName = "int(10) unsigned")]
-    public uint LibraryId { get; set; }
-    [Key]
-    [Column("hash")]
-    [StringLength(64)]
-    public string Hash { get; set; }
-  }
+  [Key]
+  [Column("library_id", TypeName = "int(10) unsigned")]
+  public uint LibraryId { get; set; }
+  [Key]
+  [Column("hash")]
+  [StringLength(64)]
+  public string Hash { get; set; }
 }

@@ -1,13 +1,12 @@
-namespace OLab.Api.Common.Contracts
-{
-  public class MapNodeListItem
-  {
-    public uint Id { get; set; }
-    public string Name { get; set; }
+namespace OLab.Api.Common.Contracts;
 
-    public override string ToString()
-    {
-      return $"{Name}({Id})";
-    }
+public class MapNodeListItem
+{
+  public uint Id { get; set; }
+  public string Name { get; set; }
+
+  public override string ToString()
+  {
+    return $"{Name}({Id})";
   }
 }

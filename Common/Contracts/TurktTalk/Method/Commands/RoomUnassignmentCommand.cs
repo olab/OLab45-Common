@@ -4,35 +4,34 @@ using Newtonsoft.Json.Linq;
 using OLab.Api.TurkTalk.BusinessObjects;
 using OLab.Api.TurkTalk.Methods;
 
-namespace OLab.Api.TurkTalk.Commands
+namespace OLab.Api.TurkTalk.Commands;
+
+public class RoomUnassignmentPayload
 {
-  public class RoomUnassignmentPayload
+  public Participant Participant { get; set; }
+  public int SlotIndex { get; set; }
+}
+/// <summary>
+/// Defines a command to remove a connection from a room
+/// </summary>
+public class RoomUnassignmentCommand : CommandMethod
+{
+  public RoomUnassignmentPayload Data { get; set; }
+
+  public RoomUnassignmentCommand(string recipientGroupName, Participant participant) : base(recipientGroupName, "learnerunassignment")
   {
-    public Participant Participant { get; set; }
-    public int SlotIndex { get; set; }
+    Guard.Argument(participant).NotNull(nameof(participant));
+    Data = new RoomUnassignmentPayload
+    {
+      Participant = participant,
+      SlotIndex = participant.SlotIndex
+    };
   }
-  /// <summary>
-  /// Defines a command to remove a connection from a room
-  /// </summary>
-  public class RoomUnassignmentCommand : CommandMethod
+
+  public override string ToJson()
   {
-    public RoomUnassignmentPayload Data { get; set; }
-
-    public RoomUnassignmentCommand(string recipientGroupName, Participant participant) : base(recipientGroupName, "learnerunassignment")
-    {
-      Guard.Argument(participant).NotNull(nameof(participant));
-      Data = new RoomUnassignmentPayload
-      {
-        Participant = participant,
-        SlotIndex = participant.SlotIndex
-      };
-    }
-
-    public override string ToJson()
-    {
-      var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
-      return JToken.Parse(rawJson).ToString(Formatting.Indented);
-    }
-
+    var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
+    return JToken.Parse(rawJson).ToString(Formatting.Indented);
   }
+
 }

@@ -4,193 +4,191 @@ using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
 
-namespace OLab.Import.OLab3.Dtos
+namespace OLab.Import.OLab3.Dtos;
+
+
+public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
 {
+  private readonly Api.ObjectMapper.MapNodesMapper _mapper;
+  private readonly IOLabConfiguration _configuration;
 
-  public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
+  public XmlMapNodeDto(IOLabLogger logger, Importer importer) : base(logger, importer, Importer.DtoTypes.XmlMapNodeDto, "map_node.xml")
   {
-    private readonly Api.ObjectMapper.MapNodesMapper _mapper;
-    private readonly IOLabConfiguration _configuration;
+    _mapper = new Api.ObjectMapper.MapNodesMapper(logger);
+    _configuration = importer.GetConfiguration();
+  }
 
-    public XmlMapNodeDto(IOLabLogger logger, Importer importer) : base(logger, importer, Importer.DtoTypes.XmlMapNodeDto, "map_node.xml")
+  /// <summary>
+  /// Extract records from the xml document
+  /// </summary>
+  /// <param name="importDirectory">Dynamic Xml object</param>
+  /// <returns>Sets of element sets</returns>
+  public override IEnumerable<dynamic> GetElements(dynamic xmlPhys)
+  {
+    return (IEnumerable<dynamic>)xmlPhys.map_node.Elements();
+  }
+
+  /// <summary>
+  /// Replaces (deprecated) VPD tags with CONST
+  /// </summary>
+  /// <param name="item">Source MapNode</param>
+  /// <returns>true if found replacement</returns>
+  public bool ReplaceVpdWikiTags(MapNodes item)
+  {
+    var rc = false;
+
+    // replace all VPD with CONST in node text
+    var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto) as XmlMapVpdElementDto;
+
+    var wiki = new VpdWikiTag(Logger, _configuration);
+    while (wiki.HaveWikiTag(item.Text))
     {
-      _mapper = new Api.ObjectMapper.MapNodesMapper(logger);
-      _configuration = importer.GetConfiguration();
+      var id = Convert.ToUInt32(wiki.GetWikiArgument1());
+      var wikiTag = wiki.GetWikiType();
+
+      var newId = vpdDto.GetIdTranslation(GetFileName(), id);
+
+      var newWikiTag = wikiTag.Replace(id.ToString(), newId.ToString());
+      newWikiTag = newWikiTag.Replace(wiki.GetWikiType(), "CONST");
+
+      Logger.LogInformation($"Replacing '{wikiTag}' -> '{newWikiTag}'");
+      item.Text = item.Text.Replace(wikiTag, newWikiTag);
+
+      rc = true;
     }
 
-    /// <summary>
-    /// Extract records from the xml document
-    /// </summary>
-    /// <param name="importDirectory">Dynamic Xml object</param>
-    /// <returns>Sets of element sets</returns>
-    public override IEnumerable<dynamic> GetElements(dynamic xmlPhys)
+    return rc;
+  }
+
+  /// <summary>
+  /// Replaces (deprecated) Avatar tags with CONST
+  /// </summary>
+  /// <param name="item">Source MapNode</param>
+  /// <returns>true if found replacement</returns>
+  public bool ReplaceAvWikiTags(MapNodes item)
+  {
+    var rc = false;
+
+    // replace all VPD with CONST in node text
+    var avDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapAvatarDto) as XmlMapAvatarDto;
+
+    var wiki = new AvatarWikiTag(Logger, _configuration);
+    while (wiki.HaveWikiTag(item.Text))
     {
-      return (IEnumerable<dynamic>)xmlPhys.map_node.Elements();
+      var id = Convert.ToUInt16(wiki.GetWikiArgument1());
+      var wikiTag = wiki.GetWikiType();
+
+      var newId = avDto.GetIdTranslation(GetFileName(), id);
+
+      var newWikiTag = wikiTag.Replace(id.ToString(), newId.ToString());
+      newWikiTag = newWikiTag.Replace(wiki.GetWikiType(), "MR");
+
+      Logger.LogInformation($"Replacing '{wikiTag}' -> '{newWikiTag}'");
+      item.Text = item.Text.Replace(wikiTag, newWikiTag);
+
+      rc = true;
     }
 
-    /// <summary>
-    /// Replaces (deprecated) VPD tags with CONST
-    /// </summary>
-    /// <param name="item">Source MapNode</param>
-    /// <returns>true if found replacement</returns>
-    public bool ReplaceVpdWikiTags(MapNodes item)
+    return rc;
+  }
+
+  public bool RemapMrWikiTags(MapNodes item)
+  {
+    var rc = true;
+
+    // remap all MR with new id's in node text
+    var mapElementDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapElementDto);
+    var mappedWikiTags = new Dictionary<string, string>();
+
+    var wiki = new MediaResourceWikiTag(Logger, _configuration);
+    while (wiki.HaveWikiTag(item.Text))
     {
-      var rc = false;
+      var id = Convert.ToUInt32(wiki.GetWikiArgument1());
 
-      // replace all VPD with CONST in node text
-      var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto) as XmlMapVpdElementDto;
+      var newId = mapElementDto.GetIdTranslation(GetFileName(), id);
 
-      var wiki = new VpdWikiTag(Logger, _configuration);
-      while (wiki.HaveWikiTag(item.Text))
-      {
-        var id = Convert.ToUInt32(wiki.GetWikiArgument1());
-        var wikiTag = wiki.GetWikiType();
+      var newWikiTag = wiki.PreviewNewArgument1(newId.ToString());
+      var tmpWikiTag = wiki.GetWiki().Replace(wiki.GetWikiType(), "temp");
 
-        var newId = vpdDto.GetIdTranslation(GetFileName(), id);
+      item.Text = item.Text.Replace(wiki.GetWiki(), tmpWikiTag);
 
-        var newWikiTag = wikiTag.Replace(id.ToString(), newId.ToString());
-        newWikiTag = newWikiTag.Replace(wiki.GetWikiType(), "CONST");
-
-        Logger.LogInformation($"Replacing '{wikiTag}' -> '{newWikiTag}'");
-        item.Text = item.Text.Replace(wikiTag, newWikiTag);
-
-        rc = true;
-      }
-
-      return rc;
+      mappedWikiTags.Add(tmpWikiTag, newWikiTag);
     }
 
-    /// <summary>
-    /// Replaces (deprecated) Avatar tags with CONST
-    /// </summary>
-    /// <param name="item">Source MapNode</param>
-    /// <returns>true if found replacement</returns>
-    public bool ReplaceAvWikiTags(MapNodes item)
+    foreach (var key in mappedWikiTags.Keys)
     {
-      var rc = false;
-
-      // replace all VPD with CONST in node text
-      var avDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapAvatarDto) as XmlMapAvatarDto;
-
-      var wiki = new AvatarWikiTag(Logger, _configuration);
-      while (wiki.HaveWikiTag(item.Text))
-      {
-        var id = Convert.ToUInt16(wiki.GetWikiArgument1());
-        var wikiTag = wiki.GetWikiType();
-
-        var newId = avDto.GetIdTranslation(GetFileName(), id);
-
-        var newWikiTag = wikiTag.Replace(id.ToString(), newId.ToString());
-        newWikiTag = newWikiTag.Replace(wiki.GetWikiType(), "MR");
-
-        Logger.LogInformation($"Replacing '{wikiTag}' -> '{newWikiTag}'");
-        item.Text = item.Text.Replace(wikiTag, newWikiTag);
-
-        rc = true;
-      }
-
-      return rc;
+      Logger.LogInformation($"Remapping '{key}' -> '{mappedWikiTags[key]}'");
+      item.Text = item.Text.Replace(key, mappedWikiTags[key]);
     }
 
-    public bool RemapMrWikiTags(MapNodes item)
+    return rc;
+  }
+
+  public bool RemapQuWikiTags(MapNodes item)
+  {
+    var rc = true;
+
+    // remap all MR with new id's in node text
+    var questionDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapQuestionDto);
+    var mappedWikiTags = new Dictionary<string, string>();
+
+    var wiki = new QuestionWikiTag(Logger, _configuration);
+    while (wiki.HaveWikiTag(item.Text))
     {
-      var rc = true;
+      var id = Convert.ToUInt32(wiki.GetWikiArgument1());
 
-      // remap all MR with new id's in node text
-      var mapElementDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapElementDto);
-      var mappedWikiTags = new Dictionary<string, string>();
+      var newId = questionDto.GetIdTranslation(GetFileName(), id);
 
-      var wiki = new MediaResourceWikiTag(Logger, _configuration);
-      while (wiki.HaveWikiTag(item.Text))
-      {
-        var id = Convert.ToUInt32(wiki.GetWikiArgument1());
+      var newWikiTag = wiki.PreviewNewArgument1(newId.ToString());
+      var tmpWikiTag = wiki.GetWiki().Replace(wiki.GetWikiType(), "temp");
 
-        var newId = mapElementDto.GetIdTranslation(GetFileName(), id);
+      item.Text = item.Text.Replace(wiki.GetWiki(), tmpWikiTag);
 
-        var newWikiTag = wiki.PreviewNewArgument1(newId.ToString());
-        var tmpWikiTag = wiki.GetWiki().Replace(wiki.GetWikiType(), "temp");
-
-        item.Text = item.Text.Replace(wiki.GetWiki(), tmpWikiTag);
-
-        mappedWikiTags.Add(tmpWikiTag, newWikiTag);
-      }
-
-      foreach (var key in mappedWikiTags.Keys)
-      {
-        Logger.LogInformation($"Remapping '{key}' -> '{mappedWikiTags[key]}'");
-        item.Text = item.Text.Replace(key, mappedWikiTags[key]);
-      }
-
-      return rc;
+      mappedWikiTags.Add(tmpWikiTag, newWikiTag);
     }
 
-    public bool RemapQuWikiTags(MapNodes item)
+    foreach (var key in mappedWikiTags.Keys)
     {
-      var rc = true;
-
-      // remap all MR with new id's in node text
-      var questionDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapQuestionDto);
-      var mappedWikiTags = new Dictionary<string, string>();
-
-      var wiki = new QuestionWikiTag(Logger, _configuration);
-      while (wiki.HaveWikiTag(item.Text))
-      {
-        var id = Convert.ToUInt32(wiki.GetWikiArgument1());
-
-        var newId = questionDto.GetIdTranslation(GetFileName(), id);
-
-        var newWikiTag = wiki.PreviewNewArgument1(newId.ToString());
-        var tmpWikiTag = wiki.GetWiki().Replace(wiki.GetWikiType(), "temp");
-
-        item.Text = item.Text.Replace(wiki.GetWiki(), tmpWikiTag);
-
-        mappedWikiTags.Add(tmpWikiTag, newWikiTag);
-      }
-
-      foreach (var key in mappedWikiTags.Keys)
-      {
-        Logger.LogInformation($"Remapping '{key}' -> '{mappedWikiTags[key]}'");
-        item.Text = item.Text.Replace(key, mappedWikiTags[key]);
-      }
-
-      return rc;
+      Logger.LogInformation($"Remapping '{key}' -> '{mappedWikiTags[key]}'");
+      item.Text = item.Text.Replace(key, mappedWikiTags[key]);
     }
 
-    /// <summary>
-    /// Saves import object to database
-    /// </summary>
-    /// <param name="dtos">All import dtos (for lookups into related objects)</param>
-    /// <param name="elements">XML doc as an array of elements</param>
-    /// <returns>Success/failure</returns>
-    public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
-    {
-      var item = _mapper.ElementsToPhys(elements);
-      var oldId = item.Id;
+    return rc;
+  }
 
-      CurrentRecordIndex = recordIndex;
+  /// <summary>
+  /// Saves import object to database
+  /// </summary>
+  /// <param name="dtos">All import dtos (for lookups into related objects)</param>
+  /// <param name="elements">XML doc as an array of elements</param>
+  /// <returns>Success/failure</returns>
+  public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
+  {
+    var item = _mapper.ElementsToPhys(elements);
+    var oldId = item.Id;
 
-      item.Id = 0;
+    CurrentRecordIndex = recordIndex;
 
-      var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto);
-      item.MapId = mapDto.GetIdTranslation(GetFileName(), item.MapId).Value;
+    item.Id = 0;
 
-      // remap 'true' MR's before Avatars since Avatars are rendered as MR's.
-      RemapMrWikiTags(item);
-      RemapQuWikiTags(item);
-      ReplaceVpdWikiTags(item);
-      ReplaceAvWikiTags(item);
+    var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto);
+    item.MapId = mapDto.GetIdTranslation(GetFileName(), item.MapId).Value;
 
-      item.Info = $"\nImported from map_node.xml. id = {oldId}";
+    // remap 'true' MR's before Avatars since Avatars are rendered as MR's.
+    RemapMrWikiTags(item);
+    RemapQuWikiTags(item);
+    ReplaceVpdWikiTags(item);
+    ReplaceAvWikiTags(item);
 
-      Context.MapNodes.Add(item);
-      Context.SaveChanges();
+    item.Info = $"\nImported from map_node.xml. id = {oldId}";
 
-      CreateIdTranslation(oldId, item.Id);
-      GetModel().Data.Add(item);
+    Context.MapNodes.Add(item);
+    Context.SaveChanges();
 
-      return true;
-    }
+    CreateIdTranslation(oldId, item.Id);
+    GetModel().Data.Add(item);
 
+    return true;
   }
 
 }

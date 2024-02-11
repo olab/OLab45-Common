@@ -1,16 +1,15 @@
-namespace OLab.Api.Common
-{
-  public class OLabObjectResult<D>
-  {
-    public static OLabAPIResponse<D> Result(D value)
-    {
-      var result = new OLabAPIResponse<D>
-      {
-        Data = value,
-        ErrorCode = System.Net.HttpStatusCode.OK
-      };
+namespace OLab.Api.Common;
 
-      return result;
-    }
+public class OLabObjectResult<D>
+{
+  public static OLabAPIResponse<D> Result(D value)
+  {
+    var result = new OLabAPIResponse<D>
+    {
+      Data = value,
+      ErrorCode = System.Net.HttpStatusCode.OK
+    };
+
+    return result;
   }
 }

@@ -1,5 +1,3 @@
-using DocumentFormat.OpenXml.EMMA;
-using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common.Exceptions;
@@ -13,319 +11,318 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OLab.Api.Endpoints.Player
+namespace OLab.Api.Endpoints.Player;
+
+public partial class MapsEndpoint : OLabEndpoint
 {
-  public partial class MapsEndpoint : OLabEndpoint
+  /// <summary>
+  /// Gets a node, with no security
+  /// </summary>
+  /// <param name="mapId">Map Id</param>
+  /// <param name="nodeId">Node Id</param>
+  /// <param name="hideHidden">Flag to hide hidden links</param>
+  /// <param name="enableWikiTranslation">Flag to (dis)able wiki tag translation</param>
+  /// <returns>MapsNodesFullRelationsDto</returns>
+  /// <exception cref="OLabObjectNotFoundException"></exception>
+  /// <exception cref="OLabGeneralException"></exception>
+  public async Task<MapsNodesFullRelationsDto> GetRawNodeAsync(
+    uint mapId,
+    uint nodeId,
+    bool hideHidden,
+    bool enableWikiTranslation = true)
   {
-    /// <summary>
-    /// Gets a node, with no security
-    /// </summary>
-    /// <param name="mapId">Map Id</param>
-    /// <param name="nodeId">Node Id</param>
-    /// <param name="hideHidden">Flag to hide hidden links</param>
-    /// <param name="enableWikiTranslation">Flag to (dis)able wiki tag translation</param>
-    /// <returns>MapsNodesFullRelationsDto</returns>
-    /// <exception cref="OLabObjectNotFoundException"></exception>
-    /// <exception cref="OLabGeneralException"></exception>
-    public async Task<MapsNodesFullRelationsDto> GetRawNodeAsync(
-      uint mapId,
-      uint nodeId,
-      bool hideHidden,
-      bool enableWikiTranslation = true)
+    MapsNodesFullRelationsDto dto;
+    if (nodeId > 0)
     {
-      MapsNodesFullRelationsDto dto;
-      if (nodeId > 0)
-      {
-        dto = await GetNodeAsync(mapId, nodeId, hideHidden, enableWikiTranslation);
-        if (!dto.Id.HasValue)
-          throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, nodeId);
-      }
-      else
-      {
-        dto = await GetRootNodeAsync(mapId, hideHidden);
-        if (!dto.Id.HasValue)
-          throw new OLabGeneralException($"map {mapId} has no root node");
-      }
-
-      return dto;
+      dto = await GetNodeAsync(mapId, nodeId, hideHidden, enableWikiTranslation);
+      if (!dto.Id.HasValue)
+        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, nodeId);
+    }
+    else
+    {
+      dto = await GetRootNodeAsync(mapId, hideHidden);
+      if (!dto.Id.HasValue)
+        throw new OLabGeneralException($"map {mapId} has no root node");
     }
 
-    /// <summary>
-    /// ReadAsync map node with out scoped objects
-    /// </summary>
-    /// <param name="mapId">map id</param>
-    /// <param name="nodeId">node id</param>
-    /// <param name="hideHidden">Flag to suppress hidden links</param>
-    /// <returns>MapsNodesFullRelationsDto</returns>
-    public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(
-      IOLabAuthorization auth,
-      uint mapId,
-      uint nodeId,
-      bool hideHidden = true)
+    return dto;
+  }
+
+  /// <summary>
+  /// ReadAsync map node with out scoped objects
+  /// </summary>
+  /// <param name="mapId">map id</param>
+  /// <param name="nodeId">node id</param>
+  /// <param name="hideHidden">Flag to suppress hidden links</param>
+  /// <returns>MapsNodesFullRelationsDto</returns>
+  public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(
+    IOLabAuthorization auth,
+    uint mapId,
+    uint nodeId,
+    bool hideHidden = true)
+  {
+    Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
+
+    var dto = await GetRawNodeAsync(mapId, nodeId, hideHidden);
+
+    // now that we had a real node id, test if user has explicit no access to node.
+    if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, nodeId))
+      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, nodeId);
+
+    // filter out any destination links the user
+    // does not have access to 
+    var filteredLinks = new List<MapNodeLinksDto>();
+    foreach (var mapNodeLink in dto.MapNodeLinks)
     {
-      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
+      if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
+        continue;
 
-      var dto = await GetRawNodeAsync(mapId, nodeId, hideHidden);
-
-      // now that we had a real node id, test if user has explicit no access to node.
-      if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, nodeId))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, nodeId);
-
-      // filter out any destination links the user
-      // does not have access to 
-      var filteredLinks = new List<MapNodeLinksDto>();
-      foreach (var mapNodeLink in dto.MapNodeLinks)
-      {
-        if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
-          continue;
-
-        filteredLinks.Add(mapNodeLink);
-      }
-
-      // replace original map node links with acl-filtered links
-      dto.MapNodeLinks = filteredLinks;
-
-      return dto;
+      filteredLinks.Add(mapNodeLink);
     }
 
-    /// <summary>
-    /// Plays specific map node
-    /// </summary>
-    /// <param name="mapId">map id</param>
-    /// <param name="nodeId">node id</param>
-    /// <param name="sessionId">session id</param>
-    /// <returns>IActionResult</returns>
-    public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(
-      IOLabAuthorization auth,
-      uint mapId,
-      uint nodeId,
-      DynamicScopedObjectsDto body)
+    // replace original map node links with acl-filtered links
+    dto.MapNodeLinks = filteredLinks;
+
+    return dto;
+  }
+
+  /// <summary>
+  /// Plays specific map node
+  /// </summary>
+  /// <param name="mapId">map id</param>
+  /// <param name="nodeId">node id</param>
+  /// <param name="sessionId">session id</param>
+  /// <returns>IActionResult</returns>
+  public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(
+    IOLabAuthorization auth,
+    uint mapId,
+    uint nodeId,
+    DynamicScopedObjectsDto body)
+  {
+    Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync. new play? {body.NewPlay}");
+
+    // test if user has access to map.
+    if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
+      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+
+    // dump out original dynamic objects for logging
+    body.Dump(Logger, "Original");
+
+    // test for valid dynamic objects
+    if (!body.IsValid())
+      throw new OLabUnauthorizedException("Object validity check failed");
+
+    var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).GetSingleAsync(mapId);
+    if (map == null)
+      throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
+
+    var dto = await GetRawNodeAsync(mapId, nodeId, true);
+
+    // now that we had a real node id, test if user has explicit no access to node.
+    if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, dto.Id.Value))
+      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, dto.Id.Value);
+
+    // filter out any destination links the user
+    // does not have access to 
+    var filteredLinks = new List<MapNodeLinksDto>();
+    foreach (var mapNodeLink in dto.MapNodeLinks)
     {
-      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync. new play? {body.NewPlay}");
+      if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
+        continue;
 
-      // test if user has access to map.
-      if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
-
-      // dump out original dynamic objects for logging
-      body.Dump(Logger, "Original");
-
-      // test for valid dynamic objects
-      if (!body.IsValid())
-        throw new OLabUnauthorizedException("Object validity check failed");
-
-      var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).GetSingleAsync(mapId);
-      if (map == null)
-        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
-
-      var dto = await GetRawNodeAsync(mapId, nodeId, true);
-
-      // now that we had a real node id, test if user has explicit no access to node.
-      if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, dto.Id.Value))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, dto.Id.Value);
-
-      // filter out any destination links the user
-      // does not have access to 
-      var filteredLinks = new List<MapNodeLinksDto>();
-      foreach (var mapNodeLink in dto.MapNodeLinks)
-      {
-        if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
-          continue;
-
-        filteredLinks.Add(mapNodeLink);
-      }
-
-      // replace original map node links with acl-filtered links
-      dto.MapNodeLinks = filteredLinks;
-
-      var session = new OLabSession(Logger, dbContext, auth.UserContext);
-      session.SetMapId(mapId);
-
-      // if browser signals a new play, then start a new session
-      if (body.NewPlay)
-        session.OnStartSession();
-
-      dto.ContextId = session.GetSessionId();
-      session.OnPlayNode(dto.Id.Value);
-
-      // extend the session into the new node
-      session.OnExtendSessionEnd(nodeId);
-
-      UpdateNodeCounter();
-
-      dto.DynamicObjects = await GetDynamicScopedObjectsTranslatedAsync(auth, mapId, nodeId);
-
-      if (body.IsEmpty() || (dto.TypeId == 1))
-        // requested a root node, so return an initial set of dynamic objects
-        dto.DynamicObjects = await GetDynamicScopedObjectsRawAsync(
-          auth,
-          mapId,
-          nodeId);
-      else
-      {
-        // apply any node open counter actions
-        await ProcessNodeOpenCountersAsync(nodeId, body.Map.Counters);
-        dto.DynamicObjects.Map = body.Map;
-      }
-
-      // save current session state to database
-      session.SaveSessionState(dto.Id.Value, dto.DynamicObjects);
-
-      dto.DynamicObjects.RefreshChecksum();
-
-      // dump out the dynamic objects for logging
-      dto.DynamicObjects.Dump(Logger, "New");
-
-      return dto;
+      filteredLinks.Add(mapNodeLink);
     }
 
-    /// <summary>
-    /// Delete a node from the map
-    /// </summary>
-    /// <param name="mapId">map id that owns node</param>
-    /// <param name="nodeId">node id</param>
-    /// <returns>IActionResult</returns>
-    public async Task<MapNodesPostResponseDto> DeleteNodeAsync(
-      IOLabAuthorization auth,
-      uint mapId,
-      uint nodeId
-    )
+    // replace original map node links with acl-filtered links
+    dto.MapNodeLinks = filteredLinks;
+
+    var session = new OLabSession(Logger, dbContext, auth.UserContext);
+    session.SetMapId(mapId);
+
+    // if browser signals a new play, then start a new session
+    if (body.NewPlay)
+      session.OnStartSession();
+
+    dto.ContextId = session.GetSessionId();
+    session.OnPlayNode(dto.Id.Value);
+
+    // extend the session into the new node
+    session.OnExtendSessionEnd(nodeId);
+
+    UpdateNodeCounter();
+
+    dto.DynamicObjects = await GetDynamicScopedObjectsTranslatedAsync(auth, mapId, nodeId);
+
+    if (body.IsEmpty() || (dto.TypeId == 1))
+      // requested a root node, so return an initial set of dynamic objects
+      dto.DynamicObjects = await GetDynamicScopedObjectsRawAsync(
+        auth,
+        mapId,
+        nodeId);
+    else
     {
-      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.DeleteNodeAsync");
-
-      // test if user has access to map.
-      if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
-
-      using var transaction = dbContext.Database.BeginTransaction();
-
-      try
-      {
-        var links = dbContext.MapNodeLinks.
-          Where(x => (x.NodeId1 == nodeId) || (x.NodeId2 == nodeId)).ToArray();
-
-        Logger.LogInformation($"deleting {links.Count()} links");
-        dbContext.MapNodeLinks.RemoveRange(links);
-
-        var node = await dbContext.MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
-
-        if (node == null)
-          throw new OLabObjectNotFoundException("MapNodes", nodeId);
-
-        dbContext.MapNodes.Remove(node);
-        Logger.LogInformation($"deleting node id: {node.Id}");
-
-        await dbContext.SaveChangesAsync();
-
-        await transaction.CommitAsync();
-
-        var responseDto = new MapNodesPostResponseDto
-        {
-          Id = nodeId
-        };
-
-        return responseDto;
-
-      }
-      catch (Exception)
-      {
-        await transaction.RollbackAsync();
-        throw;
-      }
+      // apply any node open counter actions
+      await ProcessNodeOpenCountersAsync(nodeId, body.Map.Counters);
+      dto.DynamicObjects.Map = body.Map;
     }
 
-    /// <summary>
-    /// Updates specific map node
-    /// </summary>
-    /// <param name="mapId">map id</param>
-    /// <param name="nodeId">node id</param>
-    /// <param name="dto">node data</param>
-    /// <returns>IActionResult</returns>
-    public async Task<MapNodesPostResponseDto> PutNodeAsync(
-      IOLabAuthorization auth,
-      uint mapId,
-      uint nodeId,
-      [FromBody] MapNodesFullDto dto
-    )
+    // save current session state to database
+    session.SaveSessionState(dto.Id.Value, dto.DynamicObjects);
+
+    dto.DynamicObjects.RefreshChecksum();
+
+    // dump out the dynamic objects for logging
+    dto.DynamicObjects.Dump(Logger, "New");
+
+    return dto;
+  }
+
+  /// <summary>
+  /// Delete a node from the map
+  /// </summary>
+  /// <param name="mapId">map id that owns node</param>
+  /// <param name="nodeId">node id</param>
+  /// <returns>IActionResult</returns>
+  public async Task<MapNodesPostResponseDto> DeleteNodeAsync(
+    IOLabAuthorization auth,
+    uint mapId,
+    uint nodeId
+  )
+  {
+    Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.DeleteNodeAsync");
+
+    // test if user has access to map.
+    if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
+      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+
+    using var transaction = dbContext.Database.BeginTransaction();
+
+    try
     {
-      Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutNodeAsync");
+      var links = dbContext.MapNodeLinks.
+        Where(x => (x.NodeId1 == nodeId) || (x.NodeId2 == nodeId)).ToArray();
 
-      // test if user has access to map.
-      if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+      Logger.LogInformation($"deleting {links.Count()} links");
+      dbContext.MapNodeLinks.RemoveRange(links);
 
-      using var transaction = dbContext.Database.BeginTransaction();
+      var node = await dbContext.MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
 
-      try
+      if (node == null)
+        throw new OLabObjectNotFoundException("MapNodes", nodeId);
+
+      dbContext.MapNodes.Remove(node);
+      Logger.LogInformation($"deleting node id: {node.Id}");
+
+      await dbContext.SaveChangesAsync();
+
+      await transaction.CommitAsync();
+
+      var responseDto = new MapNodesPostResponseDto
       {
-        var builder = new ObjectMapper.MapNodesFullMapper(Logger);
-        var phys = builder.DtoToPhysical(dto);
+        Id = nodeId
+      };
 
-        // patch up node size, just in case it's not set properly
-        if (phys.Height == 0) phys.Height = 440;
-        if (phys.Width == 0) phys.Width = 300;
-
-        dbContext.MapNodes.Update(phys);
-        await dbContext.SaveChangesAsync();
-        await transaction.CommitAsync();
-
-        var responseDto = new MapNodesPostResponseDto
-        {
-          Id = nodeId
-        };
-
-        return responseDto;
-
-      }
-      catch (Exception)
-      {
-        await transaction.RollbackAsync();
-        throw;
-      }
+      return responseDto;
 
     }
-
-    /// <summary>
-    /// ReadAsync node for map
-    /// </summary>
-    /// <param name="map">Map object</param>
-    /// <returns>MapsNodesFullRelationsDto</returns>
-    private async Task<MapsNodesFullRelationsDto> GetRootNodeAsync(uint mapId, bool hideHidden)
+    catch (Exception)
     {
-      var phys = await dbContext.MapNodes
-        .FirstOrDefaultAsync(x => x.MapId == mapId && x.TypeId.Value == (int)Model.MapNodes.NodeType.RootNode);
-
-      if (phys == null)
-      {
-        // if no map node by this point, then the map doesn't have a root node
-        // defined so take the first one (by id)        
-        phys = await dbContext.MapNodes
-          .Where(x => x.MapId == mapId)
-          .OrderBy(x => x.Id)
-          .FirstOrDefaultAsync();
-
-        if (phys == null)
-          throw new OLabObjectNotFoundException("MapNodes", mapId);
-      }
-
-      return await GetNodeAsync(mapId, phys.Id, hideHidden, true);
+      await transaction.RollbackAsync();
+      throw;
     }
+  }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public void UpdateNodeCounter()
+  /// <summary>
+  /// Updates specific map node
+  /// </summary>
+  /// <param name="mapId">map id</param>
+  /// <param name="nodeId">node id</param>
+  /// <param name="dto">node data</param>
+  /// <returns>IActionResult</returns>
+  public async Task<MapNodesPostResponseDto> PutNodeAsync(
+    IOLabAuthorization auth,
+    uint mapId,
+    uint nodeId,
+    [FromBody] MapNodesFullDto dto
+  )
+  {
+    Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutNodeAsync");
+
+    // test if user has access to map.
+    if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
+      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+
+    using var transaction = dbContext.Database.BeginTransaction();
+
+    try
     {
-      var counter = dbContext.SystemCounters.Where(x => x.Name == "nodeCounter").FirstOrDefault();
+      var builder = new ObjectMapper.MapNodesFullMapper(Logger);
+      var phys = builder.DtoToPhysical(dto);
 
-      var value = counter.ValueAsNumber();
+      // patch up node size, just in case it's not set properly
+      if (phys.Height == 0) phys.Height = 440;
+      if (phys.Width == 0) phys.Width = 300;
 
-      value++;
-      counter.ValueFromNumber(value);
+      dbContext.MapNodes.Update(phys);
+      await dbContext.SaveChangesAsync();
+      await transaction.CommitAsync();
 
-      dbContext.SystemCounters.Update(counter);
-      dbContext.SaveChanges();
+      var responseDto = new MapNodesPostResponseDto
+      {
+        Id = nodeId
+      };
+
+      return responseDto;
+
+    }
+    catch (Exception)
+    {
+      await transaction.RollbackAsync();
+      throw;
     }
 
   }
+
+  /// <summary>
+  /// ReadAsync node for map
+  /// </summary>
+  /// <param name="map">Map object</param>
+  /// <returns>MapsNodesFullRelationsDto</returns>
+  private async Task<MapsNodesFullRelationsDto> GetRootNodeAsync(uint mapId, bool hideHidden)
+  {
+    var phys = await dbContext.MapNodes
+      .FirstOrDefaultAsync(x => x.MapId == mapId && x.TypeId.Value == (int)Model.MapNodes.NodeType.RootNode);
+
+    if (phys == null)
+    {
+      // if no map node by this point, then the map doesn't have a root node
+      // defined so take the first one (by id)        
+      phys = await dbContext.MapNodes
+        .Where(x => x.MapId == mapId)
+        .OrderBy(x => x.Id)
+        .FirstOrDefaultAsync();
+
+      if (phys == null)
+        throw new OLabObjectNotFoundException("MapNodes", mapId);
+    }
+
+    return await GetNodeAsync(mapId, phys.Id, hideHidden, true);
+  }
+
+  /// <summary>
+  /// 
+  /// </summary>
+  public void UpdateNodeCounter()
+  {
+    var counter = dbContext.SystemCounters.Where(x => x.Name == "nodeCounter").FirstOrDefault();
+
+    var value = counter.ValueAsNumber();
+
+    value++;
+    counter.ValueFromNumber(value);
+
+    dbContext.SystemCounters.Update(counter);
+    dbContext.SaveChanges();
+  }
+
 }
