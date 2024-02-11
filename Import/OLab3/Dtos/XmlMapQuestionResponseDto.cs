@@ -1,5 +1,4 @@
 using OLab.Common.Interfaces;
-using OLab.Data.Mappers;
 using OLab.Import.OLab3.Model;
 using System.Collections.Generic;
 
@@ -8,7 +7,7 @@ namespace OLab.Import.OLab3.Dtos;
 
 public class XmlMapQuestionResponseDto : XmlImportDto<XmlMapQuestionResponses>
 {
-  private readonly QuestionResponsesMapper _mapper;
+  private readonly Api.ObjectMapper.QuestionResponses _mapper;
 
   public XmlMapQuestionResponseDto(
     IOLabLogger logger,
@@ -18,7 +17,7 @@ public class XmlMapQuestionResponseDto : XmlImportDto<XmlMapQuestionResponses>
       Importer.DtoTypes.XmlMapQuestionResponseDto,
       "map_question_response.xml")
   {
-    _mapper = new QuestionResponsesMapper(logger, GetWikiProvider());
+    _mapper = new Api.ObjectMapper.QuestionResponses(logger, GetWikiProvider());
   }
 
   /// <summary>

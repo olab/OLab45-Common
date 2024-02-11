@@ -1,11 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common.Exceptions;
+using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
-using OLab.Api.Models;
-using OLab.Api.Utils;
-using OLab.Data.Dtos;
-using OLab.Data.Exceptions;
-using OLab.Data.Mappers;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Data.BusinessObjects;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,11 +27,11 @@ public partial class MapsEndpoint : OLabEndpoint
     uint nodeId,
     uint sinceTime = 0)
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsRawAsync");
+    Logger.LogInformation($"userid: {auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsRawAsync");
 
     // test if user has access to map.
-    if (!auth.HasAccess("R", ConstantStrings.ScopeLevelMap, mapId))
-      throw new OLabUnauthorizedException(ConstantStrings.ScopeLevelMap, mapId);
+    if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
+      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
     var node = await GetMapRootNode(mapId, nodeId);
     return await GetDynamicScopedObjectsAsync(1, node, sinceTime, false);
@@ -51,11 +50,11 @@ public partial class MapsEndpoint : OLabEndpoint
     uint nodeId,
     uint sinceTime = 0)
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsTranslatedAsync");
+    Logger.LogInformation($"userid: {auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsTranslatedAsync");
 
     // test if user has access to map.
-    if (!auth.HasAccess("R", ConstantStrings.ScopeLevelMap, mapId))
-      throw new OLabUnauthorizedException(ConstantStrings.ScopeLevelMap, mapId);
+    if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
+      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
     var node = await GetMapRootNode(mapId, nodeId);
     return await GetDynamicScopedObjectsAsync(1, node, sinceTime, true);
@@ -71,14 +70,14 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <returns></returns>
   public async Task<DynamicScopedObjectsDto> GetDynamicScopedObjectsAsync(
     uint serverId,
-    MapNodes node,
+    Model.MapNodes node,
     uint sinceTime,
     bool enableWikiTranslation)
   {
     var phys = new DynamicScopedObjects(Logger, dbContext, serverId, node.MapId, node.Id);
     await phys.GetDynamicScopedObjectsAsync();
 
-    var builder = new DynamicScopedObjectsMapper(Logger, enableWikiTranslation);
+    var builder = new ObjectMapper.DynamicScopedObjects(Logger, enableWikiTranslation);
     var dto = builder.PhysicalToDto(phys);
 
     return dto;
@@ -94,7 +93,7 @@ public partial class MapsEndpoint : OLabEndpoint
 
     var counterActions = await dbContext.SystemCounterActions.Where(x =>
       (x.ImageableId == node.Id) &&
-      (x.ImageableType == ConstantStrings.ScopeLevelNode) &&
+      (x.ImageableType == Utils.Constants.ScopeLevelNode) &&
       (x.OperationType == "open")).ToListAsync();
 
     Logger.LogInformation($"Found {counterActions.Count} counterActions records for node {node.Id} ");
@@ -108,7 +107,7 @@ public partial class MapsEndpoint : OLabEndpoint
       else
       {
         // convert to physical object so we can use the counterActions code
-        var phys = new CounterMapper(Logger).DtoToPhysical(dto);
+        var phys = new ObjectMapper.CounterMapper(Logger).DtoToPhysical(dto);
 
         // test if there's a counter action to apply
         if (counterAction.ApplyFunctionToCounter(phys))
@@ -116,7 +115,7 @@ public partial class MapsEndpoint : OLabEndpoint
           // remove original counter from list
           orgDtoList.Remove(dto);
 
-          dto = new CounterMapper(Logger).PhysicalToDto(phys);
+          dto = new ObjectMapper.CounterMapper(Logger).PhysicalToDto(phys);
           Logger.LogInformation($"Updated counter '{dto.Name}' ({dto.Id}) with function '{counterAction.Expression}'. now = {dto.Value}");
 
           // add updated counter back to list
@@ -138,11 +137,11 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <param name="node">Current node</param>
   /// <param name="physList">Raw system (map-level) orgDtoList</param>
   /// <returns>void</returns>
-  private async Task<IList<SystemCounters>> ProcessNodeCounters(MapNodes node, IList<SystemCounters> physList)
+  private async Task<IList<SystemCounters>> ProcessNodeCounters(Model.MapNodes node, IList<SystemCounters> physList)
   {
     var counterActions = await dbContext.SystemCounterActions.Where(x =>
       (x.ImageableId == node.Id) &&
-      (x.ImageableType == ConstantStrings.ScopeLevelNode) &&
+      (x.ImageableType == Utils.Constants.ScopeLevelNode) &&
       (x.OperationType == "open")).ToListAsync();
 
     Logger.LogInformation($"Found {counterActions.Count} counterActions records for node {node.Id} ");

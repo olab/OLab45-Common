@@ -1,5 +1,4 @@
 using OLab.Common.Interfaces;
-using OLab.Data.Mappers;
 using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
@@ -10,7 +9,7 @@ namespace OLab.Import.OLab3.Dtos;
 
 public class XmlMapCounterDto : XmlImportDto<XmlMapCounters>
 {
-  private readonly CounterMapper _mapper;
+  private readonly Api.ObjectMapper.CounterMapper _mapper;
 
   public XmlMapCounterDto(
     IOLabLogger logger,
@@ -20,7 +19,7 @@ public class XmlMapCounterDto : XmlImportDto<XmlMapCounters>
       Importer.DtoTypes.XmlMapCounterDto,
       "map_counter.xml")
   {
-    _mapper = new CounterMapper(logger);
+    _mapper = new Api.ObjectMapper.CounterMapper(logger);
   }
 
   /// <summary>

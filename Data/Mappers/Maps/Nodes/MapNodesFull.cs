@@ -1,9 +1,8 @@
-using OLab.Api.Common;
-using OLab.Api.Models;
+using OLab.Api.Dto;
+using OLab.Api.Model;
 using OLab.Common.Interfaces;
-using OLab.Data.Dtos;
 
-namespace OLab.Data.Mappers;
+namespace OLab.Api.ObjectMapper;
 
 public class MapNodesFullMapper : OLabMapper<MapNodes, MapNodesFullDto>
 {
@@ -16,13 +15,13 @@ public class MapNodesFullMapper : OLabMapper<MapNodes, MapNodesFullDto>
     this.enableWikiTranslation = enableWikiTranslation;
   }
 
-    public MapNodesFullMapper(
-      IOLabLogger logger,
-      IOLabModuleProvider<IWikiTagModule> tagProvider,
-      bool enableWikiTranslation = true) : base(logger, tagProvider)
-    {
-      this.enableWikiTranslation = enableWikiTranslation;
-    }
+  public MapNodesFullMapper(
+    IOLabLogger logger,
+    IOLabModuleProvider<IWikiTagModule> tagProvider,
+    bool enableWikiTranslation = true) : base(logger, tagProvider)
+  {
+    this.enableWikiTranslation = enableWikiTranslation;
+  }
 
   public override MapNodes DtoToPhysical(MapNodesFullDto dto, MapNodes source)
   {

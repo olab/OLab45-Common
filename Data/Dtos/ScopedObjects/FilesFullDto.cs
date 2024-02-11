@@ -2,7 +2,7 @@ using OLab.Common.Interfaces;
 using System;
 using System.IO;
 
-namespace OLab.Data.Dtos;
+namespace OLab.Api.Dto;
 
 
 public class FilesFullDto : FilesDto

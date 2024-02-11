@@ -2,14 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
+using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
-using OLab.Api.Models;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.ObjectMapper;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data.Dtos;
-using OLab.Data.Exceptions;
-using OLab.Data.Mappers;
-using OLab.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,7 +65,7 @@ public partial class CountersEndpoint : OLabEndpoint
       remaining = total - take.Value - skip.Value;
     }
 
-    var dtoList = new CounterMapper(Logger).PhysicalToDto(Counters);
+    var dtoList = new ObjectMapper.CounterMapper(Logger).PhysicalToDto(Counters);
 
     var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
     var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
@@ -91,7 +90,7 @@ public partial class CountersEndpoint : OLabEndpoint
       throw new OLabObjectNotFoundException("CounterMapper", id);
 
     var phys = await GetCounterAsync(id);
-    var dto = new CountersFullMapper(Logger).PhysicalToDto(phys);
+    var dto = new CountersFull(Logger).PhysicalToDto(phys);
 
     // test if user has access to object
     var accessResult = auth.HasAccess("R", dto);
@@ -123,7 +122,7 @@ public partial class CountersEndpoint : OLabEndpoint
 
     try
     {
-      var builder = new CountersFullMapper(Logger);
+      var builder = new CountersFull(Logger);
       var phys = builder.DtoToPhysical(dto);
 
       phys.UpdatedAt = DateTime.Now;
@@ -159,7 +158,7 @@ public partial class CountersEndpoint : OLabEndpoint
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("CounterMapper", 0);
 
-    var builder = new CountersFullMapper(Logger);
+    var builder = new CountersFull(Logger);
     var phys = builder.DtoToPhysical(dto);
 
     phys.CreatedAt = DateTime.Now;
@@ -190,7 +189,7 @@ public partial class CountersEndpoint : OLabEndpoint
     try
     {
       var phys = await GetCounterAsync(id);
-      var dto = new CountersFullMapper(Logger).PhysicalToDto(phys);
+      var dto = new CountersFull(Logger).PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);

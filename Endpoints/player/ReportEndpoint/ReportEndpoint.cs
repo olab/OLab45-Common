@@ -1,12 +1,11 @@
+using Data.Contracts;
 using Microsoft.EntityFrameworkCore;
+using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Endpoints;
-using OLab.Api.Models;
+using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data.Contracts;
-using OLab.Data.Exceptions;
-using OLab.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

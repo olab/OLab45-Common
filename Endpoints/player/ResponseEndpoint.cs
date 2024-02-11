@@ -1,9 +1,7 @@
 using OLab.Api.Common.Exceptions;
-using OLab.Api.Models;
-using OLab.Api.Utils;
+using OLab.Api.Dto;
+using OLab.Api.Model;
 using OLab.Common.Interfaces;
-using OLab.Data.Dtos;
-using OLab.Data.Models;
 using System;
 using System.Threading.Tasks;
 
@@ -64,7 +62,7 @@ public partial class ResponseEndpoint : OLabEndpoint
         ProcessValueQuestion(question, counterDto, body);
 
       // if a server-level counter value has changed, write it to db
-      if (dbCounter.ImageableType == ConstantStrings.ScopeLevelServer)
+      if (dbCounter.ImageableType == Utils.Constants.ScopeLevelServer)
       {
         dbCounter.ValueFromNumber(counterDto.ValueAsNumber());
         dbContext.SystemCounters.Update(dbCounter);
@@ -101,7 +99,7 @@ public partial class ResponseEndpoint : OLabEndpoint
     {
       // if counter is server-level, then take db value and copy
       // it to dynamic object version, which is passed back to caller
-      if (dbCounter.ImageableType == ConstantStrings.ScopeLevelServer)
+      if (dbCounter.ImageableType == Utils.Constants.ScopeLevelServer)
         dynamicCounter.Value = dbCounter.ValueAsString();
     }
 

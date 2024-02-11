@@ -17,18 +17,6 @@ public class OLabLogMessage
     Error,
     Fatal
   };
-namespace OLab.Api.Utils;
-
-public class OLabLogMessage
-{
-  public enum MessageLevel
-  {
-    Debug = 0,
-    Info,
-    Warn,
-    Error,
-    Fatal
-  };
 
   public string ObjectType;
   public int ObjectIndex;
@@ -90,9 +78,10 @@ public class OLabLogger : IOLabLogger
 
   public bool HaveFatalError => _messages.Any(x => x.Level == OLabLogMessage.MessageLevel.Fatal);
 
-  public IList<string> GetMessages(OLabLogMessage.MessageLevel level = OLabLogMessage.MessageLevel.Debug)
+  public IList<OLabLogMessage> GetMessages(OLabLogMessage.MessageLevel level = OLabLogMessage.MessageLevel.Debug)
   {
-    return _messages.Where(x => x.Level >= level).Select(x => x.Message).ToList();
+    //return _messages.Where(x => x.Level >= level).Select(x => x.Message).ToList();
+    return _messages.Where(x => x.Level >= level).ToList();
   }
 
   public void Clear()

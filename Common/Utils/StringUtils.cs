@@ -1,4 +1,3 @@
-using Dawn;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -31,14 +30,6 @@ public class StringUtils
 
   public static string EncryptString(string key, string plainText)
   {
-    Guard.Argument(key).NotNull(nameof(key));
-    Guard.Argument(plainText).NotNull(nameof(plainText));
-
-    // ensure key is 32 bytes
-    while (key.Length < 32)
-      key += key;
-    key = key[..32];
-
     var iv = new byte[16];
     byte[] array;
 
@@ -49,18 +40,14 @@ public class StringUtils
 
       var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
-      using (var memoryStream = new MemoryStream())
+      using var memoryStream = new MemoryStream();
+      using var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
+      using (var streamWriter = new StreamWriter(cryptoStream))
       {
-        using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
-        {
-          using (var streamWriter = new StreamWriter(cryptoStream))
-          {
-            streamWriter.Write(plainText);
-          }
-
-          array = memoryStream.ToArray();
-        }
+        streamWriter.Write(plainText);
       }
+
+      array = memoryStream.ToArray();
     }
 
     return Convert.ToBase64String(array);
@@ -68,34 +55,17 @@ public class StringUtils
 
   public static string DecryptString(string key, string cipherText)
   {
-
-    Guard.Argument(key).NotNull(nameof(key));
-    Guard.Argument(cipherText).NotNull(nameof(cipherText));
-
-    // ensure key is 32 bytes
-    while (key.Length < 32)
-      key += key;
-    key = key[..32];
-
     var iv = new byte[16];
     var buffer = Convert.FromBase64String(cipherText);
 
-    using (var aes = Aes.Create())
-    {
-      aes.Key = Encoding.UTF8.GetBytes(key);
-      aes.IV = iv;
-      var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+    using var aes = Aes.Create();
+    aes.Key = Encoding.UTF8.GetBytes(key);
+    aes.IV = iv;
+    var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
-      using (var memoryStream = new MemoryStream(buffer))
-      {
-        using (var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
-        {
-          using (var streamReader = new StreamReader(cryptoStream))
-          {
-            return streamReader.ReadToEnd();
-          }
-        }
-      }
-    }
+    using var memoryStream = new MemoryStream(buffer);
+    using var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
+    using var streamReader = new StreamReader(cryptoStream);
+    return streamReader.ReadToEnd();
   }
 }

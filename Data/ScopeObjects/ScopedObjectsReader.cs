@@ -1,11 +1,9 @@
 using Dawn;
 using HeyRed.Mime;
 using Microsoft.EntityFrameworkCore;
-using OLab.Api.Models;
-using OLab.Api.Utils;
-using OLab.Data.Dtos;
-using OLab.Data.Mappers;
-using OLab.Data.Models;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.ObjectMapper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -64,7 +62,7 @@ public partial class ScopedObjects
   }
 
   /// <summary>
-  /// Load constants from database
+  /// 
   /// </summary>
   /// <param name="parentId"></param>
   /// <param name="scopeLevel"></param>
@@ -86,7 +84,7 @@ public partial class ScopedObjects
   }
 
   /// <summary>
-  /// Loads questions from database
+  /// Gets question scoped objects
   /// </summary>
   /// <returns></returns>
   private async Task<List<SystemQuestions>> LoadQuestionsFromDatabaseAsync(
@@ -112,7 +110,7 @@ public partial class ScopedObjects
   }
 
   /// <summary>
-  /// Loads files from database
+  /// Gets file scoped objects
   /// </summary>
   /// <param name="fileStorageModule">File storage module that provides URL</param>
   /// <returns></returns>
@@ -143,7 +141,7 @@ public partial class ScopedObjects
   }
 
   /// <summary>
-  /// Loads themes from database
+  /// Gets thems scoped objects
   /// </summary>
   /// <returns></returns>
   private async Task<List<SystemThemes>> LoadThemesFromDatabaseAsync(
@@ -163,7 +161,7 @@ public partial class ScopedObjects
   }
 
   /// <summary>
-  /// Loads script objects form database
+  /// Gets script scoped objects
   /// </summary>
   /// <returns>List of SystemScripts</returns>
   private async Task<List<SystemScripts>> LoadScriptsFromDatabaseAsync(
@@ -183,7 +181,7 @@ public partial class ScopedObjects
   }
 
   /// <summary>
-  /// Loads counters from database
+  /// ReadAsync counters associated with a 'parent' object 
   /// </summary>
   /// <param name="sinceTime">(optional) looks for values changed since a (unix) time</param>
   /// <returns>List of counters</returns>
@@ -222,7 +220,7 @@ public partial class ScopedObjects
     string scopeLevel,
     uint id)
   {
-    if (ScopeLevel == ConstantStrings.ScopeLevelMap)
+    if (ScopeLevel == Api.Utils.Constants.ScopeLevelMap)
     {
       var items = new List<SystemCounterActions>();
       items.AddRange(await _dbContext.SystemCounterActions.Where(x =>

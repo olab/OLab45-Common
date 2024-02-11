@@ -1,7 +1,7 @@
 ﻿using OLab.Api.Endpoints;
+using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
-using OLab.Data.Models;
 using OLab.Import.OLab3;
 using System.IO;
 using System.Threading;
@@ -45,12 +45,13 @@ public partial class Import3Endpoint : OLabEndpoint
       _fileStorageModule);
   }
 
-  public async Task<uint> ImportAsync(
+  public async Task<bool> ImportAsync(
     Stream archvieFileStream,
     string archiveFileName,
     CancellationToken token)
   {
-    return await _importer.Import(archvieFileStream, archiveFileName, token);
+    await _importer.Import(archvieFileStream, archiveFileName, token);
+    return true;
   }
 
 }

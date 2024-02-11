@@ -1,10 +1,10 @@
 using Newtonsoft.Json;
 using OLab.Api.Common;
-using OLab.Api.Models;
-using OLab.Api.Utils;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.ObjectMapper;
+using OLab.Common.Utils;
 using OLab.Data;
-using OLab.Data.Dtos;
-using OLab.Data.Mappers;
 using OLab.Import.Interface;
 using System;
 using System.IO;
@@ -65,8 +65,9 @@ public partial class Importer : IImporter
       return _newMapPhys.Id;
 
     }
-    catch (Exception)
+    catch (Exception ex)
     {
+      Logger.LogError($"Import error {ex.Message}");
       await _dbContext.Database.RollbackTransactionAsync();
       throw;
     }
@@ -192,7 +193,7 @@ public partial class Importer : IImporter
 
     var sourceFolder = _fileModule.BuildPath(
       ExtractFolderName,
-      ConstantStrings.ScopeLevelMap);
+      Api.Utils.Constants.ScopeLevelMap);
 
     var sourceFiles = _fileModule.GetFiles(sourceFolder, token);
 

@@ -1,9 +1,9 @@
 using OLab.Api.Common;
+using OLab.Api.Dto;
+using OLab.Api.Model;
 using OLab.Common.Interfaces;
-using OLab.Data.Dtos;
-using OLab.Data.Models;
 
-namespace OLab.Data.Mappers;
+namespace OLab.Api.ObjectMapper;
 
 public class ScriptsFull : OLabMapper<SystemScripts, ScriptsFullDto>
 {

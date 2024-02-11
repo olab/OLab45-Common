@@ -1,8 +1,9 @@
 using AutoMapper;
 using OLab.Api.Common;
+using OLab.Api.Model;
+using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
 using OLab.Data.Dtos.Session;
-using OLab.Data.Models;
 using System;
 
 namespace OLab.Data.Mappers;

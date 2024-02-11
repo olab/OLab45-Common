@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace OLab.Data.Dtos.Designer;
+namespace OLab.Api.Dto.Designer;
 
 public class ScopeLevelObj
 {

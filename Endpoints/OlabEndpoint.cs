@@ -2,44 +2,42 @@ using Dawn;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
-using OLab.Api.Models;
+using OLab.Api.Data.Exceptions;
+using OLab.Api.Data.Interface;
+using OLab.Api.Dto;
+using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data.Dtos;
-using OLab.Data.Exceptions;
 using OLab.Data.Interface;
-using OLab.Data.Mappers;
-using OLab.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
+using Constants = OLab.Api.Utils.Constants;
 
 namespace OLab.Api.Endpoints;
 
-namespace OLab.Api.Endpoints
+public class OLabEndpoint
 {
-  public class OLabEndpoint
+  protected readonly OLabDBContext dbContext;
+  protected IOLabLogger Logger;
+  protected string token;
+  protected IUserContext _userContext;
+  protected readonly IOLabConfiguration _configuration;
+  protected readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
+  protected readonly IFileStorageModule _fileStorageModule;
+
+  public OLabEndpoint(
+    IOLabLogger logger,
+    OLabDBContext context)
   {
-    protected readonly OLabDBContext dbContext;
-    protected IOLabLogger Logger;
-    protected string token;
-    protected IUserContext _userContext;
-    protected readonly IOLabConfiguration _configuration;
-    protected readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
-    protected readonly IFileStorageModule _fileStorageModule;
+    Guard.Argument(logger).NotNull(nameof(logger));
+    Guard.Argument(context).NotNull(nameof(context));
 
-    public OLabEndpoint(
-      IOLabLogger logger,
-      OLabDBContext context)
-    {
-      Guard.Argument(logger).NotNull(nameof(logger));
-      Guard.Argument(context).NotNull(nameof(context));
-
-      dbContext = context;
-      Logger = logger;
-    }
+    dbContext = context;
+    Logger = logger;
+  }
 
   public OLabEndpoint(
     IOLabLogger logger,
@@ -95,7 +93,7 @@ namespace OLab.Api.Endpoints
   [NonAction]
   protected void AttachParentObject(ScopedObjectDto dto)
   {
-    if (dto.ImageableType == ConstantStrings.ScopeLevelServer)
+    if (dto.ImageableType == Constants.ScopeLevelServer)
     {
       var obj = dbContext.Servers.FirstOrDefault(x => x.Id == dto.ImageableId);
       if (obj == null)
@@ -104,7 +102,7 @@ namespace OLab.Api.Endpoints
       dto.ParentInfo.Name = obj.Name;
     }
 
-    else if (dto.ImageableType == ConstantStrings.ScopeLevelMap)
+    else if (dto.ImageableType == Constants.ScopeLevelMap)
     {
       var obj = dbContext.Maps.FirstOrDefault(x => x.Id == dto.ImageableId);
       if (obj == null)
@@ -113,7 +111,7 @@ namespace OLab.Api.Endpoints
       dto.ParentInfo.Name = obj.Name;
     }
 
-    else if (dto.ImageableType == ConstantStrings.ScopeLevelNode)
+    else if (dto.ImageableType == Constants.ScopeLevelNode)
     {
       var obj = dbContext.MapNodes.FirstOrDefault(x => x.Id == dto.ImageableId);
       if (obj == null)
@@ -169,13 +167,13 @@ namespace OLab.Api.Endpoints
     IList<IdName> nodes,
     IList<IdName> servers)
   {
-    if (scopeLevel == ConstantStrings.ScopeLevelServer)
+    if (scopeLevel == Utils.Constants.ScopeLevelServer)
       return servers.FirstOrDefault(x => x.Id == parentId);
 
-    if (scopeLevel == ConstantStrings.ScopeLevelMap)
+    if (scopeLevel == Utils.Constants.ScopeLevelMap)
       return maps.FirstOrDefault(x => x.Id == parentId);
 
-    if (scopeLevel == ConstantStrings.ScopeLevelNode)
+    if (scopeLevel == Utils.Constants.ScopeLevelNode)
       return nodes.FirstOrDefault(x => x.Id == parentId);
 
     return null;
@@ -202,7 +200,7 @@ namespace OLab.Api.Endpoints
       physNode.Width = 300;
     }
 
-    var dtoList = new MapNodesFullMapper(
+    var dtoList = new ObjectMapper.MapNodesFullMapper(
       Logger,
       enableWikiTanslation).PhysicalToDto(physList);
     return dtoList;
@@ -214,14 +212,14 @@ namespace OLab.Api.Endpoints
   /// <param name="map">Map object</param>
   /// <param name="nodeId">Node id</param>
   /// <param name="hideHidden">flag to hide hidden links</param>
-  /// <param name="enableWikiTanslation">PErform Name translation</param>
+  /// <param name="enableWikiTranslation">PErform Name translation</param>
   /// <returns>MapsNodesFullRelationsDto</returns>
   [NonAction]
   protected async Task<MapsNodesFullRelationsDto> GetNodeAsync(
     uint mapId,
     uint nodeId,
     bool hideHidden,
-    bool enableWikiTanslation)
+    bool enableWikiTranslation)
   {
     var phys = await dbContext.MapNodes
       .FirstOrDefaultAsync(x => x.MapId == mapId && x.Id == nodeId);
@@ -235,10 +233,10 @@ namespace OLab.Api.Endpoints
     // explicitly load the related objects.
     dbContext.Entry(phys).Collection(b => b.MapNodeLinksNodeId1Navigation).Load();
 
-    var builder = new MapsNodesFullRelationsMapper(
+    var builder = new ObjectMapper.MapsNodesFullRelationsMapper(
       Logger,
       _wikiTagProvider as WikiTagProvider,
-      enableWikiTanslation);
+      enableWikiTranslation);
     var dto = builder.PhysicalToDto(phys);
 
     var linkedIds =

@@ -1,7 +1,7 @@
 using OLab.Api.Utils;
 using System.ComponentModel.DataAnnotations;
 
-namespace OLab.Data.Contracts;
+namespace OLab.Api.Model;
 
 public class ImportRequest
 {

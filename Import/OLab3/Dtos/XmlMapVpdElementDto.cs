@@ -1,6 +1,5 @@
+using OLab.Api.Model;
 using OLab.Common.Interfaces;
-using OLab.Data.Mappers;
-using OLab.Data.Models;
 using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,7 @@ namespace OLab.Import.OLab3.Dtos;
 
 public class XmlMapVpdElementDto : XmlImportDto<XmlMapVpdElements>
 {
-  private readonly MapVpdElementMapper _mapper;
+  private readonly Api.ObjectMapper.MapVpdElement _mapper;
 
   public XmlMapVpdElementDto(
     IOLabLogger logger,
@@ -22,7 +21,7 @@ public class XmlMapVpdElementDto : XmlImportDto<XmlMapVpdElements>
       Importer.DtoTypes.XmlMapVpdElementDto,
       "map_vpd_element.xml")
   {
-    _mapper = new MapVpdElementMapper(logger);
+    _mapper = new Api.ObjectMapper.MapVpdElement(logger);
   }
 
   /// <summary>

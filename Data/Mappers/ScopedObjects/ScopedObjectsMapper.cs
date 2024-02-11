@@ -1,7 +1,8 @@
+using OLab.Api.Dto;
 using OLab.Common.Interfaces;
-using OLab.Data.Dtos;
+using OLab.Data;
 
-namespace OLab.Data.Mappers;
+namespace OLab.Api.ObjectMapper;
 
 public class ScopedObjectsMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
 {
@@ -30,15 +31,15 @@ public class ScopedObjectsMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
     dto.Counters.AddRange(dtoCountersList);
 
     var dtoConstantsList
-      = new ConstantsFullMapper(Logger, _enableWikiTranslation).PhysicalToDto(phys.ConstantsPhys);
+      = new ConstantsFull(Logger, _enableWikiTranslation).PhysicalToDto(phys.ConstantsPhys);
     dto.Constants.AddRange(dtoConstantsList);
 
     var dtoFilesList
-      = new FilesFullMapper(Logger, _enableWikiTranslation).PhysicalToDto(phys.FilesPhys);
+      = new FilesFull(Logger, _enableWikiTranslation).PhysicalToDto(phys.FilesPhys);
     dto.Files.AddRange(dtoFilesList);
 
     var dtoScriptsList
-      = new ScriptsMapper(Logger, _enableWikiTranslation).PhysicalToDto(phys.ScriptsPhys);
+      = new Scripts(Logger, _enableWikiTranslation).PhysicalToDto(phys.ScriptsPhys);
     dto.Scripts.AddRange(dtoScriptsList);
 
     if (_wikiTagModules != null)
@@ -70,15 +71,15 @@ public class ScopedObjectsMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
     phys.CountersPhys.AddRange(physCounters);
 
     var physConstants
-      = new ConstantsFullMapper(Logger, _enableWikiTranslation).DtoToPhysical(dto.Constants);
+      = new ConstantsFull(Logger, _enableWikiTranslation).DtoToPhysical(dto.Constants);
     phys.ConstantsPhys.AddRange(physConstants);
 
     var physFiles
-      = new FilesFullMapper(Logger, _enableWikiTranslation).DtoToPhysical(dto.Files);
+      = new FilesFull(Logger, _enableWikiTranslation).DtoToPhysical(dto.Files);
     phys.FilesPhys.AddRange(physFiles);
 
     var physScripts
-      = new ScriptsMapper(Logger, _enableWikiTranslation).DtoToPhysical(dto.Scripts);
+      = new Scripts(Logger, _enableWikiTranslation).DtoToPhysical(dto.Scripts);
     phys.ScriptsPhys.AddRange(physScripts);
 
     if (_wikiTagModules != null)

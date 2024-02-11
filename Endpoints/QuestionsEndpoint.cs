@@ -2,15 +2,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
+using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
-using OLab.Api.Models;
+using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.ObjectMapper;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data.Dtos;
-using OLab.Data.Exceptions;
 using OLab.Data.Interface;
-using OLab.Data.Mappers;
-using OLab.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,7 +73,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
 
     Logger.LogInformation(string.Format("found {0} questions", physList.Count));
 
-    var dtoList = new QuestionsMapper(Logger, _wikiTagProvider).PhysicalToDto(physList);
+    var dtoList = new Questions(Logger, _wikiTagProvider).PhysicalToDto(physList);
 
     var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
     var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
@@ -206,7 +205,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
     try
     {
       var phys = await GetQuestionAsync(id);
-      var dto = new QuestionsMapper(Logger, _wikiTagProvider).PhysicalToDto(phys);
+      var dto = new Questions(Logger, _wikiTagProvider).PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = auth.HasAccess("W", dto);

@@ -1,15 +1,14 @@
 using AutoMapper;
 using OLab.Api.Common;
-using OLab.Api.Models;
-
+using OLab.Api.Dto;
+using OLab.Api.Model;
 using OLab.Common.Interfaces;
-using OLab.Data.Dtos;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLab.Data.Mappers;
+namespace OLab.Api.ObjectMapper;
 
-public class MapsFullRelationsMapper : OLabMapper<Api.Models.Maps, MapsFullRelationsDto>
+public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
 {
   private readonly bool _enableWikiTranslation;
 
@@ -51,7 +50,7 @@ public class MapsFullRelationsMapper : OLabMapper<Api.Models.Maps, MapsFullRelat
   /// </remarks>
   /// <param name="phys">Physical object</param>
   /// <returns>Dto object</returns>
-  public override MapsFullRelationsDto PhysicalToDto(Api.Models.Maps map)
+  public override MapsFullRelationsDto PhysicalToDto(Maps map)
   {
     var dto = new MapsFullRelationsDto
     {

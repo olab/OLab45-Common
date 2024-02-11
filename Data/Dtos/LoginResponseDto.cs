@@ -1,6 +1,6 @@
-using OLab.Api.Contracts;
+using OLab.Api.Model;
 
-namespace OLab.Data.Dtos;
+namespace OLab.Api.Dto;
 
 public class LoginResponseDto
 {

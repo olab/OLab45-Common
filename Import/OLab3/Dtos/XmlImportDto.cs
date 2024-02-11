@@ -1,7 +1,7 @@
 using OLab.Api.Importer;
+using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
-using OLab.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -113,11 +113,9 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
 
       if (GetFileModule().FileExists(importFileDirectory, GetFileName()))
       {
-        using (var moduleFileStream = new MemoryStream())
-        {
-          GetFileModule().ReadFileAsync(moduleFileStream, importFileDirectory, GetFileName(), new System.Threading.CancellationToken());
-          _phys = DynamicXml.Load(moduleFileStream);
-        }
+        using var moduleFileStream = new MemoryStream();
+        GetFileModule().ReadFileAsync(moduleFileStream, importFileDirectory, GetFileName(), new System.Threading.CancellationToken());
+        _phys = DynamicXml.Load(moduleFileStream);
       }
       else
       {

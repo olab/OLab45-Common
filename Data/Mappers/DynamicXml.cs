@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 // https://stackoverflow.com/questions/13704752/deserialize-xml-to-object-using-dynamic
 
-namespace OLab.Data.Mappers;
+namespace OLabWeOLabWebAPI.ObjectMapper;
 
 public class DynamicXml : DynamicObject
 {

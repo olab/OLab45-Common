@@ -1,8 +1,8 @@
-﻿using OLab.Api.Endpoints;
+﻿using OLab.Api.Dto;
+using OLab.Api.Endpoints;
+using OLab.Api.Model;
 using OLab.Common.Interfaces;
-using OLab.Data.Dtos;
 using OLab.Data.Interface;
-using OLab.Data.Models;
 using OLab.Import.OLab4;
 using System.IO;
 using System.Threading;
@@ -52,8 +52,8 @@ public partial class Import4Endpoint : OLabEndpoint
     CancellationToken token)
   {
     return await _importer.Import(
-      archiveFileStream, 
-      archiveFileName, 
+      archiveFileStream,
+      archiveFileName,
       token);
   }
 

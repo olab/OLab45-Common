@@ -1,12 +1,11 @@
 using AutoMapper;
 using OLab.Api.Common;
-using OLab.Api.Models;
+using OLab.Api.Dto;
 using OLab.Common.Interfaces;
-using OLab.Data.Dtos;
 
-namespace OLab.Data.Mappers;
+namespace OLab.Api.ObjectMapper;
 
-public class MapNodeLinksFullMapper : OLabMapper<MapNodeLinks, MapNodeLinksFullDto>
+public class MapNodeLinksFullMapper : OLabMapper<Model.MapNodeLinks, MapNodeLinksFullDto>
 {
   public MapNodeLinksFullMapper(
     IOLabLogger logger,
@@ -28,7 +27,7 @@ public class MapNodeLinksFullMapper : OLabMapper<MapNodeLinks, MapNodeLinksFullD
   protected override MapperConfiguration GetConfiguration()
   {
     return new MapperConfiguration(cfg =>
-     cfg.CreateMap<MapNodeLinks, MapNodeLinksFullDto>()
+     cfg.CreateMap<Model.MapNodeLinks, Dto.MapNodeLinksFullDto>()
       .ForMember(dest => dest.SourceId, act => act.MapFrom(src => src.NodeId1))
       .ForMember(dest => dest.DestinationId, act => act.MapFrom(src => src.NodeId2))
       .ReverseMap()

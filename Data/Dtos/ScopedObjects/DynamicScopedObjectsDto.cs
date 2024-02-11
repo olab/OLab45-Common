@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OLab.Data.Dtos;
+namespace OLab.Api.Dto;
 
 public class DynamicScopedObject
 {
@@ -70,7 +70,7 @@ public class DynamicScopedObjectsDto
 
   public bool IsEmpty()
   {
-    return Map == null && Node == null && Server == null;
+    return (Map == null) && (Node == null) && (Server == null);
   }
 
   /// <summary>

@@ -11,7 +11,7 @@ public interface IOLabLogger
   void Clear();
   ILogger GetLogger();
   ILoggerFactory GetLoggerFactory();
-  IList<string> GetMessages(OLabLogMessage.MessageLevel level = OLabLogMessage.MessageLevel.Debug);
+  IList<OLabLogMessage> GetMessages(OLabLogMessage.MessageLevel level = OLabLogMessage.MessageLevel.Debug);
   bool HasErrorMessage();
   void LogDebug(string message);
   void LogDebug(string type, int index, string message);

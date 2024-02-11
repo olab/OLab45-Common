@@ -1,7 +1,6 @@
-using OLab.Api.Contracts;
 using System;
 
-namespace OLab.Data.Contracts;
+namespace OLab.Api.Model;
 
 public class AuthenticateResponse
 {

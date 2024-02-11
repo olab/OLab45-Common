@@ -1,7 +1,6 @@
-using OLab.Api.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace OLab.Data.Contracts;
+namespace OLab.Api.Model;
 
 public class PostNewNodeRequest
 {

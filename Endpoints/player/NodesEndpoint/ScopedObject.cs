@@ -1,9 +1,7 @@
+using OLab.Api.Data.Exceptions;
+using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Data;
-using OLab.Data.Dtos;
-using OLab.Data.Exceptions;
-using OLab.Data.Mappers;
-using OLab.Data.Models;
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,19 +11,19 @@ namespace OLab.Api.Endpoints.Player;
 public partial class NodesEndpoint : OLabEndpoint
 {
 
-  public async Task<ScopedObjectsDto> GetScopedObjectsRawAsync(uint nodeId)
+  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint nodeId)
   {
     Logger.LogInformation($"NodesController.GetScopedObjectsRawAsync(uint nodeId={nodeId})");
     return await GetScopedObjectsAsync(nodeId, false);
   }
 
-  public async Task<ScopedObjectsDto> GetScopedObjectsAsync(uint nodeId)
+  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(uint nodeId)
   {
     Logger.LogInformation($"NodesController.GetScopedObjectsAsync(uint nodeId={nodeId})");
     return await GetScopedObjectsAsync(nodeId, true);
   }
 
-  public async Task<ScopedObjectsDto> GetScopedObjectsAsync(
+  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(
     uint id,
     bool enableWikiTranslation)
   {
@@ -33,20 +31,20 @@ public partial class NodesEndpoint : OLabEndpoint
 
     var node = GetSimple(dbContext, id);
     if (node == null)
-      throw new OLabObjectNotFoundException(ConstantStrings.ScopeLevelNode, id);
+      throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
 
     var phys = new ScopedObjects(
       Logger,
       dbContext,
     _fileStorageModule);
-    await phys.AddScopeFromDatabaseAsync(ConstantStrings.ScopeLevelNode, node.Id);
+    await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelNode, node.Id);
 
     phys.ConstantsPhys.Add(new SystemConstants
     {
       Id = 0,
-      Name = ConstantStrings.ReservedConstantNodeId,
+      Name = Utils.Constants.ReservedConstantNodeId,
       ImageableId = node.Id,
-      ImageableType = ConstantStrings.ScopeLevelNode,
+      ImageableType = Utils.Constants.ScopeLevelNode,
       IsSystem = 1,
       Value = Encoding.ASCII.GetBytes(node.Id.ToString())
     });
@@ -54,9 +52,9 @@ public partial class NodesEndpoint : OLabEndpoint
     phys.ConstantsPhys.Add(new SystemConstants
     {
       Id = 0,
-      Name = ConstantStrings.ReservedConstantNodeName,
+      Name = Utils.Constants.ReservedConstantNodeName,
       ImageableId = node.Id,
-      ImageableType = ConstantStrings.ScopeLevelNode,
+      ImageableType = Utils.Constants.ScopeLevelNode,
       IsSystem = 1,
       Value = Encoding.ASCII.GetBytes(node.Title)
     });
@@ -64,14 +62,15 @@ public partial class NodesEndpoint : OLabEndpoint
     phys.ConstantsPhys.Add(new SystemConstants
     {
       Id = 0,
-      Name = ConstantStrings.ReservedConstantSystemTime,
+      Name = Utils.Constants.ReservedConstantSystemTime,
       ImageableId = 1,
-      ImageableType = ConstantStrings.ScopeLevelNode,
+      ImageableType = Utils.Constants.ScopeLevelNode,
       IsSystem = 1,
       Value = Encoding.ASCII.GetBytes(DateTime.UtcNow.ToString() + " UTC")
     });
 
-    var builder = new ScopedObjectsMapper(Logger, _wikiTagProvider, enableWikiTranslation);
+    var builder = new ObjectMapper.ScopedObjectsMapper(Logger, _wikiTagProvider, enableWikiTranslation);
+
     var dto = builder.PhysicalToDto(phys);
     return dto;
   }

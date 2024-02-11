@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 using OLab.Common.Interfaces;
 using System.Collections.Generic;
 
-namespace OLab.Data.Dtos;
+namespace OLab.Api.Dto;
 
 public class ScopedObjectsDto
 {

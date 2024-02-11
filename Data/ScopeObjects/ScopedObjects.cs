@@ -1,8 +1,6 @@
-using OLab.Api.Models;
-
+using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
-using OLab.Data.Models;
 using System.Collections.Generic;
 
 namespace OLab.Data;

@@ -2,9 +2,28 @@ using AutoMapper;
 using OLab.Api.Common;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using System;
 using System.Collections.Generic;
 
-namespace OLab.Data.Mappers;
+namespace OLab.Api.ObjectMapper;
+
+public class DateTimeTypeConverter : ITypeConverter<decimal, DateTime>
+{
+  public DateTime Convert(decimal source, DateTime destination, ResolutionContext context)
+  {
+    return new System.DateTime(1970, 1, 1).AddSeconds(System.Convert.ToDouble(source));
+  }
+}
+
+public class DecimalDateTimeTypeConverter : ITypeConverter<DateTime, decimal>
+{
+  public decimal Convert(DateTime source, decimal destination, ResolutionContext context)
+  {
+    var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+    var diff = source.ToUniversalTime() - origin;
+    return System.Convert.ToDecimal(Math.Floor(diff.TotalSeconds));
+  }
+}
 
 public abstract class OLabMapper<P, D> : object where P : new() where D : new()
 {
@@ -16,7 +35,7 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   // used to hold on to id translation between origin system and new one
   protected IDictionary<uint, uint?> _idTranslation = new Dictionary<uint, uint?>();
 
-  public virtual P ElementsToPhys(IEnumerable<dynamic> elements, object source = null) { return default; }
+  public virtual P ElementsToPhys(IEnumerable<dynamic> elements, Object source = null) { return default; }
   public WikiTagProvider GetWikiProvider() { return _wikiTagModules; }
 
 
@@ -75,9 +94,6 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   /// <returns>Dto object</returns>
   public virtual D PhysicalToDto(P phys)
   {
-    if (phys == null)
-      return default(D);
-
     var dto = _mapper.Map<D>(phys);
     dto = PhysicalToDto(phys, dto);
     return dto;
@@ -155,7 +171,7 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   /// </summary>
   /// <param name="source"></param>
   /// <returns>Dto</returns>
-  public virtual D GetDto(object source = null)
+  public virtual D GetDto(Object source = null)
   {
     if (source == null)
       return new D();
@@ -168,7 +184,7 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   /// </summary>
   /// <param name="source"></param>
   /// <returns>Physical</returns>
-  public virtual P GetPhys(object source = null)
+  public virtual P GetPhys(Object source = null)
   {
     if (source == null)
       return new P();

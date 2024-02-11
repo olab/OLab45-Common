@@ -22,7 +22,6 @@ public class Diagnostics
 public class OLabAPIResponse<D> : ActionResult
 {
   public const string MessageSuccess = "success";
-  private HttpStatusCode _errorCode = HttpStatusCode.OK;
 
   public OLabAPIResponse()
   {
@@ -36,11 +35,7 @@ public class OLabAPIResponse<D> : ActionResult
   [JsonProperty("message")]
   public string Message { get; set; }
   [JsonProperty("error_code")]
-  public HttpStatusCode ErrorCode
-  {
-    get { return _errorCode; }
-    set { _errorCode = value; Message = value.ToString(); }
-  }
+  public HttpStatusCode ErrorCode { get; set; }
   [JsonProperty("diagnostics")]
   public IList<Diagnostics> Diagnostics { get; set; }
   [JsonProperty("data")]

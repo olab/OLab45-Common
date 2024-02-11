@@ -1,7 +1,6 @@
 using Newtonsoft.Json;
 
-
-namespace OLab.Data.Dtos;
+namespace OLab.Api.Dto;
 
 public class MapsScopedObjectsDto : MapsDto
 {

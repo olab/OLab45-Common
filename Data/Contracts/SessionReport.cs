@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace OLab.Data.Contracts;
+namespace Data.Contracts;
 
 public class SessionReport
 {

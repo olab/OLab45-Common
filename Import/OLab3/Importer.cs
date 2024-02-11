@@ -1,9 +1,9 @@
+using OLab.Api.Dto;
+using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data;
-using OLab.Data.Dtos;
+using OLab.Common.Utils;
 using OLab.Data.Interface;
-using OLab.Data.Models;
 using OLab.Import.Interface;
 using OLab.Import.OLab3.Dtos;
 using OLab.Import.OLab3.Model;
@@ -183,8 +183,10 @@ public class Importer : IImporter
   /// WRite import dtos to database
   /// </summary>
   /// <returns>true</returns>
-  public uint WriteImportToDatabase()
+  public bool WriteImportToDatabase()
   {
+    var rc = true;
+
     using (var transaction = _dbContext.Database.BeginTransaction())
     {
       try
@@ -198,8 +200,6 @@ public class Importer : IImporter
         var xmlMapDto = _dtos[DtoTypes.XmlMapDto] as XmlMapDto;
         var xmlMap = (XmlMap)xmlMapDto.GetDbPhys();
         Logger.LogInformation($"Loaded map '{xmlMap.Data[0].Name}'. id = {xmlMap.Data[0].Id}");
-
-        return xmlMap.Data[0].Id;
       }
       catch (Exception ex)
       {
@@ -209,7 +209,7 @@ public class Importer : IImporter
 
     }
 
-    return 0;
+    return rc;
   }
 
   public Task ExportAsync(Stream stream, uint mapId, CancellationToken token = default)

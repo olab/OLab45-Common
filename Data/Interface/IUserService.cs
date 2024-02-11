@@ -1,5 +1,4 @@
-using OLab.Api.Models;
-using OLab.Data.Contracts;
+using OLab.Api.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

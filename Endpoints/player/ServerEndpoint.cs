@@ -1,13 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
-using OLab.Api.Utils;
+using OLab.Api.Model;
+using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
 using OLab.Data;
-using OLab.Data.Dtos;
 using OLab.Data.Interface;
-using OLab.Data.Mappers;
-using OLab.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -68,7 +66,7 @@ public partial class ServerEndpoint : OLabEndpoint
   /// </summary>
   /// <param name="serverId"></param>
   /// <returns></returns>
-  public async Task<ScopedObjectsDto> GetScopedObjectsRawAsync(uint serverId)
+  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint serverId)
   {
     Logger.LogInformation($"ServerEndpoint.GetScopedObjectsRawAsync(uint serverId={serverId})");
     var dto = await GetScopedObjectsAsync(serverId, false);
@@ -80,7 +78,7 @@ public partial class ServerEndpoint : OLabEndpoint
   /// </summary>
   /// <param name="serverId"></param>
   /// <returns></returns>
-  public async Task<ScopedObjectsDto> GetScopedObjectsTranslatedAsync(uint serverId)
+  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsTranslatedAsync(uint serverId)
   {
     Logger.LogInformation($"ServerEndpoint.GetScopedObjectsTranslatedAsync(uint serverId={serverId})");
     var dto = await GetScopedObjectsAsync(serverId, true);
@@ -93,7 +91,7 @@ public partial class ServerEndpoint : OLabEndpoint
   /// <param name="serverId"></param>
   /// <param name="enableWikiTranslation"></param>
   /// <returns></returns>
-  public async Task<ScopedObjectsDto> GetScopedObjectsAsync(
+  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(
     uint serverId,
     bool enableWikiTranslation)
   {
@@ -104,7 +102,7 @@ public partial class ServerEndpoint : OLabEndpoint
       dbContext,
       _fileStorageModule);
 
-    await phys.AddScopeFromDatabaseAsync(ConstantStrings.ScopeLevelServer, 1);
+    await phys.AddScopeFromDatabaseAsync(Utils.Constants.ScopeLevelServer, 1);
 
     var builder = new ScopedObjectsMapper(Logger, _wikiTagProvider, enableWikiTranslation);
     var dto = builder.PhysicalToDto(phys);

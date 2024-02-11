@@ -1,6 +1,6 @@
-using OLab.Data.Models;
+using OLab.Api.Model;
 
-namespace OLab.Data.Dtos;
+namespace OLab.Api.Dto;
 
 public partial class MapVpdsDto
 {

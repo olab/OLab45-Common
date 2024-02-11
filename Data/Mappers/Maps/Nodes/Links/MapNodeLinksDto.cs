@@ -1,13 +1,13 @@
 using OLab.Api.Common;
-using OLab.Api.Models;
+using OLab.Api.Dto;
+using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLab.Data.Mappers;
+namespace OLab.Api.ObjectMapper;
 
 public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
 {
@@ -39,7 +39,7 @@ public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
       //  continue;
 
       // do a probability of showing check
-      if (phys.Probability.HasValue && phys.Probability.Value > 0)
+      if (phys.Probability.HasValue && (phys.Probability.Value > 0))
       {
         var chance = random.Next() % 100;
         if (chance > phys.Probability)
@@ -53,9 +53,14 @@ public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
 
     // hook up two-way links
     foreach (var itemOuter in dtoList)
+    {
       foreach (var itemInner in dtoList)
-        if (itemOuter.SourceId == itemInner.DestinationId && itemOuter.DestinationId == itemInner.SourceId)
+      {
+        if ((itemOuter.SourceId == itemInner.DestinationId) && (itemOuter.DestinationId == itemInner.SourceId))
           itemOuter.ReverseId = itemInner.Id;
+      }
+
+    }
 
     return dtoList;
   }
@@ -71,7 +76,7 @@ public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
     dto.IsHidden = phys.Hidden.HasValue ? phys.Hidden.Value : false;
   }
 
-  public override MapNodeLinksDto PhysicalToDto(MapNodeLinks phys, object source = null)
+  public override MapNodeLinksDto PhysicalToDto(MapNodeLinks phys, Object source = null)
   {
     var dto = GetDto(source);
     InternalPhysicalToDto(phys, dto);
@@ -89,14 +94,14 @@ public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
     phys.Hidden = dto.IsHidden;
   }
 
-  public override MapNodeLinks DtoToPhysical(MapNodeLinksDto dto, object source = null)
+  public override MapNodeLinks DtoToPhysical(MapNodeLinksDto dto, Object source = null)
   {
     var phys = GetPhys(source);
     InternalDtoToPhysical(dto, phys);
     return phys;
   }
 
-  public override MapNodeLinks ElementsToPhys(IEnumerable<dynamic> elements, object source = null)
+  public override MapNodeLinks ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
   {
     var phys = GetPhys(source);
 
@@ -111,7 +116,7 @@ public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
     phys.Order = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "order").Value);
     phys.Probability = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "probability").Value);
     if (int.TryParse(elements.FirstOrDefault(x => x.Name == "hidden").Value, out int nTemp))
-      phys.Hidden = nTemp == 1;
+      phys.Hidden = (nTemp == 1);
     phys.CreatedAt = DateTime.Now;
 
     // Logger.LogInformation($"loaded MapNodeLinks {phys.Id}");

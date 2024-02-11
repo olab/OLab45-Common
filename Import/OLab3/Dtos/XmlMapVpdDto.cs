@@ -1,5 +1,5 @@
+using OLab.Api.Importer;
 using OLab.Common.Interfaces;
-using OLab.Data.Mappers;
 using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ namespace OLab.Import.OLab3.Dtos;
 
 public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
 {
-  private readonly MapVpdMapper _mapper;
+  private readonly Api.ObjectMapper.MapVpd _mapper;
 
   public XmlMapVpdDto(
     IOLabLogger logger,
@@ -21,7 +21,7 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
       Importer.DtoTypes.XmlMapVpdDto,
       "map_vpd.xml")
   {
-    _mapper = new MapVpdMapper(logger);
+    _mapper = new Api.ObjectMapper.MapVpd(logger);
   }
 
   /// <summary>
@@ -40,10 +40,8 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
       if (GetFileModule().FileExists(importFileFolder, GetFileName()))
       {
         var moduleFileName = $"{importFileFolder}{GetFileModule().GetFolderSeparator()}{GetFileName()}";
-        using (var moduleFileStream = new FileStream(moduleFileName, FileMode.Open, FileAccess.Read))
-        {
-          _phys = Api.Importer.DynamicXml.Load(moduleFileStream);
-        }
+        using var moduleFileStream = new FileStream(moduleFileName, FileMode.Open, FileAccess.Read);
+        _phys = DynamicXml.Load(moduleFileStream);
       }
 
       dynamic outerElements = GetElements(GetXmlPhys());

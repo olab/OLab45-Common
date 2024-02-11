@@ -1,6 +1,6 @@
 namespace OLab.Api.Utils;
 
-public static class ConstantStrings
+public static class Constants
 {
   public const string ScopeLevelNode = "Nodes";
   public const string ScopeLevelMap = "Maps";

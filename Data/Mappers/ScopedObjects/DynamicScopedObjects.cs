@@ -1,33 +1,32 @@
 using OLab.Api.Common;
-using OLab.Api.Models;
+using OLab.Api.Dto;
 using OLab.Common.Interfaces;
-using OLab.Data.Dtos;
 
-namespace OLab.Data.Mappers;
+namespace OLab.Api.ObjectMapper;
 
-public class DynamicScopedObjectsMapper : ObjectMapper<DynamicScopedObjects, DynamicScopedObjectsDto>
+public class DynamicScopedObjects : ObjectMapper<OLab.Data.BusinessObjects.DynamicScopedObjects, DynamicScopedObjectsDto>
 {
   protected readonly bool enableWikiTranslation = true;
 
-  public DynamicScopedObjectsMapper(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+  public DynamicScopedObjects(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
   {
   }
 
-  public DynamicScopedObjectsMapper(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public DynamicScopedObjects(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
   }
 
-  public override DynamicScopedObjectsDto PhysicalToDto(DynamicScopedObjects phys, object source = null)
-  {
-    throw new System.NotImplementedException();
-  }
-
-  public override DynamicScopedObjects DtoToPhysical(DynamicScopedObjectsDto dto, object source = null)
+  public override DynamicScopedObjectsDto PhysicalToDto(OLab.Data.BusinessObjects.DynamicScopedObjects phys, object source = null)
   {
     throw new System.NotImplementedException();
   }
 
-  public DynamicScopedObjectsDto PhysicalToDto(DynamicScopedObjects phys)
+  public override OLab.Data.BusinessObjects.DynamicScopedObjects DtoToPhysical(DynamicScopedObjectsDto dto, object source = null)
+  {
+    throw new System.NotImplementedException();
+  }
+
+  public DynamicScopedObjectsDto PhysicalToDto(OLab.Data.BusinessObjects.DynamicScopedObjects phys)
   {
     var dto = new DynamicScopedObjectsDto();
     PhysicalToDto(phys, dto);
@@ -35,7 +34,7 @@ public class DynamicScopedObjectsMapper : ObjectMapper<DynamicScopedObjects, Dyn
   }
 
   public void PhysicalToDto(
-    DynamicScopedObjects phys,
+    OLab.Data.BusinessObjects.DynamicScopedObjects phys,
     DynamicScopedObjectsDto dto)
   {
     var dtoCountersList = new CounterMapper(Logger).PhysicalToDto(phys.ServerCounters);

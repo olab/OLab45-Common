@@ -1,4 +1,4 @@
-namespace OLab.Data.Dtos;
+namespace OLab.Api.Dto;
 
 public class ScriptsDto : ScopedObjectDto
 {

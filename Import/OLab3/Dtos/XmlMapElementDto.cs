@@ -1,5 +1,4 @@
 using OLab.Common.Interfaces;
-using OLab.Data.Mappers;
 using OLab.Import.OLab3.Model;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +8,7 @@ namespace OLab.Import.OLab3.Dtos;
 
 public class XmlMapElementDto : XmlImportDto<XmlMapElements>
 {
-  private readonly FilesMapper _mapper;
+  private readonly Api.ObjectMapper.Files _mapper;
   public XmlMapElementDto(
     IOLabLogger logger,
     Importer importer) : base(
@@ -18,7 +17,7 @@ public class XmlMapElementDto : XmlImportDto<XmlMapElements>
       Importer.DtoTypes.XmlMapElementDto,
       "map_element.xml")
   {
-    _mapper = new FilesMapper(logger);
+    _mapper = new Api.ObjectMapper.Files(logger);
   }
 
   /// <summary>

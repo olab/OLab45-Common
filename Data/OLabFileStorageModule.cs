@@ -1,4 +1,4 @@
-﻿using OLab.Api.Models;
+﻿using OLab.Api.Model;
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OLab.Data;
+namespace OLab.Common.Utils;
 public abstract class OLabFileStorageModule : IFileStorageModule
 {
   public const string FilesRoot = "files";
@@ -23,12 +23,12 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   protected OLabFileStorageModule(IOLabLogger logger, IOLabConfiguration configuration)
   {
     this.logger = logger;
-    cfg = configuration;
+    this.cfg = configuration;
   }
 
   public string GetModuleName()
   {
-    var attrib = GetType().GetCustomAttributes(typeof(OLabModuleAttribute), true).FirstOrDefault() as OLabModuleAttribute;
+    var attrib = this.GetType().GetCustomAttributes(typeof(OLabModuleAttribute), true).FirstOrDefault() as OLabModuleAttribute;
     if (attrib == null)
       throw new Exception("Missing OLabModule attribute");
 
@@ -64,7 +64,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   public string BuildPath(params object[] pathParts)
   {
     var sb = new StringBuilder();
-    for (var i = 0; i < pathParts.Length; i++)
+    for (int i = 0; i < pathParts.Length; i++)
     {
       // remove any extra trailing slashes
       var part = pathParts[i].ToString();
@@ -90,6 +90,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     logger.LogInformation($"Attaching URLs for {items.Count} file records");
 
     foreach (var item in items)
+    {
       try
       {
         var scopeFolder = GetScopedFolderName(
@@ -111,6 +112,8 @@ public abstract class OLabFileStorageModule : IFileStorageModule
       {
         logger.LogError(ex, $"AttachUrls error on '{item.Path}' id = {item.Id}");
       }
+
+    }
   }
 
   public abstract Task<bool> CopyFolderToArchiveAsync(

@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using OLab.Api.Utils;
 
-namespace OLab.Data.Dtos.Designer;
+namespace OLab.Api.Dto.Designer;
 
 public class ScopedObjectDto
 {

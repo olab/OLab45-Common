@@ -1,6 +1,6 @@
 using System;
 
-namespace OLab.Data.Dtos;
+namespace OLab.Api.Dto;
 
 public class MapsFullDto : MapsDto
 {
