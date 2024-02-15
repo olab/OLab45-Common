@@ -8,10 +8,11 @@ public static class SemaphoreLogger
   public static async Task WaitAsync(
     IOLabLogger logger,
     string key,
-    SemaphoreSlim semaphore)
+    SemaphoreSlim semaphore,
+    CancellationToken cancellation = default)
   {
     logger.LogInformation($"key {key} requesting lock. remaining threads = {semaphore.CurrentCount}");
-    await semaphore.WaitAsync();
+    await semaphore.WaitAsync(cancellation);
     logger.LogInformation($"key {key} lock granted. remaining threads = {semaphore.CurrentCount}");
   }
 
