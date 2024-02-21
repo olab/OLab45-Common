@@ -58,7 +58,10 @@ public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
   /// </summary>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
-  public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
+  public override bool Save(
+    string importFolderName, 
+    int recordIndex, 
+    IEnumerable<dynamic> elements)
   {
     var avItem = _avMapper.ElementsToPhys(elements);
     var oldId = avItem.Id;
