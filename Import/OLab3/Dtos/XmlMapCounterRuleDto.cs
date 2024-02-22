@@ -28,9 +28,4 @@ public class XmlMapCounterRuleDto : XmlImportDto<XmlMapCounterRule>
     return (IEnumerable<dynamic>)GetXmlPhys().map_counter_rule.Elements();
   }
 
-  // there is no applicable implementation for this yet
-  public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
-  {
-    return true;
-  }
 }

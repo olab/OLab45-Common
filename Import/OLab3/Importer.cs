@@ -64,7 +64,7 @@ public class Importer : IImporter
     _dbContext = context;
     _configuration = configuration;
 
-    Logger = OLabLogger.CreateNew<Importer>(logger);
+    Logger = logger;
 
     _wikiTagProvider = wikiTagProvider;
     FileStorageModule = fileStorageModule;
@@ -124,9 +124,8 @@ public class Importer : IImporter
     string archiveFileName,
     CancellationToken token = default)
   {
-    var mapId = await ProcessImportFileAsync(archiveFileStream, archiveFileName, token);
-    if (mapId > 0)
-      WriteImportToDatabase();
+    await ProcessImportFileAsync(archiveFileStream, archiveFileName, token);
+    var mapId = WriteImportToDatabase(archiveFileName);
     return mapId;
   }
 
@@ -134,41 +133,44 @@ public class Importer : IImporter
   /// Loads import xml files into memory
   /// </summary>
   /// <param name="stream">Stream to write file to</param>
-  /// <param name="fileName">ExportAsync ZIP file name</param>
+  /// <param name="archiveFileName">ExportAsync ZIP file name</param>
   /// <returns>true</returns>
-  public async Task<uint> ProcessImportFileAsync(
+  public async Task ProcessImportFileAsync(
     Stream stream,
-    string fileName,
+    string archiveFileName,
     CancellationToken token = default)
   {
-    uint mapId = 0;
-
     try
     {
-      Logger.LogInformation($"Module archive file: {FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, fileName)}");
+      Logger.LogInformation($"Module archive file: {FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, archiveFileName)}");
 
-      await FileStorageModule.WriteFileAsync(
+      var archiveDirectory = FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot);
+
+      var archiveFilePath = await FileStorageModule.WriteFileAsync(
         stream,
-        FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, fileName),
-        fileName,
+        archiveDirectory,
+        archiveFileName,
         token);
 
-      var extractFolderName = Path.GetFileNameWithoutExtension(fileName);
-      Logger.LogInformation($"Folder extract directory: {extractFolderName}");
+      var extractDirectory = 
+        FileStorageModule.BuildPath(
+          OLabFileStorageModule.ImportRoot, 
+          Path.GetFileNameWithoutExtension(archiveFileName));
+      Logger.LogInformation($"Folder extract directory: {extractDirectory}");
 
       await FileStorageModule.ExtractFileToStorageAsync(
         OLabFileStorageModule.ImportRoot,
-        fileName,
-        extractFolderName,
+        archiveFileName,
+        extractDirectory,
         token);
 
       foreach (var dto in _dtos.Values)
-        dto.Load(FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, extractFolderName));
+        await dto.LoadAsync(extractDirectory);
 
       // delete source import file
       await GetFileStorageModule().DeleteFileAsync(
         OLabFileStorageModule.ImportRoot,
-        fileName);
+        archiveFileName);
     }
     catch (Exception ex)
     {
@@ -176,16 +178,15 @@ public class Importer : IImporter
       throw;
     }
 
-    return mapId;
   }
 
   /// <summary>
   /// WRite import dtos to database
   /// </summary>
   /// <returns>true</returns>
-  public bool WriteImportToDatabase()
+  public uint WriteImportToDatabase(string archiveFileName)
   {
-    var rc = true;
+    uint mapId = 0;
 
     using (var transaction = _dbContext.Database.BeginTransaction())
     {
@@ -193,13 +194,15 @@ public class Importer : IImporter
       {
 
         foreach (var dto in _dtos.Values)
-          dto.Save();
+          dto.Save(Path.GetFileNameWithoutExtension(archiveFileName));
 
         transaction.Commit();
 
         var xmlMapDto = _dtos[DtoTypes.XmlMapDto] as XmlMapDto;
         var xmlMap = (XmlMap)xmlMapDto.GetDbPhys();
         Logger.LogInformation($"Loaded map '{xmlMap.Data[0].Name}'. id = {xmlMap.Data[0].Id}");
+
+        mapId = xmlMap.Data[0].Id;
       }
       catch (Exception ex)
       {
@@ -209,7 +212,7 @@ public class Importer : IImporter
 
     }
 
-    return rc;
+    return mapId;
   }
 
   public Task ExportAsync(Stream stream, uint mapId, CancellationToken token = default)

@@ -28,9 +28,4 @@ public class XmlMetadataDto : XmlImportDto<XmlMetadata>
     return (IEnumerable<dynamic>)xmlPhys.metadata.Elements();
   }
 
-  // there is no Save for MetaData records
-  public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
-  {
-    return true;
-  }
 }
