@@ -57,7 +57,7 @@ public partial class ScopedObjects
     await _dbContext.SystemCounterActions.AddAsync(phys);
     await _dbContext.SaveChangesAsync(token);
 
-    Logger.LogInformation($"  imported action for counter '{phys.CounterId}', {oldId}  ->  {phys.Id}");
+    Logger.LogInformation($"  wrote action for counter '{phys.CounterId}', {oldId}  ->  {phys.Id}");
   }
 
   private async Task WriteCounterToDatabaseAsync(
@@ -79,7 +79,7 @@ public partial class ScopedObjects
     // counter actions will need this mapping.
     AddCounterIdCrossReference(oldId, phys.Id);
 
-    Logger.LogInformation($"  imported counter '{phys.Name}', {oldId}  ->  {phys.Id}");
+    Logger.LogInformation($"  wrote counter '{phys.Name}', {oldId}  ->  {phys.Id}");
   }
 
   private async Task WriteFileToDatebaseAsync(
@@ -98,7 +98,7 @@ public partial class ScopedObjects
     await _dbContext.SystemFiles.AddAsync(phys);
     await _dbContext.SaveChangesAsync(token);
 
-    Logger.LogInformation($"  imported file '{phys.Name}', {oldId} -> {phys.Id}");
+    Logger.LogInformation($"  wrote file '{phys.Name}' {phys.Path} {phys.Mime}, {oldId} -> {phys.Id}");
   }
 
   private async Task WriteConstantToDatabaseAsync(
@@ -116,7 +116,7 @@ public partial class ScopedObjects
     await _dbContext.SystemConstants.AddAsync(phys);
     await _dbContext.SaveChangesAsync(token);
 
-    Logger.LogInformation($"  imported constant '{phys.Name}', {oldId} -> {phys.Id}");
+    Logger.LogInformation($"  wrote constant '{phys.Name}', {oldId} -> {phys.Id}");
   }
 
   private async Task WriteQuestionToDatabaseAsync(
@@ -144,13 +144,13 @@ public partial class ScopedObjects
     await _dbContext.SystemQuestions.AddAsync(phys);
     await _dbContext.SaveChangesAsync(token);
 
-    Logger.LogInformation($"  imported question '{phys.Stem}', {oldId} -> {phys.Id}");
+    Logger.LogInformation($"  wrote question '{phys.Stem}', {oldId} -> {phys.Id}");
 
     AddQuestionIdCrossReference(oldId, phys.Id);
 
     int index = 0;
     foreach (var responsePhys in phys.SystemQuestionResponses)
-      Logger.LogInformation($"    imported response '{responsePhys.Response}', {oldResponseIds[index++]} -> {responsePhys.Id}");
+      Logger.LogInformation($"    wrote response '{responsePhys.Response}', {oldResponseIds[index++]} -> {responsePhys.Id}");
 
   }
 }
