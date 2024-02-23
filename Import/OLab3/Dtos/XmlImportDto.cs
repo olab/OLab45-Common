@@ -18,7 +18,7 @@ namespace OLab.Import.OLab3.Dtos;
 public abstract class XmlImportDto<P> : XmlDto where P : new()
 {
   protected dynamic _phys;
-  private readonly string _fileName;
+  protected readonly string _fileName;
   protected readonly Importer _importer;
   protected OLabDBContext Context;
   protected int CurrentRecordIndex = 0;
@@ -64,12 +64,19 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// </summary>
   /// <param name="originalId">Import system Id</param>
   /// <param name="newId">Database id</param>
-  protected override void CreateIdTranslation(uint originalId, uint? newId = null)
+  protected override bool CreateIdTranslation(uint originalId, uint? newId = null)
   {
     if (_idTranslation.ContainsKey(originalId))
-      return;
+    {
+      Logger.LogInformation($"  replaced {_fileName} translation {originalId} -> {newId.Value}");
+      _idTranslation[originalId] = newId;
+      return false;
+    }
+
     _idTranslation.Add(originalId, newId);
     Logger.LogInformation($"  added {_fileName} translation {originalId} -> {newId.Value}");
+
+    return true;
   }
 
   /// <summary>
