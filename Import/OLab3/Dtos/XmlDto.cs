@@ -25,9 +25,7 @@ public abstract class XmlDto
     Logger = logger;
   }
 
-    protected abstract void CreateIdTranslation(uint originalId, uint? newId = null);
-    public abstract uint? GetIdTranslation(string referencedFile, uint originalId);
-    public abstract int? GetIdTranslation(string referencedFile, int? originalId);
-  }
-
+  protected abstract bool CreateIdTranslation(uint originalId, uint? newId = null);
+  public abstract uint? GetIdTranslation(string referencedFile, uint originalId);
+  public abstract int? GetIdTranslation(string referencedFile, int? originalId);
 }
