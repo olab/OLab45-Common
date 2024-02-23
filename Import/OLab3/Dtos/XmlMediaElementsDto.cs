@@ -1,10 +1,14 @@
+using DocumentFormat.OpenXml.Office2010.PowerPoint;
 using Microsoft.CSharp.RuntimeBinder;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
+using OLab.Data.Interface;
 using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static OLab.Import.OLab3.Importer;
 
 namespace OLab.Import.OLab3.Dtos;
@@ -26,9 +30,9 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
   /// </summary>
   /// <param name="importDirectory">Directory where import file exists</param>
   /// <returns></returns>
-  public override bool Load(string extractPath)
+  public override async Task<bool> LoadAsync(string extractPath)
   {
-    var result = base.Load(extractPath);
+    var result = await base.LoadAsync(extractPath);
     var record = 0;
 
     if (result)
@@ -108,14 +112,17 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
   /// </summary>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
-  public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
+  public override bool Save(
+    string importFolderName, 
+    int recordIndex, 
+    IEnumerable<dynamic> elements)
   {
     var rc = true;
 
     try
     {
-      var sourceDirectory = $"media";
-
+      var sourceDirectory = $"{OLabFileStorageModule.ImportRoot}{GetFileModule().GetFolderSeparator()}{importFolderName}{GetFileModule().GetFolderSeparator()}media";
+      
       var mapDto = GetImporter().GetDto(DtoTypes.XmlMapDto) as XmlMapDto;
       var map = mapDto.GetModel().Data.FirstOrDefault();
 

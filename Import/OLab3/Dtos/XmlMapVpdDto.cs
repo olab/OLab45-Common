@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OLab.Import.OLab3.Dtos;
 
@@ -29,7 +30,7 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
   /// </summary>
   /// <param name="importDirectory">Directory where import file exists</param>
   /// <returns></returns>
-  public override bool Load(string importFileFolder)
+  public override async Task<bool> LoadAsync(string importFileDirectory)
   {
     var rc = true;
 
@@ -37,10 +38,14 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
     {
       Logger.LogInformation($"Loading '{GetFileName()}'");
 
-      if (GetFileModule().FileExists(importFileFolder, GetFileName()))
+      if (GetFileModule().FileExists(importFileDirectory, GetFileName()))
       {
-        var moduleFileName = $"{importFileFolder}{GetFileModule().GetFolderSeparator()}{GetFileName()}";
-        using var moduleFileStream = new FileStream(moduleFileName, FileMode.Open, FileAccess.Read);
+        using var moduleFileStream = new MemoryStream();
+        await GetFileModule().ReadFileAsync(
+          moduleFileStream, 
+          importFileDirectory, 
+          GetFileName(), 
+          new System.Threading.CancellationToken());
         _phys = DynamicXml.Load(moduleFileStream);
       }
 
@@ -102,7 +107,10 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
   /// <param name="dtos">All import dtos (for lookups into related objects)</param>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
-  public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
+  public override bool Save(
+    string importFolderName, 
+    int recordIndex, 
+    IEnumerable<dynamic> elements)
   {
     var item = _mapper.ElementsToPhys(elements);
     var oldId = item.Id;

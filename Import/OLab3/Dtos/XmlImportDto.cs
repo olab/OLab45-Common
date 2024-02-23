@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using static OLab.Import.OLab3.Importer;
 
 namespace OLab.Import.OLab3.Dtos;
@@ -17,7 +18,7 @@ namespace OLab.Import.OLab3.Dtos;
 public abstract class XmlImportDto<P> : XmlDto where P : new()
 {
   protected dynamic _phys;
-  private readonly string _fileName;
+  protected readonly string _fileName;
   protected readonly Importer _importer;
   protected OLabDBContext Context;
   protected int CurrentRecordIndex = 0;
@@ -45,7 +46,11 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// </summary>
   /// <param name="importer">Importer object</param>
   /// <param name="fileName">File name to import</param>
-  public XmlImportDto(IOLabLogger logger, Importer importer, DtoTypes dtoType, string fileName) : base(logger, dtoType)
+  public XmlImportDto(
+    IOLabLogger logger, 
+    Importer importer, 
+    DtoTypes dtoType, 
+    string fileName) : base(logger, dtoType)
   {
     _importer = importer;
     _fileName = fileName;
@@ -59,12 +64,19 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// </summary>
   /// <param name="originalId">Import system Id</param>
   /// <param name="newId">Database id</param>
-  protected override void CreateIdTranslation(uint originalId, uint? newId = null)
+  protected override bool CreateIdTranslation(uint originalId, uint? newId = null)
   {
     if (_idTranslation.ContainsKey(originalId))
-      return;
+    {
+      Logger.LogInformation($"  replaced {_fileName} translation {originalId} -> {newId.Value}");
+      _idTranslation[originalId] = newId;
+      return false;
+    }
+
     _idTranslation.Add(originalId, newId);
     Logger.LogInformation($"  added {_fileName} translation {originalId} -> {newId.Value}");
+
+    return true;
   }
 
   /// <summary>
@@ -101,7 +113,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// </summary>
   /// <param name="importFilesFolder">Folder name of extracted import files</param>
   /// <returns>Success/Failure</returns>
-  public override bool Load(string importFileDirectory)
+  public override async Task<bool> LoadAsync(string importFileDirectory)
   {
     var rc = true;
 
@@ -114,7 +126,11 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
       if (GetFileModule().FileExists(importFileDirectory, GetFileName()))
       {
         using var moduleFileStream = new MemoryStream();
-        GetFileModule().ReadFileAsync(moduleFileStream, importFileDirectory, GetFileName(), new System.Threading.CancellationToken());
+        await GetFileModule().ReadFileAsync(
+          moduleFileStream, 
+          importFileDirectory, 
+          GetFileName(), 
+          new System.Threading.CancellationToken());
         _phys = DynamicXml.Load(moduleFileStream);
       }
       else
@@ -144,7 +160,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
       Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
 
       // delete data file
-      GetFileModule().DeleteFileAsync(importFileDirectory, GetFileName()).Wait();
+      await GetFileModule().DeleteFileAsync(importFileDirectory, GetFileName());
 
     }
     catch (Exception ex)
@@ -162,7 +178,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// </summary>
   /// <param name="dtos">All import dtos</param>
   /// <returns>Success/Failure</returns>
-  public override bool Save()
+  public override bool Save(string importFolderName)
   {
     Logger.LogInformation($"Saving {xmlImportElementSets.Count()} {GetFileName()} objects");
 
@@ -171,7 +187,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
     {
       try
       {
-        Save(recordIndex, elements);
+        Save(importFolderName, recordIndex, elements);
       }
       catch (Exception ex)
       {
@@ -186,9 +202,9 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
 
   // implemented here so non-applicable derived classes
   // do not need to re-implement it
-  public virtual bool Save(int recordIndex, IEnumerable<dynamic> elements)
+  public virtual bool Save(string importFolderName, int recordIndex, IEnumerable<dynamic> elements)
   {
-    throw new NotImplementedException();
+    return true;
   }
 
   /// <summary>

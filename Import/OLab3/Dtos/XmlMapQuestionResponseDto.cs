@@ -36,10 +36,14 @@ public class XmlMapQuestionResponseDto : XmlImportDto<XmlMapQuestionResponses>
   /// <param name="dtos">All import dtos (for lookups into related objects)</param>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
-  public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
+  public override bool Save(
+    string importFolderName, 
+    int recordIndex, 
+    IEnumerable<dynamic> elements)
   {
     var item = _mapper.ElementsToPhys(elements);
     var oldId = item.Id;
+    var oldQuestionId = item.QuestionId.Value;
 
     item.Id = 0;
 
@@ -54,8 +58,27 @@ public class XmlMapQuestionResponseDto : XmlImportDto<XmlMapQuestionResponses>
     item.Name = item.Id.ToString();
     Context.SaveChanges();
 
-    CreateIdTranslation(oldId, item.Id);
+    if ( CreateIdTranslation(oldId, item.Id) )
+      Logger.LogInformation($"  added {_fileName} translation {oldId} -> {item.Id}, question {oldQuestionId} -> {item.QuestionId}");
 
+    return true;
+  }
+
+  /// <summary>
+  /// Add id translation record to store
+  /// </summary>
+  /// <param name="originalId">Import system Id</param>
+  /// <param name="newId">Database id</param>
+  protected override bool CreateIdTranslation(uint originalId, uint? newId = null)
+  {
+    if (_idTranslation.ContainsKey(originalId))
+    {
+      Logger.LogInformation($"  replaced {_fileName} translation {originalId} -> {newId.Value}");
+      _idTranslation[originalId] = newId;
+      return false;
+    }
+
+    _idTranslation.Add(originalId, newId);
     return true;
   }
 }

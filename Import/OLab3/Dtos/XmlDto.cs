@@ -1,5 +1,6 @@
 using OLab.Common.Interfaces;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using static OLab.Import.OLab3.Importer;
 
 namespace OLab.Import.OLab3.Dtos;
@@ -7,9 +8,9 @@ namespace OLab.Import.OLab3.Dtos;
 public abstract class XmlDto
 {
   protected readonly IOLabLogger Logger;
-  public abstract bool Load(string extractPath);
+  public abstract Task<bool> LoadAsync(string extractPath);
   public abstract bool PostProcess(IDictionary<DtoTypes, XmlDto> dtos);
-  public abstract bool Save();
+  public abstract bool Save(string importFolderName);
   public abstract object GetDbPhys();
 
   public DtoTypes DtoType { get; private set; }
@@ -24,7 +25,9 @@ public abstract class XmlDto
     Logger = logger;
   }
 
-  protected abstract void CreateIdTranslation(uint originalId, uint? newId = null);
-  public abstract uint? GetIdTranslation(string referencedFile, uint originalId);
-  public abstract int? GetIdTranslation(string referencedFile, int? originalId);
+    protected abstract void CreateIdTranslation(uint originalId, uint? newId = null);
+    public abstract uint? GetIdTranslation(string referencedFile, uint originalId);
+    public abstract int? GetIdTranslation(string referencedFile, int? originalId);
+  }
+
 }

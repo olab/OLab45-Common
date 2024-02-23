@@ -15,7 +15,7 @@ public interface IOLabLogger
   bool HasErrorMessage();
   void LogDebug(string message);
   void LogDebug(string type, int index, string message);
-  void LogError(Exception ex, string message);
+  void LogError(Exception ex, string message = "");
   void LogError(string message);
   void LogError(string type, int index, Exception ex, string message);
   void LogError(string type, int index, string message);

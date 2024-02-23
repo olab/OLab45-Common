@@ -3,6 +3,7 @@ using OLab.Common.Interfaces;
 using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OLab.Import.OLab3.Dtos;
 
@@ -25,9 +26,9 @@ public class XmlManifestDto : XmlImportDto<XmlManifest>
   /// </summary>
   /// <param name="importDirectory">Directory where import file exists</param>
   /// <returns></returns>
-  public override bool Load(string extractPath)
+  public override async Task<bool> LoadAsync(string extractPath)
   {
-    var result = base.Load(extractPath);
+    var result = await base.LoadAsync(extractPath);
 
     if (result)
     {
@@ -61,12 +62,6 @@ public class XmlManifestDto : XmlImportDto<XmlManifest>
   public override IEnumerable<dynamic> GetElements(dynamic xmlPhys)
   {
     return (IEnumerable<dynamic>)xmlPhys.manifest.manifest_files.Elements();
-  }
-
-  // there is no Save for Manifest records
-  public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
-  {
-    return true;
   }
 
 }

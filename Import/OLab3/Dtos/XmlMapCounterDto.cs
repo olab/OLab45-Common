@@ -38,7 +38,10 @@ public class XmlMapCounterDto : XmlImportDto<XmlMapCounters>
   /// <param name="dtos">All import dtos (for lookups into related objects)</param>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
-  public override bool Save(int recordIndex, IEnumerable<dynamic> elements)
+  public override bool Save(
+    string importFolderName, 
+    int recordIndex, 
+    IEnumerable<dynamic> elements)
   {
     var item = _mapper.ElementsToPhys(elements);
     item.ImageableId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "map_id").Value);
