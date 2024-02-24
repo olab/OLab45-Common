@@ -178,7 +178,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// </summary>
   /// <param name="dtos">All import dtos</param>
   /// <returns>Success/Failure</returns>
-  public override bool Save(string importFolderName)
+  public override bool SaveToDatabase(string importFolderName)
   {
     Logger.LogInformation($"Saving {xmlImportElementSets.Count()} {GetFileName()} objects");
 
@@ -187,7 +187,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
     {
       try
       {
-        Save(importFolderName, recordIndex, elements);
+        SaveToDatabase(importFolderName, recordIndex, elements);
       }
       catch (Exception ex)
       {
@@ -202,27 +202,9 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
 
   // implemented here so non-applicable derived classes
   // do not need to re-implement it
-  public virtual bool Save(string importFolderName, int recordIndex, IEnumerable<dynamic> elements)
+  public virtual bool SaveToDatabase(string importFolderName, int recordIndex, IEnumerable<dynamic> elements)
   {
     return true;
-  }
-
-  /// <summary>
-  /// Calculate target directory for scoped type and id
-  /// </summary>
-  /// <param name="parentType">Scoped object type (e.g. 'Maps')</param>
-  /// <param name="parentId">Scoped object id</param>
-  /// <param name="path">Optional file name</param>
-  /// <returns>Public directory for scope</returns>
-  public string GetPublicFileDirectory(string parentType, uint parentId, string path = "")
-  {
-    var targetDirectory = $"{GetImporter().GetFileStorageModule().GetFolderSeparator()}{parentType}";
-    targetDirectory = $"{targetDirectory}{GetImporter().GetFileStorageModule().GetFolderSeparator()}{parentId}";
-
-    if (!string.IsNullOrEmpty(path))
-      targetDirectory = $"{targetDirectory}{GetImporter().GetFileStorageModule().GetFolderSeparator()}{path}";
-
-    return targetDirectory;
   }
 
   public static IList<string> GetWikiTags(string source)

@@ -3,7 +3,6 @@ using Microsoft.CSharp.RuntimeBinder;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using OLab.Common.Utils;
-using OLab.Data.Interface;
 using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
@@ -112,7 +111,7 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
   /// </summary>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
-  public override bool Save(
+  public override bool SaveToDatabase(
     string importFolderName, 
     int recordIndex, 
     IEnumerable<dynamic> elements)
@@ -121,12 +120,13 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
 
     try
     {
-      var sourceDirectory = $"{OLabFileStorageModule.ImportRoot}{GetFileModule().GetFolderSeparator()}{importFolderName}{GetFileModule().GetFolderSeparator()}media";
+      var sourceDirectory = GetFileModule().GetImportMediaFilesDirectory();
       
       var mapDto = GetImporter().GetDto(DtoTypes.XmlMapDto) as XmlMapDto;
       var map = mapDto.GetModel().Data.FirstOrDefault();
 
-      var targetDirectory = GetPublicFileDirectory("Maps", map.Id);
+      var targetDirectory = 
+        GetFileModule().GetPublicFileDirectory("Maps", map.Id);
 
       foreach (var element in elements)
       {
@@ -134,7 +134,10 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
         {
           dynamic fileName = Conversions.Base64Decode(element, true);
 
-          GetImporter().GetFileStorageModule().MoveFileAsync(fileName, sourceDirectory, targetDirectory).Wait();
+          GetFileModule().MoveFileAsync(
+            fileName, 
+            sourceDirectory, 
+            targetDirectory).Wait();
 
           Logger.LogInformation($"Copied {GetFileName()} '{fileName}' -> '{targetDirectory}'");
 

@@ -62,6 +62,25 @@ public interface IFileStorageModule
     string folderName,
     CancellationToken token);
 
+  /// <summary>
+  /// Builds a path, compatible with the file module
+  /// </summary>
+  /// <param name="pathParts">Argument list of path parts</param>
+  /// <returns>Path string</returns>
   string BuildPath(params object[] pathParts);
 
+  /// <summary>
+  /// Calculate target directory for scoped type and id
+  /// </summary>
+  /// <param name="parentType">Scoped object type (e.g. 'Maps')</param>
+  /// <param name="parentId">Scoped object id</param>
+  /// <param name="path">Optional file name</param>
+  /// <returns>Public directory for scope</returns>
+  string GetPublicFileDirectory(string parentType, uint parentId, string fileName = "");
+
+  /// <summary>
+  /// Get import file directory 
+  /// </summary>
+  /// <returns>Import directory for scope</returns>
+  string GetImportMediaFilesDirectory();
 }

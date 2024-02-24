@@ -16,6 +16,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
 {
   public const string FilesRoot = "files";
   public const string ImportRoot = "import";
+  public const string MediaDirectory = "media";
 
   protected IOLabLogger logger;
   protected IOLabConfiguration cfg;
@@ -162,4 +163,26 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     string folderName,
     string fileName,
     CancellationToken token);
+
+  /// <summary>
+  /// Calculate target directory for scoped type and id
+  /// </summary>
+  /// <param name="parentType">Scoped object type (e.g. 'Maps')</param>
+  /// <param name="parentId">Scoped object id</param>
+  /// <param name="fileName">Optional file name</param>
+  /// <returns>Public directory for scope</returns>
+  public string GetPublicFileDirectory(string parentType, uint parentId, string fileName = "")
+  {
+    var targetDirectory = GetPhysicalPath(parentType, parentId.ToString());
+
+    if (!string.IsNullOrEmpty(fileName))
+      targetDirectory = $"{targetDirectory}{GetFolderSeparator()}{fileName}";
+
+    return targetDirectory;
+  }
+
+  public string GetImportMediaFilesDirectory()
+  {
+    return $"{OLabFileStorageModule.ImportRoot}{GetFolderSeparator()}{ImportRoot}{GetFolderSeparator()}{MediaDirectory}";
+  }
 }
