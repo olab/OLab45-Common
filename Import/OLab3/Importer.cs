@@ -108,15 +108,17 @@ public class Importer : IImporter
     dto = new XmlMapCounterRuleDto(Logger, this);
     _dtos.Add(dto.DtoType, dto);
 
-    // dto = new XmlMapNodeSectionDto(Logger, this);
-    // _dtos.Add(dto.DtoType, dto);
+    dto = new XmlMapNodeSectionDto(Logger, this);
+    _dtos.Add(dto.DtoType, dto);
+
+    dto = new XmlMapNodeSectionNodeDto(Logger, this);
+    _dtos.Add(dto.DtoType, dto);
 
     dto = new XmlMetadataDto(Logger, this);
     _dtos.Add(dto.DtoType, dto);
 
     dto = new XmlManifestDto(Logger, this);
     _dtos.Add(dto.DtoType, dto);
-
   }
 
   public async Task<uint> Import(

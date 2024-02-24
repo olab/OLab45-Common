@@ -81,6 +81,8 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
 
       Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
 
+      // delete data file
+      await GetFileModule().DeleteFileAsync(importFileDirectory, GetFileName());
     }
     catch (Exception ex)
     {

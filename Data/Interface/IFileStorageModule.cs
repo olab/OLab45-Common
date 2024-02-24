@@ -81,6 +81,7 @@ public interface IFileStorageModule
   /// <summary>
   /// Get import file directory 
   /// </summary>
+  /// <param name="importFolderName">Import folder name</param>
   /// <returns>Import directory for scope</returns>
-  string GetImportMediaFilesDirectory();
+  string GetImportMediaFilesDirectory(string importFolderName);
 }

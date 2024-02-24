@@ -141,23 +141,26 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
 
       dynamic outerElements = GetElements(GetXmlPhys());
 
-      var record = 0;
-
-      foreach (var innerElements in outerElements)
+      if (outerElements != null)
       {
-        try
-        {
-          ++record;
-          var elements = (IEnumerable<dynamic>)innerElements.Elements();
-          xmlImportElementSets.Add(elements);
-        }
-        catch (Exception ex)
-        {
-          Logger.LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
-        }
-      }
+        var record = 0;
 
-      Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+        foreach (var innerElements in outerElements)
+        {
+          try
+          {
+            ++record;
+            var elements = (IEnumerable<dynamic>)innerElements.Elements();
+            xmlImportElementSets.Add(elements);
+          }
+          catch (Exception ex)
+          {
+            Logger.LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
+          }
+        }
+
+        Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+      }
 
       // delete data file
       await GetFileModule().DeleteFileAsync(importFileDirectory, GetFileName());

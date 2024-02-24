@@ -29,7 +29,8 @@ public abstract class OLabFileStorageModule : IFileStorageModule
 
   public string GetModuleName()
   {
-    var attrib = this.GetType().GetCustomAttributes(typeof(OLabModuleAttribute), true).FirstOrDefault() as OLabModuleAttribute;
+    var attrib = 
+      this.GetType().GetCustomAttributes(typeof(OLabModuleAttribute), true).FirstOrDefault() as OLabModuleAttribute;
     if (attrib == null)
       throw new Exception("Missing OLabModule attribute");
 
@@ -164,25 +165,13 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     string fileName,
     CancellationToken token);
 
-  /// <summary>
-  /// Calculate target directory for scoped type and id
-  /// </summary>
-  /// <param name="parentType">Scoped object type (e.g. 'Maps')</param>
-  /// <param name="parentId">Scoped object id</param>
-  /// <param name="fileName">Optional file name</param>
-  /// <returns>Public directory for scope</returns>
-  public string GetPublicFileDirectory(string parentType, uint parentId, string fileName = "")
+  public abstract string GetPublicFileDirectory(
+    string parentType, 
+    uint parentId, 
+    string fileName = "");
+
+  public string GetImportMediaFilesDirectory(string importFolderName)
   {
-    var targetDirectory = GetPhysicalPath(parentType, parentId.ToString());
-
-    if (!string.IsNullOrEmpty(fileName))
-      targetDirectory = $"{targetDirectory}{GetFolderSeparator()}{fileName}";
-
-    return targetDirectory;
-  }
-
-  public string GetImportMediaFilesDirectory()
-  {
-    return $"{OLabFileStorageModule.ImportRoot}{GetFolderSeparator()}{ImportRoot}{GetFolderSeparator()}{MediaDirectory}";
+    return $"{ImportRoot}{GetFolderSeparator()}{importFolderName}{GetFolderSeparator()}{MediaDirectory}";
   }
 }

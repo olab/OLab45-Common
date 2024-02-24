@@ -120,7 +120,7 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
 
     try
     {
-      var sourceDirectory = GetFileModule().GetImportMediaFilesDirectory();
+      var sourceDirectory = GetFileModule().GetImportMediaFilesDirectory(importFolderName);
       
       var mapDto = GetImporter().GetDto(DtoTypes.XmlMapDto) as XmlMapDto;
       var map = mapDto.GetModel().Data.FirstOrDefault();
