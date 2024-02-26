@@ -142,7 +142,7 @@ public partial class MapsEndpoint : OLabEndpoint
   public async Task<MapStatusDto> GetStatusAbbreviatedAsync(
     IOLabAuthorization auth,
     uint mapId,
-    CancellationToken token)
+    CancellationToken token = default)
   {
     Logger.LogInformation($"  generating map {mapId} summary");
 
@@ -186,7 +186,7 @@ public partial class MapsEndpoint : OLabEndpoint
   public async Task<MapStatusDto> GetStatusAsync(
     IOLabAuthorization auth,
     uint mapId,
-    CancellationToken token)
+    CancellationToken token = default)
   {
     Logger.LogInformation($"  generating map {mapId} summary");
 
