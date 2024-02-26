@@ -1,6 +1,7 @@
 using AutoMapper;
 using OLab.Api.Dto;
 using OLab.Api.Model;
+using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,8 @@ public class CounterActionsMapper : OLabMapper<SystemCounterActions, CounterActi
     var phys = GetPhys(source);
 
     phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
-    phys.OperationType = "open";
+    phys.OperationType = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "function"));
+
     phys.ImageableId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "node_id").Value);
     phys.ImageableType = Utils.Constants.ScopeLevelNode;
     phys.CounterId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "counter_id").Value);
