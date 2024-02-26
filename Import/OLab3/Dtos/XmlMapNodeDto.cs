@@ -157,7 +157,40 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     return rc;
   }
 
-    public bool ReplaceConstWikiTags(MapNodes item)
+  public bool ReplaceCrWikiTags(MapNodes item)
+  {
+    var rc = true;
+
+    // remap all QU with new id's in node text
+    var dto = GetImporter().GetDto(Importer.DtoTypes.XmlMapCounterDto);
+    var mappedWikiTags = new Dictionary<string, string>();
+
+    var wiki = new CounterWikiTag(Logger, _configuration);
+    while (wiki.HaveWikiTag(item.Text))
+    {
+
+      var id = Convert.ToUInt32(wiki.GetWikiArgument1());
+
+      var newId = dto.GetIdTranslation(GetFileName(), id);
+
+      var newWikiTag = wiki.PreviewNewArgument1(newId.ToString());
+      var tmpWikiTag = wiki.GetWiki().Replace(wiki.GetWikiType(), "temp");
+
+      item.Text = item.Text.Replace(wiki.GetWiki(), tmpWikiTag);
+
+      mappedWikiTags.Add(tmpWikiTag, newWikiTag);
+    }
+
+    foreach (var key in mappedWikiTags.Keys)
+    {
+      Logger.LogInformation($"Remapping '{key}' -> '{mappedWikiTags[key]}'");
+      item.Text = item.Text.Replace(key, mappedWikiTags[key]);
+    }
+
+    return rc;
+  }
+
+  public bool ReplaceConstWikiTags(MapNodes item)
   {
     var rc = true;
 
@@ -168,7 +201,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     var wiki = new ConstantWikiTag(Logger, _configuration);
     while (wiki.HaveWikiTag(item.Text))
     {
-      
+
       var id = Convert.ToUInt32(wiki.GetWikiArgument1());
 
       var newId = dto.GetIdTranslation(GetFileName(), id);
@@ -197,8 +230,8 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
   public override bool SaveToDatabase(
-    string importFolderName, 
-    int recordIndex, 
+    string importFolderName,
+    int recordIndex,
     IEnumerable<dynamic> elements)
   {
     var item = _mapper.ElementsToPhys(elements);
@@ -217,6 +250,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     ReplaceVpdWikiTags(item);
     ReplaceAvWikiTags(item);
     ReplaceConstWikiTags(item);
+    ReplaceCrWikiTags(item);
 
     item.Info = $"\nImported from map_node.xml. id = {oldId}";
 
