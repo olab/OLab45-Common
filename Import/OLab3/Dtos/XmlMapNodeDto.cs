@@ -3,6 +3,7 @@ using OLab.Common.Interfaces;
 using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OLab.Import.OLab3.Dtos;
 
@@ -38,7 +39,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     var rc = false;
 
     // replace all VPD with CONST in node text
-    var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto) as XmlMapVpdElementDto;
+    var dto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto) as XmlMapVpdElementDto;
 
     var wiki = new VpdWikiTag(Logger, _configuration);
     while (wiki.HaveWikiTag(item.Text))
@@ -46,7 +47,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
       var id = Convert.ToUInt32(wiki.GetWikiArgument1());
       var wikiTag = wiki.GetWikiType();
 
-      var newId = vpdDto.GetIdTranslation(GetFileName(), id);
+      var newId = dto.GetIdTranslation(GetFileName(), id);
 
       var newWikiTag = wikiTag.Replace(id.ToString(), newId.ToString());
       newWikiTag = newWikiTag.Replace(wiki.GetWikiType(), "CONST");
@@ -70,7 +71,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     var rc = false;
 
     // replace all VPD with CONST in node text
-    var avDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapAvatarDto) as XmlMapAvatarDto;
+    var dto = GetImporter().GetDto(Importer.DtoTypes.XmlMapAvatarDto) as XmlMapAvatarDto;
 
     var wiki = new AvatarWikiTag(Logger, _configuration);
     while (wiki.HaveWikiTag(item.Text))
@@ -78,7 +79,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
       var id = Convert.ToUInt16(wiki.GetWikiArgument1());
       var wikiTag = wiki.GetWikiType();
 
-      var newId = avDto.GetIdTranslation(GetFileName(), id);
+      var newId = dto.GetIdTranslation(GetFileName(), id);
 
       var newWikiTag = wikiTag.Replace(id.ToString(), newId.ToString());
       newWikiTag = newWikiTag.Replace(wiki.GetWikiType(), "MR");
@@ -97,7 +98,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     var rc = true;
 
     // remap all MR with new id's in node text
-    var mapElementDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapElementDto);
+    var dto = GetImporter().GetDto(Importer.DtoTypes.XmlMapElementDto);
     var mappedWikiTags = new Dictionary<string, string>();
 
     var wiki = new MediaResourceWikiTag(Logger, _configuration);
@@ -105,7 +106,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     {
       var id = Convert.ToUInt32(wiki.GetWikiArgument1());
 
-      var newId = mapElementDto.GetIdTranslation(GetFileName(), id);
+      var newId = dto.GetIdTranslation(GetFileName(), id);
 
       var newWikiTag = wiki.PreviewNewArgument1(newId.ToString());
       var tmpWikiTag = wiki.GetWiki().Replace(wiki.GetWikiType(), "temp");
@@ -128,8 +129,8 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
   {
     var rc = true;
 
-    // remap all MR with new id's in node text
-    var questionDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapQuestionDto);
+    // remap all QU with new id's in node text
+    var dto = GetImporter().GetDto(Importer.DtoTypes.XmlMapQuestionDto);
     var mappedWikiTags = new Dictionary<string, string>();
 
     var wiki = new QuestionWikiTag(Logger, _configuration);
@@ -137,7 +138,40 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     {
       var id = Convert.ToUInt32(wiki.GetWikiArgument1());
 
-      var newId = questionDto.GetIdTranslation(GetFileName(), id);
+      var newId = dto.GetIdTranslation(GetFileName(), id);
+
+      var newWikiTag = wiki.PreviewNewArgument1(newId.ToString());
+      var tmpWikiTag = wiki.GetWiki().Replace(wiki.GetWikiType(), "temp");
+
+      item.Text = item.Text.Replace(wiki.GetWiki(), tmpWikiTag);
+
+      mappedWikiTags.Add(tmpWikiTag, newWikiTag);
+    }
+
+    foreach (var key in mappedWikiTags.Keys)
+    {
+      Logger.LogInformation($"Remapping '{key}' -> '{mappedWikiTags[key]}'");
+      item.Text = item.Text.Replace(key, mappedWikiTags[key]);
+    }
+
+    return rc;
+  }
+
+    public bool ReplaceConstWikiTags(MapNodes item)
+  {
+    var rc = true;
+
+    // remap all QU with new id's in node text
+    var dto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto);
+    var mappedWikiTags = new Dictionary<string, string>();
+
+    var wiki = new ConstantWikiTag(Logger, _configuration);
+    while (wiki.HaveWikiTag(item.Text))
+    {
+      
+      var id = Convert.ToUInt32(wiki.GetWikiArgument1());
+
+      var newId = dto.GetIdTranslation(GetFileName(), id);
 
       var newWikiTag = wiki.PreviewNewArgument1(newId.ToString());
       var tmpWikiTag = wiki.GetWiki().Replace(wiki.GetWikiType(), "temp");
@@ -182,6 +216,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     RemapQuWikiTags(item);
     ReplaceVpdWikiTags(item);
     ReplaceAvWikiTags(item);
+    ReplaceConstWikiTags(item);
 
     item.Info = $"\nImported from map_node.xml. id = {oldId}";
 

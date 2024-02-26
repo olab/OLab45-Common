@@ -1,7 +1,9 @@
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
 using OLab.Import.OLab3.Model;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OLab.Import.OLab3.Dtos;
 
@@ -46,8 +48,8 @@ public class XmlMapDto : XmlImportDto<XmlMap>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
   public override bool SaveToDatabase(
-    string importFolderName, 
-    int recordIndex, 
+    string importFolderName,
+    int recordIndex,
     IEnumerable<dynamic> elements)
   {
     var item = _mapper.ElementsToPhys(elements);

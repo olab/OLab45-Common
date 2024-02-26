@@ -21,12 +21,17 @@ public class XmlManifestDto : XmlImportDto<XmlManifest>
       "manifest.xml")
   { }
 
+  public override string GetLoggerString(IEnumerable<dynamic> elements)
+  {
+    return $"";
+  }
+
   /// <summary>
   /// Loads the specific import file into a model object
   /// </summary>
   /// <param name="importDirectory">Directory where import file exists</param>
   /// <returns></returns>
-  public override async Task<bool> LoadAsync(string extractPath)
+  public override async Task<bool> LoadAsync(string extractPath, bool displayProgressMessage = true)
   {
     var result = await base.LoadAsync(extractPath);
 

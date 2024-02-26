@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using static OLab.Import.OLab3.Importer;
 
 namespace OLab.Import.OLab3.Dtos;
@@ -24,14 +25,19 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
       "media_elements.xml")
   { }
 
+  public override string GetLoggerString(IEnumerable<dynamic> elements)
+  {
+    return $"";
+  }
+
   /// <summary>
   /// Loads the specific import file into a model object
   /// </summary>
   /// <param name="importDirectory">Directory where import file exists</param>
   /// <returns></returns>
-  public override async Task<bool> LoadAsync(string extractPath)
+  public override async Task<bool> LoadAsync(string extractPath, bool displayProgressMessage = true)
   {
-    var result = await base.LoadAsync(extractPath);
+    var result = await base.LoadAsync(extractPath, false);
     var record = 0;
 
     if (result)
@@ -48,6 +54,7 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
             dynamic file = element.Value;
             file = Conversions.Base64Decode(element, true);
             GetModel().MediaElementsFiles.Add(file);
+            Logger.LogInformation($"  loaded '{file}'");
           }
           catch (Exception ex)
           {
@@ -112,8 +119,8 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
   public override bool SaveToDatabase(
-    string importFolderName, 
-    int recordIndex, 
+    string importFolderName,
+    int recordIndex,
     IEnumerable<dynamic> elements)
   {
     var rc = true;
@@ -121,11 +128,11 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
     try
     {
       var sourceDirectory = GetFileModule().GetImportMediaFilesDirectory(importFolderName);
-      
+
       var mapDto = GetImporter().GetDto(DtoTypes.XmlMapDto) as XmlMapDto;
       var map = mapDto.GetModel().Data.FirstOrDefault();
 
-      var targetDirectory = 
+      var targetDirectory =
         GetFileModule().GetPublicFileDirectory("Maps", map.Id);
 
       foreach (var element in elements)
@@ -135,8 +142,8 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
           dynamic fileName = Conversions.Base64Decode(element, true);
 
           GetFileModule().MoveFileAsync(
-            fileName, 
-            sourceDirectory, 
+            fileName,
+            sourceDirectory,
             targetDirectory).Wait();
 
           Logger.LogInformation($"Copied {GetFileName()} '{fileName}' -> '{targetDirectory}'");

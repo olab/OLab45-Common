@@ -114,11 +114,11 @@ public class Importer : IImporter
     dto = new XmlMapNodeSectionNodeDto(Logger, this);
     _dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlMetadataDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    //dto = new XmlMetadataDto(Logger, this);
+    //_dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlManifestDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    //dto = new XmlManifestDto(Logger, this);
+    //_dtos.Add(dto.DtoType, dto);
   }
 
   public async Task<uint> Import(
@@ -126,7 +126,7 @@ public class Importer : IImporter
     string archiveFileName,
     CancellationToken token = default)
   {
-    await ProcessImportFileAsync(archiveFileStream, archiveFileName, token);
+    await LoadImportFromArchiveFile(archiveFileStream, archiveFileName, token);
     var mapId = WriteImportToDatabase(archiveFileName);
     return mapId;
   }
@@ -137,7 +137,7 @@ public class Importer : IImporter
   /// <param name="archiveFileStream">Stream to write file to</param>
   /// <param name="archiveFileName">Import archive ZIP file name</param>
   /// <returns>true</returns>
-  public async Task ProcessImportFileAsync(
+  public async Task LoadImportFromArchiveFile(
     Stream archiveFileStream,
     string archiveFileName,
     CancellationToken token = default)

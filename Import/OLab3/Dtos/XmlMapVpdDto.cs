@@ -30,7 +30,7 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
   /// </summary>
   /// <param name="importDirectory">Directory where import file exists</param>
   /// <returns></returns>
-  public override async Task<bool> LoadAsync(string importFileDirectory)
+  public override async Task<bool> LoadAsync(string importFileDirectory, bool displayProgressMessage = true)
   {
     var rc = true;
 

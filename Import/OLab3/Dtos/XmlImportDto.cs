@@ -47,9 +47,9 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// <param name="importer">Importer object</param>
   /// <param name="fileName">File name to import</param>
   public XmlImportDto(
-    IOLabLogger logger, 
-    Importer importer, 
-    DtoTypes dtoType, 
+    IOLabLogger logger,
+    Importer importer,
+    DtoTypes dtoType,
     string fileName) : base(logger, dtoType)
   {
     _importer = importer;
@@ -57,6 +57,11 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
 
     _tagProvider = GetImporter().GetWikiProvider();
     Context = GetImporter().GetDbContext();
+  }
+
+  public virtual string GetLoggerString(IEnumerable<dynamic> elements)
+  {
+    return $"id: {Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value)}";
   }
 
   /// <summary>
@@ -113,7 +118,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// </summary>
   /// <param name="importFilesFolder">Folder name of extracted import files</param>
   /// <returns>Success/Failure</returns>
-  public override async Task<bool> LoadAsync(string importFileDirectory)
+  public override async Task<bool> LoadAsync(string importFileDirectory, bool displayProgressMessage = true)
   {
     var rc = true;
 
@@ -127,9 +132,9 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
       {
         using var moduleFileStream = new MemoryStream();
         await GetFileModule().ReadFileAsync(
-          moduleFileStream, 
-          importFileDirectory, 
-          GetFileName(), 
+          moduleFileStream,
+          importFileDirectory,
+          GetFileName(),
           new System.Threading.CancellationToken());
         _phys = DynamicXml.Load(moduleFileStream);
       }
@@ -152,6 +157,8 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
             ++record;
             var elements = (IEnumerable<dynamic>)innerElements.Elements();
             xmlImportElementSets.Add(elements);
+            if ( displayProgressMessage )
+              Logger.LogInformation($"  loaded {GetLoggerString(elements)}");
           }
           catch (Exception ex)
           {
