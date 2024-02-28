@@ -1,7 +1,9 @@
 using AutoMapper;
+using Humanizer;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
+using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -36,6 +38,9 @@ public class CountersFull : OLabMapper<SystemCounters, CountersFullDto>
       phys.Value = new List<byte>().ToArray();
     if (phys.StartValue == null)
       phys.StartValue = new List<byte>().ToArray();
+
+    source.Description = Conversions.Base64Decode(phys.Description, false);
+
     return source;
   }
 
