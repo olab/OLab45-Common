@@ -40,7 +40,7 @@ public class XmlMapVpdElementDto : XmlImportDto<XmlMapVpdElements>
   /// <param name="dtos">All import dtos (for lookups into related objects)</param>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
-  public override bool Save(
+  public override bool SaveToDatabase(
     string importFolderName, 
     int recordIndex, 
     IEnumerable<dynamic> elements)

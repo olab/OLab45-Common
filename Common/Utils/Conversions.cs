@@ -1,5 +1,6 @@
 using Microsoft.CSharp.RuntimeBinder;
 using System;
+using System.Buffers.Text;
 using System.Text;
 
 namespace OLab.Api.Utils;
@@ -59,12 +60,25 @@ public static class Conversions
   /// <summary>
   /// Decode Base64 string
   /// </summary>
-  /// <param name="data">PHP-compatible base64 source string</param>
+  /// <param name="source">PHP-compatible base64 source string</param>
   /// <returns>Decoded string</returns>
-  public static string Base64Decode(string data)
+  public static string Base64Decode(string source, bool isBase64Encoded = true )
   {
-    var binary = Convert.FromBase64String(data);
-    return Encoding.Default.GetString(binary);
+    var data = source;
+
+    try
+    {
+      if (isBase64Encoded && !string.IsNullOrEmpty(source))
+      {
+        var base64Bytes = Convert.FromBase64String(source);
+        data = Encoding.Default.GetString(base64Bytes);
+      }
+    }
+    catch (Exception)
+    {
+    }
+
+    return data;
   }
 
   /// <summary>

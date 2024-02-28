@@ -3,8 +3,10 @@ using NuGet.Packaging;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
+using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -57,6 +59,7 @@ public class QuestionsFullMapper : OLabMapper<SystemQuestions, QuestionsFullDto>
     // calculated properties
     dto.Wiki = phys.GetWikiTag();
     dto.Value = null;
+    dto.Settings = Conversions.Base64Decode(phys.Settings);
 
     var builder = new QuestionResponses(Logger, GetWikiProvider(), dto);
     dto.Responses.AddRange(builder.PhysicalToDto(phys.SystemQuestionResponses.ToList()));

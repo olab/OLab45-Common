@@ -55,6 +55,8 @@ public class CounterMapper : OLabMapper<SystemCounters, CountersDto>
     if (phys.Value != null)
       dto.Value = Encoding.ASCII.GetString(phys.Value);
     dto.Value ??= "";
+    dto.Description = Conversions.Base64Decode(phys.Description);
+
     return dto;
   }
 

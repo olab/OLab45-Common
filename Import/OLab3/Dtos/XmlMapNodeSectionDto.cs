@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 
 namespace OLab.Import.OLab3.Dtos;
 
-public class XmlMapNodeSectionNodeDto : XmlImportDto<XmlMapNodeSectionNode>
+public class XmlMapNodeSectionDto : XmlImportDto<XmlMapNodeSection>
 {
-  public XmlMapNodeSectionNodeDto(
+  public XmlMapNodeSectionDto(
     IOLabLogger logger,
     Importer importer) : base(
       logger,
       importer,
-      Importer.DtoTypes.XmlMapNodeSectionNodeDto,
-      "map_node_section_node.xml")
+      Importer.DtoTypes.XmlMapNodeSectionDto,
+      "map_node_section.xml")
   {
 
   }

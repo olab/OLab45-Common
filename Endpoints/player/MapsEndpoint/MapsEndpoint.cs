@@ -10,10 +10,12 @@ using OLab.Api.Model;
 using OLab.Api.Model.ReaderWriter;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
+using OLab.Data;
 using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints.Player;
@@ -130,6 +132,136 @@ public partial class MapsEndpoint : OLabEndpoint
     Logger.LogInformation(string.Format("have access to {0} maps", dtoList.Count));
 
     return new OLabAPIPagedResponse<MapsDto> { Data = dtoList, Remaining = remaining, Count = total };
+  }
+
+  /// <summary>
+  /// Retrieve map status
+  /// </summary>
+  /// <param name="id">Map Id</param>
+  /// <returns>MapStatusDto</returns>
+  public async Task<MapStatusDto> GetStatusAbbreviatedAsync(
+    IOLabAuthorization auth,
+    uint mapId,
+    CancellationToken token = default)
+  {
+    Logger.LogInformation($"  generating map {mapId} summary");
+
+    var map = await dbContext.Maps
+      .Include(map => map.MapNodes)
+      .Include(map => map.MapNodeLinks)
+      .AsNoTracking()
+      .FirstOrDefaultAsync(
+        x => x.Id == mapId,
+        token);
+
+    if (map == null)
+      throw new OLabObjectNotFoundException("Maps", mapId);
+
+    if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
+      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+
+    var mapDto = new MapsFullRelationsMapper(
+      Logger,
+      _wikiTagProvider as WikiTagProvider,
+      false
+    ).PhysicalToDto(map);
+
+    var dto = new MapStatusDto
+    {
+      Id = mapDto.Map.Id.Value,
+      Name = mapDto.Map.Name,
+      NodeCount = mapDto.MapNodes.Count,
+      NodeLinkCount = mapDto.MapNodeLinks.Count,
+    };
+
+    return dto;
+
+  }
+
+  /// <summary>
+  /// Retrieve map status
+  /// </summary>
+  /// <param name="id">Map Id</param>
+  /// <returns>MapStatusDto</returns>
+  public async Task<MapStatusDto> GetStatusAsync(
+    IOLabAuthorization auth,
+    uint mapId,
+    CancellationToken token = default)
+  {
+    Logger.LogInformation($"  generating map {mapId} summary");
+
+    var map = await dbContext.Maps
+      .Include(map => map.MapNodes)
+      .Include(map => map.MapNodeLinks)
+      .AsNoTracking()
+      .FirstOrDefaultAsync(
+        x => x.Id == mapId,
+        token);
+
+    if (map == null)
+      throw new OLabObjectNotFoundException("Maps", mapId);
+
+    if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
+      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+
+    var mapDto = new MapsFullRelationsMapper(
+      Logger,
+      _wikiTagProvider as WikiTagProvider,
+      false
+    ).PhysicalToDto(map);
+
+    var dto = new MapStatusDto
+    {
+      Id = mapDto.Map.Id.Value,
+      Name = mapDto.Map.Name,
+      NodeCount = mapDto.MapNodes.Count,
+      NodeLinkCount = mapDto.MapNodeLinks.Count,
+    };
+
+    dto.Server = await GetObjectTallyAsync(Utils.Constants.ScopeLevelServer, 1);
+    dto.Map = await GetObjectTallyAsync(Utils.Constants.ScopeLevelMap, mapId);
+
+    var nodesCount = new ScopeObjectCount();
+    // loop thru the nodes and get node-level scoped objects
+    foreach (var nodeDto in mapDto.MapNodes)
+      await GetObjectTallyAsync(Utils.Constants.ScopeLevelNode, nodeDto.Id.Value, nodesCount);
+
+    dto.Node = nodesCount;
+
+    dto.UpdateTotal();
+
+    return dto;
+
+  }
+
+  private async Task<ScopeObjectCount> GetObjectTallyAsync(
+    string scopeLevel, 
+    uint id, 
+    ScopeObjectCount dto = null)
+  {
+    if ( dto == null )
+      dto = new ScopeObjectCount();
+
+    var scopedObjectsPhys = new ScopedObjects(
+      Logger,
+      dbContext);
+
+    // apply scoped objects to the map dto
+    await scopedObjectsPhys.AddScopeFromDatabaseAsync(scopeLevel, id);
+
+    dto.Constants += scopedObjectsPhys.ConstantsPhys.Count;
+    dto.Files += scopedObjectsPhys.FilesPhys.Count;
+    dto.Questions += scopedObjectsPhys.QuestionsPhys.Count;
+    dto.Counters += scopedObjectsPhys.CountersPhys.Count;
+    dto.CounterActions += scopedObjectsPhys.CounterActionsPhys.Count;
+
+    var questionCount = 0;
+    foreach (var questionPhys in scopedObjectsPhys.QuestionsPhys)
+      questionCount += questionPhys.SystemQuestionResponses.Count;
+
+    dto.QuestionRepsonses += questionCount;
+
+    return dto;
   }
 
   /// <summary>

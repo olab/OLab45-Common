@@ -108,15 +108,17 @@ public class Importer : IImporter
     dto = new XmlMapCounterRuleDto(Logger, this);
     _dtos.Add(dto.DtoType, dto);
 
-    // dto = new XmlMapNodeSectionDto(Logger, this);
-    // _dtos.Add(dto.DtoType, dto);
-
-    dto = new XmlMetadataDto(Logger, this);
+    dto = new XmlMapNodeSectionDto(Logger, this);
     _dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlManifestDto(Logger, this);
+    dto = new XmlMapNodeSectionNodeDto(Logger, this);
     _dtos.Add(dto.DtoType, dto);
 
+    //dto = new XmlMetadataDto(Logger, this);
+    //_dtos.Add(dto.DtoType, dto);
+
+    //dto = new XmlManifestDto(Logger, this);
+    //_dtos.Add(dto.DtoType, dto);
   }
 
   public async Task<uint> Import(
@@ -124,19 +126,19 @@ public class Importer : IImporter
     string archiveFileName,
     CancellationToken token = default)
   {
-    await ProcessImportFileAsync(archiveFileStream, archiveFileName, token);
+    await LoadImportFromArchiveFile(archiveFileStream, archiveFileName, token);
     var mapId = WriteImportToDatabase(archiveFileName);
     return mapId;
   }
 
   /// <summary>
-  /// Loads import xml files into memory
+  /// Loads import files into memory
   /// </summary>
-  /// <param name="stream">Stream to write file to</param>
-  /// <param name="archiveFileName">ExportAsync ZIP file name</param>
+  /// <param name="archiveFileStream">Stream to write file to</param>
+  /// <param name="archiveFileName">Import archive ZIP file name</param>
   /// <returns>true</returns>
-  public async Task ProcessImportFileAsync(
-    Stream stream,
+  public async Task LoadImportFromArchiveFile(
+    Stream archiveFileStream,
     string archiveFileName,
     CancellationToken token = default)
   {
@@ -144,30 +146,34 @@ public class Importer : IImporter
     {
       Logger.LogInformation($"Module archive file: {FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, archiveFileName)}");
 
-      var archiveDirectory = FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot);
+      var importRootDirectory = FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot);
 
+      // write the archive file to storage
       var archiveFilePath = await FileStorageModule.WriteFileAsync(
-        stream,
-        archiveDirectory,
+        archiveFileStream,
+        importRootDirectory,
         archiveFileName,
         token);
 
+      // build extract direct based on archive file name without extension
       var extractDirectory = 
         FileStorageModule.BuildPath(
           OLabFileStorageModule.ImportRoot, 
           Path.GetFileNameWithoutExtension(archiveFileName));
       Logger.LogInformation($"Folder extract directory: {extractDirectory}");
 
+      // extract archive file to extract directory
       await FileStorageModule.ExtractFileToStorageAsync(
         OLabFileStorageModule.ImportRoot,
         archiveFileName,
         extractDirectory,
         token);
 
+      // load all the import files in extract directory
       foreach (var dto in _dtos.Values)
         await dto.LoadAsync(extractDirectory);
 
-      // delete source import file
+      // delete source archive file
       await GetFileStorageModule().DeleteFileAsync(
         OLabFileStorageModule.ImportRoot,
         archiveFileName);
@@ -181,23 +187,26 @@ public class Importer : IImporter
   }
 
   /// <summary>
-  /// WRite import dtos to database
+  /// WRite import data in memory to database
   /// </summary>
+  /// <param name="archiveFileName">Import archive ZIP file name</param>
   /// <returns>true</returns>
   public uint WriteImportToDatabase(string archiveFileName)
   {
     uint mapId = 0;
 
+    // if anything bad happens, rollback the entire import
     using (var transaction = _dbContext.Database.BeginTransaction())
     {
       try
       {
-
+        // save all import data sets to database
         foreach (var dto in _dtos.Values)
-          dto.Save(Path.GetFileNameWithoutExtension(archiveFileName));
+          dto.SaveToDatabase(Path.GetFileNameWithoutExtension(archiveFileName));
 
         transaction.Commit();
 
+        // get the new id of thie imported map
         var xmlMapDto = _dtos[DtoTypes.XmlMapDto] as XmlMapDto;
         var xmlMap = (XmlMap)xmlMapDto.GetDbPhys();
         Logger.LogInformation($"Loaded map '{xmlMap.Data[0].Name}'. id = {xmlMap.Data[0].Id}");

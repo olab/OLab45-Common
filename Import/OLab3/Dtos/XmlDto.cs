@@ -8,9 +8,9 @@ namespace OLab.Import.OLab3.Dtos;
 public abstract class XmlDto
 {
   protected readonly IOLabLogger Logger;
-  public abstract Task<bool> LoadAsync(string extractPath);
+  public abstract Task<bool> LoadAsync(string extractPath, bool displayProgressMessage = true);
   public abstract bool PostProcess(IDictionary<DtoTypes, XmlDto> dtos);
-  public abstract bool Save(string importFolderName);
+  public abstract bool SaveToDatabase(string importFolderName);
   public abstract object GetDbPhys();
 
   public DtoTypes DtoType { get; private set; }

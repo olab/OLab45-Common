@@ -47,9 +47,9 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// <param name="importer">Importer object</param>
   /// <param name="fileName">File name to import</param>
   public XmlImportDto(
-    IOLabLogger logger, 
-    Importer importer, 
-    DtoTypes dtoType, 
+    IOLabLogger logger,
+    Importer importer,
+    DtoTypes dtoType,
     string fileName) : base(logger, dtoType)
   {
     _importer = importer;
@@ -57,6 +57,11 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
 
     _tagProvider = GetImporter().GetWikiProvider();
     Context = GetImporter().GetDbContext();
+  }
+
+  public virtual string GetLoggerString(IEnumerable<dynamic> elements)
+  {
+    return $"id: {Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value)}";
   }
 
   /// <summary>
@@ -113,7 +118,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// </summary>
   /// <param name="importFilesFolder">Folder name of extracted import files</param>
   /// <returns>Success/Failure</returns>
-  public override async Task<bool> LoadAsync(string importFileDirectory)
+  public override async Task<bool> LoadAsync(string importFileDirectory, bool displayProgressMessage = true)
   {
     var rc = true;
 
@@ -127,9 +132,9 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
       {
         using var moduleFileStream = new MemoryStream();
         await GetFileModule().ReadFileAsync(
-          moduleFileStream, 
-          importFileDirectory, 
-          GetFileName(), 
+          moduleFileStream,
+          importFileDirectory,
+          GetFileName(),
           new System.Threading.CancellationToken());
         _phys = DynamicXml.Load(moduleFileStream);
       }
@@ -141,23 +146,28 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
 
       dynamic outerElements = GetElements(GetXmlPhys());
 
-      var record = 0;
-
-      foreach (var innerElements in outerElements)
+      if (outerElements != null)
       {
-        try
-        {
-          ++record;
-          var elements = (IEnumerable<dynamic>)innerElements.Elements();
-          xmlImportElementSets.Add(elements);
-        }
-        catch (Exception ex)
-        {
-          Logger.LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
-        }
-      }
+        var record = 0;
 
-      Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+        foreach (var innerElements in outerElements)
+        {
+          try
+          {
+            ++record;
+            var elements = (IEnumerable<dynamic>)innerElements.Elements();
+            xmlImportElementSets.Add(elements);
+            if ( displayProgressMessage )
+              Logger.LogInformation($"  loaded {GetLoggerString(elements)}");
+          }
+          catch (Exception ex)
+          {
+            Logger.LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
+          }
+        }
+
+        Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+      }
 
       // delete data file
       await GetFileModule().DeleteFileAsync(importFileDirectory, GetFileName());
@@ -178,7 +188,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// </summary>
   /// <param name="dtos">All import dtos</param>
   /// <returns>Success/Failure</returns>
-  public override bool Save(string importFolderName)
+  public override bool SaveToDatabase(string importFolderName)
   {
     Logger.LogInformation($"Saving {xmlImportElementSets.Count()} {GetFileName()} objects");
 
@@ -187,7 +197,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
     {
       try
       {
-        Save(importFolderName, recordIndex, elements);
+        SaveToDatabase(importFolderName, recordIndex, elements);
       }
       catch (Exception ex)
       {
@@ -202,27 +212,9 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
 
   // implemented here so non-applicable derived classes
   // do not need to re-implement it
-  public virtual bool Save(string importFolderName, int recordIndex, IEnumerable<dynamic> elements)
+  public virtual bool SaveToDatabase(string importFolderName, int recordIndex, IEnumerable<dynamic> elements)
   {
     return true;
-  }
-
-  /// <summary>
-  /// Calculate target directory for scoped type and id
-  /// </summary>
-  /// <param name="parentType">Scoped object type (e.g. 'Maps')</param>
-  /// <param name="parentId">Scoped object id</param>
-  /// <param name="path">Optional file name</param>
-  /// <returns>Public directory for scope</returns>
-  public string GetPublicFileDirectory(string parentType, uint parentId, string path = "")
-  {
-    var targetDirectory = $"{GetImporter().GetFileStorageModule().GetFolderSeparator()}{parentType}";
-    targetDirectory = $"{targetDirectory}{GetImporter().GetFileStorageModule().GetFolderSeparator()}{parentId}";
-
-    if (!string.IsNullOrEmpty(path))
-      targetDirectory = $"{targetDirectory}{GetImporter().GetFileStorageModule().GetFolderSeparator()}{path}";
-
-    return targetDirectory;
   }
 
   public static IList<string> GetWikiTags(string source)

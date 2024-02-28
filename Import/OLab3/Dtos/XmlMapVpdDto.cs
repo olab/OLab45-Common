@@ -30,7 +30,7 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
   /// </summary>
   /// <param name="importDirectory">Directory where import file exists</param>
   /// <returns></returns>
-  public override async Task<bool> LoadAsync(string importFileDirectory)
+  public override async Task<bool> LoadAsync(string importFileDirectory, bool displayProgressMessage = true)
   {
     var rc = true;
 
@@ -81,6 +81,8 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
 
       Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
 
+      // delete data file
+      await GetFileModule().DeleteFileAsync(importFileDirectory, GetFileName());
     }
     catch (Exception ex)
     {
@@ -107,7 +109,7 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
   /// <param name="dtos">All import dtos (for lookups into related objects)</param>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
-  public override bool Save(
+  public override bool SaveToDatabase(
     string importFolderName, 
     int recordIndex, 
     IEnumerable<dynamic> elements)

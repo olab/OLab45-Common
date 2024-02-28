@@ -8,11 +8,10 @@ using System.IO;
 
 namespace OLab.Import.OLab3.Dtos;
 
-
 public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
 {
   private readonly AvatarsMapper _avMapper;
-  private readonly Api.ObjectMapper.Files _fileMapper;
+  private readonly Files _fileMapper;
 
   public XmlMapAvatarDto(
     IOLabLogger logger,
@@ -58,7 +57,7 @@ public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
   /// </summary>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
-  public override bool Save(
+  public override bool SaveToDatabase(
     string importFolderName, 
     int recordIndex, 
     IEnumerable<dynamic> elements)
@@ -82,7 +81,9 @@ public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
     fileItem.ImageableType = "Maps";
     fileItem.Path = avItem.Image;
 
-    var publicFile = GetPublicFileDirectory(fileItem.ImageableType, fileItem.ImageableId, fileItem.Path);
+    var publicFile = 
+      GetFileModule().GetPublicFileDirectory(fileItem.ImageableType, fileItem.ImageableId, fileItem.Path);
+
     if (!File.Exists(publicFile))
       Logger.LogWarning(GetFileName(), 0, $"media file '{publicFile}' does not exist in public directory");
 
