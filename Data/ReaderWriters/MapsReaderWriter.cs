@@ -25,6 +25,60 @@ public partial class MapsReaderWriter
     _logger = logger;
   }
 
+  public async Task<Maps> DeleteAsync(uint id)
+  {
+    _context.Database.BeginTransaction();
+
+    try
+    {
+      var physMap = await _context
+        .Maps
+        .Include("MapNodes")
+        .FirstOrDefaultAsync(x => x.Id == id);
+
+      if (physMap.Id == 0)
+        return null;
+
+      _context.Maps.Remove(physMap);
+
+      // get all the related nodeIds so we can build requests
+      // to delete all map nad node scoped objects in one shot
+      var nodeIds = physMap.MapNodes.Select(x => x.Id).ToList();
+
+      var constants = _context.SystemConstants.Where(x => (
+        (x.ImageableId == id && x.ImageableType == Constants.ScopeLevelMap) ||
+        (nodeIds.Contains(x.ImageableId) && x.ImageableType == Constants.ScopeLevelNode))).ToList();
+      _context.SystemConstants.RemoveRange(constants);
+
+      var questions = _context.SystemQuestions.Where(x => (
+        (x.ImageableId == id && x.ImageableType == Constants.ScopeLevelMap) ||
+        (nodeIds.Contains(x.ImageableId) && x.ImageableType == Constants.ScopeLevelNode))).ToList();
+      _context.SystemQuestions.RemoveRange(questions);
+
+      var files = _context.SystemFiles.Where(x => (
+        (x.ImageableId == id && x.ImageableType == Constants.ScopeLevelMap) ||
+        (nodeIds.Contains(x.ImageableId) && x.ImageableType == Constants.ScopeLevelNode))).ToList();
+      _context.SystemFiles.RemoveRange(files);
+
+      var counters = _context.SystemCounters.Where(x => (
+        (x.ImageableId == id && x.ImageableType == Constants.ScopeLevelMap) ||
+        (nodeIds.Contains(x.ImageableId) && x.ImageableType == Constants.ScopeLevelNode))).ToList();
+      _context.SystemCounters.RemoveRange(counters);
+
+      _context.SaveChanges();
+
+      _context.Database.CommitTransaction();
+
+      return physMap;
+    }
+    catch (Exception)
+    {
+      _context.Database.RollbackTransaction();
+    }
+
+    return null;
+  }
+
   public async Task<Maps> GetSingleAsync(uint id)
   {
     var phys = await _context.Maps.FirstOrDefaultAsync(x => x.Id == id);

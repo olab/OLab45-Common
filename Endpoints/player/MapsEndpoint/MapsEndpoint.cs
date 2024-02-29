@@ -438,29 +438,6 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <summary>
   /// 
   /// </summary>
-  /// <param name="id"></param>
-  /// <returns></returns>
-  public async Task DeleteAsync(
-    IOLabAuthorization auth,
-    uint id)
-  {
-    Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.DeleteAsync");
-
-    // test if user has access to map.
-    if (!auth.HasAccess("D", Utils.Constants.ScopeLevelMap, id))
-      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, id);
-
-    var map = GetSimple(dbContext, id);
-    if (map == null)
-      throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
-
-    dbContext.Maps.Remove(map);
-    await dbContext.SaveChangesAsync();
-  }
-
-  /// <summary>
-  /// 
-  /// </summary>
   /// <param name="mapId"></param>
   /// <returns></returns>
   public async Task<IList<MapNodeLinksFullDto>> GetLinksAsync(
@@ -535,6 +512,19 @@ public partial class MapsEndpoint : OLabEndpoint
     }
 
     return sessions;
+  }
+
+  public async Task DeleteMapAsync( IOLabAuthorization auth, uint mapId )
+  {
+    Logger.LogInformation($"DeleteMapAsync(uint mapId={mapId})");
+
+    // test if user has access to map.
+    if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
+      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+
+    var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).DeleteAsync(mapId)
+      ?? throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
+
   }
 
   [HttpOptions]
