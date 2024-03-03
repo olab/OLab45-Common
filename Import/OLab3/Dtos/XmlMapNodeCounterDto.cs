@@ -49,7 +49,7 @@ public class XmlMapNodeCounterDto : XmlImportDto<XmlMapNodeCounters>
     // test for empty value/expression.  if so, igmore this save
     if (string.IsNullOrEmpty(item.Expression))
     {
-      Logger.LogInformation($"Empty {GetFileName()} id = {oldId} value.  Skipping");
+      Logger.LogInformation($"  empty {GetFileName()} id = {oldId} value.  Skipping");
       return true;
     }
 

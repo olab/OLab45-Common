@@ -42,9 +42,9 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
       {
         using var moduleFileStream = new MemoryStream();
         await GetFileModule().ReadFileAsync(
-          moduleFileStream, 
-          importFileDirectory, 
-          GetFileName(), 
+          moduleFileStream,
+          importFileDirectory,
+          GetFileName(),
           new System.Threading.CancellationToken());
         _phys = DynamicXml.Load(moduleFileStream);
       }
@@ -68,6 +68,8 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
             MapId = item.MapId,
             VpdTypeId = item.VpdTypeId
           };
+
+          Logger.LogInformation($"  loaded '{phys.Id}'");
 
           GetModel().Data.Add(phys);
           record++;
@@ -110,8 +112,8 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
   public override bool SaveToDatabase(
-    string importFolderName, 
-    int recordIndex, 
+    string importFolderName,
+    int recordIndex,
     IEnumerable<dynamic> elements)
   {
     var item = _mapper.ElementsToPhys(elements);

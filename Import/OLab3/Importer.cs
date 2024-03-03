@@ -105,8 +105,8 @@ public class Importer : IImporter
     dto = new XmlMapNodeLinkDto(Logger, this);
     _dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlMapCounterRuleDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    //dto = new XmlMapCounterRuleDto(Logger, this);
+    //_dtos.Add(dto.DtoType, dto);
 
     dto = new XmlMapNodeSectionDto(Logger, this);
     _dtos.Add(dto.DtoType, dto);

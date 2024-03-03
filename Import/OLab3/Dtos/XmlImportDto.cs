@@ -69,17 +69,17 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// </summary>
   /// <param name="originalId">Import system Id</param>
   /// <param name="newId">Database id</param>
-  protected override bool CreateIdTranslation(uint originalId, uint? newId = null)
+  protected override bool CreateIdTranslation(uint originalId, uint? newId)
   {
     if (_idTranslation.ContainsKey(originalId))
     {
-      Logger.LogInformation($"  replaced {_fileName} translation {originalId} -> {newId.Value}");
+      Logger.LogInformation($"  replaced {_fileName} translation id {originalId} -> {newId.Value}");
       _idTranslation[originalId] = newId;
       return false;
     }
 
     _idTranslation.Add(originalId, newId);
-    Logger.LogInformation($"  added {_fileName} translation {originalId} -> {newId.Value}");
+    Logger.LogInformation($"  added {_fileName} translation id {originalId} -> {newId.Value}");
 
     return true;
   }

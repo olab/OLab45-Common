@@ -9,8 +9,8 @@ namespace OLab.Api.Common;
 public abstract class WikiTagModule : IWikiTagModule
 {
   protected List<string> wikiTagPatterns = new();
-  private string _wikiType;
-  private string _wiki;
+  protected string _wikiType;
+  protected string _wiki;
   private readonly string _htmlElementName;
   protected readonly IOLabConfiguration _configuration;
 
@@ -34,10 +34,17 @@ public abstract class WikiTagModule : IWikiTagModule
   }
 
   public string GetWikiType() { return _wikiType; }
-  public void SetWikiType(string wikiTag) { _wikiType = wikiTag; }
+  public virtual void SetWikiType(string wikiTag) { _wikiType = wikiTag; }
   public string GetHtmlElementName() { return _htmlElementName; }
   public abstract string Translate(string source);
   protected abstract string BuildWikiTagHTMLElement();
+
+  public string GetUnquotedWiki()
+  {
+    var wiki = GetWiki().Replace("[[", "[");
+    wiki = wiki.Replace("]]", "]");
+    return wiki;
+  }
 
   public string GetWiki() { return _wiki; }
   public string BuildWiki(uint id, string name = "")

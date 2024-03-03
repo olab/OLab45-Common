@@ -23,6 +23,26 @@ public abstract class WikiTag1Argument : WikiTagModule
     wikiTagNamePatterns.Add("[0-9]*");
   }
 
+  public string Set(string wikiType, string wikiId)
+  {
+    SetWikiType(wikiType);
+    SetWikiId(wikiId);
+    return _wiki;
+  }
+
+  public string GetWikiId() { return wikiTagIdPart; }
+  public void SetWikiId(string wikiTag)
+  {
+    wikiTagIdPart = wikiTag;
+    _wiki = $"[[{GetWikiType()}:{GetWikiId()}]]";
+  }
+
+  public override void SetWikiType(string wikiTag)
+  {
+    _wikiType = wikiTag;
+    _wiki = $"[[{GetWikiType()}:{GetWikiId()}]]";
+  }
+
   public string GetWikiArgument1()
   {
     var source = GetWiki()[(GetWiki().IndexOf(':') + 1)..].Replace("]]", "");

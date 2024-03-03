@@ -40,7 +40,7 @@ public class CounterActionsMapper : OLabMapper<SystemCounterActions, CounterActi
     var phys = GetPhys(source);
 
     phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
-    phys.OperationType = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "function"));
+    phys.OperationType = elements.FirstOrDefault(x => x.Name == "function").Value;
 
     phys.ImageableId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "node_id").Value);
     phys.ImageableType = Utils.Constants.ScopeLevelNode;

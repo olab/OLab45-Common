@@ -36,7 +36,7 @@ public partial class MapsReaderWriter
         .Include("MapNodes")
         .FirstOrDefaultAsync(x => x.Id == id);
 
-      if (physMap.Id == 0)
+      if ( ( physMap == null ) || (physMap.Id == 0) )
         return null;
 
       _context.Maps.Remove(physMap);
