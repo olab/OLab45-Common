@@ -60,6 +60,11 @@ public partial class MapsReaderWriter
         (nodeIds.Contains(x.ImageableId) && x.ImageableType == Constants.ScopeLevelNode))).ToList();
       _context.SystemFiles.RemoveRange(files);
 
+      var counterActions = _context.SystemCounterActions.Where(x => (
+        (x.ImageableId == id && x.ImageableType == Constants.ScopeLevelMap) ||
+        (nodeIds.Contains(x.ImageableId) && x.ImageableType == Constants.ScopeLevelNode))).ToList();
+      _context.SystemCounterActions.RemoveRange(counterActions);
+
       var counters = _context.SystemCounters.Where(x => (
         (x.ImageableId == id && x.ImageableType == Constants.ScopeLevelMap) ||
         (nodeIds.Contains(x.ImageableId) && x.ImageableType == Constants.ScopeLevelNode))).ToList();
