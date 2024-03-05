@@ -66,6 +66,14 @@ public partial class MapsEndpoint : OLabEndpoint
       ?? throw new OLabObjectNotFoundException(Constants.ScopeLevelMap, mapId);
 
     MapsNodesFullRelationsDto dto;
+
+    // if node id = 0, get the root node
+    if (nodeId == 0)
+    {
+      var nodePhys = await GetMapRootNode(mapId, 0);
+      nodeId = nodePhys.Id;
+    }
+
     // get node with no wikitag translation
     dto = await GetNodeAsync(map.Id, nodeId, false, false);
 
