@@ -1,4 +1,5 @@
-﻿using OLab.Api.Endpoints;
+﻿using OLab.Api.Data.Interface;
+using OLab.Api.Endpoints;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
@@ -46,11 +47,16 @@ public partial class Import3Endpoint : OLabEndpoint
   }
 
   public async Task<uint> ImportAsync(
+    IOLabAuthorization auth,
     Stream archvieFileStream,
     string archiveFileName,
     CancellationToken token)
   {
-    uint mapId = await _importer.Import(archvieFileStream, archiveFileName, token);
+    uint mapId = await _importer.Import(
+      auth, 
+      archvieFileStream, 
+      archiveFileName, 
+      token);
     return mapId;
   }
 

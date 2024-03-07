@@ -1,3 +1,4 @@
+using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
@@ -10,6 +11,7 @@ using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -38,6 +40,7 @@ public class Importer : IImporter
     XmlMapAvatarDto
   };
 
+  public IOLabAuthorization Authorization { get; set; }
   private readonly OLabDBContext _dbContext;
   public readonly AppSettings _appSettings;
   private readonly IOLabConfiguration _configuration;
@@ -122,12 +125,20 @@ public class Importer : IImporter
   }
 
   public async Task<uint> Import(
+    IOLabAuthorization auth,
     Stream archiveFileStream,
     string archiveFileName,
     CancellationToken token = default)
   {
-    await LoadImportFromArchiveFile(archiveFileStream, archiveFileName, token);
-    var mapId = WriteImportToDatabase(archiveFileName);
+    Authorization = auth;
+
+    await LoadImportFromArchiveFile(
+      archiveFileStream, 
+      archiveFileName, 
+      token);
+
+    var mapId = WriteImportToDatabase(
+      archiveFileName);
     return mapId;
   }
 
@@ -191,7 +202,8 @@ public class Importer : IImporter
   /// </summary>
   /// <param name="archiveFileName">Import archive ZIP file name</param>
   /// <returns>true</returns>
-  public uint WriteImportToDatabase(string archiveFileName)
+  public uint WriteImportToDatabase(
+    string archiveFileName)
   {
     uint mapId = 0;
 

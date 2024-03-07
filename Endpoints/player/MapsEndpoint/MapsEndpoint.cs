@@ -146,7 +146,7 @@ public partial class MapsEndpoint : OLabEndpoint
   {
     Logger.LogInformation($"  generating map {mapId} summary");
 
-    var map = await dbContext.Maps
+    var mapPhys = await dbContext.Maps
       .Include(map => map.MapNodes)
       .Include(map => map.MapNodeLinks)
       .AsNoTracking()
@@ -154,7 +154,7 @@ public partial class MapsEndpoint : OLabEndpoint
         x => x.Id == mapId,
         token);
 
-    if (map == null)
+    if (mapPhys == null)
       throw new OLabObjectNotFoundException("Maps", mapId);
 
     if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -164,7 +164,13 @@ public partial class MapsEndpoint : OLabEndpoint
       Logger,
       _wikiTagProvider as WikiTagProvider,
       false
-    ).PhysicalToDto(map);
+    ).PhysicalToDto(mapPhys);
+
+    var userPhys = dbContext.Users.FirstOrDefault(x => x.Id == mapPhys.AuthorId);
+    string author = string.Empty;
+
+    if (userPhys != null)
+      author = $"({userPhys.Id}): {userPhys.Nickname}";
 
     var dto = new MapStatusDto
     {
@@ -172,6 +178,8 @@ public partial class MapsEndpoint : OLabEndpoint
       Name = mapDto.Map.Name,
       NodeCount = mapDto.MapNodes.Count,
       NodeLinkCount = mapDto.MapNodeLinks.Count,
+      Author = author,
+      CreatedAt = mapPhys.CreatedAt.Value.ToUniversalTime()
     };
 
     return dto;

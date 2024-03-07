@@ -18,22 +18,6 @@ public partial class OLabDBContext : DbContext
   {
   }
 
-  protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-  {
-    if (!optionsBuilder.IsConfigured)
-    {
-      IConfigurationRoot configuration = new ConfigurationBuilder()
-         .SetBasePath(Directory.GetCurrentDirectory())
-         .AddJsonFile("local.settings.json")
-         .Build();
-
-      var connectionString = Environment.GetEnvironmentVariable("DefaultDatabase");
-      var serverVersion = ServerVersion.AutoDetect(connectionString);
-
-      optionsBuilder.UseMySql(connectionString, serverVersion);
-    }
-  }
-
   public virtual DbSet<AuthorRights> AuthorRights { get; set; }
   public virtual DbSet<Cron> Cron { get; set; }
   public virtual DbSet<Groups> Groups { get; set; }

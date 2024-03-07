@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using OLab.Api.Common;
+using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
@@ -8,6 +9,7 @@ using OLab.Data;
 using OLab.Import.Interface;
 using System;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,12 +31,14 @@ public partial class Importer : IImporter
   /// <param name="token"></param>
   /// <returns></returns>
   public async Task<uint> Import(
+    IOLabAuthorization auth, 
     Stream stream,
     string fileName,
     CancellationToken token = default)
   {
     try
     {
+      Authorization = auth;
 
       var transaction = _dbContext.Database.BeginTransaction();
 

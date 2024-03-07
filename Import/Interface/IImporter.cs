@@ -1,4 +1,5 @@
-﻿using OLab.Api.Dto;
+﻿using OLab.Api.Data.Interface;
+using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
@@ -14,7 +15,7 @@ public interface IImporter
   OLabDBContext GetDbContext();
   IOLabModuleProvider<IWikiTagModule> GetWikiProvider();
   IFileStorageModule GetFileStorageModule();
-  Task<uint> Import(Stream stream, string fileName, CancellationToken token = default);
+  Task<uint> Import(IOLabAuthorization auth, Stream stream, string fileName, CancellationToken token = default);
   Task ExportAsync(Stream stream, uint mapId, CancellationToken token = default);
   Task<MapsFullRelationsDto> ExportAsync(uint mapId, CancellationToken token = default);
 

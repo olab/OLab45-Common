@@ -1,3 +1,4 @@
+using OLab.Api.Data.Interface;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
@@ -11,6 +12,7 @@ public partial class Importer : IImporter
 {
   public const string MapFileName = "map.json";
 
+  public IOLabAuthorization Authorization { get; set; }
   private readonly OLabDBContext _dbContext;
   private readonly IOLabConfiguration _configuration;
   private readonly IOLabLogger Logger;

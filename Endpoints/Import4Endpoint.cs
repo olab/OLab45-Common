@@ -1,4 +1,5 @@
-﻿using OLab.Api.Dto;
+﻿using OLab.Api.Data.Interface;
+using OLab.Api.Dto;
 using OLab.Api.Endpoints;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
@@ -47,11 +48,13 @@ public partial class Import4Endpoint : OLabEndpoint
   }
 
   public async Task<uint> ImportAsync(
+    IOLabAuthorization auth,
     Stream archiveFileStream,
     string archiveFileName,
     CancellationToken token)
   {
     return await _importer.Import(
+      auth,
       archiveFileStream,
       archiveFileName,
       token);
