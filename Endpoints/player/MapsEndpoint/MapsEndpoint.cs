@@ -172,6 +172,10 @@ public partial class MapsEndpoint : OLabEndpoint
     if (userPhys != null)
       author = $"({userPhys.Id}): {userPhys.Nickname}";
 
+    string createdAt = string.Empty;
+    if (mapPhys.CreatedAt.HasValue)
+      createdAt = mapPhys.CreatedAt.Value.ToUniversalTime().ToString();
+
     var dto = new MapStatusDto
     {
       Id = mapDto.Map.Id.Value,
@@ -179,7 +183,7 @@ public partial class MapsEndpoint : OLabEndpoint
       NodeCount = mapDto.MapNodes.Count,
       NodeLinkCount = mapDto.MapNodeLinks.Count,
       Author = author,
-      CreatedAt = mapPhys.CreatedAt.Value.ToUniversalTime()
+      CreatedAt = createdAt
     };
 
     return dto;
