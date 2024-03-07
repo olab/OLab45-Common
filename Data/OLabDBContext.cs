@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
 
 #nullable disable
 
@@ -13,6 +16,22 @@ public partial class OLabDBContext : DbContext
   public OLabDBContext(DbContextOptions<OLabDBContext> options)
       : base(options)
   {
+  }
+
+  protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+  {
+    if (!optionsBuilder.IsConfigured)
+    {
+      IConfigurationRoot configuration = new ConfigurationBuilder()
+         .SetBasePath(Directory.GetCurrentDirectory())
+         .AddJsonFile("local.settings.json")
+         .Build();
+
+      var connectionString = Environment.GetEnvironmentVariable("DefaultDatabase");
+      var serverVersion = ServerVersion.AutoDetect(connectionString);
+
+      optionsBuilder.UseMySql(connectionString, serverVersion);
+    }
   }
 
   public virtual DbSet<AuthorRights> AuthorRights { get; set; }
