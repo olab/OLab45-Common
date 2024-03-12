@@ -56,7 +56,7 @@ public partial class NodesEndpoint : OLabEndpoint
       ImageableId = node.Id,
       ImageableType = Utils.Constants.ScopeLevelNode,
       IsSystem = 1,
-      Value = Encoding.ASCII.GetBytes(node.Title)
+      Value = Encoding.UTF8.GetBytes(node.Title)
     });
 
     phys.ConstantsPhys.Add(new SystemConstants

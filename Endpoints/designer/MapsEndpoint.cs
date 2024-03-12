@@ -392,7 +392,7 @@ public partial class MapsEndpoint : OLabEndpoint
       ImageableId = map.Id,
       ImageableType = Constants.ScopeLevelMap,
       IsSystem = 1,
-      Value = Encoding.ASCII.GetBytes(map.Name)
+      Value = Encoding.UTF8.GetBytes(map.Name)
     });
 
     phys.ConstantsPhys.Add(new SystemConstants

@@ -22,7 +22,7 @@ public partial class SystemCounters
       var orgValue = ValueAsString();
       if (source != orgValue)
       {
-        Value = Encoding.ASCII.GetBytes(source);
+        Value = Encoding.UTF8.GetBytes(source);
         UpdatedAt = DateTime.Now;
       }
     }
