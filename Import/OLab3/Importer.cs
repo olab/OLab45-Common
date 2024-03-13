@@ -124,7 +124,7 @@ public class Importer : IImporter
     //_dtos.Add(dto.DtoType, dto);
   }
 
-  public async Task<uint> Import(
+  public async Task<Maps> Import(
     IOLabAuthorization auth,
     Stream archiveFileStream,
     string archiveFileName,
@@ -137,9 +137,9 @@ public class Importer : IImporter
       archiveFileName, 
       token);
 
-    var mapId = WriteImportToDatabase(
+    var mapPhys = WriteImportToDatabase(
       archiveFileName);
-    return mapId;
+    return mapPhys;
   }
 
   /// <summary>
@@ -202,7 +202,7 @@ public class Importer : IImporter
   /// </summary>
   /// <param name="archiveFileName">Import archive ZIP file name</param>
   /// <returns>true</returns>
-  public uint WriteImportToDatabase(
+  public Maps WriteImportToDatabase(
     string archiveFileName)
   {
     uint mapId = 0;
@@ -223,7 +223,9 @@ public class Importer : IImporter
         var xmlMap = (XmlMap)xmlMapDto.GetDbPhys();
         Logger.LogInformation($"Loaded map '{xmlMap.Data[0].Name}'. id = {xmlMap.Data[0].Id}");
 
-        mapId = xmlMap.Data[0].Id;
+        var mapPhys = xmlMap.Data[0];
+        return mapPhys;
+
       }
       catch (Exception ex)
       {
@@ -233,7 +235,7 @@ public class Importer : IImporter
 
     }
 
-    return mapId;
+    return null;
   }
 
   public Task ExportAsync(Stream stream, uint mapId, CancellationToken token = default)

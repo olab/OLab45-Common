@@ -3,6 +3,7 @@ using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -50,27 +51,26 @@ public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
   /// </remarks>
   /// <param name="phys">Physical object</param>
   /// <returns>Dto object</returns>
-  public override MapsFullRelationsDto PhysicalToDto(Maps map)
+  public override MapsFullRelationsDto PhysicalToDto(Maps mapPhys)
   {
+    mapPhys.CreatedAt = DateTime.SpecifyKind(mapPhys.CreatedAt.Value, DateTimeKind.Utc);
+
     var dto = new MapsFullRelationsDto
     {
       Map = new MapsFullMapper(
         Logger,
         _wikiTagModules,
         _enableWikiTranslation
-      ).PhysicalToDto(map),
+      ).PhysicalToDto(mapPhys),
       MapNodes = new MapNodesFullMapper(
         Logger,
         _wikiTagModules,
         _enableWikiTranslation
-      ).PhysicalToDto(map.MapNodes.ToList())
+      ).PhysicalToDto(mapPhys.MapNodes.ToList())
     };
 
     var links = new List<MapNodeLinks>();
-    links.AddRange(map.MapNodeLinks);
-
-    //foreach (var node in map.MapNodes)
-    //  links.AddRange(node.MapNodeLinksNodeId1Navigation);
+    links.AddRange(mapPhys.MapNodeLinks);
 
     dto.MapNodeLinks = new MapNodeLinksMapper(Logger, _enableWikiTranslation).PhysicalToDto(links);
 

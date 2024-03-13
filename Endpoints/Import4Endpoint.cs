@@ -47,7 +47,7 @@ public partial class Import4Endpoint : OLabEndpoint
       _fileStorageModule);
   }
 
-  public async Task<uint> ImportAsync(
+  public async Task<Maps> ImportAsync(
     IOLabAuthorization auth,
     Stream archiveFileStream,
     string archiveFileName,

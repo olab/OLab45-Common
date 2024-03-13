@@ -1,4 +1,5 @@
 using OLab.Api.ObjectMapper;
+using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using OLab.Import.OLab3.Model;
 using System;
@@ -15,6 +16,13 @@ public class XmlMapDto : XmlImportDto<XmlMap>
   public XmlMapDto(IOLabLogger logger, Importer importer) : base(logger, importer, Importer.DtoTypes.XmlMapDto, "map.xml")
   {
     _mapper = new MapsMapper(logger);
+  }
+
+  public override string GetLoggerString(IEnumerable<dynamic> elements)
+  {
+    var id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
+    var name = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "name"));
+    return $"id: {id} '{name}'";
   }
 
   /// <summary>

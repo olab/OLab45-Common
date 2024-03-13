@@ -7,6 +7,7 @@ using OLab.Api.ObjectMapper;
 using OLab.Common.Utils;
 using OLab.Data;
 using OLab.Import.Interface;
+using OLab.Import.OLab3;
 using System;
 using System.IO;
 using System.Net;
@@ -30,7 +31,7 @@ public partial class Importer : IImporter
   /// <param name="fileName">File name of improt file</param>
   /// <param name="token"></param>
   /// <returns></returns>
-  public async Task<uint> Import(
+  public async Task<Maps> Import(
     IOLabAuthorization auth, 
     Stream stream,
     string fileName,
@@ -52,7 +53,7 @@ public partial class Importer : IImporter
 
       _scopedObjectPhys = new ScopedObjects(Logger, _dbContext);
 
-      _newMapPhys = await WriteMapToDatabaseAsync(mapFullDto, token);
+      _newMapPhys = await WriteMapToDatabaseAsync(auth, mapFullDto, token);
 
       await ProcessMapNodesAsync(mapFullDto, token);
       await ProcessAttachedImportFiles(token);
@@ -66,7 +67,7 @@ public partial class Importer : IImporter
       else
         await _dbContext.Database.CommitTransactionAsync();
 
-      return _newMapPhys.Id;
+      return _newMapPhys;
 
     }
     catch (Exception ex)
@@ -127,7 +128,7 @@ public partial class Importer : IImporter
         ExtractFolderName,
         MapFileName,
         token);
-      mapJson = Encoding.ASCII.GetString(mapStream.ToArray());
+      mapJson = Encoding.UTF8.GetString(mapStream.ToArray());
     }
 
     // build the map object
@@ -143,6 +144,7 @@ public partial class Importer : IImporter
   }
 
   private async Task<Maps> WriteMapToDatabaseAsync(
+    IOLabAuthorization auth,
     MapsFullRelationsDto dto,
     CancellationToken token)
   {
@@ -151,6 +153,9 @@ public partial class Importer : IImporter
 
     phys.Id = 0;
     phys.Name = $"IMPORT: {phys.Name}";
+    phys.AuthorId = auth.UserContext.UserId;
+    phys.CreatedAt = DateTime.UtcNow;
+    phys.CreatedAt = phys.CreatedAt.Value.AddTicks( - (phys.CreatedAt.Value.Ticks % TimeSpan.TicksPerSecond));
 
     await _dbContext.Maps.AddAsync(phys);
     await _dbContext.SaveChangesAsync(token);

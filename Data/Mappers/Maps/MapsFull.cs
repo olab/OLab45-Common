@@ -5,6 +5,7 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using System;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -35,10 +36,12 @@ public class MapsFullMapper : OLabMapper<Model.Maps, MapsFullDto>
     );
   }
 
-  public override MapsFullDto PhysicalToDto(Maps phys)
+  public override MapsFullDto PhysicalToDto(Maps mapPhys)
   {
-    var dto = base.PhysicalToDto(phys);
-    dto.Feedback = Conversions.Base64Decode(phys.Feedback);
+    var dto = base.PhysicalToDto(mapPhys);
+    dto.Feedback = Conversions.Base64Decode(mapPhys.Feedback);
+    mapPhys.CreatedAt = DateTime.SpecifyKind(mapPhys.CreatedAt.Value, DateTimeKind.Utc);
+
     return dto;
   }
 
