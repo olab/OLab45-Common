@@ -2,6 +2,7 @@ using AutoMapper;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,7 +63,8 @@ public class MapsMapper : OLabMapper<Maps, Dto.MapsDto>
     phys.AuthorRights = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "author_rights").Value);
     phys.RevisableAnswers = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "revisable_answers").Value) == 1;
     phys.SendXapiStatements = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "send_xapi_statements").Value) == 1;
-    phys.CreatedAt = DateTime.UtcNow;
+    phys.CreatedAt = TimeUtils.UtcNow();
+
     if (elements.Any(x => x.Name == "report_node_id"))
       phys.ReportNodeId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "report_node_id").Value);
 
