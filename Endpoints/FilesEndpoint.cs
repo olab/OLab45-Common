@@ -213,9 +213,6 @@ public partial class FilesEndpoint : OLabEndpoint
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("ConstantsPhys", id);
 
-      dbContext.SystemFiles.Remove(phys);
-      await dbContext.SaveChangesAsync();
-
       var filePath = _fileStorageModule.BuildPath(
         OLabFileStorageModule.FilesRoot,
         dto.ImageableType,
@@ -224,6 +221,9 @@ public partial class FilesEndpoint : OLabEndpoint
       await _fileStorageModule.DeleteFileAsync(
         filePath,
         dto.FileName);
+
+      dbContext.SystemFiles.Remove(phys);
+      await dbContext.SaveChangesAsync();
     }
     catch (DbUpdateConcurrencyException)
     {
