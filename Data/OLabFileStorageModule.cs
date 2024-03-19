@@ -21,6 +21,8 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   protected IOLabLogger logger;
   protected IOLabConfiguration cfg;
 
+  public abstract string GetUrlPath(string path, string fileName);
+
   protected OLabFileStorageModule(IOLabLogger logger, IOLabConfiguration configuration)
   {
     this.logger = logger;
@@ -29,17 +31,12 @@ public abstract class OLabFileStorageModule : IFileStorageModule
 
   public string GetModuleName()
   {
-    var attrib = 
+    var attrib =
       this.GetType().GetCustomAttributes(typeof(OLabModuleAttribute), true).FirstOrDefault() as OLabModuleAttribute;
     if (attrib == null)
       throw new Exception("Missing OLabModule attribute");
 
     return attrib == null ? "" : attrib.Name;
-  }
-
-  public string GetUrlPath(string path, string fileName = null)
-  {
-    return BuildPath(cfg.GetAppSettings().FileStorageUrl, path, fileName).Replace("\\", "/");
   }
 
   public string GetPhysicalPath(string path, string fileName)
@@ -80,6 +77,23 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     return sb.ToString();
   }
 
+  public void AttachUrls(SystemFiles item)
+  {
+    var scopeFolder = GetScopedFolderName(
+      item.ImageableType,
+      item.ImageableId);
+
+    if (FileExists(scopeFolder, item.Path))
+    {
+      item.OriginUrl = GetUrlPath(
+        scopeFolder,
+        item.Path
+      );
+
+      logger.LogInformation($"  file '{item.Name}' mapped to url '{item.OriginUrl}'");
+    }
+  }
+
   /// <summary>
   /// Attach browseable URLS for system files
   /// </summary>
@@ -95,20 +109,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     {
       try
       {
-        var scopeFolder = GetScopedFolderName(
-          item.ImageableType,
-          item.ImageableId);
-
-        if (FileExists(scopeFolder, item.Path))
-        {
-          item.OriginUrl = GetUrlPath(
-            scopeFolder,
-            item.Path
-          );
-
-          logger.LogInformation($"  file '{item.Name}' mapped to url '{item.OriginUrl}'");
-        }
-
+        AttachUrls(item);
       }
       catch (Exception ex)
       {
@@ -166,8 +167,8 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     CancellationToken token);
 
   public abstract string GetPublicFileDirectory(
-    string parentType, 
-    uint parentId, 
+    string parentType,
+    uint parentId,
     string fileName = "");
 
   public string GetImportMediaFilesDirectory(string importFolderName)

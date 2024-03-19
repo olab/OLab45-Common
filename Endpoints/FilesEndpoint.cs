@@ -97,6 +97,8 @@ public partial class FilesEndpoint : OLabEndpoint
       throw new OLabObjectNotFoundException("FilesPhys", id);
 
     var phys = await dbContext.SystemFiles.FirstAsync(x => x.Id == id);
+    _fileStorageModule.AttachUrls(phys);
+
     var dto = new FilesFull(Logger).PhysicalToDto(phys);
 
     // test if user has access to object
@@ -173,7 +175,6 @@ public partial class FilesEndpoint : OLabEndpoint
     await dbContext.SaveChangesAsync();
 
     var filePath = _fileStorageModule.BuildPath(
-      OLabFileStorageModule.FilesRoot,
       dto.ImageableType,
       dto.ImageableId);
 

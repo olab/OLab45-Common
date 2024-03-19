@@ -16,6 +16,9 @@ public interface IFileStorageModule
   void AttachUrls(
     IList<SystemFiles> items);
 
+  void AttachUrls(
+    SystemFiles item);
+
   public Task MoveFileAsync(
     string fileName,
     string sourcePath,
