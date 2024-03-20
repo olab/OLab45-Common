@@ -1,6 +1,7 @@
 using OLab.Api.Importer;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
@@ -133,6 +134,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
         using var moduleFileStream = new MemoryStream();
         await GetFileModule().ReadFileAsync(
           moduleFileStream,
+          OLabFileStorageModule.ImportRoot,
           importFileDirectory,
           GetFileName(),
           new System.Threading.CancellationToken());

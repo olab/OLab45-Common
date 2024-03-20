@@ -177,6 +177,7 @@ public class Importer : IImporter
       await FileStorageModule.ExtractFileToStorageAsync(
         OLabFileStorageModule.ImportRoot,
         archiveFileName,
+        OLabFileStorageModule.ImportRoot,
         extractDirectory,
         token);
 

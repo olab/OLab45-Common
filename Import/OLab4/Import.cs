@@ -88,21 +88,14 @@ public partial class Importer : IImporter
     string importFileName,
     CancellationToken token = default)
   {
-    // build file module import file name
-    var moduleArchiveFile = _fileModule.BuildPath(
-      OLabFileStorageModule.ImportRoot,
-      importFileName);
-    Logger.LogInformation($"Module archive file: {moduleArchiveFile}");
-
-    // build file module extraction folder name
-    ExtractFolderName = _fileModule.BuildPath(
-      OLabFileStorageModule.ImportRoot,
-      Path.GetFileNameWithoutExtension(importFileName));
+    ExtractFolderName = Path.GetFileNameWithoutExtension(importFileName);
     Logger.LogInformation($"Folder extract directory: {ExtractFolderName}");
 
     // delete any existing import files left over
     // from previous run
-    await _fileModule.DeleteFolderAsync(ExtractFolderName);
+    await _fileModule.DeleteFolderAsync(
+      OLabFileStorageModule.ImportRoot,
+      ExtractFolderName);
 
     // save import file to storage
     await _fileModule.WriteFileAsync(
@@ -115,6 +108,7 @@ public partial class Importer : IImporter
     await _fileModule.ExtractFileToStorageAsync(
       OLabFileStorageModule.ImportRoot,
       importFileName,
+      OLabFileStorageModule.ImportRoot,
       ExtractFolderName,
       token);
 
@@ -125,6 +119,7 @@ public partial class Importer : IImporter
     {
       await _fileModule.ReadFileAsync(
         mapStream,
+        OLabFileStorageModule.ImportRoot,
         ExtractFolderName,
         MapFileName,
         token);
@@ -190,7 +185,9 @@ public partial class Importer : IImporter
   {
     // delete any existing import files left over
     // from previous run
-    await _fileModule.DeleteFolderAsync(ExtractFolderName);
+    await _fileModule.DeleteFolderAsync(
+      OLabFileStorageModule.ImportRoot,
+      ExtractFolderName);
   }
 
   private async Task ProcessAttachedImportFiles(
@@ -198,45 +195,24 @@ public partial class Importer : IImporter
   {
     // list and move map-level files
 
-    var sourceFolder = _fileModule.BuildPath(
+    var importFilesFolder = _fileModule.BuildPath(
+      OLabFileStorageModule.ImportRoot,
       ExtractFolderName,
       Api.Utils.Constants.ScopeLevelMap);
 
-    var sourceFiles = _fileModule.GetFiles(sourceFolder, token);
+    var sourceFiles = _fileModule.GetFiles(importFilesFolder, token);
 
-    var destinationFolder = _fileModule.BuildPath(
+    var mapFilesFolder = _fileModule.BuildPath(
+      OLabFileStorageModule.FilesRoot,
       Api.Utils.Constants.ScopeLevelMap,
       _newMapPhys.Id);
 
     foreach (var sourceFile in sourceFiles)
       await _fileModule.MoveFileAsync(
         Path.GetFileName(sourceFile),
-        sourceFolder,
-        destinationFolder,
+        importFilesFolder,
+        mapFilesFolder,
         token);
-
-    // TODO: processnode-level files
-
-    // list and move node-level files
-
-    //sourceFolder = _fileModule.BuildPath(
-    //  ExtractFolderName,
-    //  Api.Utils.ConstantsPhys.ScopeLevelNode,
-    //  originalMapId);
-
-    //sourceFiles = _fileModule.GetFiles(sourceFolder, token);
-
-    //destinationFolder = _fileModule.BuildPath(
-    //  OLabFileStorageModule.FilesRoot,
-    //  Api.Utils.ConstantsPhys.ScopeLevelNode,
-    //  newMapId);
-
-    //foreach (var sourceFile in sourceFiles)
-    //  await _fileModule.MoveFileAsync(
-    //    Path.GetFileName(sourceFile),
-    //    Path.GetDirectoryName(sourceFolder),
-    //    destinationFolder,
-    //    token);
   }
 
   private async Task<MapNodes> WriteMapNodesDtoToDatabase(

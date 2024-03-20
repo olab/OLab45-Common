@@ -1,5 +1,6 @@
 using OLab.Api.Importer;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,7 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
         using var moduleFileStream = new MemoryStream();
         await GetFileModule().ReadFileAsync(
           moduleFileStream,
+          OLabFileStorageModule.ImportRoot,
           importFileDirectory,
           GetFileName(),
           new System.Threading.CancellationToken());

@@ -31,6 +31,7 @@ public interface IFileStorageModule
 
   Task ReadFileAsync(
     Stream stream,
+    string fileType,
     string folder,
     string fileName,
     CancellationToken token);
@@ -46,11 +47,13 @@ public interface IFileStorageModule
     string fileName);
 
   Task DeleteFolderAsync(
-    string folder);
+    string baseFolder,
+    string folder = null);
 
   Task<bool> ExtractFileToStorageAsync(
-    string folderName,
-    string fileName,
+    string sourceFileType,
+    string archiveFileName,
+    string destinationFileType,
     string extractDirectory,
     CancellationToken token);
 

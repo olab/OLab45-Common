@@ -67,6 +67,8 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     {
       // remove any extra trailing slashes
       var part = pathParts[i].ToString();
+      if (string.IsNullOrEmpty(part))
+        continue;
       part = part.TrimEnd(GetFolderSeparator());
 
       sb.Append(part);
@@ -130,11 +132,14 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     string folder,
     string fileName);
 
-  public abstract Task DeleteFolderAsync(string folder);
+  public abstract Task DeleteFolderAsync(
+    string fileType,
+    string folder);
 
   public abstract Task<bool> ExtractFileToStorageAsync(
-    string folderName,
-    string fileName,
+    string sourceFileType,
+    string archiveFileName,
+    string destinationFileType,
     string extractDirectory,
     CancellationToken token);
 
@@ -156,6 +161,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
 
   public abstract Task ReadFileAsync(
     Stream stream,
+    string fileType,
     string folder,
     string fileName,
     CancellationToken token);
