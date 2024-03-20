@@ -32,7 +32,7 @@ public partial class Importer : IImporter
   /// <param name="token"></param>
   /// <returns></returns>
   public async Task<Maps> Import(
-    IOLabAuthorization auth, 
+    IOLabAuthorization auth,
     Stream stream,
     string fileName,
     CancellationToken token = default)
@@ -94,22 +94,26 @@ public partial class Importer : IImporter
     // delete any existing import files left over
     // from previous run
     await _fileModule.DeleteFolderAsync(
-      OLabFileStorageModule.ImportRoot,
-      ExtractFolderName);
+      _fileModule.BuildPath(
+        OLabFileStorageModule.ImportRoot,
+        ExtractFolderName));
 
     // save import file to storage
     await _fileModule.WriteFileAsync(
       importFileStream,
-      OLabFileStorageModule.ImportRoot,
-      importFileName,
+      _fileModule.BuildPath(
+        OLabFileStorageModule.ImportRoot,
+        importFileName),
       token);
 
     // extract import file to storage
     await _fileModule.ExtractFileToStorageAsync(
-      OLabFileStorageModule.ImportRoot,
-      importFileName,
-      OLabFileStorageModule.ImportRoot,
-      ExtractFolderName,
+      _fileModule.BuildPath(
+        OLabFileStorageModule.ImportRoot,
+        importFileName),
+      _fileModule.BuildPath(
+       OLabFileStorageModule.ImportRoot,
+        ExtractFolderName),
       token);
 
     string mapJson;
@@ -119,9 +123,10 @@ public partial class Importer : IImporter
     {
       await _fileModule.ReadFileAsync(
         mapStream,
-        OLabFileStorageModule.ImportRoot,
-        ExtractFolderName,
-        MapFileName,
+        _fileModule.BuildPath(
+          OLabFileStorageModule.ImportRoot,
+          ExtractFolderName,
+          MapFileName),
         token);
       mapJson = Encoding.UTF8.GetString(mapStream.ToArray());
     }
@@ -131,8 +136,9 @@ public partial class Importer : IImporter
 
     // delete source import file
     await GetFileStorageModule().DeleteFileAsync(
-      OLabFileStorageModule.ImportRoot,
-      Path.GetFileName(importFileName));
+      _fileModule.BuildPath(
+        OLabFileStorageModule.ImportRoot,
+        Path.GetFileName(importFileName)));
 
     return mapFullDto;
 
@@ -186,8 +192,9 @@ public partial class Importer : IImporter
     // delete any existing import files left over
     // from previous run
     await _fileModule.DeleteFolderAsync(
-      OLabFileStorageModule.ImportRoot,
-      ExtractFolderName);
+      _fileModule.BuildPath(
+        OLabFileStorageModule.ImportRoot,
+        ExtractFolderName));
   }
 
   private async Task ProcessAttachedImportFiles(
@@ -209,10 +216,11 @@ public partial class Importer : IImporter
 
     foreach (var sourceFile in sourceFiles)
       await _fileModule.MoveFileAsync(
-        Path.GetFileName(sourceFile),
+      _fileModule.BuildPath(
         importFilesFolder,
-        mapFilesFolder,
-        token);
+        Path.GetFileName(sourceFile)),
+      mapFilesFolder,
+      token);
   }
 
   private async Task<MapNodes> WriteMapNodesDtoToDatabase(

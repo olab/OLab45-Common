@@ -39,15 +39,19 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
     {
       Logger.LogInformation($"Loading '{GetFileName()}'");
 
-      if (GetFileModule().FileExists(importFileDirectory, GetFileName()))
+      var physicalFilePath = GetFileModule().BuildPath(
+        OLabFileStorageModule.ImportRoot,
+        importFileDirectory,
+        GetFileName());
+
+      if (GetFileModule().FileExists(physicalFilePath))
       {
         using var moduleFileStream = new MemoryStream();
         await GetFileModule().ReadFileAsync(
           moduleFileStream,
-          OLabFileStorageModule.ImportRoot,
-          importFileDirectory,
-          GetFileName(),
+          physicalFilePath,
           new System.Threading.CancellationToken());
+
         _phys = DynamicXml.Load(moduleFileStream);
       }
 
@@ -86,7 +90,7 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
       Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
 
       // delete data file
-      await GetFileModule().DeleteFileAsync(importFileDirectory, GetFileName());
+      await GetFileModule().DeleteFileAsync(physicalFilePath);
     }
     catch (Exception ex)
     {

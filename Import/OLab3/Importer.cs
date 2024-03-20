@@ -157,13 +157,12 @@ public class Importer : IImporter
     {
       Logger.LogInformation($"Module archive file: {FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, archiveFileName)}");
 
-      var importRootDirectory = FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot);
+      var archiveFilePath = FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, archiveFileName);
 
       // write the archive file to storage
-      var archiveFilePath = await FileStorageModule.WriteFileAsync(
+      archiveFilePath = await FileStorageModule.WriteFileAsync(
         archiveFileStream,
-        importRootDirectory,
-        archiveFileName,
+        archiveFilePath,
         token);
 
       // build extract direct based on archive file name without extension
@@ -175,20 +174,17 @@ public class Importer : IImporter
 
       // extract archive file to extract directory
       await FileStorageModule.ExtractFileToStorageAsync(
-        OLabFileStorageModule.ImportRoot,
-        archiveFileName,
-        OLabFileStorageModule.ImportRoot,
+        archiveFilePath,
         extractDirectory,
         token);
 
       // load all the import files in extract directory
       foreach (var dto in _dtos.Values)
-        await dto.LoadAsync(extractDirectory);
+        await dto.LoadAsync(Path.GetFileNameWithoutExtension(archiveFileName));
 
       // delete source archive file
       await GetFileStorageModule().DeleteFileAsync(
-        OLabFileStorageModule.ImportRoot,
-        archiveFileName);
+        archiveFilePath);
     }
     catch (Exception ex)
     {
@@ -206,7 +202,6 @@ public class Importer : IImporter
   public Maps WriteImportToDatabase(
     string archiveFileName)
   {
-    uint mapId = 0;
 
     // if anything bad happens, rollback the entire import
     using (var transaction = _dbContext.Database.BeginTransaction())

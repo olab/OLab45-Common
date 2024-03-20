@@ -180,8 +180,7 @@ public partial class FilesEndpoint : OLabEndpoint
 
     await _fileStorageModule.WriteFileAsync(
       dto.GetStream(),
-      filePath,
-      dto.FileName,
+      _fileStorageModule.BuildPath( filePath, dto.FileName ),
       token);
 
     var newDto = builder.PhysicalToDto(phys);
@@ -216,11 +215,11 @@ public partial class FilesEndpoint : OLabEndpoint
       var filePath = _fileStorageModule.BuildPath(
         OLabFileStorageModule.FilesRoot,
         dto.ImageableType,
-        dto.ImageableId);
+        dto.ImageableId,
+        dto.FileName);
 
       await _fileStorageModule.DeleteFileAsync(
-        filePath,
-        dto.FileName);
+        filePath);
 
       dbContext.SystemFiles.Remove(phys);
       await dbContext.SaveChangesAsync();

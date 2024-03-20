@@ -85,7 +85,9 @@ public abstract class OLabFileStorageModule : IFileStorageModule
       item.ImageableType,
       item.ImageableId);
 
-    if (FileExists(scopeFolder, item.Path))
+    var physicalPath = GetPhysicalPath(BuildPath( FilesRoot, scopeFolder, item.Path) );
+
+    if (FileExists(physicalPath))
     {
       item.OriginUrl = GetUrlPath(
         scopeFolder,
@@ -129,23 +131,18 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     CancellationToken token);
 
   public abstract Task<bool> DeleteFileAsync(
-    string folder,
-    string fileName);
+    string filePath);
 
   public abstract Task DeleteFolderAsync(
-    string fileType,
-    string folder);
+    string folderName);
 
   public abstract Task<bool> ExtractFileToStorageAsync(
-    string sourceFileType,
     string archiveFileName,
-    string destinationFileType,
     string extractDirectory,
     CancellationToken token);
 
   public abstract bool FileExists(
-    string folder,
-    string fileName);
+    string filePath);
 
   public abstract IList<string> GetFiles(
     string folderName,
@@ -154,21 +151,17 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   public abstract char GetFolderSeparator();
 
   public abstract Task MoveFileAsync(
-    string fileName,
-    string sourcePath,
-    string destinationPath,
+    string sourceFilePath,
+    string destinationFolder,
     CancellationToken token = default);
 
   public abstract Task ReadFileAsync(
     Stream stream,
-    string fileType,
-    string folder,
     string fileName,
     CancellationToken token);
 
   public abstract Task<string> WriteFileAsync(
     Stream stream,
-    string folderName,
     string fileName,
     CancellationToken token);
 

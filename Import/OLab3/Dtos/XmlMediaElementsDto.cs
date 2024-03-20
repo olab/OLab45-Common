@@ -143,12 +143,13 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
         {
           dynamic fileName = Conversions.Base64Decode(element, true);
 
+          var sourceFilePath = GetFileModule().BuildPath(sourceDirectory, fileName);
+
           GetFileModule().MoveFileAsync(
-            fileName,
-            sourceDirectory,
+            sourceFilePath,
             targetDirectory).Wait();
 
-          Logger.LogInformation($"Copied {GetFileName()} '{fileName}' -> '{targetDirectory}'");
+          Logger.LogInformation($"Moved {sourceFilePath}' -> '{targetDirectory}'");
 
         }
         catch (Exception ex)

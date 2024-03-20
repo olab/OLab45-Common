@@ -129,14 +129,17 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
       var moduleFileName = $"{importFileDirectory}{GetFileModule().GetFolderSeparator()}{GetFileName()}";
       Logger.LogInformation($"Loading {moduleFileName}");
 
-      if (GetFileModule().FileExists(importFileDirectory, GetFileName()))
+      var physicalFilePath = GetFileModule().BuildPath(
+        OLabFileStorageModule.ImportRoot,
+        importFileDirectory,
+        GetFileName());
+
+      if (GetFileModule().FileExists(physicalFilePath))
       {
         using var moduleFileStream = new MemoryStream();
         await GetFileModule().ReadFileAsync(
           moduleFileStream,
-          OLabFileStorageModule.ImportRoot,
-          importFileDirectory,
-          GetFileName(),
+          physicalFilePath,
           new System.Threading.CancellationToken());
         _phys = DynamicXml.Load(moduleFileStream);
       }
@@ -159,7 +162,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
             ++record;
             var elements = (IEnumerable<dynamic>)innerElements.Elements();
             xmlImportElementSets.Add(elements);
-            if ( displayProgressMessage )
+            if (displayProgressMessage)
               Logger.LogInformation($"  loaded {GetLoggerString(elements)}");
           }
           catch (Exception ex)
@@ -172,7 +175,11 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
       }
 
       // delete data file
-      await GetFileModule().DeleteFileAsync(importFileDirectory, GetFileName());
+      await GetFileModule().DeleteFileAsync(
+        GetFileModule().BuildPath(
+          OLabFileStorageModule.ImportRoot,
+          importFileDirectory, 
+          GetFileName()));
 
     }
     catch (Exception ex)

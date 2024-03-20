@@ -20,40 +20,31 @@ public interface IFileStorageModule
     SystemFiles item);
 
   public Task MoveFileAsync(
-    string fileName,
-    string sourcePath,
-    string destinationPath,
+    string sourceFilePath,
+    string destinationFolder,
     CancellationToken token = default);
 
   bool FileExists(
-    string folder,
-    string fileName);
+    string filePath);
 
   Task ReadFileAsync(
     Stream stream,
-    string fileType,
-    string folder,
-    string fileName,
+    string filePath,
     CancellationToken token);
 
   Task<string> WriteFileAsync(
     Stream stream,
-    string folderName,
     string fileName,
     CancellationToken token);
 
   Task<bool> DeleteFileAsync(
-    string folder,
-    string fileName);
+    string filePath);
 
   Task DeleteFolderAsync(
-    string baseFolder,
-    string folder = null);
+    string folderName);
 
   Task<bool> ExtractFileToStorageAsync(
-    string sourceFileType,
     string archiveFileName,
-    string destinationFileType,
     string extractDirectory,
     CancellationToken token);
 
