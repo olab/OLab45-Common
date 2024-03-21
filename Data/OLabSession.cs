@@ -1,12 +1,14 @@
 using Dawn;
-using Newtonsoft.Json;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.Dtos.ScopedObjects;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 
 namespace OLab.Api.Data;
 
@@ -103,15 +105,27 @@ public class OLabSession : IOLabSession
   /// Record a node play on the session
   /// </summary>
   /// <param name="nodeId">Node Id</param>
-  public void OnPlayNode(uint nodeId)
+  public void OnPlayNode(MapsNodesFullRelationsDto dto)
   {
     Guard.Argument(_mapId, nameof(_mapId)).Positive();
 
+    var nodeId = dto.Id.Value;
     _logger.LogInformation($"OnPlayNode: session {GetSessionId()} Map: {_mapId} Node: {nodeId}");
 
     var session = GetSessionFromDatabase(GetSessionId());
     if (session == null)
       return;
+
+    // abbreviate counter dto's into shorter version dto
+    var countersDto = new List<CounterValueDto>();
+    foreach (var counterDto in dto.DynamicObjects.Server.Counters)
+      countersDto.Add(new CounterValueDto(counterDto));
+    foreach (var counterDto in dto.DynamicObjects.Map.Counters)
+      countersDto.Add(new CounterValueDto(counterDto)); 
+    foreach (var counterDto in dto.DynamicObjects.Node.Counters)
+      countersDto.Add(new CounterValueDto(counterDto));
+
+    var counterJson = JsonSerializer.Serialize(countersDto);
 
     var sessionTrace = new UserSessionTraces
     {
@@ -119,7 +133,8 @@ public class OLabSession : IOLabSession
       MapId = _mapId,
       NodeId = nodeId,
       DateStamp = Conversions.GetCurrentUnixTime(),
-      UserId = session.UserId
+      UserId = session.UserId,
+      Counters = counterJson
     };
 
     _dbContext.UserSessionTraces.Add(sessionTrace);
@@ -173,7 +188,7 @@ public class OLabSession : IOLabSession
       MapId = _mapId,
       MapNodeId = nodeId,
       UserId = _userContext.UserId,
-      StateData = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(dynamicObjects))
+      StateData = Encoding.ASCII.GetBytes(JsonSerializer.Serialize(dynamicObjects))
     };
 
     _dbContext.UserState.Add(userState);
