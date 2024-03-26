@@ -125,10 +125,6 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<MapNodes> MapNodes { get; set; }
 
-    public virtual DbSet<MapNodesIm> MapNodesIm { get; set; }
-
-    public virtual DbSet<MapNodesTmp> MapNodesTmp { get; set; }
-
     public virtual DbSet<MapPopupAssignTypes> MapPopupAssignTypes { get; set; }
 
     public virtual DbSet<MapPopupPositionTypes> MapPopupPositionTypes { get; set; }
@@ -172,10 +168,6 @@ public partial class OLabDBContext : DbContext
     public virtual DbSet<OauthProviders> OauthProviders { get; set; }
 
     public virtual DbSet<Options> Options { get; set; }
-
-    public virtual DbSet<Orphanedconstantsview> Orphanedconstantsview { get; set; }
-
-    public virtual DbSet<Orphanedquestionsview> Orphanedquestionsview { get; set; }
 
     public virtual DbSet<Phinxlog> Phinxlog { get; set; }
 
@@ -681,18 +673,6 @@ public partial class OLabDBContext : DbContext
             entity.HasOne(d => d.Map).WithMany(p => p.MapNodes).HasConstraintName("map_nodes_ibfk_1");
         });
 
-        modelBuilder.Entity<MapNodesIm>(entity =>
-        {
-            entity.Property(e => e.ForceReload).HasDefaultValueSql("'0'");
-            entity.Property(e => e.LinkTypeId).HasDefaultValueSql("'1'");
-        });
-
-        modelBuilder.Entity<MapNodesTmp>(entity =>
-        {
-            entity.Property(e => e.ForceReload).HasDefaultValueSql("'0'");
-            entity.Property(e => e.LinkTypeId).HasDefaultValueSql("'1'");
-        });
-
         modelBuilder.Entity<MapPopupAssignTypes>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -857,20 +837,6 @@ public partial class OLabDBContext : DbContext
 
             entity.Property(e => e.Autoload).HasDefaultValueSql("'yes'");
             entity.Property(e => e.Name).HasDefaultValueSql("''");
-        });
-
-        modelBuilder.Entity<Orphanedconstantsview>(entity =>
-        {
-            entity.ToView("orphanedconstantsview");
-
-            entity.Property(e => e.MapId).HasDefaultValueSql("'0'");
-        });
-
-        modelBuilder.Entity<Orphanedquestionsview>(entity =>
-        {
-            entity.ToView("orphanedquestionsview");
-
-            entity.Property(e => e.MapId).HasDefaultValueSql("'0'");
         });
 
         modelBuilder.Entity<Phinxlog>(entity =>
