@@ -408,7 +408,7 @@ public partial class MapsEndpoint : OLabEndpoint
     dbContext.SecurityUsers.Add(acl);
 
     // update map's author
-    map.AuthorId = acl.UserId;
+    map.AuthorId = (uint)acl.UserId;
     dbContext.Entry(map).State = EntityState.Modified;
 
     await dbContext.SaveChangesAsync();
@@ -505,12 +505,12 @@ public partial class MapsEndpoint : OLabEndpoint
 
     var userSessions = await dbContext.UserSessions
       .AsNoTracking()
-      .Include(x => x.UserSessionTraces)
+      .Include(x => x.UserSessiontraces)
       .Where(x => x.MapId == mapId)
       .Select(x => new
       {
         uuid = x.Uuid,
-        nodesVisited = x.UserSessionTraces.Where(s => s.MapId == mapId).Count(),
+        nodesVisited = x.UserSessiontraces.Where(s => s.MapId == mapId).Count(),
         timestamp = x.StartTime,
         user = x.Iss == auth.UserContext.Issuer
           ? dbContext.Users.Where(u => u.Id == x.UserId).First()
