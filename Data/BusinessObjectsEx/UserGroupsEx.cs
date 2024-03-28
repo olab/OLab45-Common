@@ -42,4 +42,12 @@ public partial class UserGroups
   {
     return $"{userGroup.Group.Name}:{userGroup.Role}";
   }
+
+  public static IList<GroupRole> GetGroupRole( IList<UserGroups> userGroup )
+  {
+    var items = new List<GroupRole>();
+    foreach ( var item in userGroup )
+      items.Add( new GroupRole { Role = item.Role, Group = item.Group.Name } );
+    return items;
+  }
 }

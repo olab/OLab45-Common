@@ -150,21 +150,25 @@ public partial class Importer : IImporter
     CancellationToken token)
   {
     var mapDto = dto.Map;
-    var phys = new MapsFullMapper(Logger).DtoToPhysical(mapDto);
+    var mapPhys = new MapsFullMapper(Logger).DtoToPhysical(mapDto);
 
-    phys.Id = 0;
-    phys.Name = $"IMPORT: {phys.Name}";
-    phys.AuthorId = auth.UserContext.UserId;
+    mapPhys.Id = 0;
+    mapPhys.Name = $"IMPORT: {mapPhys.Name}";
+    mapPhys.AuthorId = auth.UserContext.UserId;
 
-    await _dbContext.Maps.AddAsync(phys);
+    await _dbContext.Maps.AddAsync(mapPhys);
     await _dbContext.SaveChangesAsync(token);
 
-    Logger.LogInformation($"  imported map '{mapDto.Name}' {mapDto.Id.Value} -> {phys.Id}");
+    // 'inherit' the group from the user
+    mapPhys.AddGroupsFromUser(auth.User);
+    await _dbContext.SaveChangesAsync(token);
 
-    _scopedObjectPhys.AddMapIdCrossReference(mapDto.Id.Value, phys.Id);
+    Logger.LogInformation($"  imported map '{mapDto.Name}' {mapDto.Id.Value} -> {mapPhys.Id}");
+
+    _scopedObjectPhys.AddMapIdCrossReference(mapDto.Id.Value, mapPhys.Id);
     _scopedObjectPhys.AddScopeFromDto(dto.ScopedObjects);
 
-    return phys;
+    return mapPhys;
   }
 
   private async Task ProcessMapNodesAsync(MapsFullRelationsDto mapFullDto, CancellationToken token)
