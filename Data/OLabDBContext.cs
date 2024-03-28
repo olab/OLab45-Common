@@ -563,6 +563,14 @@ public partial class OLabDBContext : DbContext
         modelBuilder.Entity<MapGroups>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.HasOne(d => d.Group).WithMany(p => p.MapGroups)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("mp_ibfk_group");
+
+            entity.HasOne(d => d.Map).WithMany(p => p.MapGroups)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("mp_ibfk_map");
         });
 
         modelBuilder.Entity<MapKeys>(entity =>
@@ -1067,6 +1075,8 @@ public partial class OLabDBContext : DbContext
         modelBuilder.Entity<UserGroups>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.Property(e => e.Iss).HasDefaultValueSql("'olab'");
 
             entity.HasOne(d => d.Group).WithMany(p => p.UserGroups).HasConstraintName("user_groups_ibfk_2");
 

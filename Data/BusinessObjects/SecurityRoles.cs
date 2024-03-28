@@ -15,11 +15,6 @@ public partial class SecurityRoles
     [Column("id", TypeName = "int(10) unsigned")]
     public uint Id { get; set; }
 
-    [Required]
-    [Column("name")]
-    [StringLength(45)]
-    public string Name { get; set; }
-
     [Column("imageable_id", TypeName = "int(10) unsigned")]
     public uint ImageableId { get; set; }
 
@@ -32,4 +27,12 @@ public partial class SecurityRoles
     [Column("acl")]
     [StringLength(45)]
     public string Acl { get; set; }
+
+    [Required]
+    [Column("role")]
+    [StringLength(45)]
+    public string Role { get; set; }
+
+    [Column("group_id", TypeName = "int(10) unsigned")]
+    public uint GroupId { get; set; }
 }

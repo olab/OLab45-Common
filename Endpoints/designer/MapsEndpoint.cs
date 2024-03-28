@@ -442,7 +442,11 @@ public partial class MapsEndpoint : OLabEndpoint
 
     search = search.Trim();
 
-    var users = dbContext.Users.Where(x => search.Length > 0 ? (
+    var users = dbContext
+      .Users
+      .Include("UserGroups")
+      .Include("UserGroups.Group")
+      .Where(x => search.Length > 0 ? (
       x.Nickname.Contains(search)
       || x.Email.Contains(search)
       || x.Username.Contains(search)
@@ -476,7 +480,11 @@ public partial class MapsEndpoint : OLabEndpoint
     if (!GenericValidations.IsValidUsername(body.Username))
       throw new OLabBadRequestException("Invalid username (can only contain alphanumeric and any of -_ characters).");
 
-    var existing = dbContext.Users.Where(u =>
+    var existing = dbContext
+      .Users
+      .Include("UserGroups")
+      .Include("UserGroups.Group")
+      .Where(u =>
       u.Username.ToLower() == body.Username.ToLower()
       || u.Email.ToLower() == body.Email.ToLower()).FirstOrDefault();
 
@@ -532,7 +540,11 @@ public partial class MapsEndpoint : OLabEndpoint
 
     body.CheckAcl();
 
-    var user = dbContext.Users.Where(u => u.Id == body.UserId).FirstOrDefault();
+    var user = dbContext
+      .Users
+      .Include("UserGroups")
+      .Include("UserGroups.Group")
+      .Where(u => u.Id == body.UserId).FirstOrDefault();
 
     if (null == user)
       throw new OLabBadRequestException("User not found.");

@@ -22,5 +22,8 @@ public partial class Groups
     public string Name { get; set; }
 
     [InverseProperty("Group")]
+    public virtual ICollection<MapGroups> MapGroups { get; } = new List<MapGroups>();
+
+    [InverseProperty("Group")]
     public virtual ICollection<UserGroups> UserGroups { get; } = new List<UserGroups>();
 }

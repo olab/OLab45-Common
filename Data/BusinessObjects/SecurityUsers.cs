@@ -16,7 +16,7 @@ public partial class SecurityUsers
     public uint Id { get; set; }
 
     [Column("user_id", TypeName = "int(10) unsigned")]
-    public uint? UserId { get; set; }
+    public uint UserId { get; set; }
 
     [Column("iss")]
     [StringLength(45)]

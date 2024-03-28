@@ -174,6 +174,9 @@ public partial class Maps
     public virtual ICollection<MapFeedbackRules> MapFeedbackRules { get; } = new List<MapFeedbackRules>();
 
     [InverseProperty("Map")]
+    public virtual ICollection<MapGroups> MapGroups { get; } = new List<MapGroups>();
+
+    [InverseProperty("Map")]
     public virtual ICollection<MapKeys> MapKeys { get; } = new List<MapKeys>();
 
     [InverseProperty("Map")]
