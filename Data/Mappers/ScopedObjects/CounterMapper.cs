@@ -9,72 +9,73 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Api.ObjectMapper;
+
+public class CounterValueResolver : IValueResolver<SystemCounters, CountersDto, string>
 {
-  public class CounterValueResolver : IValueResolver<SystemCounters, CountersDto, string>
+  public string Resolve(SystemCounters source, CountersDto destination, string destMember, ResolutionContext context)
   {
-    public string Resolve(SystemCounters source, CountersDto destination, string destMember, ResolutionContext context)
-    {
-      return source.ValueAsString();
-    }
+    return source.ValueAsString();
+  }
+}
+
+public class CounterMapper : OLabMapper<SystemCounters, CountersDto>
+{
+  public CounterMapper(IOLabLogger logger, WikiTagProvider tagProvider) : base(logger, tagProvider)
+  {
+
   }
 
-  public class CounterMapper : OLabMapper<SystemCounters, CountersDto>
+  public CounterMapper(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
   {
-    public CounterMapper(IOLabLogger logger, WikiTagProvider tagProvider) : base(logger, tagProvider)
+  }
+
+  public CounterMapper(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  {
+  }
+
+  /// <summary>
+  /// Default (overridable) AutoMapper cfg
+  /// </summary>
+  /// <returns>MapperConfiguration</returns>
+  protected override MapperConfiguration GetConfiguration()
+  {
+    return new MapperConfiguration(cfg =>
     {
+      cfg.CreateMap<SystemCounters, CountersDto>()
+                .ForMember(dst => dst.Value, opt => opt.MapFrom(src => src.ValueAsString()));
 
-    }
+      cfg.CreateMap<CountersDto, SystemCounters>()
+                .ForMember(dst => dst.Value, opt => opt.MapFrom(src => Encoding.ASCII.GetBytes(src.Value)));
+    });
+  }
 
-    public CounterMapper(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
-    {
-    }
+  public override CountersDto PhysicalToDto(SystemCounters phys, CountersDto dto)
+  {
+    if (phys.Value != null)
+      dto.Value = Encoding.ASCII.GetString(phys.Value);
+    dto.Value ??= "";
+    dto.Description = Conversions.Base64Decode(phys.Description);
 
-    public CounterMapper(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
-    {
-    }
+    return dto;
+  }
 
-    /// <summary>
-    /// Default (overridable) AutoMapper cfg
-    /// </summary>
-    /// <returns>MapperConfiguration</returns>
-    protected override MapperConfiguration GetConfiguration()
-    {
-      return new MapperConfiguration(cfg =>
-      {
-        cfg.CreateMap<SystemCounters, CountersDto>()
-                  .ForMember(dst => dst.Value, opt => opt.MapFrom(src => src.ValueAsString()));
+  public override SystemCounters DtoToPhysical(CountersDto dto, SystemCounters phys)
+  {
+    phys.Value = Encoding.ASCII.GetBytes(dto.Value);
+    return phys;
+  }
 
-        cfg.CreateMap<CountersDto, SystemCounters>()
-                  .ForMember(dst => dst.Value, opt => opt.MapFrom(src => Encoding.ASCII.GetBytes(src.Value)));
-      });
-    }
+  public override SystemCounters ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
+  {
+    var phys = GetPhys(source);
 
-    public override CountersDto PhysicalToDto(SystemCounters phys, CountersDto dto)
-    {
-      if (phys.Value != null)
-        dto.Value = Encoding.ASCII.GetString(phys.Value);
-      dto.Value ??= "";
-      return dto;
-    }
+    phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
+    phys.Name = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "name"));
+    phys.Description = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "description"));
+    phys.StartValue = Encoding.ASCII.GetBytes(elements.FirstOrDefault(x => x.Name == "start_value").Value);
+    phys.CreatedAt = DateTime.Now;
 
-    public override SystemCounters DtoToPhysical(CountersDto dto, SystemCounters phys)
-    {
-      phys.Value = Encoding.ASCII.GetBytes(dto.Value);
-      return phys;
-    }
-
-    public override SystemCounters ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
-    {
-      var phys = GetPhys(source);
-
-      phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
-      phys.Name = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "name"));
-      phys.Description = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "description"));
-      phys.StartValue = Encoding.ASCII.GetBytes(elements.FirstOrDefault(x => x.Name == "start_value").Value);
-      phys.CreatedAt = DateTime.Now;
-
-      return phys;
-    }
+    return phys;
   }
 }

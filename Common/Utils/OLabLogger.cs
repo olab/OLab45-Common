@@ -80,6 +80,7 @@ public class OLabLogger : IOLabLogger
 
   public IList<OLabLogMessage> GetMessages(OLabLogMessage.MessageLevel level = OLabLogMessage.MessageLevel.Debug)
   {
+    //return _messages.Where(x => x.Level >= level).Select(x => x.Message).ToList();
     return _messages.Where(x => x.Level >= level).ToList();
   }
 

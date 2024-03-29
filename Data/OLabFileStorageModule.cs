@@ -16,6 +16,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
 {
   public const string FilesRoot = "files";
   public const string ImportRoot = "import";
+  public const string MediaDirectory = "media";
 
   protected IOLabLogger logger;
   protected IOLabConfiguration cfg;
@@ -28,7 +29,8 @@ public abstract class OLabFileStorageModule : IFileStorageModule
 
   public string GetModuleName()
   {
-    var attrib = this.GetType().GetCustomAttributes(typeof(OLabModuleAttribute), true).FirstOrDefault() as OLabModuleAttribute;
+    var attrib = 
+      this.GetType().GetCustomAttributes(typeof(OLabModuleAttribute), true).FirstOrDefault() as OLabModuleAttribute;
     if (attrib == null)
       throw new Exception("Missing OLabModule attribute");
 
@@ -37,7 +39,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
 
   public string GetUrlPath(string path, string fileName = null)
   {
-    return BuildPath(cfg.GetAppSettings().FileStorageUrl, path, fileName).Replace( "\\", "/" );
+    return BuildPath(cfg.GetAppSettings().FileStorageUrl, path, fileName).Replace("\\", "/");
   }
 
   public string GetPhysicalPath(string path, string fileName)
@@ -94,12 +96,12 @@ public abstract class OLabFileStorageModule : IFileStorageModule
       try
       {
         var scopeFolder = GetScopedFolderName(
-          item.ImageableType, 
+          item.ImageableType,
           item.ImageableId);
 
         if (FileExists(scopeFolder, item.Path))
         {
-          item.OriginUrl = GetUrlPath( 
+          item.OriginUrl = GetUrlPath(
             scopeFolder,
             item.Path
           );
@@ -162,4 +164,14 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     string folderName,
     string fileName,
     CancellationToken token);
+
+  public abstract string GetPublicFileDirectory(
+    string parentType, 
+    uint parentId, 
+    string fileName = "");
+
+  public string GetImportMediaFilesDirectory(string importFolderName)
+  {
+    return $"{ImportRoot}{GetFolderSeparator()}{importFolderName}{GetFolderSeparator()}{MediaDirectory}";
+  }
 }

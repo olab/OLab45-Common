@@ -1,22 +1,5 @@
-using AutoMapper.Internal.Mappers;
-using Common.Utils;
-using Dawn;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using HeyRed.Mime;
-using Humanizer;
-using Microsoft.EntityFrameworkCore;
-using OLab.Api.Common;
-using OLab.Api.Dto;
 using OLab.Api.Model;
-using OLab.Api.ObjectMapper;
-using OLab.Common.Interfaces;
-using OLab.Data.Interface;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -58,7 +41,7 @@ public partial class ScopedObjects
   }
 
   private async Task WriteActionToDatabaseAsync(
-    SystemCounterActions phys, 
+    SystemCounterActions phys,
     CancellationToken token)
   {
     var oldId = phys.Id;
@@ -66,28 +49,28 @@ public partial class ScopedObjects
     phys.Id = 0;
     phys.CounterId = GetCounterIdCrossReference(phys.Id);
 
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
-      phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelNode )
-      phys.ImageableId = GetMapNodeIdCrossReference( phys.ImageableId );
+    if (phys.ImageableType == Api.Utils.Constants.ScopeLevelMap)
+      phys.ImageableId = GetMapIdCrossReference(phys.ImageableId);
+    if (phys.ImageableType == Api.Utils.Constants.ScopeLevelNode)
+      phys.ImageableId = GetMapNodeIdCrossReference(phys.ImageableId);
 
     await _dbContext.SystemCounterActions.AddAsync(phys);
     await _dbContext.SaveChangesAsync(token);
 
-    Logger.LogInformation($"  imported action for counter '{phys.CounterId}', {oldId}  ->  {phys.Id}");
+    Logger.LogInformation($"  wrote action for counter '{phys.CounterId}', {oldId}  ->  {phys.Id}");
   }
 
   private async Task WriteCounterToDatabaseAsync(
-    SystemCounters phys, 
+    SystemCounters phys,
     CancellationToken token)
   {
     var oldId = phys.Id;
     phys.Id = 0;
 
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
-      phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelNode )
-      phys.ImageableId = GetMapNodeIdCrossReference( phys.ImageableId );
+    if (phys.ImageableType == Api.Utils.Constants.ScopeLevelMap)
+      phys.ImageableId = GetMapIdCrossReference(phys.ImageableId);
+    if (phys.ImageableType == Api.Utils.Constants.ScopeLevelNode)
+      phys.ImageableId = GetMapNodeIdCrossReference(phys.ImageableId);
 
     await _dbContext.SystemCounters.AddAsync(phys);
     await _dbContext.SaveChangesAsync(token);
@@ -96,7 +79,7 @@ public partial class ScopedObjects
     // counter actions will need this mapping.
     AddCounterIdCrossReference(oldId, phys.Id);
 
-    Logger.LogInformation($"  imported counter '{phys.Name}', {oldId}  ->  {phys.Id}");
+    Logger.LogInformation($"  wrote counter '{phys.Name}', {oldId}  ->  {phys.Id}");
   }
 
   private async Task WriteFileToDatebaseAsync(
@@ -106,16 +89,16 @@ public partial class ScopedObjects
     var oldId = phys.Id;
     phys.Id = 0;
 
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
-      phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelNode )
-      phys.ImageableId = GetMapNodeIdCrossReference( phys.ImageableId );
+    if (phys.ImageableType == Api.Utils.Constants.ScopeLevelMap)
+      phys.ImageableId = GetMapIdCrossReference(phys.ImageableId);
+    if (phys.ImageableType == Api.Utils.Constants.ScopeLevelNode)
+      phys.ImageableId = GetMapNodeIdCrossReference(phys.ImageableId);
 
 
     await _dbContext.SystemFiles.AddAsync(phys);
     await _dbContext.SaveChangesAsync(token);
 
-    Logger.LogInformation($"  imported file '{phys.Name}', {oldId} -> {phys.Id}");
+    Logger.LogInformation($"  wrote file '{phys.Name}' {phys.Path} {phys.Mime}, {oldId} -> {phys.Id}");
   }
 
   private async Task WriteConstantToDatabaseAsync(
@@ -125,15 +108,15 @@ public partial class ScopedObjects
     var oldId = phys.Id;
     phys.Id = 0;
 
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
-      phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelNode )
-      phys.ImageableId = GetMapNodeIdCrossReference( phys.ImageableId );
+    if (phys.ImageableType == Api.Utils.Constants.ScopeLevelMap)
+      phys.ImageableId = GetMapIdCrossReference(phys.ImageableId);
+    if (phys.ImageableType == Api.Utils.Constants.ScopeLevelNode)
+      phys.ImageableId = GetMapNodeIdCrossReference(phys.ImageableId);
 
     await _dbContext.SystemConstants.AddAsync(phys);
     await _dbContext.SaveChangesAsync(token);
 
-    Logger.LogInformation($"  imported constant '{phys.Name}', {oldId} -> {phys.Id}");
+    Logger.LogInformation($"  wrote constant '{phys.Name}', {oldId} -> {phys.Id}");
   }
 
   private async Task WriteQuestionToDatabaseAsync(
@@ -145,10 +128,10 @@ public partial class ScopedObjects
     var oldId = phys.Id;
     phys.Id = 0;
 
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
-      phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelNode )
-      phys.ImageableId = GetMapNodeIdCrossReference( phys.ImageableId );
+    if (phys.ImageableType == Api.Utils.Constants.ScopeLevelMap)
+      phys.ImageableId = GetMapIdCrossReference(phys.ImageableId);
+    if (phys.ImageableType == Api.Utils.Constants.ScopeLevelNode)
+      phys.ImageableId = GetMapNodeIdCrossReference(phys.ImageableId);
 
     foreach (var responsePhys in phys.SystemQuestionResponses)
     {
@@ -161,13 +144,13 @@ public partial class ScopedObjects
     await _dbContext.SystemQuestions.AddAsync(phys);
     await _dbContext.SaveChangesAsync(token);
 
-    Logger.LogInformation($"  imported question '{phys.Stem}', {oldId} -> {phys.Id}");
+    Logger.LogInformation($"  wrote question '{phys.Stem}', {oldId} -> {phys.Id}");
 
     AddQuestionIdCrossReference(oldId, phys.Id);
 
     int index = 0;
     foreach (var responsePhys in phys.SystemQuestionResponses)
-      Logger.LogInformation($"    imported response '{responsePhys.Response}', {oldResponseIds[index++]} -> {responsePhys.Id}");
+      Logger.LogInformation($"    wrote response '{responsePhys.Response}', {oldResponseIds[index++]} -> {responsePhys.Id}");
 
   }
 }

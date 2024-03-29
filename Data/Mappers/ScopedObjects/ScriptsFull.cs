@@ -3,12 +3,11 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Api.ObjectMapper;
+
+public class ScriptsFull : OLabMapper<SystemScripts, ScriptsFullDto>
 {
-  public class ScriptsFull : OLabMapper<SystemScripts, ScriptsFullDto>
+  public ScriptsFull(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
-    public ScriptsFull(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
-    {
-    }
   }
 }

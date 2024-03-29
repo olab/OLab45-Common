@@ -1,8 +1,7 @@
-namespace OLab.Common.Interfaces
+namespace OLab.Common.Interfaces;
+
+public interface IWikiTagModule
 {
-  public interface IWikiTagModule
-  {
-    string Translate(string source);
-    string GetHtmlElementName();
-  }
+  string Translate(string source);
+  string GetHtmlElementName();
 }

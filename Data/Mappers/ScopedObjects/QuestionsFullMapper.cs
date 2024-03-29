@@ -3,65 +3,67 @@ using NuGet.Packaging;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
+using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System.Linq;
+using System.Xml.Linq;
 
-namespace OLab.Api.ObjectMapper
+namespace OLab.Api.ObjectMapper;
+
+public class QuestionsFullMapper : OLabMapper<SystemQuestions, QuestionsFullDto>
 {
-  public class QuestionsFullMapper : OLabMapper<SystemQuestions, QuestionsFullDto>
+  public QuestionsFullMapper(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
   {
-    public QuestionsFullMapper(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
-    {
-    }
+  }
 
-    public QuestionsFullMapper(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
-    {
-    }
+  public QuestionsFullMapper(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  {
+  }
 
-    /// <summary>
-    /// Default (overridable) AutoMapper cfg
-    /// </summary>
-    /// <returns>MapperConfiguration</returns>
-    protected override MapperConfiguration GetConfiguration()
-    {
-      return new MapperConfiguration(cfg =>
-       cfg.CreateMap<SystemQuestions, QuestionsFullDto>()
-        .ForMember(dest => dest.TryCount, act => act.MapFrom(src => src.NumTries))
-        .ReverseMap()
-      );
-    }
+  /// <summary>
+  /// Default (overridable) AutoMapper cfg
+  /// </summary>
+  /// <returns>MapperConfiguration</returns>
+  protected override MapperConfiguration GetConfiguration()
+  {
+    return new MapperConfiguration(cfg =>
+     cfg.CreateMap<SystemQuestions, QuestionsFullDto>()
+      .ForMember(dest => dest.TryCount, act => act.MapFrom(src => src.NumTries))
+      .ReverseMap()
+    );
+  }
 
-    public override SystemQuestions DtoToPhysical(QuestionsFullDto dto)
-    {
-      var phys = new SystemQuestions();
-      _mapper.Map(dto, phys);
+  public override SystemQuestions DtoToPhysical(QuestionsFullDto dto)
+  {
+    var phys = new SystemQuestions();
+    _mapper.Map(dto, phys);
 
-      phys = DtoToPhysical(dto, phys);
+    phys = DtoToPhysical(dto, phys);
 
-      return phys;
-    }
+    return phys;
+  }
 
-    public override SystemQuestions DtoToPhysical(QuestionsFullDto dto, SystemQuestions phys)
-    {
-      var builder = new QuestionResponses(Logger, GetWikiProvider(), dto);
-      phys.SystemQuestionResponses.AddRange(builder.DtoToPhysical(dto.Responses));
+  public override SystemQuestions DtoToPhysical(QuestionsFullDto dto, SystemQuestions phys)
+  {
+    var builder = new QuestionResponses(Logger, GetWikiProvider(), dto);
+    phys.SystemQuestionResponses.AddRange(builder.DtoToPhysical(dto.Responses));
 
-      return phys;
-    }
+    return phys;
+  }
 
-    public override QuestionsFullDto PhysicalToDto(SystemQuestions phys, QuestionsFullDto dto)
-    {
-      if (string.IsNullOrEmpty(phys.Name))
-        dto.Name = phys.Id.ToString();
+  public override QuestionsFullDto PhysicalToDto(SystemQuestions phys, QuestionsFullDto dto)
+  {
+    if (string.IsNullOrEmpty(phys.Name))
+      dto.Name = phys.Id.ToString();
 
-      // calculated properties
-      dto.Wiki = phys.GetWikiTag();
-      dto.Value = null;
+    // calculated properties
+    dto.Wiki = phys.GetWikiTag();
+    dto.Value = null;
+    dto.Settings = Conversions.Base64Decode(phys.Settings);
 
-      var builder = new QuestionResponses(Logger, GetWikiProvider(), dto);
-      dto.Responses.AddRange(builder.PhysicalToDto(phys.SystemQuestionResponses.ToList()));
+    var builder = new QuestionResponses(Logger, GetWikiProvider(), dto);
+    dto.Responses.AddRange(builder.PhysicalToDto(phys.SystemQuestionResponses.ToList()));
 
-      return dto;
-    }
+    return dto;
   }
 }

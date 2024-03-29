@@ -1,12 +1,11 @@
-namespace Common.Utils
+namespace Common.Utils;
+
+public static class ConnectionIdUtils
 {
-  public static class ConnectionIdUtils
+  public static string Shorten(string connectionId)
   {
-    public static string Shorten(string connectionId)
-    {
-      if (string.IsNullOrEmpty(connectionId))
-        return "<none>";
-      return connectionId[^3..];
-    }
+    if (string.IsNullOrEmpty(connectionId))
+      return "<none>";
+    return connectionId[^3..];
   }
 }

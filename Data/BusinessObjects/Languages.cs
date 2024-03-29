@@ -6,30 +6,29 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLab.Api.Model
+namespace OLab.Api.Model;
+
+[Table("languages")]
+[Index(nameof(Name), Name = "name")]
+public partial class Languages
 {
-  [Table("languages")]
-  [Index(nameof(Name), Name = "name")]
-  public partial class Languages
+  public Languages()
   {
-    public Languages()
-    {
-      Maps = new HashSet<Maps>();
-    }
-
-    [Key]
-    [Column("id", TypeName = "int(10) unsigned")]
-    public uint Id { get; set; }
-    [Required]
-    [Column("name")]
-    [StringLength(20)]
-    public string Name { get; set; }
-    [Required]
-    [Column("key")]
-    [StringLength(20)]
-    public string Key { get; set; }
-
-    [InverseProperty("Language")]
-    public virtual ICollection<Maps> Maps { get; set; }
+    Maps = new HashSet<Maps>();
   }
+
+  [Key]
+  [Column("id", TypeName = "int(10) unsigned")]
+  public uint Id { get; set; }
+  [Required]
+  [Column("name")]
+  [StringLength(20)]
+  public string Name { get; set; }
+  [Required]
+  [Column("key")]
+  [StringLength(20)]
+  public string Key { get; set; }
+
+  [InverseProperty("Language")]
+  public virtual ICollection<Maps> Maps { get; set; }
 }
