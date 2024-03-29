@@ -97,6 +97,8 @@ public partial class FilesEndpoint : OLabEndpoint
       throw new OLabObjectNotFoundException("FilesPhys", id);
 
     var phys = await dbContext.SystemFiles.FirstAsync(x => x.Id == id);
+    _fileStorageModule.AttachUrls(phys);
+
     var dto = new FilesFull(Logger).PhysicalToDto(phys);
 
     // test if user has access to object
@@ -173,14 +175,12 @@ public partial class FilesEndpoint : OLabEndpoint
     await dbContext.SaveChangesAsync();
 
     var filePath = _fileStorageModule.BuildPath(
-      OLabFileStorageModule.FilesRoot,
       dto.ImageableType,
       dto.ImageableId);
 
     await _fileStorageModule.WriteFileAsync(
       dto.GetStream(),
-      filePath,
-      dto.FileName,
+      _fileStorageModule.BuildPath( filePath, dto.FileName ),
       token);
 
     var newDto = builder.PhysicalToDto(phys);
@@ -212,17 +212,17 @@ public partial class FilesEndpoint : OLabEndpoint
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("ConstantsPhys", id);
 
-      dbContext.SystemFiles.Remove(phys);
-      await dbContext.SaveChangesAsync();
-
       var filePath = _fileStorageModule.BuildPath(
         OLabFileStorageModule.FilesRoot,
         dto.ImageableType,
-        dto.ImageableId);
+        dto.ImageableId,
+        dto.FileName);
 
       await _fileStorageModule.DeleteFileAsync(
-        filePath,
-        dto.FileName);
+        filePath);
+
+      dbContext.SystemFiles.Remove(phys);
+      await dbContext.SaveChangesAsync();
     }
     catch (DbUpdateConcurrencyException)
     {

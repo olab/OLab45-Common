@@ -32,7 +32,7 @@ public partial class SessionEndpoint : OLabEndpoint
     var session = await dbContext.UserSessions
       .Include(session => session.Statements)
       .Include(session => session.UserBookmarks)
-      .Include(session => session.UserSessionTraces)
+      .Include(session => session.UserSessiontraces)
       .FirstOrDefaultAsync(x => x.Uuid == sessionUuid);
 
     if (session == null)

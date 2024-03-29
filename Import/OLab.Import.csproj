@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Api\OLab.Access\OLab.Access.csproj" />
     <ProjectReference Include="..\Data\OLab.Data.csproj" />
   </ItemGroup>
 

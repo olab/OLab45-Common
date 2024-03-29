@@ -1,5 +1,6 @@
 using OLab.Api.Importer;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
@@ -38,14 +39,19 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
     {
       Logger.LogInformation($"Loading '{GetFileName()}'");
 
-      if (GetFileModule().FileExists(importFileDirectory, GetFileName()))
+      var physicalFilePath = GetFileModule().BuildPath(
+        OLabFileStorageModule.ImportRoot,
+        importFileDirectory,
+        GetFileName());
+
+      if (GetFileModule().FileExists(physicalFilePath))
       {
         using var moduleFileStream = new MemoryStream();
         await GetFileModule().ReadFileAsync(
-          moduleFileStream, 
-          importFileDirectory, 
-          GetFileName(), 
+          moduleFileStream,
+          physicalFilePath,
           new System.Threading.CancellationToken());
+
         _phys = DynamicXml.Load(moduleFileStream);
       }
 
@@ -69,6 +75,8 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
             VpdTypeId = item.VpdTypeId
           };
 
+          Logger.LogInformation($"  loaded '{phys.Id}'");
+
           GetModel().Data.Add(phys);
           record++;
         }
@@ -82,7 +90,7 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
       Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
 
       // delete data file
-      await GetFileModule().DeleteFileAsync(importFileDirectory, GetFileName());
+      await GetFileModule().DeleteFileAsync(physicalFilePath);
     }
     catch (Exception ex)
     {
@@ -110,8 +118,8 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
   public override bool SaveToDatabase(
-    string importFolderName, 
-    int recordIndex, 
+    string importFolderName,
+    int recordIndex,
     IEnumerable<dynamic> elements)
   {
     var item = _mapper.ElementsToPhys(elements);

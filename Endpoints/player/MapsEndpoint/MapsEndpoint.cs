@@ -65,13 +65,13 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <returns></returns>
   public async Task<Model.Maps> GetSimpleAnonymousAsync(uint id)
   {
-    var phys = await dbContext.Maps
+    var mapPhys = await dbContext.Maps
       .Include(x => x.SystemCounterActions).FirstOrDefaultAsync(x => x.Id == id);
 
-    if (phys == null)
+    if (mapPhys == null)
       throw new OLabObjectNotFoundException("Maps", id);
 
-    return phys;
+    return mapPhys;
   }
 
   /// <summary>
@@ -82,9 +82,9 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <returns></returns>
   public Maps GetSimple(OLabDBContext context, uint id)
   {
-    var phys = context.Maps
+    var mapPhys = context.Maps
       .Include(x => x.SystemCounterActions).FirstOrDefault(x => x.Id == id);
-    return phys;
+    return mapPhys;
   }
 
   /// <summary>
@@ -116,9 +116,7 @@ public partial class MapsEndpoint : OLabEndpoint
       remaining = total - take.Value - skip.Value;
     }
     else
-    {
       items = await dbContext.Maps.OrderBy(x => x.Name).ToListAsync();
-    }
 
     total = items.Count;
 
@@ -146,7 +144,7 @@ public partial class MapsEndpoint : OLabEndpoint
   {
     Logger.LogInformation($"  generating map {mapId} summary");
 
-    var map = await dbContext.Maps
+    var mapPhys = await dbContext.Maps
       .Include(map => map.MapNodes)
       .Include(map => map.MapNodeLinks)
       .AsNoTracking()
@@ -154,7 +152,7 @@ public partial class MapsEndpoint : OLabEndpoint
         x => x.Id == mapId,
         token);
 
-    if (map == null)
+    if (mapPhys == null)
       throw new OLabObjectNotFoundException("Maps", mapId);
 
     if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -164,7 +162,16 @@ public partial class MapsEndpoint : OLabEndpoint
       Logger,
       _wikiTagProvider as WikiTagProvider,
       false
-    ).PhysicalToDto(map);
+    ).PhysicalToDto(mapPhys);
+
+    string author = $"({auth.UserContext.UserId}): {auth.UserContext.UserName}";
+
+    DateTime createdAt = new DateTime();
+    if (mapPhys.CreatedAt.HasValue)
+    {
+      createdAt = mapPhys.CreatedAt.Value;
+      createdAt = DateTime.SpecifyKind(createdAt, DateTimeKind.Utc);
+    }
 
     var dto = new MapStatusDto
     {
@@ -172,6 +179,8 @@ public partial class MapsEndpoint : OLabEndpoint
       Name = mapDto.Map.Name,
       NodeCount = mapDto.MapNodes.Count,
       NodeLinkCount = mapDto.MapNodeLinks.Count,
+      Author = author,
+      CreatedAt = createdAt
     };
 
     return dto;
@@ -190,7 +199,7 @@ public partial class MapsEndpoint : OLabEndpoint
   {
     Logger.LogInformation($"  generating map {mapId} summary");
 
-    var map = await dbContext.Maps
+    var mapPhys = await dbContext.Maps
       .Include(map => map.MapNodes)
       .Include(map => map.MapNodeLinks)
       .AsNoTracking()
@@ -198,7 +207,7 @@ public partial class MapsEndpoint : OLabEndpoint
         x => x.Id == mapId,
         token);
 
-    if (map == null)
+    if (mapPhys == null)
       throw new OLabObjectNotFoundException("Maps", mapId);
 
     if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
@@ -208,7 +217,16 @@ public partial class MapsEndpoint : OLabEndpoint
       Logger,
       _wikiTagProvider as WikiTagProvider,
       false
-    ).PhysicalToDto(map);
+    ).PhysicalToDto(mapPhys);
+
+    string author = $"({auth.UserContext.UserId}): {auth.UserContext.UserName}";
+
+    DateTime createdAt = new DateTime();
+    if (mapPhys.CreatedAt.HasValue)
+    {
+      createdAt = mapPhys.CreatedAt.Value;
+      createdAt = DateTime.SpecifyKind(createdAt, DateTimeKind.Utc);
+    }
 
     var dto = new MapStatusDto
     {
@@ -216,6 +234,8 @@ public partial class MapsEndpoint : OLabEndpoint
       Name = mapDto.Map.Name,
       NodeCount = mapDto.MapNodes.Count,
       NodeLinkCount = mapDto.MapNodeLinks.Count,
+      Author = author,
+      CreatedAt = createdAt
     };
 
     dto.Server = await GetObjectTallyAsync(Utils.Constants.ScopeLevelServer, 1);
@@ -275,8 +295,8 @@ public partial class MapsEndpoint : OLabEndpoint
   {
     Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.ReadAsync");
 
-    var map = await GetMapAsync(id);
-    if (map == null)
+    var mapPhys = await GetMapAsync(id);
+    if (mapPhys == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 
     // test if map set to use ACL for testing access
@@ -287,7 +307,7 @@ public partial class MapsEndpoint : OLabEndpoint
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, id);
     //}
 
-    var dto = new MapsFullMapper(Logger).PhysicalToDto(map);
+    var dto = new MapsFullMapper(Logger).PhysicalToDto(mapPhys);
 
     return dto;
   }
@@ -309,12 +329,12 @@ public partial class MapsEndpoint : OLabEndpoint
     if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-    var map = await dbContext.Maps
+    var mapPhys = await dbContext.Maps
       .AsNoTracking()
       .Include(x => x.MapNodes)
       .FirstOrDefaultAsync(x => x.Id == mapId);
 
-    if (map == null)
+    if (mapPhys == null)
       throw new OLabObjectNotFoundException("Maps", mapId);
 
     var template = await dbContext.Maps
@@ -325,13 +345,13 @@ public partial class MapsEndpoint : OLabEndpoint
     if (template == null)
       throw new OLabObjectNotFoundException("Maps", body.TemplateId);
 
-    map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext)
-      .CreateMapWithTemplateAsync(map, template);
+    mapPhys = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext)
+      .CreateMapWithTemplateAsync(auth.User, mapPhys, template);
 
-    var mapLinks = dbContext.MapNodeLinks.AsNoTracking().Where(x => x.MapId == map.Id).ToList();
+    var mapLinks = dbContext.MapNodeLinks.AsNoTracking().Where(x => x.MapId == mapPhys.Id).ToList();
     var linksDto = new MapNodeLinksMapper(Logger).PhysicalToDto(mapLinks);
 
-    var mapNodes = dbContext.MapNodes.AsNoTracking().Where(x => x.MapId == map.Id).ToList();
+    var mapNodes = dbContext.MapNodes.AsNoTracking().Where(x => x.MapId == mapPhys.Id).ToList();
     var nodesDto = new MapNodesFullMapper(Logger, _wikiTagProvider).PhysicalToDto(mapNodes);
 
     var dto = new ExtendMapResponse
@@ -358,13 +378,16 @@ public partial class MapsEndpoint : OLabEndpoint
     if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, 0))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, 0);
 
-    Maps map = null;
+    Maps mapPhys = null;
 
     // if no templateId passed in, create default map
     if (!body.TemplateId.HasValue)
     {
-      map = Maps.CreateDefault();
-      dbContext.Maps.Add(map);
+      mapPhys = Maps.CreateDefault();
+      dbContext.Maps.Add(mapPhys);
+      await dbContext.SaveChangesAsync();
+
+      mapPhys.AddGroupsFromUser(auth.User);
       await dbContext.SaveChangesAsync();
     }
     else
@@ -377,24 +400,24 @@ public partial class MapsEndpoint : OLabEndpoint
       if (template == null)
         throw new OLabObjectNotFoundException("Maps", body.TemplateId.Value);
 
-      map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext)
-        .CreateMapWithTemplateAsync(map, template);
+      mapPhys = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext)
+        .CreateMapWithTemplateAsync(auth.User, mapPhys, template);
     }
 
     // set up default ACL for map author against map
-    var acl = SecurityUsers.CreateDefaultMapACL(auth.UserContext, map);
+    var acl = SecurityUsers.CreateDefaultMapACL(auth.UserContext, mapPhys);
     dbContext.SecurityUsers.Add(acl);
 
     // update map's author
-    map.AuthorId = acl.UserId;
-    dbContext.Entry(map).State = EntityState.Modified;
+    mapPhys.AuthorId = (uint)acl.UserId;
+    dbContext.Entry(mapPhys).State = EntityState.Modified;
 
     await dbContext.SaveChangesAsync();
 
     var dto = new MapsFullRelationsMapper(
       Logger,
       _wikiTagProvider as WikiTagProvider
-    ).PhysicalToDto(map);
+    ).PhysicalToDto(mapPhys);
     return dto;
   }
 
@@ -433,29 +456,6 @@ public partial class MapsEndpoint : OLabEndpoint
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
     }
 
-  }
-
-  /// <summary>
-  /// 
-  /// </summary>
-  /// <param name="id"></param>
-  /// <returns></returns>
-  public async Task DeleteAsync(
-    IOLabAuthorization auth,
-    uint id)
-  {
-    Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.DeleteAsync");
-
-    // test if user has access to map.
-    if (!auth.HasAccess("D", Utils.Constants.ScopeLevelMap, id))
-      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, id);
-
-    var map = GetSimple(dbContext, id);
-    if (map == null)
-      throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
-
-    dbContext.Maps.Remove(map);
-    await dbContext.SaveChangesAsync();
   }
 
   /// <summary>
@@ -506,15 +506,19 @@ public partial class MapsEndpoint : OLabEndpoint
 
     var userSessions = await dbContext.UserSessions
       .AsNoTracking()
-      .Include(x => x.UserSessionTraces)
+      .Include(x => x.UserSessiontraces)
       .Where(x => x.MapId == mapId)
       .Select(x => new
       {
         uuid = x.Uuid,
-        nodesVisited = x.UserSessionTraces.Where(s => s.MapId == mapId).Count(),
+        nodesVisited = x.UserSessiontraces.Where(s => s.MapId == mapId).Count(),
         timestamp = x.StartTime,
         user = x.Iss == auth.UserContext.Issuer
-          ? dbContext.Users.Where(u => u.Id == x.UserId).First()
+          ? dbContext
+            .Users
+            .Include("UserGroups")
+            .Include("UserGroups.Group")
+            .Where(u => u.Id == x.UserId).First()
           : null,
       })
       .ToListAsync();
@@ -535,6 +539,19 @@ public partial class MapsEndpoint : OLabEndpoint
     }
 
     return sessions;
+  }
+
+  public async Task DeleteMapAsync( IOLabAuthorization auth, uint mapId )
+  {
+    Logger.LogInformation($"DeleteMapAsync(uint mapId={mapId})");
+
+    // test if user has access to map.
+    if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
+      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+
+    var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).DeleteAsync(mapId)
+      ?? throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
+
   }
 
   [HttpOptions]

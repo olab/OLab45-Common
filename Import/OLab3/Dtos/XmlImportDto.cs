@@ -1,6 +1,7 @@
 using OLab.Api.Importer;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
@@ -69,17 +70,17 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// </summary>
   /// <param name="originalId">Import system Id</param>
   /// <param name="newId">Database id</param>
-  protected override bool CreateIdTranslation(uint originalId, uint? newId = null)
+  protected override bool CreateIdTranslation(uint originalId, uint? newId)
   {
     if (_idTranslation.ContainsKey(originalId))
     {
-      Logger.LogInformation($"  replaced {_fileName} translation {originalId} -> {newId.Value}");
+      Logger.LogInformation($"  replaced {_fileName} translation id {originalId} -> {newId.Value}");
       _idTranslation[originalId] = newId;
       return false;
     }
 
     _idTranslation.Add(originalId, newId);
-    Logger.LogInformation($"  added {_fileName} translation {originalId} -> {newId.Value}");
+    Logger.LogInformation($"  added {_fileName} translation id {originalId} -> {newId.Value}");
 
     return true;
   }
@@ -128,13 +129,17 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
       var moduleFileName = $"{importFileDirectory}{GetFileModule().GetFolderSeparator()}{GetFileName()}";
       Logger.LogInformation($"Loading {moduleFileName}");
 
-      if (GetFileModule().FileExists(importFileDirectory, GetFileName()))
+      var physicalFilePath = GetFileModule().BuildPath(
+        OLabFileStorageModule.ImportRoot,
+        importFileDirectory,
+        GetFileName());
+
+      if (GetFileModule().FileExists(physicalFilePath))
       {
         using var moduleFileStream = new MemoryStream();
         await GetFileModule().ReadFileAsync(
           moduleFileStream,
-          importFileDirectory,
-          GetFileName(),
+          physicalFilePath,
           new System.Threading.CancellationToken());
         _phys = DynamicXml.Load(moduleFileStream);
       }
@@ -157,7 +162,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
             ++record;
             var elements = (IEnumerable<dynamic>)innerElements.Elements();
             xmlImportElementSets.Add(elements);
-            if ( displayProgressMessage )
+            if (displayProgressMessage)
               Logger.LogInformation($"  loaded {GetLoggerString(elements)}");
           }
           catch (Exception ex)
@@ -170,7 +175,11 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
       }
 
       // delete data file
-      await GetFileModule().DeleteFileAsync(importFileDirectory, GetFileName());
+      await GetFileModule().DeleteFileAsync(
+        GetFileModule().BuildPath(
+          OLabFileStorageModule.ImportRoot,
+          importFileDirectory, 
+          GetFileName()));
 
     }
     catch (Exception ex)

@@ -1,7 +1,14 @@
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace OLab.Api.Model;
+
+public class GroupRole
+{
+  public string Group { get; set; }
+  public string Role { get; set; }
+}
 
 public class AddUserRequest
 {
@@ -18,6 +25,7 @@ public class AddUserRequest
   public string Group { get; set; }
   [Required]
   public string Role { get; set; }
+  public IList<GroupRole> Roles = new List<GroupRole>();
 
   public AddUserRequest()
   {

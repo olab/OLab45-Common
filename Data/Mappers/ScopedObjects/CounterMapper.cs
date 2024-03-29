@@ -74,6 +74,8 @@ public class CounterMapper : OLabMapper<SystemCounters, CountersDto>
     phys.Name = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "name"));
     phys.Description = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "description"));
     phys.StartValue = Encoding.ASCII.GetBytes(elements.FirstOrDefault(x => x.Name == "start_value").Value);
+    phys.Value = phys.StartValue;
+    phys.Visible = Convert.ToInt16(elements.FirstOrDefault(x => x.Name == "visible").Value) == 1;
     phys.CreatedAt = DateTime.Now;
 
     return phys;

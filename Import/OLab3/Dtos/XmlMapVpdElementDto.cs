@@ -41,34 +41,34 @@ public class XmlMapVpdElementDto : XmlImportDto<XmlMapVpdElements>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
   public override bool SaveToDatabase(
-    string importFolderName, 
-    int recordIndex, 
+    string importFolderName,
+    int recordIndex,
     IEnumerable<dynamic> elements)
   {
-    var phys = _mapper.ElementsToPhys(elements);
+    var vpdElementPhys = _mapper.ElementsToPhys(elements);
 
-    // only support the VPDText type at this time
-    if (phys.Key == "VPDText")
+    var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdDto) as XmlMapVpdDto;
+    var vpdPhys = vpdDto.GetModel().Data.First(x => x.Id == vpdElementPhys.VpdId);
+
+    // only support the VPDTextType type at this time
+    if (vpdPhys.VpdTypeId != 1)
     {
-      Logger.LogInformation($"Skipped MapVpdElement record of type 'VPDText'");
+      Logger.LogInformation($"  skipped vpd type {vpdPhys.VpdTypeId} {vpdElementPhys.Id} MapVpdElement record");
       return true;
     }
 
     var item = new SystemConstants();
-    var oldId = phys.VpdId;
+    var oldId = vpdPhys.Id;
 
     item.Id = 0;
     item.ImageableType = "Maps";
-    item.Name = phys.Key;
-    item.Value = Encoding.ASCII.GetBytes(phys.Value);
+    item.Name = vpdElementPhys.Key;
+    item.Value = Encoding.ASCII.GetBytes(vpdElementPhys.Value);
     item.CreatedAt = DateTime.Now;
-    item.Description = $"Imported from {GetFileName()} id = {phys.Id}.";
-
-    var vpdDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdDto) as XmlMapVpdDto;
-    var vpd = vpdDto.GetModel().Data.First(x => x.Id == phys.VpdId);
+    item.Description = $"Imported from {GetFileName()} id = {vpdElementPhys.Id}.";
 
     var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
-    item.ImageableId = mapDto.GetIdTranslation(GetFileName(), vpd.MapId).Value;
+    item.ImageableId = mapDto.GetIdTranslation(GetFileName(), vpdPhys.MapId).Value;
 
     Context.SystemConstants.Add(item);
     Context.SaveChanges();
@@ -77,9 +77,28 @@ public class XmlMapVpdElementDto : XmlImportDto<XmlMapVpdElements>
     item.Name = item.Id.ToString();
     Context.SaveChanges();
 
-    CreateIdTranslation(oldId, item.Id);
+    CreateIdTranslation(oldId, item.Id, Encoding.Default.GetString(item.Value));
 
     return true;
   }
 
+  /// <summary>
+  /// Add id translation record to store
+  /// </summary>
+  /// <param name="originalId">Import system Id</param>
+  /// <param name="newId">Database id</param>
+  protected bool CreateIdTranslation(uint originalId, uint? newId, string value)
+  {
+    if (_idTranslation.ContainsKey(originalId))
+    {
+      Logger.LogInformation($"  replaced {_fileName} = {value}. translation id {originalId} -> {newId.Value} ");
+      _idTranslation[originalId] = newId;
+      return false;
+    }
+
+    _idTranslation.Add(originalId, newId);
+    Logger.LogInformation($"  added {_fileName} = {value}. translation id {originalId} -> {newId.Value} ");
+
+    return true;
+  }
 }

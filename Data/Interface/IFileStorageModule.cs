@@ -16,38 +16,35 @@ public interface IFileStorageModule
   void AttachUrls(
     IList<SystemFiles> items);
 
+  void AttachUrls(
+    SystemFiles item);
+
   public Task MoveFileAsync(
-    string fileName,
-    string sourcePath,
-    string destinationPath,
+    string sourceFilePath,
+    string destinationFolder,
     CancellationToken token = default);
 
   bool FileExists(
-    string folder,
-    string fileName);
+    string filePath);
 
   Task ReadFileAsync(
     Stream stream,
-    string folder,
-    string fileName,
+    string filePath,
     CancellationToken token);
 
   Task<string> WriteFileAsync(
     Stream stream,
-    string folderName,
     string fileName,
     CancellationToken token);
 
   Task<bool> DeleteFileAsync(
-    string folder,
-    string fileName);
+    string filePath);
 
   Task DeleteFolderAsync(
-    string folder);
+    string folderName);
 
   Task<bool> ExtractFileToStorageAsync(
-    string folderName,
-    string fileName,
+    string archiveFileName,
     string extractDirectory,
     CancellationToken token);
 

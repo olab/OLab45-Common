@@ -1,13 +1,15 @@
 using AutoMapper;
+using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace OLab.Api.ObjectMapper;
 
-public class MapsMapper : OLabMapper<Model.Maps, Dto.MapsDto>
+public class MapsMapper : OLabMapper<Maps, Dto.MapsDto>
 {
   public MapsMapper(
     IOLabLogger logger,
@@ -22,13 +24,13 @@ public class MapsMapper : OLabMapper<Model.Maps, Dto.MapsDto>
   protected override MapperConfiguration GetConfiguration()
   {
     return new MapperConfiguration(cfg =>
-     cfg.CreateMap<Model.Maps, Dto.MapsDto>()
+     cfg.CreateMap<Maps, Dto.MapsDto>()
       .ForMember(dest => dest.Description, act => act.MapFrom(src => src.Abstract))
       .ReverseMap()
     );
   }
 
-  public override Model.Maps ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
+  public override Maps ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
   {
     var phys = base.GetPhys(source);
 
@@ -61,11 +63,10 @@ public class MapsMapper : OLabMapper<Model.Maps, Dto.MapsDto>
     phys.AuthorRights = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "author_rights").Value);
     phys.RevisableAnswers = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "revisable_answers").Value) == 1;
     phys.SendXapiStatements = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "send_xapi_statements").Value) == 1;
-    phys.CreatedAt = DateTime.Now;
+    phys.CreatedAt = TimeUtils.UtcNow();
+
     if (elements.Any(x => x.Name == "report_node_id"))
       phys.ReportNodeId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "report_node_id").Value);
-
-    // Logger.LogInformation($"loaded Map {phys.Id}");
 
     return phys;
   }
