@@ -26,8 +26,8 @@ namespace OLab.Api.ObjectMapper
     {
       return new MapperConfiguration(cfg =>
       {
-        cfg.CreateMap<string, byte[]>().ConvertUsing(s => Encoding.ASCII.GetBytes(s));
-        cfg.CreateMap<byte[], string>().ConvertUsing(s => Encoding.ASCII.GetString(s));
+        cfg.CreateMap<string, byte[]>().ConvertUsing(s => Encoding.UTF8.GetBytes(s));
+        cfg.CreateMap<byte[], string>().ConvertUsing(s => Encoding.UTF8.GetString(s));
         cfg.CreateMap<SystemConstants, ConstantsDto>().ReverseMap();
       });
     }

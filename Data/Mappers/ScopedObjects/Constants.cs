@@ -22,13 +22,13 @@ namespace OLab.Api.ObjectMapper
 
     public override ConstantsDto PhysicalToDto(SystemConstants phys, ConstantsDto dto)
     {
-      dto.Value = Encoding.ASCII.GetString(phys.Value);
+      dto.Value = Encoding.UTF8.GetString(phys.Value);
       return dto;
     }
 
     public override SystemConstants DtoToPhysical(ConstantsDto dto, SystemConstants phys)
     {
-      phys.Value = Encoding.ASCII.GetBytes(dto.Value);
+      phys.Value = Encoding.UTF8.GetBytes(dto.Value);
       return phys;
     }
 

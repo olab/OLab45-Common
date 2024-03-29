@@ -81,7 +81,7 @@ namespace OLab.Api.Endpoints.Player
         ImageableId = map.Id,
         ImageableType = Utils.Constants.ScopeLevelMap,
         IsSystem = 1,
-        Value = Encoding.ASCII.GetBytes(map.Name)
+        Value = Encoding.UTF8.GetBytes(map.Name)
       });
 
       var builder = new ObjectMapper.ScopedObjectsMapper(Logger, _wikiTagProvider, enableWikiTranslation);

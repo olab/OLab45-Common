@@ -11,7 +11,7 @@ namespace OLab.Api.Model
       return new MapNodes
       {
         Title = "New Node",
-        Text = "<b>New node text</b>",
+        Text = "New node text",
         X = 0,
         Y = 0,
         Locked = 0,
