@@ -19,9 +19,9 @@ public partial class MapsEndpoint : OLabEndpoint
   {
     Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetScopedObjectsRawAsync");
 
-      // test if user has access to map.
-      if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, id))
-        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
+    // test if user has access to map.
+    if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, id))
+      throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 
       var result = await GetScopedObjectsAsync(id, false);
       return result;
@@ -158,5 +158,4 @@ public partial class MapsEndpoint : OLabEndpoint
 
     return dto;
   }
-
 }

@@ -9,7 +9,6 @@ namespace OLab.Api.ObjectMapper;
 
 public class ConstantsFull : OLabMapper<SystemConstants, ConstantsDto>
 {
-
   public ConstantsFull(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
   {
 
