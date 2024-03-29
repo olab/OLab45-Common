@@ -1,7 +1,6 @@
-namespace OLabWebAPI.Dto
+namespace OLab.Api.Dto;
+
+public class MapsTestAccessDto : MapsDto
 {
-  public class MapsTestAccessDto : MapsDto
-  {
-    public uint SecurityId { get; set; }
-  }
+  public uint SecurityId { get; set; }
 }

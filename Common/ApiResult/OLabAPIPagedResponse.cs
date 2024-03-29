@@ -1,13 +1,12 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.Common
+namespace OLab.Api.Common;
+
+public class OLabAPIPagedResponse<D> : OLabAPIResponse<IList<D>>
 {
-  public class OLabAPIPagedResponse<D> : OLabAPIResponse<IList<D>>
-  {
-    [JsonProperty("count")]
-    public int Count { get; set; }
-    [JsonProperty("remaining")]
-    public int Remaining { get; set; }
-  }
+  [JsonProperty("count")]
+  public int Count { get; set; }
+  [JsonProperty("remaining")]
+  public int Remaining { get; set; }
 }

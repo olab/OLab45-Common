@@ -1,37 +1,36 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto;
+using OLab.Common.Interfaces;
 using System.Linq;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper;
+
+public class MapsNodesFullRelationsMapper : OLabMapper<Model.MapNodes, MapsNodesFullRelationsDto>
 {
-  public class MapsNodesFullRelationsMapper : OLabMapper<Model.MapNodes, MapsNodesFullRelationsDto>
+  protected readonly bool enableWikiTranslation = false;
+
+  public MapsNodesFullRelationsMapper(
+    IOLabLogger logger,
+    WikiTagProvider tagProvider,
+    bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
-    protected readonly bool enableWikiTranslation = false;
+    this.enableWikiTranslation = enableWikiTranslation;
+  }
 
-    public MapsNodesFullRelationsMapper(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
-    {
-      this.enableWikiTranslation = enableWikiTranslation;
-    }
+  public override MapsNodesFullRelationsDto PhysicalToDto(Model.MapNodes phys, MapsNodesFullRelationsDto dto)
+  {
+    dto.Height = phys.Height.HasValue ? phys.Height : MapNodesMapper.DefaultHeight;
 
-    public MapsNodesFullRelationsMapper(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
-    {
-      this.enableWikiTranslation = enableWikiTranslation;
-    }
+    if (enableWikiTranslation)
+      dto.Text = GetWikiProvider().Translate(phys.Text);
+    else
+      dto.Text = phys.Text;
 
-    public override MapsNodesFullRelationsDto PhysicalToDto(Model.MapNodes phys, MapsNodesFullRelationsDto dto)
-    {
-      dto.Height = phys.Height.HasValue ? phys.Height : ObjectMapper.MapNodesMapper.DefaultHeight;
+    dto.Width = phys.Width.HasValue ? phys.Width : ObjectMapper.MapNodesMapper.DefaultWidth;
+    dto.MapNodeLinks = new MapNodeLinksMapper(
+      Logger,
+      GetWikiProvider()).PhysicalToDto(phys.MapNodeLinksNodeId1Navigation.ToList());
 
-      if (enableWikiTranslation)
-        dto.Text = _tagProvider.Translate(phys.Text);
-      else
-        dto.Text = phys.Text;
-
-      dto.Width = phys.Width.HasValue ? phys.Width : ObjectMapper.MapNodesMapper.DefaultWidth;
-      dto.MapNodeLinks = new MapNodeLinksMapper(logger, GetWikiProvider()).PhysicalToDto(phys.MapNodeLinksNodeId1Navigation.ToList());
-
-      return dto;
-    }
+    return dto;
   }
 }

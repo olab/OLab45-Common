@@ -1,7 +1,6 @@
-namespace OLabWebAPI.Dto
+namespace OLab.Api.Dto;
+
+public class FilesDto : ScopedObjectDto
 {
-  public class FilesDto : ScopedObjectDto
-  {
-    public string Url { get; set; }
-  }
+  public string Url { get; set; }
 }

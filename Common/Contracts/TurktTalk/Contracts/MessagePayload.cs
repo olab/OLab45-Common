@@ -1,53 +1,52 @@
 
-using OLabWebAPI.TurkTalk.BusinessObjects;
+using OLab.Api.TurkTalk.BusinessObjects;
 
-namespace OLabWebAPI.Common.Contracts
+namespace OLab.Api.Common.Contracts;
+
+
+public class SessionInfo
 {
+  public string ContextId { get; set; }
+  public uint MapId { get; set; }
+  public uint NodeId { get; set; }
+  public uint QuestionId { get; set; }
+}
 
-  public class SessionInfo
+public class MessagePayload
+{
+  public Envelope Envelope { get; set; }
+  public string Data { get; set; }
+  public SessionInfo Session { get; set; }
+
+  public MessagePayload()
   {
-    public string ContextId { get; set; }
-    public uint MapId { get; set; }
-    public uint NodeId { get; set; }
-    public uint QuestionId { get; set; }
+    Session = new SessionInfo();
+    Envelope = new Envelope();
   }
 
-  public class MessagePayload
+  /// <summary>
+  /// Construct message to specific Participant
+  /// </summary>
+  /// <param name="participant">Recipient</param>
+  /// <param name="message">Message to send</param>
+  public MessagePayload(string commandChannel, string message)
   {
-    public Envelope Envelope { get; set; }
-    public string Data { get; set; }
-    public SessionInfo Session { get; set; }
+    Session = new SessionInfo();
+    Envelope = new Envelope();
+    Envelope.To = commandChannel;
+    Data = message;
+  }
 
-    public MessagePayload()
-    {
-      Session = new SessionInfo();
-      Envelope = new Envelope();
-    }
-
-    /// <summary>
-    /// Construct message to specific Participant
-    /// </summary>
-    /// <param name="participant">Recipient</param>
-    /// <param name="message">Message to send</param>
-    public MessagePayload(string commandChannel, string message)
-    {
-      Session = new SessionInfo();
-      Envelope = new Envelope();
-      Envelope.To = commandChannel;
-      Data = message;
-    }
-
-    /// <summary>
-    /// Construct message to specific Participant
-    /// </summary>
-    /// <param name="participant">Recipient</param>
-    /// <param name="message">Message to send</param>
-    public MessagePayload(Participant participant, string message)
-    {
-      Session = new SessionInfo();
-      Envelope = new Envelope();
-      Envelope.To = participant.CommandChannel;
-      Data = message;
-    }
+  /// <summary>
+  /// Construct message to specific Participant
+  /// </summary>
+  /// <param name="participant">Recipient</param>
+  /// <param name="message">Message to send</param>
+  public MessagePayload(Participant participant, string message)
+  {
+    Session = new SessionInfo();
+    Envelope = new Envelope();
+    Envelope.To = participant.CommandChannel;
+    Data = message;
   }
 }

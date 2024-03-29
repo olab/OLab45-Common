@@ -1,199 +1,199 @@
 using Newtonsoft.Json;
-using OLabWebAPI.Utils;
+using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OLabWebAPI.Dto
+namespace OLab.Api.Dto;
+
+public class DynamicScopedObject
 {
-  public class DynamicScopedObject
-  {
-    [JsonProperty("counters")]
-    public List<CountersDto> Counters { get; set; }
+  [JsonProperty("counters")]
+  public List<CountersDto> Counters { get; set; }
 
-    public DynamicScopedObject()
-    {
-      Counters = new List<CountersDto>();
-    }
+  public DynamicScopedObject()
+  {
+    Counters = new List<CountersDto>();
+  }
+}
+
+public class ServerDynamicScopedObjects : DynamicScopedObject
+{
+  public ServerDynamicScopedObjects()
+  {
+  }
+}
+
+public class MapDynamicScopedObjects : DynamicScopedObject
+{
+  public MapDynamicScopedObjects()
+  {
+  }
+}
+
+public class NodeDynamicScopedObjects : DynamicScopedObject
+{
+  public NodeDynamicScopedObjects()
+  {
+  }
+}
+
+public class DynamicScopedObjectsDto
+{
+  [JsonProperty("newPlay")]
+  public bool NewPlay { get; set; }
+
+  [JsonProperty("updatedAt")]
+  public DateTime UpdatedAt { get; private set; }
+
+  [JsonProperty("checksum")]
+  public string Checksum { get; set; }
+
+  [JsonProperty("server")]
+  public ServerDynamicScopedObjects Server { get; set; }
+
+  [JsonProperty("map")]
+  public MapDynamicScopedObjects Map { get; set; }
+
+  [JsonProperty("node")]
+  public NodeDynamicScopedObjects Node { get; set; }
+
+  public DynamicScopedObjectsDto()
+  {
+    UpdatedAt = DateTime.Now;
+    Server = new ServerDynamicScopedObjects();
+    Map = new MapDynamicScopedObjects();
+    Node = new NodeDynamicScopedObjects();
   }
 
-  public class ServerDynamicScopedObjects : DynamicScopedObject
+  public bool IsEmpty()
   {
-    public ServerDynamicScopedObjects()
-    {
-    }
+    return (Map == null) && (Node == null) && (Server == null);
   }
 
-  public class MapDynamicScopedObjects : DynamicScopedObject
+  /// <summary>
+  /// Verify a checksum is valid for a given object
+  /// </summary>
+  /// <returns>true/false</returns>
+  public bool IsValid()
   {
-    public MapDynamicScopedObjects()
-    {
-    }
+    if (IsEmpty())
+      return true;
+
+    var expectedCheckSum = GenerateChecksum();
+    return expectedCheckSum == Checksum;
   }
 
-  public class NodeDynamicScopedObjects : DynamicScopedObject
+  /// <summary>
+  /// Generate a verification checksum on the dynamic scope
+  /// </summary>
+  /// <returns>checksum string</returns>
+  public string GenerateChecksum()
   {
-    public NodeDynamicScopedObjects()
-    {
-    }
+    var plainText = GetObjectPlainText();
+    var cypherText = GetStringHash(plainText);
+    return cypherText;
   }
 
-  public class DynamicScopedObjectsDto
+  public int GetPlainTextBytes(string plainText)
   {
-    [JsonProperty("newPlay")]
-    public bool NewPlay { get; set; }
+    var bytes = Encoding.ASCII.GetBytes(plainText);
+    var byteSum = 0;
 
-    [JsonProperty("updatedAt")]
-    public DateTime UpdatedAt { get; private set; }
+    foreach (var singleByte in bytes)
+      byteSum += singleByte;
 
-    [JsonProperty("checksum")]
-    public string Checksum { get; set; }
+    return byteSum;
+  }
 
-    [JsonProperty("server")]
-    public ServerDynamicScopedObjects Server { get; set; }
+  /// <summary>
+  /// Calculate a hash for a given string
+  /// </summary>
+  /// <param name="key">String to hash</param>
+  /// <returns>MD5 hash</returns>
+  private string GetStringHash(string plaintext)
+  {
+    var cypherString = StringUtils.GenerateCheckSum(plaintext);
+    return cypherString;
+  }
 
-    [JsonProperty("map")]
-    public MapDynamicScopedObjects Map { get; set; }
+  /// <summary>
+  /// Refresh the object checksum
+  /// </summary>
+  public void RefreshChecksum()
+  {
+    Checksum = GenerateChecksum();
+  }
 
-    [JsonProperty("node")]
-    public NodeDynamicScopedObjects Node { get; set; }
+  public string GetObjectPlainText()
+  {
+    var counterValues = UpdatedAt.ToString() + "/";
 
-    public DynamicScopedObjectsDto()
+    foreach (var counter in Server.Counters.OrderBy(x => x.Id))
+      counterValues += counter.Value + "/";
+
+    foreach (var counter in Node.Counters.OrderBy(x => x.Id))
+      counterValues += counter.Value + "/";
+
+    foreach (var counter in Map.Counters.OrderBy(x => x.Id))
+      counterValues += counter.Value + "/";
+
+    return counterValues;
+
+  }
+
+  /// <summary>
+  /// ReadAsync counter from scoped object lists
+  /// </summary>
+  /// <param name="id"></param>
+  /// <param name="scopeType">(optional) desired scope level</param>
+  /// <returns></returns>
+  public CountersDto GetCounter(uint id, string scopeType = "")
+  {
+    CountersDto dto = null;
+
+    if (string.IsNullOrEmpty(scopeType))
     {
-      UpdatedAt = DateTime.Now;
-      Server = new ServerDynamicScopedObjects();
-      Map = new MapDynamicScopedObjects();
-      Node = new NodeDynamicScopedObjects();
-    }
-
-    public bool IsEmpty()
-    {
-      return (Map == null) && (Node == null) && (Server == null);
-    }
-
-    /// <summary>
-    /// Verify a checksum is valid for a given object
-    /// </summary>
-    /// <returns>true/false</returns>
-    public bool IsValid()
-    {
-      if (IsEmpty())
-        return true;
-
-      var expectedCheckSum = GenerateChecksum();
-      return expectedCheckSum == Checksum;
-    }
-
-    /// <summary>
-    /// Generate a verification checksum on the dynamic scope
-    /// </summary>
-    /// <returns>checksum string</returns>
-    public string GenerateChecksum()
-    {
-      var plainText = GetObjectPlainText();
-      var cypherText = GetStringHash(plainText);
-      return cypherText;
-    }
-
-    public int GetPlainTextBytes(string plainText)
-    {
-      var bytes = Encoding.ASCII.GetBytes(plainText);
-      var byteSum = 0;
-
-      foreach (var singleByte in bytes)
-        byteSum += singleByte;
-
-      return byteSum;
-    }
-
-    /// <summary>
-    /// Calculate a hash for a given string
-    /// </summary>
-    /// <param name="key">String to hash</param>
-    /// <returns>MD5 hash</returns>
-    private string GetStringHash(string plaintext)
-    {
-      var cypherString = StringUtils.GenerateCheckSum(plaintext);
-      return cypherString;
-    }
-
-    /// <summary>
-    /// Refresh the object checksum
-    /// </summary>
-    public void RefreshChecksum()
-    {
-      Checksum = GenerateChecksum();
-    }
-
-    public string GetObjectPlainText()
-    {
-      var counterValues = UpdatedAt.ToString() + "/";
-
-      foreach (CountersDto counter in Server.Counters.OrderBy(x => x.Id))
-        counterValues += counter.Value + "/";
-
-      foreach (CountersDto counter in Node.Counters.OrderBy(x => x.Id))
-        counterValues += counter.Value + "/";
-
-      foreach (CountersDto counter in Map.Counters.OrderBy(x => x.Id))
-        counterValues += counter.Value + "/";
-
-      return counterValues;
+      dto = Server.Counters.FirstOrDefault(x => x.Id == id);
+      if (dto == null)
+        dto = Map.Counters.FirstOrDefault(x => x.Id == id);
+      if (dto == null)
+        dto = Node.Counters.FirstOrDefault(x => x.Id == id);
 
     }
 
-    /// <summary>
-    /// Get counter from scoped object lists
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="scopeType">(optional) desired scope level</param>
-    /// <returns></returns>
-    public CountersDto GetCounter(uint id, string scopeType = "")
+    return dto;
+  }
+
+  public void Dump(IOLabLogger logger, string prefix)
+  {
+    var message = $"{prefix}{Environment.NewLine}";
+
+    if (IsEmpty())
     {
-      CountersDto dto = null;
-
-      if (string.IsNullOrEmpty(scopeType))
-      {
-        dto = Server.Counters.FirstOrDefault(x => x.Id == id);
-        if (dto == null)
-          dto = Map.Counters.FirstOrDefault(x => x.Id == id);
-        if (dto == null)
-          dto = Node.Counters.FirstOrDefault(x => x.Id == id);
-
-      }
-
-      return dto;
+      message += $"IsEmpty{Environment.NewLine}";
+      return;
     }
 
-    public void Dump(OLabLogger logger, string prefix)
-    {
-      var message = $"{prefix}{Environment.NewLine}";
+    var plainText = GetObjectPlainText();
+    message += $"Text:   {plainText}{Environment.NewLine}";
+    message += $"Bytes:  {GetPlainTextBytes(plainText)}{Environment.NewLine}";
 
-      if (IsEmpty())
-      {
-        message += $"IsEmpty{Environment.NewLine}";
-        return;
-      }
+    foreach (var counter in Server.Counters)
+      message += $"Server: {counter}{Environment.NewLine}";
 
-      var plainText = GetObjectPlainText();
-      message += $"Text:   {plainText}{Environment.NewLine}";
-      message += $"Bytes:  {GetPlainTextBytes(plainText)}{Environment.NewLine}";
+    foreach (var counter in Node.Counters)
+      message += $"Node:   {counter}{Environment.NewLine}";
 
-      foreach (CountersDto counter in Server.Counters)
-        message += $"Server: {counter}{Environment.NewLine}";
+    foreach (var counter in Map.Counters)
+      message += $"Map:    {counter}{Environment.NewLine}";
 
-      foreach (CountersDto counter in Node.Counters)
-        message += $"Node:   {counter}{Environment.NewLine}";
+    message += $"Update  {UpdatedAt.ToString()}{Environment.NewLine}";
+    message += $"ChkSum  {Checksum}{Environment.NewLine}";
 
-      foreach (CountersDto counter in Map.Counters)
-        message += $"Map:    {counter}{Environment.NewLine}";
+    logger.LogDebug(message);
 
-      message += $"Update  {UpdatedAt.ToString()}{Environment.NewLine}";
-      message += $"ChkSum  {Checksum}{Environment.NewLine}";
-
-      logger.LogDebug(message);
-
-    }
   }
 }

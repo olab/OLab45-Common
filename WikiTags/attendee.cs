@@ -1,10 +1,11 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Common.Attributes;
+using OLab.Common.Interfaces;
 
-[WikiTagModule("ATTENDEE")]
+[OLabModule("ATTENDEE")]
 public class AttendeeWikiTag : WikiTag1Argument
 {
-  public AttendeeWikiTag(OLabLogger logger) : base(logger, "OlabAttendeeTag")
+  public AttendeeWikiTag(IOLabLogger logger, IOLabConfiguration configuration) : base(logger, configuration, "OlabAttendeeTag")
   {
   }
 }

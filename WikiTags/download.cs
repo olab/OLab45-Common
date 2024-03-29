@@ -1,10 +1,13 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Common.Attributes;
+using OLab.Common.Interfaces;
 
-[WikiTagModule("DL")]
+[OLabModule("DL")]
 public class DownloadWikiTag : WikiTag1Argument
 {
-  public DownloadWikiTag(OLabLogger logger) : base(logger, "OlabDownloadTag")
+  public DownloadWikiTag(
+    IOLabLogger logger,
+    IOLabConfiguration configuration) : base(logger, configuration, "OlabDownloadTag")
   {
   }
 }

@@ -1,10 +1,13 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Common.Attributes;
+using OLab.Common.Interfaces;
 
-[WikiTagModule("LINKS")]
+[OLabModule("LINKS")]
 public class LinksWikiTag : WikiTag0Argument
 {
-  public LinksWikiTag(OLabLogger logger) : base(logger, "OlabLinksTag")
+  public LinksWikiTag(
+    IOLabLogger logger,
+    IOLabConfiguration configuration) : base(logger, configuration, "OlabLinksTag")
   {
   }
 }

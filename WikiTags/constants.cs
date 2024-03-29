@@ -1,15 +1,13 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Common.Attributes;
+using OLab.Common.Interfaces;
 
-[WikiTagModule("CONST")]
+[OLabModule("CONST")]
 public class ConstantWikiTag : WikiTag1Argument
 {
-  public static ConstantWikiTag Instance()
-  {
-    return new ConstantWikiTag(new OLabLogger());
-  }
-
-  public ConstantWikiTag(OLabLogger logger) : base(logger, "OlabConstantTag")
+  public ConstantWikiTag(
+    IOLabLogger logger,
+    IOLabConfiguration configuration) : base(logger, configuration, "OlabConstantTag")
   {
   }
 }

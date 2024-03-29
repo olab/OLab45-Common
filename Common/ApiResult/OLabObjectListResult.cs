@@ -1,19 +1,17 @@
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.Common
-{
-  public class OLabObjectListResult<D>
-  {
-    public static JsonResult Result(IList<D> value)
-    {
-      var result = new OLabAPIPagedResponse<D>
-      {
-        Data = value,
-        Count = value.Count
-      };
+namespace OLab.Api.Common;
 
-      return new JsonResult(result);
-    }
+public class OLabObjectListResult<D>
+{
+  public static OLabAPIResponse<IList<D>> Result(IList<D> value)
+  {
+    var result = new OLabAPIPagedResponse<D>
+    {
+      Data = value,
+      Count = value.Count
+    };
+
+    return result;
   }
 }

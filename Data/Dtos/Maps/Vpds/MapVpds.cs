@@ -1,12 +1,11 @@
-using OLabWebAPI.Model;
+using OLab.Api.Model;
 
-namespace OLabWebAPI.Dto
+namespace OLab.Api.Dto;
+
+public partial class MapVpdsDto
 {
-  public partial class MapVpdsDto
-  {
-    public uint Id { get; set; }
-    public uint MapId { get; set; }
-    public uint VpdTypeId { get; set; }
-    public virtual MapVpdTypes VpdType { get; set; }
-  }
+  public uint Id { get; set; }
+  public uint MapId { get; set; }
+  public uint VpdTypeId { get; set; }
+  public virtual MapVpdTypes VpdType { get; set; }
 }

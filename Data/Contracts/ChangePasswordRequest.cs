@@ -1,14 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model;
+
+public class ChangePasswordRequest
 {
-  public class ChangePasswordRequest
-  {
-    [Required]
-    public string Username { get; set; }
-    [Required]
-    public string Password { get; set; }
-    [Required]
-    public string NewPassword { get; set; }
-  }
+  [Required]
+  public string Username { get; set; }
+  [Required]
+  public string Password { get; set; }
+  [Required]
+  public string NewPassword { get; set; }
 }

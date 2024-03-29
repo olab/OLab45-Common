@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Deterministic>False</Deterministic>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Dawn.Guard" Version="1.12.0" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.10" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Api\OLab.Access\OLab.Access.csproj" />
+    <ProjectReference Include="..\Common\OLab.Common.csproj" />
+    <ProjectReference Include="..\Data\OLab.Data.csproj" />
+    <ProjectReference Include="..\Import\OLab.Import.csproj" />
+  </ItemGroup>  
+  <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <ItemGroup>
+      <OutputFiles Include="$(ProjectDir)$(OutputPath)*.*" />  
+    </ItemGroup>
+    <Copy SourceFiles="@(OutputFiles)" DestinationFolder="../bin/$(Configuration)/$(TargetFramework)" SkipUnchangedFiles="true" />
+  </Target> -->
+</Project>

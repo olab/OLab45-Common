@@ -1,29 +1,28 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using OLabWebAPI.Common;
+using OLab.Api.Common;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.Dto
+namespace OLab.Api.Dto;
+
+public class OlabResult : ActionResult
 {
-  public class OlabResult : ActionResult
+  public const string MessageSuccess = "success";
+
+  public OlabResult()
   {
-    public const string MessageSuccess = "success";
-
-    public OlabResult()
-    {
-      Diagnostics = new List<Diagnostics>();
-      Message = MessageSuccess;
-      ErrorCode = StatusCodes.Status200OK;
-    }
-
-    [JsonProperty("status")]
-    public int Status { get; set; }
-    [JsonProperty("message")]
-    public string Message { get; set; }
-    [JsonProperty("error_code")]
-    public int ErrorCode { get; set; }
-    [JsonProperty("diagnostics")]
-    public IList<Diagnostics> Diagnostics { get; set; }
+    Diagnostics = new List<Diagnostics>();
+    Message = MessageSuccess;
+    ErrorCode = StatusCodes.Status200OK;
   }
+
+  [JsonProperty("status")]
+  public int Status { get; set; }
+  [JsonProperty("message")]
+  public string Message { get; set; }
+  [JsonProperty("error_code")]
+  public int ErrorCode { get; set; }
+  [JsonProperty("diagnostics")]
+  public IList<Diagnostics> Diagnostics { get; set; }
 }

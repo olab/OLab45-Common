@@ -1,12 +1,11 @@
-using OLabWebAPI.TurkTalk.BusinessObjects;
+using OLab.Api.TurkTalk.BusinessObjects;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.Common.Contracts
-{
-  public class ModeratorAssignmentPayload
-  {
-    public IList<MapNodeListItem> MapNodes { get; set; }
-    public Moderator Remote { get; set; }
+namespace OLab.Api.Common.Contracts;
 
-  }
+public class ModeratorAssignmentPayload
+{
+  public IList<MapNodeListItem> MapNodes { get; set; }
+  public Moderator Remote { get; set; }
+
 }

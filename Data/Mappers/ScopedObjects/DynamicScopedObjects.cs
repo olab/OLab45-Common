@@ -1,63 +1,56 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Dto;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Api.Dto;
+using OLab.Common.Interfaces;
 
-namespace OLabWebAPI.ObjectMapper
+namespace OLab.Api.ObjectMapper;
+
+public class DynamicScopedObjects : ObjectMapper<OLab.Data.BusinessObjects.DynamicScopedObjects, DynamicScopedObjectsDto>
 {
-  public class DynamicScopedObjects : ObjectMapper<Model.ScopedObjects, DynamicScopedObjectsDto>
+  protected readonly bool enableWikiTranslation = true;
+
+  public DynamicScopedObjects(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
   {
-    protected readonly bool enableWikiTranslation = true;
-
-    public DynamicScopedObjects(OLabLogger logger, bool enableWikiTranslation = true) : base(logger)
-    {
-    }
-
-    public DynamicScopedObjects(OLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
-    {
-    }
-
-    public override DynamicScopedObjectsDto PhysicalToDto(Model.ScopedObjects phys, object source = null)
-    {
-      throw new System.NotImplementedException();
-    }
-
-    public override Model.ScopedObjects DtoToPhysical(DynamicScopedObjectsDto dto, object source = null)
-    {
-      throw new System.NotImplementedException();
-    }
-
-    public DynamicScopedObjectsDto PhysicalToDto(
-      Model.ScopedObjects server,
-      Model.ScopedObjects map,
-      Model.ScopedObjects node
-    )
-    {
-      var dto = new DynamicScopedObjectsDto();
-      PhysicalToDto(server, map, node, dto);
-      return dto;
-    }
-
-    public void PhysicalToDto(
-      Model.ScopedObjects server,
-      Model.ScopedObjects map,
-      Model.ScopedObjects node,
-      DynamicScopedObjectsDto dto)
-    {
-      System.Collections.Generic.IList<CountersDto> dtoCountersList = new ObjectMapper.Counters(logger, GetWikiProvider()).PhysicalToDto(server.Counters);
-      dto.Server.Counters.AddRange(dtoCountersList);
-
-      dtoCountersList = new ObjectMapper.Counters(logger, GetWikiProvider()).PhysicalToDto(map.Counters);
-      dto.Map.Counters.AddRange(dtoCountersList);
-
-      dtoCountersList = new ObjectMapper.Counters(logger, GetWikiProvider()).PhysicalToDto(node.Counters);
-      dto.Node.Counters.AddRange(dtoCountersList);
-
-      // var dtoConstantsList = new ConstantsObjectMapper(logger, GetWikiProvider()).PhysicalToDto( server.Constants );
-      // dto.Server.Constants.AddRange(dtoConstantsList);
-
-      // calculate validation
-      dto.Checksum = dto.GenerateChecksum();
-    }
-
   }
+
+  public DynamicScopedObjects(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  {
+  }
+
+  public override DynamicScopedObjectsDto PhysicalToDto(OLab.Data.BusinessObjects.DynamicScopedObjects phys, object source = null)
+  {
+    throw new System.NotImplementedException();
+  }
+
+  public override OLab.Data.BusinessObjects.DynamicScopedObjects DtoToPhysical(DynamicScopedObjectsDto dto, object source = null)
+  {
+    throw new System.NotImplementedException();
+  }
+
+  public DynamicScopedObjectsDto PhysicalToDto(OLab.Data.BusinessObjects.DynamicScopedObjects phys)
+  {
+    var dto = new DynamicScopedObjectsDto();
+    PhysicalToDto(phys, dto);
+    return dto;
+  }
+
+  public void PhysicalToDto(
+    OLab.Data.BusinessObjects.DynamicScopedObjects phys,
+    DynamicScopedObjectsDto dto)
+  {
+    var dtoCountersList = new CounterMapper(Logger).PhysicalToDto(phys.ServerCounters);
+    dto.Server.Counters.AddRange(dtoCountersList);
+
+    dtoCountersList = new CounterMapper(Logger).PhysicalToDto(phys.MapCounters);
+    dto.Map.Counters.AddRange(dtoCountersList);
+
+    dtoCountersList = new CounterMapper(Logger).PhysicalToDto(phys.NodeCounters);
+    dto.Node.Counters.AddRange(dtoCountersList);
+
+    // var dtoConstantsList = new ConstantsObjectMapper(Logger, GetWikiProvider()).PhysicalToDto( server.ConstantsPhys );
+    // dto.Server.ConstantsPhys.AddRange(dtoConstantsList);
+
+    // calculate validation
+    dto.Checksum = dto.GenerateChecksum();
+  }
+
 }

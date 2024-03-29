@@ -1,7 +1,6 @@
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model;
+
+public class CreateMapRequest
 {
-  public class CreateMapRequest
-  {
-    public uint? TemplateId { get; set; }
-  }
+  public uint? TemplateId { get; set; }
 }

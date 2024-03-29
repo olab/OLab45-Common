@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Dawn.Guard" Version="1.12.0" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\OLab.Common.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Deterministic>False</Deterministic>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>    
+  </PropertyGroup>
+
+  <!-- <PropertyGroup>
+    <OutputPath>..\bin\$(Configuration)\$(TargetFramework)\PlugIns</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup> -->
+
+  <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <ItemGroup>
+      <OutputFiles Include="$(ProjectDir)$(OutputPath)*.*" />  
+    </ItemGroup>
+    <Copy 
+      SourceFiles="@(OutputFiles)"
+      DestinationFolder="../bin/$(Configuration)/$(TargetFramework)"
+      SkipUnchangedFiles="true"/>
+  </Target> -->
+  
+</Project>

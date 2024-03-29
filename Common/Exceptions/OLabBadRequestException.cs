@@ -1,11 +1,10 @@
 using System;
 
-namespace OLabWebAPI.Common.Exceptions
+namespace OLab.Api.Common.Exceptions;
+
+public class OLabBadRequestException : Exception
 {
-  public class OLabBadRequestException : Exception
+  public OLabBadRequestException(string message) : base(message)
   {
-    public OLabBadRequestException(string message) : base(message)
-    {
-    }
   }
 }

@@ -1,10 +1,13 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Common.Attributes;
+using OLab.Common.Interfaces;
 
-[WikiTagModule("SUSPEND")]
+[OLabModule("SUSPEND")]
 public class SuspendWikiTag : WikiTag0Argument
 {
-  public SuspendWikiTag(OLabLogger logger) : base(logger, "OlabSuspendTag")
+  public SuspendWikiTag(
+    IOLabLogger logger,
+    IOLabConfiguration configuration) : base(logger, configuration, "OlabSuspendTag")
   {
   }
 }

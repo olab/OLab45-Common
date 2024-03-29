@@ -4,19 +4,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model;
+
+[Table("lti_nonces")]
+public partial class LtiNonces
 {
-  [Table("lti_nonces")]
-  public partial class LtiNonces
-  {
-    [Key]
-    [Column("consumer_key")]
-    public string ConsumerKey { get; set; }
-    [Required]
-    [Column("value")]
-    [StringLength(32)]
-    public string Value { get; set; }
-    [Column("expires", TypeName = "datetime")]
-    public DateTime Expires { get; set; }
-  }
+  [Key]
+  [Column("consumer_key")]
+  public string ConsumerKey { get; set; }
+  [Required]
+  [Column("value")]
+  [StringLength(32)]
+  public string Value { get; set; }
+  [Column("expires", TypeName = "datetime")]
+  public DateTime Expires { get; set; }
 }

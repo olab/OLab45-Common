@@ -1,72 +1,77 @@
-using OLabWebAPI.Data.Exceptions;
-using OLabWebAPI.Model;
+using OLab.Api.Data.Exceptions;
+using OLab.Api.Model;
+using OLab.Api.Utils;
+using OLab.Data;
 using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OLabWebAPI.Endpoints.Player
+namespace OLab.Api.Endpoints.Player;
+
+public partial class NodesEndpoint : OLabEndpoint
 {
-  public partial class NodesEndpoint : OlabEndpoint
+
+  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint nodeId)
   {
+    Logger.LogInformation($"NodesController.GetScopedObjectsRawAsync(uint nodeId={nodeId})");
+    return await GetScopedObjectsAsync(nodeId, false);
+  }
 
-    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint nodeId)
+  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(uint nodeId)
+  {
+    Logger.LogInformation($"NodesController.GetScopedObjectsAsync(uint nodeId={nodeId})");
+    return await GetScopedObjectsAsync(nodeId, true);
+  }
+
+  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(
+    uint id,
+    bool enableWikiTranslation)
+  {
+    Logger.LogInformation($"NodesController.GetScopedObjectsAsync(uint nodeId={id})");
+
+    var node = GetSimple(dbContext, id);
+    if (node == null)
+      throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
+
+    var phys = new ScopedObjects(
+      Logger,
+      dbContext,
+    _fileStorageModule);
+    await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelNode, node.Id);
+
+    phys.ConstantsPhys.Add(new SystemConstants
     {
-      logger.LogDebug($"NodesController.GetScopedObjectsRawAsync(uint nodeId={nodeId})");
-      return await GetScopedObjectsAsync(nodeId, false);
-    }
+      Id = 0,
+      Name = Utils.Constants.ReservedConstantNodeId,
+      ImageableId = node.Id,
+      ImageableType = Utils.Constants.ScopeLevelNode,
+      IsSystem = 1,
+      Value = Encoding.ASCII.GetBytes(node.Id.ToString())
+    });
 
-    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsAsync(uint nodeId)
+    phys.ConstantsPhys.Add(new SystemConstants
     {
-      logger.LogDebug($"NodesController.GetScopedObjectsAsync(uint nodeId={nodeId})");
-      return await GetScopedObjectsAsync(nodeId, true);
-    }
+      Id = 0,
+      Name = Utils.Constants.ReservedConstantNodeName,
+      ImageableId = node.Id,
+      ImageableType = Utils.Constants.ScopeLevelNode,
+      IsSystem = 1,
+      Value = Encoding.ASCII.GetBytes(node.Title)
+    });
 
-    public async Task<OLabWebAPI.Dto.ScopedObjectsDto> GetScopedObjectsAsync(
-      uint id,
-      bool enableWikiTranslation)
+    phys.ConstantsPhys.Add(new SystemConstants
     {
-      logger.LogDebug($"NodesController.GetScopedObjectsAsync(uint nodeId={id})");
+      Id = 0,
+      Name = Utils.Constants.ReservedConstantSystemTime,
+      ImageableId = 1,
+      ImageableType = Utils.Constants.ScopeLevelNode,
+      IsSystem = 1,
+      Value = Encoding.ASCII.GetBytes(DateTime.UtcNow.ToString() + " UTC")
+    });
 
-      MapNodes node = GetSimple(dbContext, id);
-      if (node == null)
-        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
+    var builder = new ObjectMapper.ScopedObjectsMapper(Logger, _wikiTagProvider, enableWikiTranslation);
 
-      Model.ScopedObjects phys = await GetScopedObjectsAllAsync(node.Id, Utils.Constants.ScopeLevelNode);
-
-      phys.Constants.Add(new SystemConstants
-      {
-        Id = 0,
-        Name = Utils.Constants.ReservedConstantNodeId,
-        ImageableId = node.Id,
-        ImageableType = Utils.Constants.ScopeLevelNode,
-        IsSystem = 1,
-        Value = Encoding.ASCII.GetBytes(node.Id.ToString())
-      });
-
-      phys.Constants.Add(new SystemConstants
-      {
-        Id = 0,
-        Name = Utils.Constants.ReservedConstantNodeName,
-        ImageableId = node.Id,
-        ImageableType = Utils.Constants.ScopeLevelNode,
-        IsSystem = 1,
-        Value = Encoding.ASCII.GetBytes(node.Title)
-      });
-
-      phys.Constants.Add(new SystemConstants
-      {
-        Id = 0,
-        Name = Utils.Constants.ReservedConstantSystemTime,
-        ImageableId = 1,
-        ImageableType = Utils.Constants.ScopeLevelNode,
-        IsSystem = 1,
-        Value = Encoding.ASCII.GetBytes(DateTime.UtcNow.ToString() + " UTC")
-      });
-
-      var builder = new ObjectMapper.ScopedObjects(logger, enableWikiTranslation);
-
-      Dto.ScopedObjectsDto dto = builder.PhysicalToDto(phys);
-      return dto;
-    }
+    var dto = builder.PhysicalToDto(phys);
+    return dto;
   }
 }

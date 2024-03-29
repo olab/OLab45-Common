@@ -1,18 +1,15 @@
-using OLabWebAPI.Utils;
+using OLab.Api.Utils;
 using System.Collections.Generic;
 
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model;
+
+public class ImportResponse
 {
-  public class ImportResponse
+  public IList<string> LogMessages { get; set; }
+  public uint MapId { get; set; }
+
+  public ImportResponse()
   {
-    //public IList<OLabLogMessage> Objects { get; set; }
-    public IList<string> Messages { get; set; }
-
-    public ImportResponse()
-    {
-      //Objects = new List<OLabLogMessage>();
-      Messages = new List<string>();
-    }
-
+    LogMessages = new List<string>();
   }
 }

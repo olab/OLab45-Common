@@ -1,14 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OLabWebAPI.Model
+namespace OLab.Api.Model;
+
+public class MapAccessCandidateRequest
 {
-  public class MapAccessCandidateRequest
-  {
-    [Required]
-    public uint MapId { get; set; }
-    [Required]
-    public string Username { get; set; }
-    [Required]
-    public string Email { get; set; }
-  }
+  [Required]
+  public uint MapId { get; set; }
+  [Required]
+  public string Username { get; set; }
+  [Required]
+  public string Email { get; set; }
 }

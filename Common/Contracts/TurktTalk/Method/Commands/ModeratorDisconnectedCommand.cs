@@ -1,25 +1,24 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OLabWebAPI.TurkTalk.Methods;
+using OLab.Api.TurkTalk.Methods;
 
-namespace OLabWebAPI.TurkTalk.Commands
+namespace OLab.Api.TurkTalk.Commands;
+
+public class ModeratorDisconnectedCommand : CommandMethod
 {
-  public class ModeratorDisconnectedCommand : CommandMethod
+  /// <summary>
+  /// Defined a Moderator Joined command method
+  /// </summary>
+  public string ModeratorName { get; set; }
+  public ModeratorDisconnectedCommand(string groupName) : base(groupName, "moderatordisconnected")
   {
-    /// <summary>
-    /// Defined a Moderator Joined command method
-    /// </summary>
-    public string ModeratorName { get; set; }
-    public ModeratorDisconnectedCommand(string groupName) : base(groupName, "moderatordisconnected")
-    {
-      ModeratorName = ModeratorName;
-    }
-
-    public override string ToJson()
-    {
-      var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
-      return JToken.Parse(rawJson).ToString(Formatting.Indented);
-    }
-
+    ModeratorName = ModeratorName;
   }
+
+  public override string ToJson()
+  {
+    var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
+    return JToken.Parse(rawJson).ToString(Formatting.Indented);
+  }
+
 }

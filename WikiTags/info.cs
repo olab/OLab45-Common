@@ -1,10 +1,13 @@
-using OLabWebAPI.Common;
-using OLabWebAPI.Utils;
+using OLab.Api.Common;
+using OLab.Common.Attributes;
+using OLab.Common.Interfaces;
 
-[WikiTagModule("INFO")]
+[OLabModule("INFO")]
 public class InfoWikiTag : WikiTag1Argument
 {
-  public InfoWikiTag(OLabLogger logger) : base(logger, "OlabInfoTag")
+  public InfoWikiTag(
+    IOLabLogger logger,
+    IOLabConfiguration configuration) : base(logger, configuration, "OlabInfoTag")
   {
   }
 }
