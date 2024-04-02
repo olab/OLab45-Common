@@ -7,7 +7,7 @@ public interface IOLabSession
 {
   public void SetMapId(uint mapId);
   public void OnStartSession();
-  public void OnPlayNode(uint nodeId);
+  public void OnPlayNode(MapsNodesFullRelationsDto dto);
   public void OnQuestionResponse(uint nodeId, uint questionId, string value);
   public void OnExtendSessionEnd(uint nodeId);
   public string GetSessionId();

@@ -67,6 +67,8 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
         Logger.LogWarning($"No media_elements_files records in {GetFileName()}");
       }
 
+      Logger.LogInformation($"loaded {GetModel().MediaElementsFiles.Count()} {GetFileName()} MediaElementsFiles objects");
+
       record = 0;
 
       try
@@ -81,6 +83,7 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
             dynamic file = element.Value;
             file = Conversions.Base64Decode(file);
             GetModel().MediaElementsAvatars.Add(file);
+            Logger.LogInformation($"  loaded '{file}'");
           }
           catch (Exception ex)
           {
@@ -94,7 +97,6 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
         Logger.LogWarning($"No media_elements_avatars records in {GetFileName()}");
       }
 
-      Logger.LogInformation($"loaded {GetModel().MediaElementsFiles.Count()} {GetFileName()} MediaElementsFiles objects");
       Logger.LogInformation($"loaded {GetModel().MediaElementsAvatars.Count()} {GetFileName()} MediaElementsAvatars objects");
 
     }
@@ -141,12 +143,13 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
         {
           dynamic fileName = Conversions.Base64Decode(element, true);
 
+          var sourceFilePath = GetFileModule().BuildPath(sourceDirectory, fileName);
+
           GetFileModule().MoveFileAsync(
-            fileName,
-            sourceDirectory,
+            sourceFilePath,
             targetDirectory).Wait();
 
-          Logger.LogInformation($"Copied {GetFileName()} '{fileName}' -> '{targetDirectory}'");
+          Logger.LogInformation($"Moved {sourceFilePath}' -> '{targetDirectory}'");
 
         }
         catch (Exception ex)

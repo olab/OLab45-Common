@@ -1,3 +1,4 @@
+using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
@@ -10,6 +11,7 @@ using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -38,6 +40,7 @@ public class Importer : IImporter
     XmlMapAvatarDto
   };
 
+  public IOLabAuthorization Authorization { get; set; }
   private readonly OLabDBContext _dbContext;
   public readonly AppSettings _appSettings;
   private readonly IOLabConfiguration _configuration;
@@ -105,8 +108,8 @@ public class Importer : IImporter
     dto = new XmlMapNodeLinkDto(Logger, this);
     _dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlMapCounterRuleDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    //dto = new XmlMapCounterRuleDto(Logger, this);
+    //_dtos.Add(dto.DtoType, dto);
 
     dto = new XmlMapNodeSectionDto(Logger, this);
     _dtos.Add(dto.DtoType, dto);
@@ -121,14 +124,26 @@ public class Importer : IImporter
     //_dtos.Add(dto.DtoType, dto);
   }
 
-  public async Task<uint> Import(
+  public async Task<Maps> Import(
+    IOLabAuthorization auth,
     Stream archiveFileStream,
     string archiveFileName,
     CancellationToken token = default)
   {
-    await LoadImportFromArchiveFile(archiveFileStream, archiveFileName, token);
-    var mapId = WriteImportToDatabase(archiveFileName);
-    return mapId;
+    Authorization = auth;
+
+    await LoadImportFromArchiveFile(
+      archiveFileStream, 
+      archiveFileName, 
+      token);
+
+    var mapPhys = WriteImportToDatabase(
+      archiveFileName);
+
+    mapPhys.AddGroupsFromUser(auth.User);
+    GetDbContext().SaveChanges();
+
+    return mapPhys;
   }
 
   /// <summary>
@@ -146,13 +161,12 @@ public class Importer : IImporter
     {
       Logger.LogInformation($"Module archive file: {FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, archiveFileName)}");
 
-      var importRootDirectory = FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot);
+      var archiveFilePath = FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, archiveFileName);
 
       // write the archive file to storage
-      var archiveFilePath = await FileStorageModule.WriteFileAsync(
+      archiveFilePath = await FileStorageModule.WriteFileAsync(
         archiveFileStream,
-        importRootDirectory,
-        archiveFileName,
+        archiveFilePath,
         token);
 
       // build extract direct based on archive file name without extension
@@ -164,19 +178,17 @@ public class Importer : IImporter
 
       // extract archive file to extract directory
       await FileStorageModule.ExtractFileToStorageAsync(
-        OLabFileStorageModule.ImportRoot,
-        archiveFileName,
+        archiveFilePath,
         extractDirectory,
         token);
 
       // load all the import files in extract directory
       foreach (var dto in _dtos.Values)
-        await dto.LoadAsync(extractDirectory);
+        await dto.LoadAsync(Path.GetFileNameWithoutExtension(archiveFileName));
 
       // delete source archive file
       await GetFileStorageModule().DeleteFileAsync(
-        OLabFileStorageModule.ImportRoot,
-        archiveFileName);
+        archiveFilePath);
     }
     catch (Exception ex)
     {
@@ -191,9 +203,9 @@ public class Importer : IImporter
   /// </summary>
   /// <param name="archiveFileName">Import archive ZIP file name</param>
   /// <returns>true</returns>
-  public uint WriteImportToDatabase(string archiveFileName)
+  public Maps WriteImportToDatabase(
+    string archiveFileName)
   {
-    uint mapId = 0;
 
     // if anything bad happens, rollback the entire import
     using (var transaction = _dbContext.Database.BeginTransaction())
@@ -211,7 +223,9 @@ public class Importer : IImporter
         var xmlMap = (XmlMap)xmlMapDto.GetDbPhys();
         Logger.LogInformation($"Loaded map '{xmlMap.Data[0].Name}'. id = {xmlMap.Data[0].Id}");
 
-        mapId = xmlMap.Data[0].Id;
+        var mapPhys = xmlMap.Data[0];
+        return mapPhys;
+
       }
       catch (Exception ex)
       {
@@ -221,7 +235,7 @@ public class Importer : IImporter
 
     }
 
-    return mapId;
+    return null;
   }
 
   public Task ExportAsync(Stream stream, uint mapId, CancellationToken token = default)

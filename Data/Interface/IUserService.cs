@@ -6,7 +6,7 @@ namespace OLab.Data.Interface;
 
 public interface IUserService
 {
-  Users Authenticate(LoginRequest model);
+  //Users Authenticate(LoginRequest model);
   void ChangePassword(Users user, ChangePasswordRequest model);
 
   Task<List<AddUserResponse>> AddUsersAsync(List<AddUserRequest> items);

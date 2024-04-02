@@ -136,19 +136,6 @@ public partial class MapsEndpoint : OLabEndpoint
     // replace original map node links with acl-filtered links
     dto.MapNodeLinks = filteredLinks;
 
-    var session = new OLabSession(Logger, dbContext, auth.UserContext);
-    session.SetMapId(mapId);
-
-    // if browser signals a new play, then start a new session
-    if (body.NewPlay)
-      session.OnStartSession();
-
-    dto.ContextId = session.GetSessionId();
-    session.OnPlayNode(dto.Id.Value);
-
-    // extend the session into the new node
-    session.OnExtendSessionEnd(nodeId);
-
     UpdateNodeCounter();
 
     dto.DynamicObjects = await GetDynamicScopedObjectsTranslatedAsync(auth, mapId, nodeId);
@@ -165,6 +152,19 @@ public partial class MapsEndpoint : OLabEndpoint
       await ProcessNodeOpenCountersAsync(nodeId, body.Map.Counters);
       dto.DynamicObjects.Map = body.Map;
     }
+
+    var session = new OLabSession(Logger, dbContext, auth.UserContext);
+    session.SetMapId(mapId);
+
+    // if browser signals a new play, then start a new session
+    if (body.NewPlay)
+      session.OnStartSession();
+
+    dto.ContextId = session.GetSessionId();
+    session.OnPlayNode(dto);
+
+    // extend the session into the new node
+    session.OnExtendSessionEnd(nodeId);
 
     // save current session state to database
     session.SaveSessionState(dto.Id.Value, dto.DynamicObjects);

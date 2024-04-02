@@ -21,6 +21,8 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   protected IOLabLogger logger;
   protected IOLabConfiguration cfg;
 
+  public abstract string GetUrlPath(string path, string fileName);
+
   protected OLabFileStorageModule(IOLabLogger logger, IOLabConfiguration configuration)
   {
     this.logger = logger;
@@ -29,17 +31,12 @@ public abstract class OLabFileStorageModule : IFileStorageModule
 
   public string GetModuleName()
   {
-    var attrib = 
+    var attrib =
       this.GetType().GetCustomAttributes(typeof(OLabModuleAttribute), true).FirstOrDefault() as OLabModuleAttribute;
     if (attrib == null)
       throw new Exception("Missing OLabModule attribute");
 
     return attrib == null ? "" : attrib.Name;
-  }
-
-  public string GetUrlPath(string path, string fileName = null)
-  {
-    return BuildPath(cfg.GetAppSettings().FileStorageUrl, path, fileName).Replace("\\", "/");
   }
 
   public string GetPhysicalPath(string path, string fileName)
@@ -70,6 +67,8 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     {
       // remove any extra trailing slashes
       var part = pathParts[i].ToString();
+      if (string.IsNullOrEmpty(part))
+        continue;
       part = part.TrimEnd(GetFolderSeparator());
 
       sb.Append(part);
@@ -78,6 +77,25 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     }
 
     return sb.ToString();
+  }
+
+  public void AttachUrls(SystemFiles item)
+  {
+    var scopeFolder = GetScopedFolderName(
+      item.ImageableType,
+      item.ImageableId);
+
+    var physicalPath = GetPhysicalPath(BuildPath( FilesRoot, scopeFolder, item.Path) );
+
+    if (FileExists(physicalPath))
+    {
+      item.OriginUrl = GetUrlPath(
+        scopeFolder,
+        item.Path
+      );
+
+      logger.LogInformation($"  file '{item.Name}' mapped to url '{item.OriginUrl}'");
+    }
   }
 
   /// <summary>
@@ -95,20 +113,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     {
       try
       {
-        var scopeFolder = GetScopedFolderName(
-          item.ImageableType,
-          item.ImageableId);
-
-        if (FileExists(scopeFolder, item.Path))
-        {
-          item.OriginUrl = GetUrlPath(
-            scopeFolder,
-            item.Path
-          );
-
-          logger.LogInformation($"  file '{item.Name}' mapped to url '{item.OriginUrl}'");
-        }
-
+        AttachUrls(item);
       }
       catch (Exception ex)
       {
@@ -126,20 +131,18 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     CancellationToken token);
 
   public abstract Task<bool> DeleteFileAsync(
-    string folder,
-    string fileName);
+    string filePath);
 
-  public abstract Task DeleteFolderAsync(string folder);
+  public abstract Task DeleteFolderAsync(
+    string folderName);
 
   public abstract Task<bool> ExtractFileToStorageAsync(
-    string folderName,
-    string fileName,
+    string archiveFileName,
     string extractDirectory,
     CancellationToken token);
 
   public abstract bool FileExists(
-    string folder,
-    string fileName);
+    string filePath);
 
   public abstract IList<string> GetFiles(
     string folderName,
@@ -148,26 +151,23 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   public abstract char GetFolderSeparator();
 
   public abstract Task MoveFileAsync(
-    string fileName,
-    string sourcePath,
-    string destinationPath,
+    string sourceFilePath,
+    string destinationFolder,
     CancellationToken token = default);
 
   public abstract Task ReadFileAsync(
     Stream stream,
-    string folder,
     string fileName,
     CancellationToken token);
 
   public abstract Task<string> WriteFileAsync(
     Stream stream,
-    string folderName,
     string fileName,
     CancellationToken token);
 
   public abstract string GetPublicFileDirectory(
-    string parentType, 
-    uint parentId, 
+    string parentType,
+    uint parentId,
     string fileName = "");
 
   public string GetImportMediaFilesDirectory(string importFolderName)

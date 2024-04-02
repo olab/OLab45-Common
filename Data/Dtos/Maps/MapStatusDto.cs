@@ -37,6 +37,8 @@ public class MapStatusDto
   public string Name { get; set; }
   public int NodeCount { get; set; }
   public int NodeLinkCount { get; set; }
+  public string Author { get; set; }
+  public DateTime CreatedAt { get; set; }
   public ScopeObjectCount? Total { get; set; }
   public ScopeObjectCount? Server { get; set; }
   public ScopeObjectCount? Map { get; set; }
