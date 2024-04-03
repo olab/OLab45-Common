@@ -1,4 +1,3 @@
-using Dawn;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OLab.Api.Utils;
@@ -37,7 +36,7 @@ public partial class MapsReaderWriter
         .Include("MapNodes")
         .FirstOrDefaultAsync(x => x.Id == id);
 
-      if ((physMap == null) || (physMap.Id == 0))
+      if ( ( physMap == null ) || (physMap.Id == 0) )
         return null;
 
       _context.Maps.Remove(physMap);
@@ -87,10 +86,7 @@ public partial class MapsReaderWriter
 
   public async Task<Maps> GetSingleAsync(uint id)
   {
-    var phys = await _context.Maps
-      .Include("MapGroups")
-      .Include("MapGroups.Group")
-      .FirstOrDefaultAsync(x => x.Id == id);
+    var phys = await _context.Maps.FirstOrDefaultAsync(x => x.Id == id);
     if (phys.Id == 0)
       return null;
     return phys;
@@ -127,17 +123,16 @@ public partial class MapsReaderWriter
   /// <summary>
   /// Add template to new map
   /// </summary>
-  /// <param name="user">Owning user</param>
   /// <param name="map">Target map (map be null, meaning create new map)</param>
   /// <param name="templateId">Source template</param>
   /// <returns>Ammended map</returns>
-  public async Task<Maps> CreateMapWithTemplateAsync(Users user, Maps map, Maps template)
+  public async Task<Maps> CreateMapWithTemplateAsync(Maps map, Maps template)
   {
     using var transaction = _context.Database.BeginTransaction();
 
     try
     {
-      map = await CloneMapAsync(user, map, template);
+      map = await CloneMapAsync(map, template);
       await _context.SaveChangesAsync();
       await transaction.CommitAsync();
     }
@@ -154,13 +149,11 @@ public partial class MapsReaderWriter
   /// <summary>
   /// Adds template nodes to a map
   /// </summary>
-  /// <param name="user">Owning user</param>
   /// <param name="map">Target map</param>
   /// <param name="template">Source template map</param>
   /// <returns>Modified map</returns>
-  private async Task<Maps> CloneMapAsync(Users user, Maps map, Maps template)
+  private async Task<Maps> CloneMapAsync(Maps map, Maps template)
   {
-
     var oldMapId = template.Id;
 
     var reverseNodeIdMap = new Dictionary<uint, uint>();
@@ -176,9 +169,6 @@ public partial class MapsReaderWriter
       map = Maps.CreateDefault(template);
       map.Id = 0;
       _context.Entry(map).State = EntityState.Added;
-      await _context.SaveChangesAsync();
-
-      map.AddGroupsFromUser(user);
       await _context.SaveChangesAsync();
 
       _logger.LogError($"  New Map {map.Id}");

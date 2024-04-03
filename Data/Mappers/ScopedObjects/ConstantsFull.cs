@@ -10,13 +10,13 @@ namespace OLab.Api.ObjectMapper;
 public class ConstantsFull : OLabMapper<SystemConstants, ConstantsDto>
 {
 
-    public ConstantsFull(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
-    {
-    }
+  public ConstantsFull(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+  {
+  }
 
-    public ConstantsFull(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
-    {
-    }
+  public ConstantsFull(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  {
+  }
 
   /// <summary>
   /// Default (overridable) AutoMapper cfg

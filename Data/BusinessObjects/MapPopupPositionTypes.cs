@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+
+#nullable disable
 
 namespace OLab.Api.Model;
 
 [Table("map_popup_position_types")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class MapPopupPositionTypes
 {
-    [Key]
-    [Column("id", TypeName = "int(10) unsigned")]
-    public uint Id { get; set; }
-
-    [Required]
-    [Column("title")]
-    [StringLength(200)]
-    public string Title { get; set; }
+  [Key]
+  [Column("id", TypeName = "int(10) unsigned")]
+  public uint Id { get; set; }
+  [Required]
+  [Column("title")]
+  [StringLength(200)]
+  public string Title { get; set; }
 }

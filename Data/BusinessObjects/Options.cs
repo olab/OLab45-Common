@@ -1,32 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+
+#nullable disable
 
 namespace OLab.Api.Model;
 
 [Table("options")]
-[Index("Name", Name = "name", IsUnique = true)]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[Index(nameof(Name), Name = "name", IsUnique = true)]
 public partial class Options
 {
-    [Key]
-    [Column("id", TypeName = "int(10) unsigned")]
-    public uint Id { get; set; }
-
-    [Required]
-    [Column("name")]
-    [StringLength(64)]
-    public string Name { get; set; }
-
-    [Required]
-    [Column("value")]
-    public string Value { get; set; }
-
-    [Required]
-    [Column("autoload")]
-    [StringLength(20)]
-    public string Autoload { get; set; }
+  [Key]
+  [Column("id", TypeName = "int(10) unsigned")]
+  public uint Id { get; set; }
+  [Required]
+  [Column("name")]
+  [StringLength(64)]
+  public string Name { get; set; }
+  [Required]
+  [Column("value")]
+  public string Value { get; set; }
+  [Required]
+  [Column("autoload")]
+  [StringLength(20)]
+  public string Autoload { get; set; }
 }

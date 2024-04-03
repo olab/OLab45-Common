@@ -6,12 +6,6 @@ namespace OLab.Api.Model;
 
 public partial class MapNodes
 {
-  public enum NodeType : int
-  {
-    RootNode = 1,
-    ContentNode = 2
-  }
-
   public static MapNodes CreateDefault()
   {
     return new MapNodes

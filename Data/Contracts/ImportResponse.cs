@@ -10,11 +10,9 @@ public class ImportResponse
   public uint Id { get; set; }
   public string Name { get; set; }
   public DateTime CreatedAt { get; set; }
-  public IList<string> Groups { get; set; }
 
   public ImportResponse()
   {
     LogMessages = new List<string>();
-    Groups = new List<string>();
   }
 }
