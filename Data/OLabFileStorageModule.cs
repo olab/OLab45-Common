@@ -85,7 +85,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
       item.ImageableType,
       item.ImageableId);
 
-    var physicalPath = GetPhysicalPath(BuildPath( FilesRoot, scopeFolder, item.Path) );
+    var physicalPath = GetPhysicalPath(BuildPath(FilesRoot, scopeFolder, item.Path));
 
     if (FileExists(physicalPath))
     {
@@ -165,10 +165,22 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     string fileName,
     CancellationToken token);
 
-  public abstract string GetPublicFileDirectory(
-    string parentType,
-    uint parentId,
-    string fileName = "");
+  /// <summary>
+  /// Calculate physical target directory for scoped type and id
+  /// </summary>
+  /// <param name="parentType">Scoped object type (e.g. 'Maps')</param>
+  /// <param name="parentId">Scoped object id</param>
+  /// <param name="fileName">Optional file name</param>
+  /// <returns>Public directory for scope</returns>
+  public string GetPublicFileDirectory(string parentType, uint parentId, string fileName = "")
+  {
+    var physicalDirectory = BuildPath(FilesRoot, parentType, parentId.ToString());
+
+    if (!string.IsNullOrEmpty(fileName))
+      physicalDirectory = $"{physicalDirectory}{GetFolderSeparator()}{fileName}";
+
+    return physicalDirectory;
+  }
 
   public string GetImportMediaFilesDirectory(string importFolderName)
   {
