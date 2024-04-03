@@ -127,7 +127,7 @@ public class OLabSession : IOLabSession
 
     var counterJson = JsonSerializer.Serialize(countersDto);
 
-    var sessionTrace = new UserSessiontraces
+    var sessionTrace = new UserSessionTraces
     {
       SessionId = session.Id,
       MapId = _mapId,
@@ -137,7 +137,7 @@ public class OLabSession : IOLabSession
       Counters = counterJson
     };
 
-    _dbContext.UserSessiontraces.Add(sessionTrace);
+    _dbContext.UserSessionTraces.Add(sessionTrace);
     _dbContext.SaveChanges();
 
   }

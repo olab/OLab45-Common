@@ -96,12 +96,15 @@ public partial class ScopedObjects
 
     items.AddRange(await _dbContext.SystemQuestions
       .Where(x => x.ImageableType == scopeLevel && x.ImageableId == id)
-      .Include(p => p.SystemQuestionResponses.OrderBy(x => x.Order))
+      .Include("SystemQuestionResponses")
       .ToListAsync());
 
     // order the responses by Order field
     foreach (var item in items)
+    {
       Logger.LogInformation($"  question '{item.Stem}'. read {item.SystemQuestionResponses.Count} responses");
+      item.SystemQuestionResponses = item.SystemQuestionResponses.OrderBy(x => x.Order).ToList();
+    }
 
     return items;
   }

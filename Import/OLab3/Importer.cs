@@ -139,10 +139,6 @@ public class Importer : IImporter
 
     var mapPhys = WriteImportToDatabase(
       archiveFileName);
-
-    mapPhys.AddGroupsFromUser(auth.User);
-    GetDbContext().SaveChanges();
-
     return mapPhys;
   }
 

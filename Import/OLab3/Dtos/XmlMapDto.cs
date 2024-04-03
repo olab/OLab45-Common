@@ -13,8 +13,7 @@ public class XmlMapDto : XmlImportDto<XmlMap>
 {
   private readonly MapsMapper _mapper;
 
-  public XmlMapDto(IOLabLogger logger, Importer importer)
-    : base(logger, importer, Importer.DtoTypes.XmlMapDto, "map.xml")
+  public XmlMapDto(IOLabLogger logger, Importer importer) : base(logger, importer, Importer.DtoTypes.XmlMapDto, "map.xml")
   {
     _mapper = new MapsMapper(logger);
   }
