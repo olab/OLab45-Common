@@ -82,12 +82,12 @@ public partial class Maps
   {
     AuthorId = userContext.UserId;
 
-    AssignUserAuthorization(dbContext, userContext);
-    AssignRoleAuthorization(dbContext, userContext);
-    AssignAclAuthorization(dbContext);
+    AssignMapGroups(dbContext, userContext);
+    AssignSecurityRoles(dbContext, userContext);
+    AssignSecurityUsers(dbContext);
   }
 
-  private void AssignAclAuthorization(OLabDBContext dbContext)
+  private void AssignSecurityUsers(OLabDBContext dbContext)
   {
     dbContext.SecurityUsers.Add(new SecurityUsers
     {
@@ -99,29 +99,41 @@ public partial class Maps
     });
   }
 
-  private void AssignUserAuthorization(OLabDBContext dbContext, IUserContext userContext)
+  private void AssignMapGroups(OLabDBContext dbContext, IUserContext userContext)
   {
     foreach (var item in userContext.UserRoles)
     {
+      // user must belong to an explicit 'Importer' role
+      // on a group in order for the group to be added.
+
+      if (item.Role.Name != Roles.RoleNameImporter)
+        continue;
+
       MapGroups.Add(Model.MapGroups.FromGroupNames(
         dbContext,
         item.Group.Name));
     }
   }
 
-  private void AssignRoleAuthorization(OLabDBContext dbContext, IUserContext userContext)
+  private void AssignSecurityRoles(OLabDBContext dbContext, IUserContext userContext)
   {
     var roleLearnerPhys = dbContext.Roles.FirstOrDefault(x => x.Name == Roles.RoleNameLearner);
     var roleAuthorPhys = dbContext.Roles.FirstOrDefault(x => x.Name == Roles.RoleNameAuthor);
 
     foreach (var item in userContext.UserRoles)
     {
+      // user must belong to an explicit 'Importer' role
+      // on a group in order for the security roles to be added.
+
+      if (item.Role.Name != Roles.RoleNameImporter)
+        continue;
+
       dbContext.SecurityRoles.Add(new SecurityRoles
       {
         Acl = "RX",
         ImageableId = Id,
         ImageableType = "Maps",
-        GroupId = item.Group.Id,
+        GroupId = item.GroupId,
         RoleId = roleLearnerPhys.Id
       });
 
@@ -130,7 +142,7 @@ public partial class Maps
         Acl = "RWXD",
         ImageableId = Id,
         ImageableType = "Maps",
-        GroupId = item.Group.Id,
+        GroupId = item.GroupId,
         RoleId = roleAuthorPhys.Id
       });
     }

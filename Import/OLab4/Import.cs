@@ -43,7 +43,7 @@ public partial class Importer : IImporter
     {
       Authorization = auth;
 
-      if (!auth.IsMemberOf(Api.Model.Groups.GroupNameOLab, Api.Model.Roles.RoleNameImporter))
+      if (!auth.IsMemberOf("*", Api.Model.Roles.RoleNameImporter))
         throw new OLabUnauthorizedException();
 
       var transaction = _dbContext.Database.BeginTransaction();

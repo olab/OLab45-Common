@@ -133,12 +133,12 @@ public class Importer : IImporter
   {
     Authorization = auth;
 
-    if (!auth.IsMemberOf(Groups.GroupNameOLab, Roles.RoleNameImporter))
+    if (!auth.IsMemberOf("*", Api.Model.Roles.RoleNameImporter))
       throw new OLabUnauthorizedException();
 
     await LoadImportFromArchiveFile(
-      archiveFileStream, 
-      archiveFileName, 
+      archiveFileStream,
+      archiveFileName,
       token);
 
     var mapPhys = await WriteImportToDatabaseAsync(
@@ -171,9 +171,9 @@ public class Importer : IImporter
         token);
 
       // build extract direct based on archive file name without extension
-      var extractDirectory = 
+      var extractDirectory =
         FileStorageModule.BuildPath(
-          OLabFileStorageModule.ImportRoot, 
+          OLabFileStorageModule.ImportRoot,
           Path.GetFileNameWithoutExtension(archiveFileName));
       Logger.LogInformation($"Folder extract directory: {extractDirectory}");
 
