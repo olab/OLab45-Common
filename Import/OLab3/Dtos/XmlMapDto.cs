@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
@@ -5,6 +7,7 @@ using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace OLab.Import.OLab3.Dtos;
 
@@ -55,23 +58,28 @@ public class XmlMapDto : XmlImportDto<XmlMap>
   /// <param name="dtos">All import dtos (for lookups into related objects)</param>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
-  public override bool SaveToDatabase(
+  public override async Task<bool> SaveToDatabaseAsync(
     string importFolderName,
     int recordIndex,
     IEnumerable<dynamic> elements)
   {
-    var item = _mapper.ElementsToPhys(elements);
-    var oldId = item.Id;
-    item.Id = 0;
+    var phys = _mapper.ElementsToPhys(elements);
+    var oldId = phys.Id;
 
-    item.Name = $"IMPORT: {item.Name}";
-    item.AuthorId = _importer.Authorization.UserContext.UserId;
+    phys.Id = 0;
+    phys.Name = $"IMPORT: {phys.Name}";
 
-    Context.Maps.Add(item);
+    Context.Maps.Add(phys);
     Context.SaveChanges();
 
-    CreateIdTranslation(oldId, item.Id);
-    GetModel().Data.Add(item);
+    phys.AssignAuthorization(
+      _importer.GetDbContext(), 
+      _importer.Authorization.UserContext);
+
+    Context.SaveChanges();
+
+    CreateIdTranslation(oldId, phys.Id);
+    GetModel().Data.Add(phys);
 
     return true;
   }

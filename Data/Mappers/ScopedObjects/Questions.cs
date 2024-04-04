@@ -17,13 +17,6 @@ public class Questions : OLabMapper<SystemQuestions, QuestionsDto>
   {
   }
 
-  //public QuestionsPhys(
-  //  IOLabLogger Logger, 
-  //  WikiTagProvider tagProvider, 
-  //  bool _enableWikiTranslation = true) : base(Logger, tagProvider)
-  //{
-  //}
-
   public override SystemQuestions ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
   {
     var phys = GetPhys(source);

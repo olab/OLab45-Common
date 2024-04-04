@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OLab.Api.Common;
+using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -40,6 +42,9 @@ public partial class Importer : IImporter
     try
     {
       Authorization = auth;
+
+      if (!auth.IsMemberOf(Api.Model.Groups.GroupNameOLab, Api.Model.Roles.RoleNameImporter))
+        throw new OLabUnauthorizedException();
 
       var transaction = _dbContext.Database.BeginTransaction();
 
@@ -152,11 +157,17 @@ public partial class Importer : IImporter
     var mapDto = dto.Map;
     var phys = new MapsFullMapper(Logger).DtoToPhysical(mapDto);
 
+
     phys.Id = 0;
     phys.Name = $"IMPORT: {phys.Name}";
-    phys.AuthorId = auth.UserContext.UserId;
 
     await _dbContext.Maps.AddAsync(phys);
+    await _dbContext.SaveChangesAsync(token);
+
+    phys.AssignAuthorization(
+      _dbContext, 
+      auth.UserContext);
+
     await _dbContext.SaveChangesAsync(token);
 
     Logger.LogInformation($"  imported map '{mapDto.Name}' {mapDto.Id.Value} -> {phys.Id}");

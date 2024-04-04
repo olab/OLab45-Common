@@ -1,4 +1,6 @@
 using Newtonsoft.Json;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace OLab.Api.Model;
@@ -15,16 +17,12 @@ public class AddUserRequest
   public string NickName { get; set; }
   public string Password { get; set; }
   public string ModeUi { get; set; }
-  public string Group { get; set; }
-  [Required]
-  public string Role { get; set; }
+  public string Auth { get; set; }
 
   public AddUserRequest()
   {
     NickName = "";
     ModeUi = "easy";
-    Group = "";
-    Role = "";
   }
 
   public AddUserRequest(string userRequestText)
@@ -36,14 +34,13 @@ public class AddUserRequest
     }
 
     Username = parts[0];
-    if (parts[1].Length > 0)
-      Password = parts[1];
-    EMail = parts[2];
-    NickName = parts[3];
-    Group = "";
-    Role = parts[5];
-
     Username = Username.ToLower();
 
+    if (parts[1].Length > 0)
+      Password = parts[1];
+
+    EMail = parts[2];
+    NickName = parts[3];
+    Auth = parts[4];
   }
 }

@@ -44,5 +44,7 @@ public interface IUserContext
 
   public IList<UserGroups> UserRoles { get; }
 
+  public bool IsMemberOf(string groupName, string RoleName);
+
   public string ToString();
 }

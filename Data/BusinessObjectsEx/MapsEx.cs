@@ -1,5 +1,8 @@
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using OLab.Api.Data.Interface;
 using System.Collections.Generic;
+using System.Linq;
 
 #nullable disable
 
@@ -68,5 +71,68 @@ public partial class Maps
     map.MapNodes.Add(new MapNodes { Title = "New Node", TypeId = 1, Text = "Sample Text" });
 
     return map;
+  }
+
+  /// <summary>
+  /// Assign user's authorization configuration to map
+  /// </summary>
+  /// <param name="dbContext">OLabDBContext</param>
+  /// <param name="userContext">User context</param>
+  public void AssignAuthorization(OLabDBContext dbContext, IUserContext userContext)
+  {
+    AuthorId = userContext.UserId;
+
+    AssignUserAuthorization(dbContext, userContext);
+    AssignRoleAuthorization(dbContext, userContext);
+    AssignAclAuthorization(dbContext);
+  }
+
+  private void AssignAclAuthorization(OLabDBContext dbContext)
+  {
+    dbContext.SecurityUsers.Add(new SecurityUsers
+    {
+      Acl = "RWXD",
+      ImageableId = Id,
+      ImageableType = "Maps",
+      Iss = "olab",
+      UserId = AuthorId
+    });
+  }
+
+  private void AssignUserAuthorization(OLabDBContext dbContext, IUserContext userContext)
+  {
+    foreach (var item in userContext.UserRoles)
+    {
+      MapGroups.Add(Model.MapGroups.FromGroupNames(
+        dbContext,
+        item.Group.Name));
+    }
+  }
+
+  private void AssignRoleAuthorization(OLabDBContext dbContext, IUserContext userContext)
+  {
+    var roleLearnerPhys = dbContext.Roles.FirstOrDefault(x => x.Name == Roles.RoleNameLearner);
+    var roleAuthorPhys = dbContext.Roles.FirstOrDefault(x => x.Name == Roles.RoleNameAuthor);
+
+    foreach (var item in userContext.UserRoles)
+    {
+      dbContext.SecurityRoles.Add(new SecurityRoles
+      {
+        Acl = "RX",
+        ImageableId = Id,
+        ImageableType = "Maps",
+        GroupId = item.Group.Id,
+        RoleId = roleLearnerPhys.Id
+      });
+
+      dbContext.SecurityRoles.Add(new SecurityRoles
+      {
+        Acl = "RWXD",
+        ImageableId = Id,
+        ImageableType = "Maps",
+        GroupId = item.Group.Id,
+        RoleId = roleAuthorPhys.Id
+      });
+    }
   }
 }

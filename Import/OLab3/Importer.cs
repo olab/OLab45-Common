@@ -1,3 +1,4 @@
+using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -132,13 +133,17 @@ public class Importer : IImporter
   {
     Authorization = auth;
 
+    if (!auth.IsMemberOf(Groups.GroupNameOLab, Roles.RoleNameImporter))
+      throw new OLabUnauthorizedException();
+
     await LoadImportFromArchiveFile(
       archiveFileStream, 
       archiveFileName, 
       token);
 
-    var mapPhys = WriteImportToDatabase(
+    var mapPhys = await WriteImportToDatabaseAsync(
       archiveFileName);
+
     return mapPhys;
   }
 
@@ -199,7 +204,7 @@ public class Importer : IImporter
   /// </summary>
   /// <param name="archiveFileName">Import archive ZIP file name</param>
   /// <returns>true</returns>
-  public Maps WriteImportToDatabase(
+  public async Task<Maps> WriteImportToDatabaseAsync(
     string archiveFileName)
   {
 
@@ -210,7 +215,7 @@ public class Importer : IImporter
       {
         // save all import data sets to database
         foreach (var dto in _dtos.Values)
-          dto.SaveToDatabase(Path.GetFileNameWithoutExtension(archiveFileName));
+          await dto.SaveToDatabaseAsync(Path.GetFileNameWithoutExtension(archiveFileName));
 
         transaction.Commit();
 

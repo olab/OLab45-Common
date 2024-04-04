@@ -120,7 +120,7 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
   /// </summary>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
-  public override bool SaveToDatabase(
+  public override async Task<bool> SaveToDatabaseAsync(
     string importFolderName,
     int recordIndex,
     IEnumerable<dynamic> elements)
