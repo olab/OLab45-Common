@@ -106,7 +106,7 @@ public partial class Maps
       // user must belong to an explicit 'Importer' role
       // on a group in order for the group to be added.
 
-      if (item.Role.Name != Roles.RoleNameImporter)
+      if ((item.Role.Name != Roles.RoleNameImporter) || (item.Role.Name != Roles.RoleNameSuperuser))
         continue;
 
       MapGroups.Add(Model.MapGroups.FromGroupNames(
@@ -125,7 +125,7 @@ public partial class Maps
       // user must belong to an explicit 'Importer' role
       // on a group in order for the security roles to be added.
 
-      if (item.Role.Name != Roles.RoleNameImporter)
+      if ((item.Role.Name != Roles.RoleNameImporter) || (item.Role.Name != Roles.RoleNameSuperuser))
         continue;
 
       dbContext.SecurityRoles.Add(new SecurityRoles
