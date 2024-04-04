@@ -1,191 +1,229 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
-#nullable disable
+using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
 [Table("maps")]
+[Index("AuthorId", Name = "author_id")]
+[Index("AuthorId", "TypeId", "SecurityId", "SectionId", "LanguageId", Name = "author_id_2")]
+[Index("LanguageId", Name = "language_id")]
+[Index("SectionId", Name = "section_id")]
+[Index("SecurityId", Name = "security_id")]
+[Index("SkinId", Name = "skin_id")]
+[Index("TypeId", "SkinId", "SectionId", "LanguageId", Name = "type_id")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class Maps
 {
-  public Maps()
-  {
-    MapNodes = new HashSet<MapNodes>();
-    MapNodeLinks = new HashSet<MapNodeLinks>();
+    [Key]
+    [Column("id", TypeName = "int(10) unsigned")]
+    public uint Id { get; set; }
 
-    Constants = new List<SystemConstants>();
-    Counters = new List<SystemCounters>();
-    Questions = new List<SystemQuestions>();
-    Files = new List<SystemFiles>();
-    Scripts = new List<SystemScripts>();
+    [Required]
+    [Column("name")]
+    [StringLength(200)]
+    public string Name { get; set; }
 
-    SystemCounterActions = new HashSet<SystemCounterActions>();
+    [Column("author_id", TypeName = "int(10) unsigned")]
+    public uint AuthorId { get; set; }
 
-    MapAvatars = new HashSet<MapAvatars>();
-    MapChats = new HashSet<MapChats>();
-    MapCollectionMaps = new HashSet<MapCollectionMaps>();
-    MapContributors = new HashSet<MapContributors>();
-    MapCounterCommonRules = new HashSet<MapCounterCommonRules>();
-    MapCounters = new HashSet<MapCounters>();
-    MapDams = new HashSet<MapDams>();
-    MapElements = new HashSet<MapElements>();
-    MapFeedbackRules = new HashSet<MapFeedbackRules>();
-    MapKeys = new HashSet<MapKeys>();
-    MapNodeJumps = new HashSet<MapNodeJumps>();
-    MapNodeLinks = new HashSet<MapNodeLinks>();
-    MapNodeSections = new HashSet<MapNodeSections>();
-    MapNodes = new HashSet<MapNodes>();
-    MapQuestions = new HashSet<MapQuestions>();
-    MapUsers = new HashSet<MapUsers>();
-    QCumulative = new HashSet<QCumulative>();
-    ScenarioMaps = new HashSet<ScenarioMaps>();
-    SystemCounterActions = new HashSet<SystemCounterActions>();
-    UserSessions = new HashSet<UserSessions>();
-    UserSessionTraces = new HashSet<UserSessionTraces>();
-    UserState = new HashSet<UserState>();
-  }
+    [Required]
+    [Column("abstract")]
+    [StringLength(2000)]
+    public string Abstract { get; set; }
 
-  [Key]
-  [Column("id", TypeName = "int(10) unsigned")]
-  public uint Id { get; set; }
-  [Required]
-  [Column("name")]
-  [StringLength(200)]
-  public string Name { get; set; }
-  [Column("author_id", TypeName = "int(10) unsigned")]
-  public uint AuthorId { get; set; }
-  [Required]
-  [Column("abstract")]
-  [StringLength(2000)]
-  public string Abstract { get; set; }
-  [Column("startScore", TypeName = "int(10)")]
-  public int StartScore { get; set; }
-  [Column("threshold", TypeName = "int(10)")]
-  public int Threshold { get; set; }
-  [Required]
-  [Column("keywords")]
-  [StringLength(500)]
-  public string Keywords { get; set; }
-  [Column("type_id", TypeName = "int(10) unsigned")]
-  public uint TypeId { get; set; }
-  [Required]
-  [Column("units")]
-  [StringLength(10)]
-  public string Units { get; set; }
-  [Column("security_id", TypeName = "int(10) unsigned")]
-  public uint SecurityId { get; set; }
-  [Required]
-  [Column("guid")]
-  [StringLength(50)]
-  public string Guid { get; set; }
-  [Column("timing")]
-  public bool Timing { get; set; }
-  [Column("delta_time", TypeName = "int(10)")]
-  public int DeltaTime { get; set; }
-  [Required]
-  [Column("reminder_msg")]
-  [StringLength(255)]
-  public string ReminderMsg { get; set; }
-  [Column("reminder_time", TypeName = "int(10)")]
-  public int ReminderTime { get; set; }
-  [Column("show_bar")]
-  public bool ShowBar { get; set; }
-  [Column("show_score")]
-  public bool ShowScore { get; set; }
-  [Column("skin_id", TypeName = "int(10) unsigned")]
-  public uint SkinId { get; set; }
-  [Column("enabled")]
-  public bool Enabled { get; set; }
-  [Column("section_id", TypeName = "int(10) unsigned")]
-  public uint SectionId { get; set; }
-  [Column("language_id", TypeName = "int(10) unsigned")]
-  public uint? LanguageId { get; set; }
-  [Required]
-  [Column("feedback")]
-  [StringLength(2000)]
-  public string Feedback { get; set; }
-  [Required]
-  [Column("dev_notes")]
-  [StringLength(1000)]
-  public string DevNotes { get; set; }
-  [Required]
-  [Column("source")]
-  [StringLength(50)]
-  public string Source { get; set; }
-  [Column("source_id", TypeName = "int(10) unsigned")]
-  public uint SourceId { get; set; }
-  [Column("verification", TypeName = "text")]
-  public string Verification { get; set; }
-  [Column("assign_forum_id", TypeName = "int(10)")]
-  public int? AssignForumId { get; set; }
-  [Column("author_rights", TypeName = "int(10)")]
-  public int AuthorRights { get; set; }
-  [Column("revisable_answers")]
-  public bool RevisableAnswers { get; set; }
-  [Column("send_xapi_statements")]
-  public bool SendXapiStatements { get; set; }
-  [Column("renderer_version")]
-  public float? RendererVersion { get; set; }
-  [Column("is_template", TypeName = "int(10)")]
-  public int? IsTemplate { get; set; }
-  [Column("report_node_id", TypeName = "int(10) unsigned")]
-  public uint? ReportNodeId { get; set; }
-  [Column("created_at", TypeName = "datetime")]
-  public DateTime? CreatedAt { get; set; }
-  [Column("updated_At", TypeName = "datetime")]
-  public DateTime? UpdatedAt { get; set; }
+    [Column("startScore", TypeName = "int(10)")]
+    public int StartScore { get; set; }
 
+    [Column("threshold", TypeName = "int(10)")]
+    public int Threshold { get; set; }
 
-  // public ICollection<MapNodes> MapNodes { get; set; }
-  // public ICollection<SystemCounterActions> SystemCounterActions { get; set; }
-  // public List<SystemConstants> ConstantsPhys { get; set; }
-  // public List<SystemCounters> CounterMapper { get; set; }
-  // public List<SystemFiles> FilesPhys { get; set; }
-  // public List<SystemQuestions> QuestionsPhys { get; set; }
-  // public List<SystemScripts> ScriptsPhys { get; set; }
-  // public List<SystemThemes> ThemesPhys { get; set; }
-  // public ICollection<MapAvatars> MapAvatars { get; set; }
-  // public ICollection<MapNodeLinks> MapNodeLinks { get; set; }
+    [Required]
+    [Column("keywords")]
+    [StringLength(500)]
+    public string Keywords { get; set; }
 
-  [NotMapped]
-  public List<SystemConstants> Constants { get; set; }
-  [NotMapped]
-  public List<SystemCounters> Counters { get; set; }
-  [NotMapped]
-  public List<SystemFiles> Files { get; set; }
-  [NotMapped]
-  public List<SystemQuestions> Questions { get; set; }
-  [NotMapped]
-  public List<SystemScripts> Scripts { get; set; }
-  [NotMapped]
-  public List<SystemThemes> Themes { get; set; }
+    [Column("type_id", TypeName = "int(10) unsigned")]
+    public uint TypeId { get; set; }
 
-  public virtual Languages Language { get; set; }
-  public virtual MapSections Section { get; set; }
-  public virtual MapSecurities Security { get; set; }
-  public virtual MapTypes Type { get; set; }
-  public virtual ICollection<MapAvatars> MapAvatars { get; set; }
-  public virtual ICollection<MapChats> MapChats { get; set; }
-  public virtual ICollection<MapCollectionMaps> MapCollectionMaps { get; set; }
-  public virtual ICollection<MapContributors> MapContributors { get; set; }
-  public virtual ICollection<MapCounterCommonRules> MapCounterCommonRules { get; set; }
-  public virtual ICollection<MapCounters> MapCounters { get; set; }
-  public virtual ICollection<MapDams> MapDams { get; set; }
-  public virtual ICollection<MapElements> MapElements { get; set; }
-  public virtual ICollection<MapFeedbackRules> MapFeedbackRules { get; set; }
-  public virtual ICollection<MapKeys> MapKeys { get; set; }
-  public virtual ICollection<MapNodeJumps> MapNodeJumps { get; set; }
-  public virtual ICollection<MapNodeLinks> MapNodeLinks { get; set; }
-  public virtual ICollection<MapNodeSections> MapNodeSections { get; set; }
-  public virtual ICollection<MapNodes> MapNodes { get; set; }
-  public virtual ICollection<MapQuestions> MapQuestions { get; set; }
-  public virtual ICollection<MapUsers> MapUsers { get; set; }
-  public virtual ICollection<QCumulative> QCumulative { get; set; }
-  public virtual ICollection<ScenarioMaps> ScenarioMaps { get; set; }
-  public virtual ICollection<SystemCounterActions> SystemCounterActions { get; set; }
-  public virtual ICollection<UserSessions> UserSessions { get; set; }
-  public virtual ICollection<UserSessionTraces> UserSessionTraces { get; set; }
-  public virtual ICollection<UserState> UserState { get; set; }
+    [Required]
+    [Column("units")]
+    [StringLength(10)]
+    public string Units { get; set; }
+
+    [Column("security_id", TypeName = "int(10) unsigned")]
+    public uint SecurityId { get; set; }
+
+    [Required]
+    [Column("guid")]
+    [StringLength(50)]
+    public string Guid { get; set; }
+
+    [Column("timing")]
+    public bool Timing { get; set; }
+
+    [Column("delta_time", TypeName = "int(10)")]
+    public int DeltaTime { get; set; }
+
+    [Required]
+    [Column("reminder_msg")]
+    [StringLength(255)]
+    public string ReminderMsg { get; set; }
+
+    [Column("reminder_time", TypeName = "int(10)")]
+    public int ReminderTime { get; set; }
+
+    [Column("show_bar")]
+    public bool ShowBar { get; set; }
+
+    [Column("show_score")]
+    public bool ShowScore { get; set; }
+
+    [Column("skin_id", TypeName = "int(10) unsigned")]
+    public uint SkinId { get; set; }
+
+    [Column("enabled")]
+    public bool Enabled { get; set; }
+
+    [Column("section_id", TypeName = "int(10) unsigned")]
+    public uint SectionId { get; set; }
+
+    [Column("language_id", TypeName = "int(10) unsigned")]
+    public uint? LanguageId { get; set; }
+
+    [Required]
+    [Column("feedback")]
+    [StringLength(2000)]
+    public string Feedback { get; set; }
+
+    [Required]
+    [Column("dev_notes")]
+    [StringLength(1000)]
+    public string DevNotes { get; set; }
+
+    [Required]
+    [Column("source")]
+    [StringLength(50)]
+    public string Source { get; set; }
+
+    [Column("source_id", TypeName = "int(10) unsigned")]
+    public uint SourceId { get; set; }
+
+    [Column("verification", TypeName = "text")]
+    public string Verification { get; set; }
+
+    [Column("assign_forum_id", TypeName = "int(10)")]
+    public int? AssignForumId { get; set; }
+
+    [Column("author_rights", TypeName = "int(10)")]
+    public int AuthorRights { get; set; }
+
+    [Column("revisable_answers")]
+    public bool RevisableAnswers { get; set; }
+
+    [Column("send_xapi_statements")]
+    public bool SendXapiStatements { get; set; }
+
+    [Column("renderer_version")]
+    public float? RendererVersion { get; set; }
+
+    [Column("is_template", TypeName = "int(10)")]
+    public int? IsTemplate { get; set; }
+
+    [Column("created_at", TypeName = "datetime")]
+    public DateTime? CreatedAt { get; set; }
+
+    [Column("updated_At", TypeName = "datetime")]
+    public DateTime? UpdatedAt { get; set; }
+
+    [Column("report_node_id", TypeName = "int(10)")]
+    public int? ReportNodeId { get; set; }
+
+    [ForeignKey("LanguageId")]
+    [InverseProperty("Maps")]
+    public virtual Languages Language { get; set; }
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapAvatars> MapAvatars { get; } = new List<MapAvatars>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapChats> MapChats { get; } = new List<MapChats>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapCollectionMaps> MapCollectionMaps { get; } = new List<MapCollectionMaps>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapContributors> MapContributors { get; } = new List<MapContributors>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapCounterCommonRules> MapCounterCommonRules { get; } = new List<MapCounterCommonRules>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapCounters> MapCounters { get; } = new List<MapCounters>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapDams> MapDams { get; } = new List<MapDams>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapElements> MapElements { get; } = new List<MapElements>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapFeedbackRules> MapFeedbackRules { get; } = new List<MapFeedbackRules>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapGroups> MapGroups { get; } = new List<MapGroups>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapKeys> MapKeys { get; } = new List<MapKeys>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapNodeJumps> MapNodeJumps { get; } = new List<MapNodeJumps>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapNodeLinks> MapNodeLinks { get; } = new List<MapNodeLinks>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapNodeSections> MapNodeSections { get; } = new List<MapNodeSections>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapNodes> MapNodes { get; } = new List<MapNodes>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapQuestions> MapQuestions { get; } = new List<MapQuestions>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapUsers> MapUsers { get; } = new List<MapUsers>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<QCumulative> QCumulative { get; } = new List<QCumulative>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<ScenarioMaps> ScenarioMaps { get; } = new List<ScenarioMaps>();
+
+    [ForeignKey("SectionId")]
+    [InverseProperty("Maps")]
+    public virtual MapSections Section { get; set; }
+
+    [ForeignKey("SecurityId")]
+    [InverseProperty("Maps")]
+    public virtual MapSecurities Security { get; set; }
+
+    [InverseProperty("Map")]
+    public virtual ICollection<SystemCounterActions> SystemCounterActions { get; } = new List<SystemCounterActions>();
+
+    [ForeignKey("TypeId")]
+    [InverseProperty("Maps")]
+    public virtual MapTypes Type { get; set; }
+
+    [InverseProperty("Map")]
+    public virtual ICollection<UserSessions> UserSessions { get; } = new List<UserSessions>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<UserSessiontraces> UserSessiontraces { get; } = new List<UserSessiontraces>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<UserState> UserState { get; } = new List<UserState>();
 }

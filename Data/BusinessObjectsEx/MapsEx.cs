@@ -7,6 +7,10 @@ namespace OLab.Api.Model;
 
 public partial class Maps
 {
+  public bool IsAnonymous()
+  {
+    return SecurityId != 1;
+  }
 
   public static Maps CreateDefault(Maps templateMap)
   {
@@ -57,7 +61,7 @@ public partial class Maps
       TypeId = 11,
       Units = "",
       Verification = "{}",
-      MapNodes = new List<MapNodes>(),
+      // MapNodes = new List<MapNodes>(),
       ReportNodeId = 0
     };
 

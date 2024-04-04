@@ -1,6 +1,7 @@
 using Dawn;
 using HeyRed.Mime;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Packaging;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
@@ -103,7 +104,7 @@ public partial class ScopedObjects
     foreach (var item in items)
     {
       Logger.LogInformation($"  question '{item.Stem}'. read {item.SystemQuestionResponses.Count} responses");
-      item.SystemQuestionResponses = item.SystemQuestionResponses.OrderBy(x => x.Order).ToList();
+      item.SystemQuestionResponses.AddRange( item.SystemQuestionResponses.OrderBy(x => x.Order).ToList() );
     }
 
     return items;
