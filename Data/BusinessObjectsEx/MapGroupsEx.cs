@@ -32,4 +32,10 @@ public partial class MapGroups
       GroupId = groupPhys.Id
     };
   }
+
+  public static string ToString(IList<MapGroups> groups) 
+  {
+    var str = string.Join(",", groups.Select(x => x.Group.Name));
+    return str;
+  }
 }

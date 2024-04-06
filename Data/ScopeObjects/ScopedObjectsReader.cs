@@ -93,21 +93,23 @@ public partial class ScopedObjects
     uint id)
   {
     Guard.Argument(_dbContext).NotNull(nameof(_dbContext));
-    var items = new List<SystemQuestions>();
+    var questionsPhys = new List<SystemQuestions>();
 
-    items.AddRange(await _dbContext.SystemQuestions
+    questionsPhys.AddRange(await _dbContext.SystemQuestions
       .Where(x => x.ImageableType == scopeLevel && x.ImageableId == id)
       .Include("SystemQuestionResponses")
       .ToListAsync());
 
     // order the responses by Order field
-    foreach (var item in items)
+    foreach (var questionPhys in questionsPhys.Where( x => x.SystemQuestionResponses.Count > 0 ))
     {
-      Logger.LogInformation($"  question '{item.Stem}'. read {item.SystemQuestionResponses.Count} responses");
-      item.SystemQuestionResponses.AddRange( item.SystemQuestionResponses.OrderBy(x => x.Order).ToList() );
+      Logger.LogInformation($"  question '{questionPhys.Stem}'. read {questionPhys.SystemQuestionResponses.Count} responses");
+      var orderedResponses = questionPhys.SystemQuestionResponses.OrderBy(x => x.Order).ToList();
+      questionPhys.SystemQuestionResponses.Clear();
+      questionPhys.SystemQuestionResponses.AddRange( orderedResponses );
     }
 
-    return items;
+    return questionsPhys;
   }
 
   /// <summary>

@@ -20,20 +20,40 @@ public partial class UserGroups
   /// <param name="dbContext">OLabDbContext</param>
   /// <param name="groupName">Group name</param>
   /// <param name="roleName">Role name</param>
+  /// <param name="createIfNotExist">Create Groujp/Role if they do not exist</param>
   /// <returns>UserGroups</returns>
   /// <exception cref="OLabObjectNotFoundException">Grup or role name not found</exception>
   public static UserGroups FromGroupRoleNames(
     OLabDBContext dbContext,
     string groupName,
-    string roleName)
+    string roleName,
+    bool createIfNotExist = true)
   {
     var groupPhys = dbContext.Groups.FirstOrDefault(x => x.Name == groupName);
     if (groupPhys == null)
-      throw new OLabObjectNotFoundException("Groups", groupName);
+    {
+      if (createIfNotExist)
+      {
+        groupPhys = new Groups { Name = groupName };
+        dbContext.Groups.Add(groupPhys);
+      }
+      else
+        throw new OLabObjectNotFoundException("Groups", groupName);
+    }
 
     var rolePhys = dbContext.Roles.FirstOrDefault(x => x.Name == roleName);
     if (groupPhys == null)
-      throw new OLabObjectNotFoundException("Roles", roleName);
+    {
+      if (createIfNotExist)
+      {
+        rolePhys = new Roles { Name = roleName };
+        dbContext.Roles.Add(rolePhys);
+      }
+      else
+        throw new OLabObjectNotFoundException("Roles", roleName);
+    }
+
+    dbContext.SaveChanges();
 
     return new UserGroups
     {
@@ -49,14 +69,22 @@ public partial class UserGroups
   /// </summary>
   /// <param name="dbContext">OLabDbContext</param>
   /// <param name="source">Source string</param>
-  /// <returns></returns>
-  public static IList<UserGroups> FromString(OLabDBContext dbContext, string source)
+  /// <param name="createIfNotExist">Create Groujp/Role if they do not exist</param>
+  /// <returns>List of UserGroups</returns>
+  public static IList<UserGroups> FromString(
+    OLabDBContext dbContext, 
+    string source,
+    bool createIfNotExist = true )
   {
     var userGroups = new List<UserGroups>();
     foreach (var item in source.Split(",").Distinct())
     {
       var itemParts = item.Split(GroupRoleSeparator);
-      userGroups.Add( FromGroupRoleNames( dbContext, itemParts[0], itemParts[1]));
+      userGroups.Add( FromGroupRoleNames( 
+        dbContext, 
+        itemParts[0], 
+        itemParts[1], 
+        createIfNotExist));
     }
 
     return userGroups;

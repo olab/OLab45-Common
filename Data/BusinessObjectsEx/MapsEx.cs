@@ -105,13 +105,10 @@ public partial class Maps
     {
       // user must belong to an explicit 'Importer' role
       // on a group in order for the group to be added.
-
-      if ((item.Role.Name != Roles.RoleNameImporter) || (item.Role.Name != Roles.RoleNameSuperuser))
-        continue;
-
-      MapGroups.Add(Model.MapGroups.FromGroupNames(
-        dbContext,
-        item.Group.Name));
+      if ((item.Role.Name == Roles.RoleNameImporter) || (item.Role.Name == Roles.RoleNameSuperuser))
+        MapGroups.Add(Model.MapGroups.FromGroupNames(
+          dbContext,
+          item.Group.Name));
     }
   }
 

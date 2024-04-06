@@ -1,4 +1,5 @@
-﻿using Humanizer;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
@@ -8,9 +9,12 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace OLab.Api.Endpoints;
 
@@ -25,17 +29,30 @@ public partial class RolesEndpoint : OLabEndpoint
   }
 
   /// <summary>
-  /// 
+  /// Get group exists
   /// </summary>
-  /// <param name="id"></param>
-  /// <returns></returns>
-  private bool Exists(uint id)
+  /// <param name="nameOrId">Group name or id</param>
+  /// <returns>Group, or null</returns>
+  /// 
+  private async Task<Model.Roles> GetAsync(uint id)
   {
-    return dbContext.Roles.Any(e => e.Id == id);
+    return await GetAsync(id.ToString());
+  }
+
+  private async Task<Model.Roles> GetAsync(string nameOrId)
+  {
+    if (uint.TryParse(nameOrId, out var id))
+      return await dbContext.Roles.FirstOrDefaultAsync(e => e.Id == id);
+
+    var myWriter = new StringWriter();
+    // Decode any html encoded string.
+    HttpUtility.HtmlDecode(nameOrId, myWriter);
+
+    return await dbContext.Roles.FirstOrDefaultAsync(e => e.Name == myWriter.ToString());
   }
 
   /// <summary>
-  /// PAged get of Groups
+  /// Paged reading of Roles
   /// </summary>
   /// <param name="take">Max number of records to retrieve</param>
   /// <param name="skip">Skip over number of records</param>
@@ -69,7 +86,7 @@ public partial class RolesEndpoint : OLabEndpoint
 
     var dtoList = new ObjectMapper.Roles(Logger).PhysicalToDto(groupsPhys);
 
-    Logger.LogInformation(string.Format("found {0} roles", dtoList.Count));
+    Logger.LogInformation(string.Format("found {0} groups", dtoList.Count));
 
     return new OLabAPIPagedResponse<IdNameDto> { Data = dtoList, Remaining = remaining, Count = total };
   }
@@ -77,57 +94,59 @@ public partial class RolesEndpoint : OLabEndpoint
   /// <summary>
   /// 
   /// </summary>
-  /// <param name="id"></param>
+  /// <param name="nameOrId">Group name or id</param>
   /// <returns></returns>
   public async Task<IdNameDto> GetAsync(
     IOLabAuthorization auth,
-    uint id)
+    string nameOrId)
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: RolesEndpoint.ReadAsync");
+    Logger.LogInformation($"{auth.UserContext.UserId}: RolesEndpoint.GetAsync");
 
-    if (!Exists(id))
-      throw new OLabObjectNotFoundException("Roles", id);
+    var phys = await GetAsync(nameOrId);
+    if (phys == null)
+      throw new OLabObjectNotFoundException("Roles", nameOrId);
 
-    var phys = await dbContext.Roles.FirstAsync(x => x.Id == id);
     var dto = new ObjectMapper.Roles(Logger).PhysicalToDto(phys);
 
     return dto;
   }
 
-  /// <summary>
   /// Saves a object edit
   /// </summary>
   /// <param name="id">question id</param>
   /// <returns>IActionResult</returns>
   public async Task PutAsync(
     IOLabAuthorization auth,
-    uint id,
     IdNameDto dto)
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: RolesEndpoint.PutAsync");
-
-    if (!Exists(id))
-      throw new OLabObjectNotFoundException("Roles", id);
+    Logger.LogInformation($"{auth.UserContext.UserId}: RolessEndpoint.PutAsync");
 
     // test if user has access to object
     if (!auth.IsMemberOf(Model.Groups.GroupNameOLab, Model.Roles.RoleNameSuperuser))
-      throw new OLabUnauthorizedException("Roles", id);
+      throw new OLabUnauthorizedException("Roles", dto.Id);
+
+    var phys = await GetAsync(dto.Id);
+    if (phys == null)
+      throw new OLabObjectNotFoundException("Roles", dto.Id);
 
     // test if reserved object
+    if (Model.Roles.IsReserved(phys.Name))
+      throw new OLabUnauthorizedException("Roles", dto.Id);
+
     if (Model.Roles.IsReserved(dto.Name))
-      throw new OLabUnauthorizedException("Roles", id);
+      throw new OLabUnauthorizedException("Roles", dto.Name);
 
     try
     {
       var builder = new ObjectMapper.Roles(Logger);
-      var phys = builder.DtoToPhysical(dto);
+      phys = builder.DtoToPhysical(dto);
 
       dbContext.Entry(phys).State = EntityState.Modified;
       await dbContext.SaveChangesAsync();
     }
     catch (DbUpdateConcurrencyException ex)
     {
-      Logger.LogError($"RolesEndpoint.PutAsync {ex.Message}");
+      Logger.LogError($"RolessEndpoint.PutAsync {ex.Message}");
     }
 
   }
@@ -147,12 +166,16 @@ public partial class RolesEndpoint : OLabEndpoint
     if (!auth.IsMemberOf(Model.Groups.GroupNameOLab, Model.Roles.RoleNameSuperuser))
       throw new OLabUnauthorizedException("Roles", 0);
 
+    var phys = await GetAsync(dto.Name);
+    if (phys != null)
+      throw new OLabInvalidRequestException($"Role '{dto.Name}' already exists");
+
     // test if reserved object
     if (Model.Roles.IsReserved(dto.Name))
       throw new OLabUnauthorizedException("Roles", 0);
 
     var builder = new ObjectMapper.Roles(Logger);
-    var phys = builder.DtoToPhysical(dto);
+    phys = builder.DtoToPhysical(dto);
 
     dbContext.Roles.Add(phys);
     await dbContext.SaveChangesAsync();
@@ -169,21 +192,20 @@ public partial class RolesEndpoint : OLabEndpoint
   /// <returns></returns>
   public async Task DeleteAsync(
     IOLabAuthorization auth,
-    uint id)
+    string nameOrId)
   {
     Logger.LogInformation($"{auth.UserContext.UserId}: RolesEndpoint.DeleteAsync");
 
     // test if user has access to object
     if (!auth.IsMemberOf(Model.Groups.GroupNameOLab, Model.Roles.RoleNameSuperuser))
-      throw new OLabUnauthorizedException("Roles", id);
+      throw new OLabUnauthorizedException("Roles", nameOrId);
 
-    if (!Exists(id))
-      throw new OLabObjectNotFoundException("Roles", id);
-
-    var phys = await dbContext.Roles.FirstOrDefaultAsync(x => x.Id == id);
+    var phys = await GetAsync(nameOrId);
+    if (phys == null)
+      throw new OLabObjectNotFoundException("Roles", nameOrId);
 
     if (Model.Roles.IsReserved(phys.Name))
-      throw new OLabUnauthorizedException("Roles", id);
+      throw new OLabUnauthorizedException("Roles", nameOrId);
 
     try
     {

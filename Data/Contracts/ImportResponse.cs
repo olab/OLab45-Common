@@ -10,6 +10,7 @@ public class ImportResponse
   public uint Id { get; set; }
   public string Name { get; set; }
   public DateTime CreatedAt { get; set; }
+  public string Groups { get; set; }
 
   public ImportResponse()
   {
