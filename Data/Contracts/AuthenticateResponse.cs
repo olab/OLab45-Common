@@ -9,7 +9,7 @@ public class AuthenticateResponse
 {
   public DateTime CreatedAt { get; set; }
   public string UserName { get; set; }
-  public string Auth { get; set; }
+  public IList<string> Auth { get; set; }
   public RefreshToken AuthInfo { get; set; }
   public string CourseName { get; set; }
 
@@ -17,6 +17,7 @@ public class AuthenticateResponse
   {
     CreatedAt = DateTime.Now;
     AuthInfo = new RefreshToken();
+    Auth = new List<string>();
   }
 
 }

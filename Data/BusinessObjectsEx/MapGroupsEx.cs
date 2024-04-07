@@ -10,7 +10,7 @@ namespace OLab.Api.Model;
 
 public partial class MapGroups
 {
-    /// <summary>
+  /// <summary>
   /// Create a UserGroups instance from group and role names
   /// </summary>
   /// <param name="dbContext">OLabDbContext</param>
@@ -33,7 +33,7 @@ public partial class MapGroups
     };
   }
 
-  public static string ToString(IList<MapGroups> groups) 
+  public static string ToString(IList<MapGroups> groups)
   {
     var str = string.Join(",", groups.Select(x => x.Group.Name));
     return str;

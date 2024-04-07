@@ -61,17 +61,26 @@ public partial class Import4Endpoint : OLabEndpoint
   }
 
   public async Task ExportAsync(
+    IOLabAuthorization auth,
     Stream stream,
     uint mapId,
     CancellationToken token)
   {
-    await _importer.ExportAsync(stream, mapId, token);
+    await _importer.ExportAsync(
+      auth, 
+      stream, 
+      mapId, 
+      token);
   }
 
   public async Task<MapsFullRelationsDto> ExportAsync(
+    IOLabAuthorization auth,
     uint mapId,
     CancellationToken token)
   {
-    return await _importer.ExportAsync(mapId, token);
+    return await _importer.ExportAsync(
+      auth, 
+      mapId, 
+      token);
   }
 }

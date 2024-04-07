@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Humanizer;
+using Microsoft.EntityFrameworkCore;
+using OLab.Api.Common.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,8 +26,9 @@ public partial class Groups
   /// </summary>
   /// <param name="groupName">Group name to test</param>
   /// <returns></returns>
-  public static bool IsReserved( string groupName )
+  public static bool IsReserved(string groupName)
   {
-    return ReservedNames.Contains( groupName );
+    return ReservedNames.Contains(groupName);
   }
+
 }

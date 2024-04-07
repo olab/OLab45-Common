@@ -6,8 +6,8 @@ using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
+using OLab.Api.Endpoints.ReaderWriters;
 using OLab.Api.Model;
-using OLab.Api.Model.ReaderWriter;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
 using OLab.Data;
@@ -347,7 +347,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if (template == null)
       throw new OLabObjectNotFoundException("Maps", body.TemplateId);
 
-    map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext)
+    map = await MapsReaderWriter.Instance(Logger, dbContext)
       .CreateMapWithTemplateAsync(map, template);
 
     var mapLinks = dbContext.MapNodeLinks.AsNoTracking().Where(x => x.MapId == map.Id).ToList();
@@ -399,7 +399,7 @@ public partial class MapsEndpoint : OLabEndpoint
       if (template == null)
         throw new OLabObjectNotFoundException("Maps", body.TemplateId.Value);
 
-      map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext)
+      map = await MapsReaderWriter.Instance(Logger, dbContext)
         .CreateMapWithTemplateAsync(map, template);
     }
 
@@ -433,16 +433,16 @@ public partial class MapsEndpoint : OLabEndpoint
   {
     Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutAsync");
 
-    var map = new MapsFullMapper(Logger).DtoToPhysical(mapdto);
+    var mapPhys = new MapsFullMapper(Logger).DtoToPhysical(mapdto);
 
     // test if user has access to map.
-    if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, map.Id))
-      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, map.Id);
+    if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapPhys.Id))
+      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapPhys.Id);
 
-    if (id != map.Id)
-      throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, map.Id);
+    if (id != mapPhys.Id)
+      throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapPhys.Id);
 
-    dbContext.Entry(map).State = EntityState.Modified;
+    dbContext.Entry(mapPhys).State = EntityState.Modified;
 
     try
     {
@@ -544,9 +544,12 @@ public partial class MapsEndpoint : OLabEndpoint
     if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-    var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).DeleteAsync(mapId)
-      ?? throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
+    var mapPhys = GetSimple(dbContext, mapId);
 
+    if (mapPhys == null)
+      throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
+
+    await MapsReaderWriter.Instance(Logger, dbContext).DeleteAsync(mapPhys);
   }
 
   [HttpOptions]

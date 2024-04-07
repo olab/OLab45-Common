@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OLab.Api.Common;
+using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
+using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.ObjectMapper;
 using OLab.Data;
@@ -22,10 +24,16 @@ public partial class Importer : IImporter
   /// <param name="token"></param>
   /// <returns>MapsFullRelationsDto</returns>
   public async Task<MapsFullRelationsDto> ExportAsync(
+    IOLabAuthorization auth,
     uint mapId,
     CancellationToken token = default)
   {
     Logger.LogInformation($"Exporting mapId: {mapId} ");
+
+    // importer must be a superuser or an importer
+    if (!auth.IsMemberOf("*", Api.Model.Roles.RoleNameSuperuser)
+      && !auth.IsMemberOf("*", Api.Model.Roles.RoleNameImporter))
+      throw new OLabUnauthorizedException();
 
     // create map json object
     var dto = await ReadMapDtoFromDatabase(mapId, token);
@@ -43,14 +51,20 @@ public partial class Importer : IImporter
   /// <param name="mapId">Map id to export</param>
   /// <param name="token"></param>
   public async Task ExportAsync(
+    IOLabAuthorization auth,
     Stream stream,
     uint mapId,
     CancellationToken token = default)
   {
     Logger.Clear();
 
+    // importer must be a superuser or an importer
+    if (!auth.IsMemberOf("*", Api.Model.Roles.RoleNameSuperuser)
+      && !auth.IsMemberOf("*", Api.Model.Roles.RoleNameImporter))
+      throw new OLabUnauthorizedException();
+
     // create map json object
-    var dto = await ExportAsync(mapId, token);
+    var dto = await ExportAsync(auth, mapId, token);
 
     // serialize the dto into a json string
     var rawJson = JsonConvert.SerializeObject(dto);

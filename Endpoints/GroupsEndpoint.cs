@@ -1,13 +1,14 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
 using Humanizer;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Packaging;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
+using OLab.Api.Endpoints.ReaderWriters;
 using OLab.Api.Model;
-using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -34,61 +35,15 @@ public partial class GroupsEndpoint : OLabEndpoint
   /// <param name="nameOrId">Group name or id</param>
   /// <returns>Group, or null</returns>
   /// 
-  private async Task<Model.Groups> GetAsync(uint id)
+  private async Task<Groups> GetAsync(uint id)
   {
     return await GetAsync(id.ToString());
   }
 
-  private async Task<Model.Groups> GetAsync(string nameOrId)
+  private async Task<Groups> GetAsync(string nameOrId)
   {
-    if (uint.TryParse(nameOrId, out var id))
-      return await dbContext.Groups.FirstOrDefaultAsync(e => e.Id == id);
-
-    var myWriter = new StringWriter();
-    // Decode any html encoded string.
-    HttpUtility.HtmlDecode(nameOrId, myWriter);
-
-    return await dbContext.Groups.FirstOrDefaultAsync(e => e.Name == myWriter.ToString());
-  }
-
-  /// <summary>
-  /// Paged reading of Groups
-  /// </summary>
-  /// <param name="take">Max number of records to retrieve</param>
-  /// <param name="skip">Skip over number of records</param>
-  /// <returns>OLabAPIPagedResponse</returns>
-  public async Task<OLabAPIPagedResponse<IdNameDto>> GetAsync(
-    IOLabAuthorization auth,
-    int? take,
-    int? skip)
-  {
-    Logger.LogInformation($"{auth.UserContext.UserId}: GroupsEndpoint.ReadAsync");
-
-    var groupsPhys = new List<Model.Groups>();
-    var total = 0;
-    var remaining = 0;
-
-    if (!skip.HasValue)
-      skip = 0;
-
-    total = dbContext.Groups.Count();
-
-    if (take.HasValue && skip.HasValue)
-    {
-      groupsPhys = await dbContext.Groups.Skip(skip.Value).Take(take.Value).ToListAsync();
-      remaining = total - take.Value - skip.Value;
-    }
-    else
-    {
-      groupsPhys = await dbContext.Groups.OrderBy(x => x.Name).ToListAsync();
-      remaining = 0;
-    }
-
-    var dtoList = new ObjectMapper.Groups(Logger).PhysicalToDto(groupsPhys);
-
-    Logger.LogInformation(string.Format("found {0} groups", dtoList.Count));
-
-    return new OLabAPIPagedResponse<IdNameDto> { Data = dtoList, Remaining = remaining, Count = total };
+    return await GroupsReaderWriter.Instance(Logger, dbContext).GetAsync(nameOrId)
+      ?? throw new OLabObjectNotFoundException("Groups", nameOrId);
   }
 
   /// <summary>
@@ -102,9 +57,8 @@ public partial class GroupsEndpoint : OLabEndpoint
   {
     Logger.LogInformation($"{auth.UserContext.UserId}: GroupsEndpoint.GetAsync");
 
-    var phys = await GetAsync(nameOrId);
-    if (phys == null)
-      throw new OLabObjectNotFoundException("Groups", nameOrId);
+    var phys = await GetAsync(nameOrId)
+      ?? throw new OLabObjectNotFoundException("Groups", nameOrId);
 
     var dto = new ObjectMapper.Groups(Logger).PhysicalToDto(phys);
 
@@ -123,19 +77,15 @@ public partial class GroupsEndpoint : OLabEndpoint
     Logger.LogInformation($"{auth.UserContext.UserId}: GroupsEndpoint.PutAsync");
 
     // test if user has access to object
-    if (!auth.IsMemberOf(Model.Groups.GroupNameOLab, Model.Roles.RoleNameSuperuser))
+    if (!auth.IsMemberOf(Groups.GroupNameOLab, Roles.RoleNameSuperuser))
       throw new OLabUnauthorizedException("Groups", dto.Id);
 
-    var phys = await GetAsync(dto.Id);
-    if (phys == null)
-      throw new OLabObjectNotFoundException("Groups", dto.Id);
+    var phys = await GetAsync(dto.Id)
+      ?? throw new OLabObjectNotFoundException("Groups", dto.Id);
 
     // test if reserved object
-    if (Model.Groups.IsReserved(phys.Name))
+    if (Groups.IsReserved(phys.Name))
       throw new OLabUnauthorizedException("Groups", dto.Id);
-
-    if (Model.Groups.IsReserved(dto.Name))
-      throw new OLabUnauthorizedException("Roles", dto.Name);
 
     try
     {
@@ -164,24 +114,40 @@ public partial class GroupsEndpoint : OLabEndpoint
     Logger.LogInformation($"{auth.UserContext.UserId}: GroupsEndpoint.PostAsync");
 
     // test if user has access to object
-    if (!auth.IsMemberOf(Model.Groups.GroupNameOLab, Model.Roles.RoleNameSuperuser))
+    if (!auth.IsMemberOf(Groups.GroupNameOLab, Roles.RoleNameSuperuser))
       throw new OLabUnauthorizedException("Groups", 0);
 
-    var phys = await GetAsync(dto.Name);
-    if (phys != null)
+    var groupPhys = await GetAsync(dto.Name);
+    if (groupPhys != null)
       throw new OLabBadRequestException($"Group '{dto.Name}' already exists");
 
     // test if reserved object
-    if (Model.Groups.IsReserved(dto.Name))
+    if (Groups.IsReserved(dto.Name))
       throw new OLabUnauthorizedException("Groups", 0);
 
     var builder = new ObjectMapper.Groups(Logger);
-    phys = builder.DtoToPhysical(dto);
+    groupPhys = builder.DtoToPhysical(dto);
 
-    dbContext.Groups.Add(phys);
+    var transaction = dbContext.Database.BeginTransaction();
+
+    try
+    {
+      groupPhys = await GroupsReaderWriter
+        .Instance(Logger, dbContext).CreateAsync(auth, groupPhys);
+
+      await dbContext.SaveChangesAsync();
+      transaction.Commit();
+    }
+    catch (Exception ex)
+    {
+      Logger.LogError($"GroupsEndpoint.DeleteAsync {ex.Message}");
+      await transaction.RollbackAsync();
+    }
+
+
     await dbContext.SaveChangesAsync();
 
-    dto = builder.PhysicalToDto(phys);
+    dto = builder.PhysicalToDto(groupPhys);
 
     return dto;
   }
@@ -198,26 +164,41 @@ public partial class GroupsEndpoint : OLabEndpoint
     Logger.LogInformation($"{auth.UserContext.UserId}: GroupsEndpoint.DeleteAsync");
 
     // test if user has access to object
-    if (!auth.IsMemberOf(Model.Groups.GroupNameOLab, Model.Roles.RoleNameSuperuser))
+    if (!auth.IsMemberOf(Groups.GroupNameOLab, Roles.RoleNameSuperuser))
       throw new OLabUnauthorizedException("Groups", nameOrId);
 
-    var phys = await GetAsync(nameOrId);
-    if (phys == null)
-      throw new OLabObjectNotFoundException("Groups", nameOrId);
+    var groupPhys = await GetAsync(nameOrId)
+      ?? throw new OLabObjectNotFoundException("Groups", nameOrId);
 
-    if (Model.Groups.IsReserved(phys.Name))
+    if (Groups.IsReserved(groupPhys.Name))
       throw new OLabUnauthorizedException("Groups", nameOrId);
+
+    var transaction = dbContext.Database.BeginTransaction();
 
     try
     {
-      dbContext.Groups.Remove(phys);
+      // delete all the related group references
+      await GroupsReaderWriter
+        .Instance(Logger, dbContext).DeleteAsync(groupPhys);
+
       await dbContext.SaveChangesAsync();
+      transaction.Commit();
     }
-    catch (DbUpdateConcurrencyException ex)
+    catch (Exception ex)
     {
       Logger.LogError($"GroupsEndpoint.DeleteAsync {ex.Message}");
+      await transaction.RollbackAsync();
     }
 
   }
 
+  public async Task<PagedResult<Groups>> GetAsync(
+    IOLabAuthorization auth, 
+    int? take, 
+    int? skip)
+  {
+    var result = await GroupsReaderWriter
+      .Instance(Logger, dbContext).GetAsync(auth, take, skip);
+    return result;
+  }
 }

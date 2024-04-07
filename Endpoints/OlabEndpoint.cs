@@ -130,8 +130,7 @@ public class OLabEndpoint
         .FirstOrDefaultAsync(x => x.Id == nodeId);
 
     var item = await dbContext.MapNodes
-        .Where(x => x.MapId == mapId && x.TypeId == 1)
-        .FirstOrDefaultAsync(x => x.Id == nodeId);
+        .FirstOrDefaultAsync(x => x.MapId == mapId && x.TypeId == 1);
 
     if (item == null)
       item = await dbContext.MapNodes

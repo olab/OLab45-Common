@@ -133,8 +133,10 @@ public class Importer : IImporter
   {
     Authorization = auth;
 
-    if (!auth.IsMemberOf("*", Api.Model.Roles.RoleNameImporter))
-      throw new OLabUnauthorizedException();
+    // importer must be a superuser or an importer
+    if (!auth.IsMemberOf("*", Roles.RoleNameSuperuser) 
+      && !auth.IsMemberOf("*", Roles.RoleNameImporter))
+        throw new OLabUnauthorizedException();
 
     await LoadImportFromArchiveFile(
       archiveFileStream,
@@ -239,12 +241,12 @@ public class Importer : IImporter
     return null;
   }
 
-  public Task ExportAsync(Stream stream, uint mapId, CancellationToken token = default)
+  public Task ExportAsync(IOLabAuthorization auth, Stream stream, uint mapId, CancellationToken token = default)
   {
     throw new NotImplementedException();
   }
 
-  public Task<MapsFullRelationsDto> ExportAsync(uint mapId, CancellationToken token = default)
+  public Task<MapsFullRelationsDto> ExportAsync(IOLabAuthorization auth, uint mapId, CancellationToken token = default)
   {
     throw new NotImplementedException();
   }

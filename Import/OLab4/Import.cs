@@ -43,7 +43,9 @@ public partial class Importer : IImporter
     {
       Authorization = auth;
 
-      if (!auth.IsMemberOf("*", Api.Model.Roles.RoleNameImporter))
+      // importer must be a superuser or an importer
+      if (!auth.IsMemberOf("*", Api.Model.Roles.RoleNameSuperuser)
+        && !auth.IsMemberOf("*", Api.Model.Roles.RoleNameImporter))
         throw new OLabUnauthorizedException();
 
       var transaction = _dbContext.Database.BeginTransaction();
@@ -165,7 +167,7 @@ public partial class Importer : IImporter
     await _dbContext.SaveChangesAsync(token);
 
     phys.AssignAuthorization(
-      _dbContext, 
+      _dbContext,
       auth.UserContext);
 
     await _dbContext.SaveChangesAsync(token);

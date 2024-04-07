@@ -1,18 +1,98 @@
 #nullable disable
 
+using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 
 namespace OLab.Api.Model;
 
 public partial class SecurityRoles
 {
-  public static IList<SecurityRoles> GetAcls(OLabDBContext dbContect, UserGroups userGroup)
+  public static IList<SecurityRoles> GetAcls(OLabDBContext dbContext, UserGroups userGroup)
   {
-    return dbContect.SecurityRoles
+    var securityRoles = dbContext.SecurityRoles
       .Where(x => x.GroupId == userGroup.GroupId && x.RoleId == userGroup.RoleId).ToList();
+
+    return securityRoles;
+  }
+
+  public static IList<SecurityRoles> CreateDefaultRolesForGroup(
+    OLabDBContext dbContext, 
+    uint groupId, 
+    string scopeLevelType, 
+    uint scopeObjectId)
+  {
+    var roles = new List<SecurityRoles>();
+
+    var groupPhys = dbContext.Groups.FirstOrDefault(x => x.Id == groupId);
+    if (groupPhys == null)
+      throw new OLabObjectNotFoundException("Groups", groupId);
+
+    var rolePhys = dbContext.Roles
+      .FirstOrDefault(x => x.Name == Roles.RoleNameSuperuser);
+
+    if (rolePhys == null)
+      throw new OLabObjectNotFoundException("Roles", Roles.RoleNameSuperuser);
+    roles.Add(new SecurityRoles { 
+      GroupId = groupId, 
+      RoleId = rolePhys.Id, 
+      Acl = "RWXD", 
+      ImageableType = scopeLevelType,
+      ImageableId = scopeObjectId});
+
+    rolePhys = dbContext.Roles
+      .FirstOrDefault(x => x.Name == Roles.RoleNameLearner);
+
+    if (rolePhys == null)
+      throw new OLabObjectNotFoundException("Roles", Roles.RoleNameLearner);
+    roles.Add(new SecurityRoles { 
+      GroupId = groupId, 
+      RoleId = rolePhys.Id, 
+      Acl = "RX", 
+      ImageableType = scopeLevelType,
+      ImageableId = scopeObjectId});
+
+    rolePhys = dbContext.Roles
+      .FirstOrDefault(x => x.Name == Roles.RoleNameImporter);
+
+    if (rolePhys == null)
+      throw new OLabObjectNotFoundException("Roles", Roles.RoleNameImporter);
+    roles.Add(new SecurityRoles { 
+      GroupId = groupId, 
+      RoleId = rolePhys.Id, 
+      Acl = "RXW", 
+      ImageableType = scopeLevelType,
+      ImageableId = scopeObjectId});
+
+    rolePhys = dbContext.Roles
+      .FirstOrDefault(x => x.Name == Roles.RoleNameModerator);
+
+    if (rolePhys == null)
+      throw new OLabObjectNotFoundException("Roles", Roles.RoleNameModerator);
+    roles.Add(new SecurityRoles { 
+      GroupId = groupId, 
+      RoleId = rolePhys.Id, 
+      Acl = "RX", 
+      ImageableType = scopeLevelType,
+      ImageableId = scopeObjectId});
+
+    rolePhys = dbContext.Roles
+      .FirstOrDefault(x => x.Name == Roles.RoleNameAuthor);
+
+    if (rolePhys == null)
+      throw new OLabObjectNotFoundException("Roles", Roles.RoleNameAuthor);
+    roles.Add(new SecurityRoles { 
+      GroupId = groupId, 
+      RoleId = rolePhys.Id, 
+      Acl = "RWXD", 
+      ImageableType = scopeLevelType,
+      ImageableId = scopeObjectId});
+
+    return roles;
   }
 
   public override string ToString()
