@@ -20,7 +20,7 @@ public partial class SecurityRoles
     return securityRoles;
   }
 
-  public static IList<SecurityRoles> CreateDefaultRolesForGroup(
+  public static IList<SecurityRoles> CreateDefaultForGroup(
     OLabDBContext dbContext, 
     uint groupId, 
     string scopeLevelType, 

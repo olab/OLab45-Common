@@ -24,9 +24,9 @@ public abstract class ReaderWriter<T> where T : class
   protected readonly OLabDBContext dbContext;
   protected readonly IOLabLogger logger;
 
-  public abstract Task<T> GetAsync(string nameOrId);
-  public abstract Task<T> EditAsync(T phys);
-  public abstract Task DeleteAsync(T phys);
+  public abstract Task<T> GetAsync(string nameOrId, bool throwIfNotFound = true);
+  public abstract Task<T> EditAsync(T phys, bool throwIfNotFound = true);
+  public abstract Task DeleteAsync(T phys, bool throwIfNotFound = true);
 
   protected ReaderWriter(IOLabLogger logger, OLabDBContext context)
   {

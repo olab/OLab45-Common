@@ -1,5 +1,8 @@
+using DocumentFormat.OpenXml.InkML;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Model;
 using OLab.Api.Utils;
@@ -26,41 +29,47 @@ public partial class MapsReaderWriter : ReaderWriter<Maps>
   {
   }
 
-  public override async Task<Maps> GetAsync(string nameOrId)
+  public override async Task<Maps> GetAsync(string nameOrId, bool throwIfNotFound = true)
   {
+    Maps phys = null;
+
     if (uint.TryParse(nameOrId, out var id))
-      return await dbContext.Maps.FirstOrDefaultAsync(e => e.Id == id);
+      phys = await dbContext.Maps.FirstOrDefaultAsync(e => e.Id == id);
+    else
+    {
+      var myWriter = new StringWriter();
 
-    var myWriter = new StringWriter();
+  // Decode any html encoded string.
+      HttpUtility.HtmlDecode(nameOrId, myWriter);
 
-    // Decode any html encoded string.
-    HttpUtility.HtmlDecode(nameOrId, myWriter);
+      phys = await dbContext.Maps
+        .FirstOrDefaultAsync(e => e.Name == myWriter.ToString());
+    }
 
-    return await dbContext.Maps
-      .FirstOrDefaultAsync(e => e.Name == myWriter.ToString());
+    if ((phys == null) && throwIfNotFound)
+      throw new OLabObjectNotFoundException("Maps", nameOrId);
+
+    return phys;
   }
 
-  public override Task<Maps> EditAsync(Maps phys)
+  public override async Task<Maps> EditAsync(Maps phys, bool throwIfNotFound = true)
   {
-    throw new NotImplementedException();
-  }
-
-  public override async Task<Maps> CreateAsync(
-    IOLabAuthorization auth,
-    Maps phys,
-    CancellationToken token = default)
-  {
-    phys = await base.CreateAsync(auth, phys, token);
-
-    phys.AssignAuthorization(
-      dbContext,
-      auth.UserContext);
+    try
+    {
+      dbContext.Entry(phys).State = EntityState.Modified;
+      await dbContext.SaveChangesAsync();
+    }
+    catch (Exception)
+    {
+      if (throwIfNotFound)
+        throw;
+    }
 
     return phys;
   }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-  public override async Task DeleteAsync(Maps phys)
+  public override async Task DeleteAsync(Maps phys, bool throwIfNotFound = true)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
   {
     // get all the related nodeIds so we can build requests

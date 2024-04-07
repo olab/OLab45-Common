@@ -40,10 +40,11 @@ public partial class GroupsEndpoint : OLabEndpoint
     return await GetAsync(id.ToString());
   }
 
-  private async Task<Groups> GetAsync(string nameOrId)
+  private async Task<Groups> GetAsync(string nameOrId, bool throwIfNotFound = false)
   {
-    return await GroupsReaderWriter.Instance(Logger, dbContext).GetAsync(nameOrId)
-      ?? throw new OLabObjectNotFoundException("Groups", nameOrId);
+    var phys = await GroupsReaderWriter
+      .Instance(Logger, dbContext).GetAsync(nameOrId, throwIfNotFound);
+    return phys;
   }
 
   /// <summary>
@@ -117,7 +118,7 @@ public partial class GroupsEndpoint : OLabEndpoint
     if (!auth.IsMemberOf(Groups.GroupNameOLab, Roles.RoleNameSuperuser))
       throw new OLabUnauthorizedException("Groups", 0);
 
-    var groupPhys = await GetAsync(dto.Name);
+    var groupPhys = await GetAsync(dto.Name, false);
     if (groupPhys != null)
       throw new OLabBadRequestException($"Group '{dto.Name}' already exists");
 
@@ -193,8 +194,8 @@ public partial class GroupsEndpoint : OLabEndpoint
   }
 
   public async Task<PagedResult<Groups>> GetAsync(
-    IOLabAuthorization auth, 
-    int? take, 
+    IOLabAuthorization auth,
+    int? take,
     int? skip)
   {
     var result = await GroupsReaderWriter

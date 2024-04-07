@@ -6,6 +6,7 @@ using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
+using OLab.Api.Endpoints.ReaderWriters;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
@@ -39,16 +40,11 @@ public partial class RolesEndpoint : OLabEndpoint
     return await GetAsync(id.ToString());
   }
 
-  private async Task<Model.Roles> GetAsync(string nameOrId)
+  private async Task<Model.Roles> GetAsync(string nameOrId, bool throwIfNotFound = false)
   {
-    if (uint.TryParse(nameOrId, out var id))
-      return await dbContext.Roles.FirstOrDefaultAsync(e => e.Id == id);
-
-    var myWriter = new StringWriter();
-    // Decode any html encoded string.
-    HttpUtility.HtmlDecode(nameOrId, myWriter);
-
-    return await dbContext.Roles.FirstOrDefaultAsync(e => e.Name == myWriter.ToString());
+    var phys = await RolesReaderWriter
+      .Instance(Logger, dbContext).GetAsync(nameOrId, throwIfNotFound);
+    return phys;
   }
 
   /// <summary>

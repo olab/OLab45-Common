@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Web;
 using System.IO;
 using OLab.Common.Interfaces;
+using OLab.Api.Data.Exceptions;
+using System;
 
 namespace OLab.Api.Endpoints.ReaderWriters;
 public class GroupsReaderWriter : ReaderWriter<Groups>
@@ -20,23 +22,57 @@ public class GroupsReaderWriter : ReaderWriter<Groups>
   {
   }
 
-  public override async Task<Groups> GetAsync(string nameOrId)
+  /// <summary>
+  /// Reads a record from the database
+  /// </summary>
+  /// <param name="nameOrId"></param>
+  /// <param name="throwIfNotFound"></param>
+  /// <returns></returns>
+  /// <exception cref="OLabObjectNotFoundException"></exception>
+  public override async Task<Groups> GetAsync(string nameOrId, bool throwIfNotFound = true)
   {
+    Groups phys = null;
+
     if (uint.TryParse(nameOrId, out var id))
-      return await dbContext.Groups.FirstOrDefaultAsync(e => e.Id == id);
+      phys = await dbContext.Groups.FirstOrDefaultAsync(e => e.Id == id);
+    else
+    {
+      var myWriter = new StringWriter();
 
-    var myWriter = new StringWriter();
+      // Decode any html encoded string.
+      HttpUtility.HtmlDecode(nameOrId, myWriter);
 
-    // Decode any html encoded string.
-    HttpUtility.HtmlDecode(nameOrId, myWriter);
+      phys = await dbContext.Groups
+        .FirstOrDefaultAsync(e => e.Name == myWriter.ToString());
+    }
 
-    return await dbContext.Groups
-      .FirstOrDefaultAsync(e => e.Name == myWriter.ToString());
+    if ((phys == null) && throwIfNotFound)
+      throw new OLabObjectNotFoundException("Groups", nameOrId);
+
+    return phys;
   }
 
-  public override Task<Groups> EditAsync(Groups phys)
+  /// <summary>
+  /// Edit a record
+  /// </summary>
+  /// <param name="phys"></param>
+  /// <param name="throwIfNotFound"></param>
+  /// <returns></returns>
+  public override async Task<Groups> EditAsync(Groups phys, bool throwIfNotFound = true)
   {
-    throw new System.NotImplementedException();
+    try
+    {
+      dbContext.Entry(phys).State = EntityState.Modified;
+      await dbContext.SaveChangesAsync();
+    }
+    catch (Exception)
+    {
+      if (throwIfNotFound)
+        throw;
+    }
+
+    return phys;
+
   }
 
   /// <summary>
@@ -54,7 +90,7 @@ public class GroupsReaderWriter : ReaderWriter<Groups>
 
     // add default group security roles for all maps in group
     dbContext.SecurityRoles.AddRange(
-      SecurityRoles.CreateDefaultRolesForGroup(
+      SecurityRoles.CreateDefaultForGroup(
         dbContext,
         phys.Id,
         Utils.Constants.ScopeLevelMap,
@@ -67,8 +103,10 @@ public class GroupsReaderWriter : ReaderWriter<Groups>
   /// Delete object and related references
   /// </summary>
   /// <param name="phys">Groups object</param>
-  public override Task DeleteAsync(Groups phys)
+  public override async Task DeleteAsync(Groups phys, bool throwIfNotFound = true)
   {
+    var groupPhys = await GetAsync(phys.Name);
+
     foreach (var mapGroupPhys in dbContext.MapGroups.Where(x => x.GroupId == phys.Id))
       dbContext.MapGroups.Remove(mapGroupPhys);
 
@@ -80,7 +118,7 @@ public class GroupsReaderWriter : ReaderWriter<Groups>
 
     dbContext.Groups.Remove(phys);
 
-    return Task.CompletedTask;
+    return;
   }
 
 }

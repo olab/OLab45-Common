@@ -1,11 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
+using OLab.Api.Endpoints.ReaderWriters;
 using OLab.Api.Model;
+using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
 using OLab.Data.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -184,4 +188,35 @@ public partial class SecurityRolesEndpoint : OLabEndpoint
 
   }
 
+  /// <summary>
+  /// Get records for a given group and role
+  /// </summary>
+  /// <param name="auth">IOLabAuthorization</param>
+  /// <param name="groupIdName">Group id/name</param>
+  /// <param name="roleIdName">Role id/name</param>
+  /// <returns></returns>
+  /// <exception cref="NotImplementedException"></exception>
+
+  public async Task<IList<SecurityRolesDto>> GetGroupRoleAsync(
+    IOLabAuthorization auth, 
+    string groupIdName, 
+    string roleIdName = null)
+  {
+    Logger.LogInformation($"{auth.UserContext.UserId}: SecurityRolesEndpoint.DeleteAsync");
+
+    IList<Model.SecurityRoles> physList;
+
+    var groupPhys = await GroupsReaderWriter.Instance(Logger, dbContext).GetAsync(groupIdName);
+    if (!string.IsNullOrEmpty(roleIdName))
+    {
+      var rolePhys = await RolesReaderWriter.Instance(Logger, dbContext).GetAsync(roleIdName);
+      physList = dbContext.SecurityRoles.Where(x => x.GroupId == groupPhys.Id && x.RoleId == rolePhys.Id ).ToList();
+    }
+    else
+      physList = dbContext.SecurityRoles.Where(x => x.GroupId == groupPhys.Id ).ToList();
+
+    var dtoList = new ObjectMapper.SecurityRoles(Logger).PhysicalToDto(physList);
+
+    return dtoList;
+  }
 }

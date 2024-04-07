@@ -63,7 +63,7 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <param name="context"></param>
   /// <param name="id"></param>
   /// <returns></returns>
-  public async Task<Model.Maps> GetSimpleAnonymousAsync(uint id)
+  public async Task<Maps> GetSimpleAnonymousAsync(uint id)
   {
     var phys = await dbContext.Maps
       .Include(x => x.SystemCounterActions).FirstOrDefaultAsync(x => x.Id == id);
