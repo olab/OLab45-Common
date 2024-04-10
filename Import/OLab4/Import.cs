@@ -69,6 +69,10 @@ public partial class Importer : IImporter
 
       await CleanupImportAsync();
 
+      _newMapPhys.AssignAuthorization(
+        GetDbContext(), 
+        Authorization.UserContext);
+
       if (Logger.HasErrorMessage())
         await _dbContext.Database.RollbackTransactionAsync();
       else
@@ -164,12 +168,6 @@ public partial class Importer : IImporter
     phys.Name = $"IMPORT: {phys.Name}";
 
     await _dbContext.Maps.AddAsync(phys);
-    await _dbContext.SaveChangesAsync(token);
-
-    phys.AssignAuthorization(
-      _dbContext,
-      auth.UserContext);
-
     await _dbContext.SaveChangesAsync(token);
 
     Logger.LogInformation($"  imported map '{mapDto.Name}' {mapDto.Id.Value} -> {phys.Id}");

@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.InkML;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
@@ -9,6 +10,7 @@ using OLab.Data.Interface;
 using OLab.Import.Interface;
 using OLab.Import.OLab3.Dtos;
 using OLab.Import.OLab3.Model;
+using OLab.Import.OLab4;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -144,7 +146,11 @@ public class Importer : IImporter
       token);
 
     var mapPhys = await WriteImportToDatabaseAsync(
-      archiveFileName);
+    archiveFileName);
+
+    mapPhys.AssignAuthorization(
+      GetDbContext(),
+      Authorization.UserContext);
 
     return mapPhys;
   }

@@ -1,4 +1,5 @@
 using AutoMapper;
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Data.Interface;
 using System.Collections.Generic;
@@ -86,18 +87,8 @@ public partial class Maps
     AssignMapGroups(dbContext, userContext);
     AssignSecurityRoles(dbContext, userContext);
     AssignSecurityUsers(dbContext);
-  }
 
-  private void AssignSecurityUsers(OLabDBContext dbContext)
-  {
-    dbContext.SecurityUsers.Add(new SecurityUsers
-    {
-      Acl = "RWXD",
-      ImageableId = Id,
-      ImageableType = "Maps",
-      Iss = "olab",
-      UserId = AuthorId
-    });
+    dbContext.SaveChanges();
   }
 
   private void AssignMapGroups(OLabDBContext dbContext, IUserContext userContext)
@@ -128,7 +119,7 @@ public partial class Maps
 
       dbContext.SecurityRoles.Add(new SecurityRoles
       {
-        Acl = "RX",
+        Acl2 = SecurityRoles.Read | SecurityRoles.Execute,
         ImageableId = Id,
         ImageableType = "Maps",
         GroupId = item.GroupId,
@@ -137,13 +128,26 @@ public partial class Maps
 
       dbContext.SecurityRoles.Add(new SecurityRoles
       {
-        Acl = "RWXD",
+        Acl2 = SecurityRoles.AllAccess,
         ImageableId = Id,
         ImageableType = "Maps",
         GroupId = item.GroupId,
         RoleId = roleAuthorPhys.Id
       });
     }
+  }
+
+  private void AssignSecurityUsers(OLabDBContext dbContext)
+  {
+    dbContext.SecurityUsers.Add(new SecurityUsers
+    {
+      Acl = "RWXD",
+      Acl2 = SecurityRoles.AllAccess,
+      ImageableId = Id,
+      ImageableType = "Maps",
+      Iss = "olab",
+      UserId = AuthorId
+    });
   }
 
 }

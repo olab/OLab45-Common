@@ -41,7 +41,7 @@ public partial class MapsEndpoint : OLabEndpoint
     Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutMapNodeLinksAsync");
 
     // test if user has access to map.
-    if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
+    if (!auth.HasAccess(Model.SecurityRoles.Write, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
     try

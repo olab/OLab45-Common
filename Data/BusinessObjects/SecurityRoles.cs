@@ -43,4 +43,7 @@ public partial class SecurityRoles
     [ForeignKey("RoleId")]
     [InverseProperty("SecurityRoles")]
     public virtual Roles Role { get; set; }
+
+    [Column("acl2", TypeName = "bit(3)")]
+    public ulong Acl2 { get; set; }
 }

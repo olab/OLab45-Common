@@ -1,5 +1,6 @@
 #nullable disable
 
+using DocumentFormat.OpenXml.Vml;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using System;
@@ -12,6 +13,12 @@ namespace OLab.Api.Model;
 
 public partial class SecurityRoles
 {
+  public const uint Read = 0b100;
+  public const uint Write = 0b010;
+  public const uint Execute = 0b001;
+  public const uint NoAccess = 0b000;
+  public const uint AllAccess = 0b111;
+
   public static IList<SecurityRoles> GetAcls(OLabDBContext dbContext, UserGroups userGroup)
   {
     var securityRoles = dbContext.SecurityRoles
@@ -40,7 +47,7 @@ public partial class SecurityRoles
     roles.Add(new SecurityRoles { 
       GroupId = groupId, 
       RoleId = rolePhys.Id, 
-      Acl = "RWXD", 
+      Acl2 = AllAccess,
       ImageableType = scopeLevelType,
       ImageableId = scopeObjectId});
 
@@ -52,7 +59,7 @@ public partial class SecurityRoles
     roles.Add(new SecurityRoles { 
       GroupId = groupId, 
       RoleId = rolePhys.Id, 
-      Acl = "RX", 
+      Acl2 = Read | Execute,
       ImageableType = scopeLevelType,
       ImageableId = scopeObjectId});
 
@@ -64,7 +71,7 @@ public partial class SecurityRoles
     roles.Add(new SecurityRoles { 
       GroupId = groupId, 
       RoleId = rolePhys.Id, 
-      Acl = "RXW", 
+      Acl2 = AllAccess,
       ImageableType = scopeLevelType,
       ImageableId = scopeObjectId});
 
@@ -76,7 +83,7 @@ public partial class SecurityRoles
     roles.Add(new SecurityRoles { 
       GroupId = groupId, 
       RoleId = rolePhys.Id, 
-      Acl = "RX", 
+      Acl2 = Read | Execute,
       ImageableType = scopeLevelType,
       ImageableId = scopeObjectId});
 
@@ -88,7 +95,7 @@ public partial class SecurityRoles
     roles.Add(new SecurityRoles { 
       GroupId = groupId, 
       RoleId = rolePhys.Id, 
-      Acl = "RWXD", 
+      Acl2 = AllAccess,
       ImageableType = scopeLevelType,
       ImageableId = scopeObjectId});
 
@@ -97,7 +104,7 @@ public partial class SecurityRoles
 
   public override string ToString()
   {
-    return $"{Id}: {GroupId} {RoleId} {ImageableType}({ImageableId}) '{Acl}'";
+    return $"{Id}: {GroupId} {RoleId} {ImageableType}({ImageableId}) '{Acl} {Acl2}'";
   }
 
 }

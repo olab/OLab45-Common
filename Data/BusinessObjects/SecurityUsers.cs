@@ -34,4 +34,7 @@ public partial class SecurityUsers
     [Column("acl")]
     [StringLength(45)]
     public string Acl { get; set; }
+
+    [Column("acl2", TypeName = "bit(3)")]
+    public ulong Acl2 { get; set; }
 }

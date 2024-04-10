@@ -11,6 +11,10 @@ namespace OLab.Api.Model;
 
 public partial class SecurityUsers
 {
+  public const uint Read = 0b100;
+  public const uint Write = 0b010;
+  public const uint Execute = 0b001;
+
   public static IList<SecurityUsers> GetAcls(OLabDBContext dbContext, uint userId)
   {
     return dbContext.SecurityUsers.Where(x => x.UserId == userId).ToList();

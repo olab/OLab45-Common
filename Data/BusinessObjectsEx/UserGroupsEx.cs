@@ -30,22 +30,28 @@ public partial class UserGroups
     bool createIfNotExist = false)
   {
     var groupPhys = dbContext.Groups.FirstOrDefault(x => x.Name == groupName);
-    if ((groupPhys == null) && createIfNotExist)
+    if (groupPhys == null)
     {
-      groupPhys = new Groups { Name = groupName };
-      dbContext.Groups.Add(groupPhys);
+      if (createIfNotExist)
+      {
+        groupPhys = new Groups { Name = groupName };
+        dbContext.Groups.Add(groupPhys);
+      }
+      else
+        throw new OLabObjectNotFoundException("Groups", groupName);
     }
-    else
-      throw new OLabObjectNotFoundException("Groups", groupName);
 
     var rolePhys = dbContext.Roles.FirstOrDefault(x => x.Name == roleName);
-    if ((rolePhys == null) && createIfNotExist)
+    if (rolePhys == null)
     {
-      rolePhys = new Roles { Name = roleName };
-      dbContext.Roles.Add(rolePhys);
+      if (createIfNotExist)
+      {
+        rolePhys = new Roles { Name = roleName };
+        dbContext.Roles.Add(rolePhys);
+      }
+      else
+        throw new OLabObjectNotFoundException("Roles", roleName);
     }
-    else
-      throw new OLabObjectNotFoundException("Roles", roleName);
 
     dbContext.SaveChanges();
 
@@ -114,5 +120,10 @@ public partial class UserGroups
 
     return strings;
 
+  }
+
+  public override string ToString()
+  {
+    return $"{Id} {Group?.Name}{GroupRoleSeparator}{Role?.Name}";
   }
 }

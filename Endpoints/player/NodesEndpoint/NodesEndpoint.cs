@@ -83,7 +83,7 @@ public partial class NodesEndpoint : OLabEndpoint
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
 
     // test if user has access to map.
-    if (!auth.HasAccess("W", Utils.Constants.ScopeLevelNode, id))
+    if (!auth.HasAccess(SecurityRoles.Write, Utils.Constants.ScopeLevelNode, id))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, id);
 
     var builder = new ObjectMapper.MapNodesFullMapper(Logger);

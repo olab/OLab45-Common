@@ -72,11 +72,11 @@ public class XmlMapDto : XmlImportDto<XmlMap>
     Context.Maps.Add(phys);
     Context.SaveChanges();
 
-    phys.AssignAuthorization(
-      _importer.GetDbContext(), 
-      _importer.Authorization.UserContext);
+    //phys.AssignAuthorization(
+    //  _importer.GetDbContext(), 
+    //  _importer.Authorization.UserContext);
 
-    Context.SaveChanges();
+    //Context.SaveChanges();
 
     CreateIdTranslation(oldId, phys.Id);
     GetModel().Data.Add(phys);
