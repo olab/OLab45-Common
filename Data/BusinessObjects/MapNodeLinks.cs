@@ -10,8 +10,6 @@ namespace OLab.Api.Model;
 [Index("MapId", Name = "map_id")]
 [Index("NodeId1", Name = "node_id_1")]
 [Index("NodeId2", Name = "node_id_2")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class MapNodeLinks
 {
     [Key]

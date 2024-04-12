@@ -551,7 +551,7 @@ public partial class MapsEndpoint : OLabEndpoint
     securityUser.ImageableId = map.Id;
     securityUser.UserId = user.Id;
     securityUser.ImageableType = Constants.ScopeLevelMap;
-    securityUser.Acl = body.Acl;
+    securityUser.Acl2 = SecurityUsers.AclStringToBitMask(body.Acl);
 
     try
     {

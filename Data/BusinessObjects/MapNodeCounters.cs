@@ -8,8 +8,6 @@ namespace OLab.Api.Model;
 
 [Table("map_node_counters")]
 [Index("NodeId", Name = "node_id")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class MapNodeCounters
 {
     [Key]

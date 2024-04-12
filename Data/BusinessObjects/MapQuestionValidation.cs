@@ -8,8 +8,6 @@ namespace OLab.Api.Model;
 
 [Table("map_question_validation")]
 [Index("QuestionId", Name = "question_id")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class MapQuestionValidation
 {
     [Key]

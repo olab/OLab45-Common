@@ -8,8 +8,6 @@ namespace OLab.Api.Model;
 
 [Table("map_vpds")]
 [Index("VpdTypeId", Name = "vpd_type_id")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class MapVpds
 {
     [Key]

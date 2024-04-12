@@ -141,7 +141,6 @@ public partial class Maps
   {
     dbContext.SecurityUsers.Add(new SecurityUsers
     {
-      Acl = "RWXD",
       Acl2 = SecurityRoles.AllAccess,
       ImageableId = Id,
       ImageableType = "Maps",

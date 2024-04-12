@@ -7,8 +7,6 @@ using Microsoft.EntityFrameworkCore;
 namespace OLab.Api.Model;
 
 [Table("h5p_tags")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class H5pTags
 {
     [Key]

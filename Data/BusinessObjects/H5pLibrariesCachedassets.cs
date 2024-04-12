@@ -8,8 +8,6 @@ namespace OLab.Api.Model;
 
 [PrimaryKey("LibraryId", "Hash")]
 [Table("h5p_libraries_cachedassets")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class H5pLibrariesCachedassets
 {
     [Key]

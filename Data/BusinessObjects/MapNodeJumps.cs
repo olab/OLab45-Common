@@ -9,8 +9,6 @@ namespace OLab.Api.Model;
 [Table("map_node_jumps")]
 [Index("MapId", Name = "map_id")]
 [Index("NodeId", Name = "node_id")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class MapNodeJumps
 {
     [Key]

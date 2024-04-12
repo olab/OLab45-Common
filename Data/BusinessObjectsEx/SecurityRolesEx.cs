@@ -13,6 +13,10 @@ namespace OLab.Api.Model;
 
 public partial class SecurityRoles
 {
+  public const string ReadChar = "R";
+  public const string WriteChar = "W";
+  public const string ExecuteChar = "X";
+
   public const uint Read = 0b100;
   public const uint Write = 0b010;
   public const uint Execute = 0b001;
@@ -104,7 +108,7 @@ public partial class SecurityRoles
 
   public override string ToString()
   {
-    return $"{Id}: {GroupId} {RoleId} {ImageableType}({ImageableId}) '{Acl} {Acl2}'";
+    return $"{Id}: {GroupId} {RoleId} {ImageableType}({ImageableId}) '{Acl2}'";
   }
 
 }

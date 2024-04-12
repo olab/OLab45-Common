@@ -11,8 +11,6 @@ namespace OLab.Api.Model;
 [Index("NodeId", Name = "node_id")]
 [Index("SessionId", Name = "session_id")]
 [Index("UserId", Name = "user_id")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class UserSessiontraces
 {
     [Key]

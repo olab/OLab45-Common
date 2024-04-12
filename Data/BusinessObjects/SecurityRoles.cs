@@ -9,8 +9,6 @@ namespace OLab.Api.Model;
 [Table("security_roles")]
 [Index("GroupId", Name = "security_roles_ibfk_1")]
 [Index("RoleId", Name = "security_roles_ibfk_2")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class SecurityRoles
 {
     [Key]
@@ -25,16 +23,14 @@ public partial class SecurityRoles
     [StringLength(45)]
     public string ImageableType { get; set; }
 
-    [Required]
-    [Column("acl")]
-    [StringLength(45)]
-    public string Acl { get; set; }
-
     [Column("group_id", TypeName = "int(10) unsigned")]
     public uint GroupId { get; set; }
 
     [Column("role_id", TypeName = "int(10) unsigned")]
     public uint RoleId { get; set; }
+
+    [Column("acl2", TypeName = "bit(3)")]
+    public ulong Acl2 { get; set; }
 
     [ForeignKey("GroupId")]
     [InverseProperty("SecurityRoles")]
@@ -43,7 +39,4 @@ public partial class SecurityRoles
     [ForeignKey("RoleId")]
     [InverseProperty("SecurityRoles")]
     public virtual Roles Role { get; set; }
-
-    [Column("acl2", TypeName = "bit(3)")]
-    public ulong Acl2 { get; set; }
 }

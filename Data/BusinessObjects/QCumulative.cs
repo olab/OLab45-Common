@@ -9,8 +9,6 @@ namespace OLab.Api.Model;
 [Table("q_cumulative")]
 [Index("MapId", Name = "map_id")]
 [Index("QuestionId", Name = "question_id")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class QCumulative
 {
     [Key]
