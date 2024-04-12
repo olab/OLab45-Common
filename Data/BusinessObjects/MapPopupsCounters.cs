@@ -9,8 +9,6 @@ namespace OLab.Api.Model;
 [Table("map_popups_counters")]
 [Index("CounterId", Name = "counter_id")]
 [Index("PopupId", Name = "popup_id")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class MapPopupsCounters
 {
     [Key]

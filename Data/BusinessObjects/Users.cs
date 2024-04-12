@@ -10,8 +10,6 @@ namespace OLab.Api.Model;
 [Index("LanguageId", Name = "fk_language_id")]
 [Index("TypeId", Name = "fk_type_id")]
 [Index("Username", "Email", Name = "username", IsUnique = true)]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class Users
 {
     [Key]

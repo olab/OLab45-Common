@@ -270,8 +270,8 @@ public partial class OLabDBContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
-            .UseCollation("utf8mb4_general_ci")
-            .HasCharSet("utf8mb4");
+            .UseCollation("utf8mb3_general_ci")
+            .HasCharSet("utf8mb3");
 
         modelBuilder.Entity<AuthorRights>(entity =>
         {
@@ -903,6 +903,8 @@ public partial class OLabDBContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
+            entity.Property(e => e.Acl2).HasDefaultValueSql("b'0'");
+
             entity.HasOne(d => d.Group).WithMany(p => p.SecurityRoles)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("security_roles_ibfk_1");
@@ -915,6 +917,8 @@ public partial class OLabDBContext : DbContext
         modelBuilder.Entity<SecurityUsers>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.Property(e => e.Acl2).HasDefaultValueSql("b'0'");
         });
 
         modelBuilder.Entity<Servers>(entity =>
@@ -969,9 +973,7 @@ public partial class OLabDBContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.HasOne(d => d.Counter).WithMany(p => p.SystemCounterActions)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_counter_action_counter");
+            entity.HasOne(d => d.Counter).WithMany(p => p.SystemCounterActions).HasConstraintName("fk_counter_action_counter");
 
             entity.HasOne(d => d.Map).WithMany(p => p.SystemCounterActions)
                 .OnDelete(DeleteBehavior.Cascade)

@@ -10,8 +10,6 @@ namespace OLab.Api.Model;
 [Index("SessionId", Name = "session_id", IsUnique = true)]
 [Index("UserId", Name = "user_id")]
 [Index("WebinarId", Name = "webinar_id")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class UserNotes
 {
     [Key]

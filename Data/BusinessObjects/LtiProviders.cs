@@ -8,8 +8,6 @@ namespace OLab.Api.Model;
 
 [Table("lti_providers")]
 [Index("Name", Name = "name", IsUnique = true)]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class LtiProviders
 {
     [Key]

@@ -9,8 +9,6 @@ namespace OLab.Api.Model;
 [Table("webinar_poll")]
 [Index("OnNode", Name = "on_node")]
 [Index("ToNode", Name = "to_node")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class WebinarPoll
 {
     [Key]

@@ -10,8 +10,6 @@ namespace OLab.Api.Model;
 [Index("MapId", Name = "map_fk_idx")]
 [Index("MapNodeId", Name = "map_node_fk_idx")]
 [Index("UserId", Name = "user_fk_idx")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class UserState
 {
     [Key]

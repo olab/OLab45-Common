@@ -8,8 +8,6 @@ namespace OLab.Api.Model;
 
 [PrimaryKey("ContentId", "TagId")]
 [Table("h5p_contents_tags")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class H5pContentsTags
 {
     [Key]
