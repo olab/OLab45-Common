@@ -169,14 +169,6 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<Options> Options { get; set; }
 
-    public virtual DbSet<OrphanedConstantsView> OrphanedConstantsView { get; set; }
-
-    public virtual DbSet<OrphanedCountersView> OrphanedCountersView { get; set; }
-
-    public virtual DbSet<OrphanedFilesView> OrphanedFilesView { get; set; }
-
-    public virtual DbSet<OrphanedQuestions0View> OrphanedQuestions0View { get; set; }
-
     public virtual DbSet<Phinxlog> Phinxlog { get; set; }
 
     public virtual DbSet<QCumulative> QCumulative { get; set; }
@@ -857,34 +849,6 @@ public partial class OLabDBContext : DbContext
 
             entity.Property(e => e.Autoload).HasDefaultValueSql("'yes'");
             entity.Property(e => e.Name).HasDefaultValueSql("''");
-        });
-
-        modelBuilder.Entity<OrphanedConstantsView>(entity =>
-        {
-            entity.ToView("OrphanedConstantsView");
-
-            entity.Property(e => e.MapId).HasDefaultValueSql("'0'");
-        });
-
-        modelBuilder.Entity<OrphanedCountersView>(entity =>
-        {
-            entity.ToView("OrphanedCountersView");
-
-            entity.Property(e => e.MapId).HasDefaultValueSql("'0'");
-        });
-
-        modelBuilder.Entity<OrphanedFilesView>(entity =>
-        {
-            entity.ToView("OrphanedFilesView");
-
-            entity.Property(e => e.MapId).HasDefaultValueSql("'0'");
-        });
-
-        modelBuilder.Entity<OrphanedQuestions0View>(entity =>
-        {
-            entity.ToView("OrphanedQuestions0View");
-
-            entity.Property(e => e.MapId).HasDefaultValueSql("'0'");
         });
 
         modelBuilder.Entity<Phinxlog>(entity =>
