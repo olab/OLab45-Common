@@ -249,10 +249,6 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<Users> Users { get; set; }
 
-    public virtual DbSet<UsersCopy240225> UsersCopy240225 { get; set; }
-
-    public virtual DbSet<UsersUpdates240225> UsersUpdates240225 { get; set; }
-
     public virtual DbSet<Vocablets> Vocablets { get; set; }
 
     public virtual DbSet<WebinarGroups> WebinarGroups { get; set; }
@@ -1172,19 +1168,6 @@ public partial class OLabDBContext : DbContext
 
             entity.Property(e => e.IsLti).HasDefaultValueSql("'0'");
             entity.Property(e => e.VisualEditorAutosaveTime).HasDefaultValueSql("'50000'");
-        });
-
-        modelBuilder.Entity<UsersCopy240225>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.Property(e => e.IsLti).HasDefaultValueSql("'0'");
-            entity.Property(e => e.VisualEditorAutosaveTime).HasDefaultValueSql("'50000'");
-        });
-
-        modelBuilder.Entity<UsersUpdates240225>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
         });
 
         modelBuilder.Entity<Vocablets>(entity =>
