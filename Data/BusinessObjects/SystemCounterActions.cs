@@ -9,6 +9,8 @@ namespace OLab.Api.Model;
 [Table("system_counter_actions")]
 [Index("CounterId", Name = "fk_counter_action_counter_idx")]
 [Index("MapId", Name = "fk_counter_action_map")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class SystemCounterActions
 {
     [Key]

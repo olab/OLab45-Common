@@ -8,6 +8,8 @@ namespace OLab.Api.Model;
 
 [Table("statements")]
 [Index("SessionId", Name = "session_id")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class Statements
 {
     [Key]

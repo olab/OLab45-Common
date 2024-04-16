@@ -9,6 +9,8 @@ namespace OLab.Api.Model;
 [Table("scenario_maps")]
 [Index("MapId", Name = "fk_scenario_maps_maps_idx")]
 [Index("ScenarioId", Name = "fk_scenerio_maps_idx")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class ScenarioMaps
 {
     [Key]

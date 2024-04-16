@@ -8,6 +8,8 @@ namespace OLab.Api.Model;
 
 [PrimaryKey("Type", "LibraryName", "LibraryVersion")]
 [Table("h5p_counters")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class H5pCounters
 {
     [Key]

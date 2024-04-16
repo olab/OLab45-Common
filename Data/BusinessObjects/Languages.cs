@@ -8,6 +8,8 @@ namespace OLab.Api.Model;
 
 [Table("languages")]
 [Index("Name", Name = "name")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class Languages
 {
     [Key]

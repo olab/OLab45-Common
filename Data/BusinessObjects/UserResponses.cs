@@ -9,6 +9,8 @@ namespace OLab.Api.Model;
 [Table("user_responses")]
 [Index("QuestionId", Name = "question_id")]
 [Index("SessionId", Name = "session_id")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class UserResponses
 {
     [Key]
@@ -39,4 +41,7 @@ public partial class UserResponses
     [ForeignKey("SessionId")]
     [InverseProperty("UserResponses")]
     public virtual UserSessions Session { get; set; }
+
+    [InverseProperty("Userresponse")]
+    public virtual ICollection<UserresponseCounterupdate> UserresponseCounterupdate { get; } = new List<UserresponseCounterupdate>();
 }

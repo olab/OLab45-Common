@@ -11,6 +11,8 @@ namespace OLab.Api.Model;
 [Index("MapId", Name = "map_id")]
 [Index("UserId", Name = "user_id")]
 [Index("Uuid", Name = "uuid", IsUnique = true)]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class UserSessions
 {
     [Key]

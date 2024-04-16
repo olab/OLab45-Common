@@ -9,6 +9,8 @@ namespace OLab.Api.Model;
 [Table("map_dam_elements")]
 [Index("DamId", Name = "dam_id")]
 [Index("ElementId", Name = "element_id")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class MapDamElements
 {
     [Key]

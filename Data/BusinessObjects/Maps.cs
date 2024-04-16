@@ -14,6 +14,8 @@ namespace OLab.Api.Model;
 [Index("SecurityId", Name = "security_id")]
 [Index("SkinId", Name = "skin_id")]
 [Index("TypeId", "SkinId", "SectionId", "LanguageId", Name = "type_id")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class Maps
 {
     [Key]
