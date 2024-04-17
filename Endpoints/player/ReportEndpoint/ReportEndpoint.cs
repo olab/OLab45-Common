@@ -15,7 +15,7 @@ namespace Endpoints.player.ReportEndpoint;
 
 public partial class ReportEndpoint : OLabEndpoint
 {
-  private IList<UserSessionTraces> _sessionTraces;
+  private IList<UserSessiontraces> _sessionTraces;
   private IList<UserResponses> _sessionResponses;
   private IList<SystemQuestions> _questions;
   private IList<SystemQuestionResponses> _questionsResponses;
@@ -52,10 +52,10 @@ public partial class ReportEndpoint : OLabEndpoint
 
   private void ReadSessionFromDb(string contextId)
   {
-    _sessionTraces = dbContext.UserSessionTraces
+    _sessionTraces = dbContext.UserSessiontraces
       .Where(x => x.SessionId == _session.Id)
       .OrderBy(x => x.DateStamp).ToList();
-    Logger.LogInformation($"Found {_sessionTraces.Count} UserSessionTraces records for userSession {contextId}");
+    Logger.LogInformation($"Found {_sessionTraces.Count} UserSessiontraces records for userSession {contextId}");
 
     _sessionResponses = dbContext.UserResponses
       .Where(x => x.SessionId == _session.Id)

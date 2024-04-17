@@ -549,7 +549,7 @@ public partial class MapsEndpoint : OLabEndpoint
       securityUser = new SecurityUsers();
 
     securityUser.ImageableId = map.Id;
-    securityUser.UserId = user.Id;
+    securityUser.UserId = (int)user.Id;
     securityUser.ImageableType = Constants.ScopeLevelMap;
     securityUser.Acl = body.Acl;
 
