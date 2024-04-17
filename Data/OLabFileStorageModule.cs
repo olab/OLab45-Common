@@ -21,7 +21,23 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   protected IOLabLogger logger;
   protected IOLabConfiguration cfg;
 
-  public abstract string GetUrlPath(string path, string fileName);
+  public abstract string GetPhysicalScopedFilePath(
+    string scopeLevel,
+    uint scopeId,
+    string fileName);
+
+  public abstract string GetWebScopedFilePath(
+    string scopeLevel,
+    uint scopeId,
+    string fileName);
+
+  public abstract string GetPhysicalImportFilePath(
+    string importName,
+    string fileName);
+
+  public abstract string GetPhysicalImportMediaFilePath(
+    string importName,
+    string fileName);
 
   protected OLabFileStorageModule(IOLabLogger logger, IOLabConfiguration configuration)
   {
@@ -37,22 +53,6 @@ public abstract class OLabFileStorageModule : IFileStorageModule
       throw new Exception("Missing OLabModule attribute");
 
     return attrib == null ? "" : attrib.Name;
-  }
-
-  public string GetPhysicalPath(string path, string fileName)
-  {
-    return BuildPath(cfg.GetAppSettings().FileStorageRoot, path, fileName);
-  }
-
-  public string GetPhysicalPath(string path)
-  {
-    return BuildPath(cfg.GetAppSettings().FileStorageRoot, path);
-  }
-
-  public string GetScopedFolderName(string scopeLevel, uint scopeId)
-  {
-    var scopeFolder = BuildPath(scopeLevel, scopeId);
-    return scopeFolder;
   }
 
   /// <summary>
@@ -79,27 +79,6 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     return sb.ToString();
   }
 
-  public void AttachUrls(SystemFiles item)
-  {
-    var scopeFolder = GetScopedFolderName(
-      item.ImageableType,
-      item.ImageableId);
-
-    var filePath = BuildPath(FilesRoot, scopeFolder, item.Path);
-
-    if (FileExists(filePath))
-    {
-      item.OriginUrl = GetUrlPath(
-        scopeFolder,
-        item.Path
-      );
-
-      logger.LogInformation($"  file '{item.Name}' mapped to url '{item.OriginUrl}'");
-    }
-    else
-      logger.LogError($"  file '{filePath}' not found");
-  }
-
   /// <summary>
   /// Attach browseable URLS for system files
   /// </summary>
@@ -115,7 +94,10 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     {
       try
       {
-        AttachUrls(item);
+        item.OriginUrl = GetWebScopedFilePath( 
+          item.ImageableType, 
+          item.ImageableId, 
+          item.Name );
       }
       catch (Exception ex)
       {
@@ -166,26 +148,4 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     Stream stream,
     string fileName,
     CancellationToken token);
-
-  /// <summary>
-  /// Calculate physical target directory for scoped type and id
-  /// </summary>
-  /// <param name="parentType">Scoped object type (e.g. 'Maps')</param>
-  /// <param name="parentId">Scoped object id</param>
-  /// <param name="fileName">Optional file name</param>
-  /// <returns>Public directory for scope</returns>
-  public string GetPublicFileDirectory(string parentType, uint parentId, string fileName = "")
-  {
-    var physicalDirectory = BuildPath(FilesRoot, parentType, parentId.ToString());
-
-    if (!string.IsNullOrEmpty(fileName))
-      physicalDirectory = $"{physicalDirectory}{GetFolderSeparator()}{fileName}";
-
-    return physicalDirectory;
-  }
-
-  public string GetImportMediaFilesDirectory(string importFolderName)
-  {
-    return $"{ImportRoot}{GetFolderSeparator()}{importFolderName}{GetFolderSeparator()}{MediaDirectory}";
-  }
 }

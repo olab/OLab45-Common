@@ -57,9 +57,9 @@ public class DynamicScopedObjects
     await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelMap, mapId);
     await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelNode, nodeId);
 
-    ServerCounters = phys.CountersPhys;
-    NodeCounters = phys.CountersPhys;
-    MapCounters = phys.CountersPhys;
+    ServerCounters = phys.CountersPhys.Where( x => x.ImageableType == Constants.ScopeLevelServer ).ToList();
+    NodeCounters = phys.CountersPhys.Where(x => x.ImageableType == Constants.ScopeLevelNode).ToList();
+    MapCounters = phys.CountersPhys.Where(x => x.ImageableType == Constants.ScopeLevelMap).ToList();
 
     await ProcessNodeCounters(MapCounters);
   }

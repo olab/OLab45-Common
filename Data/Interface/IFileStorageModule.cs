@@ -16,47 +16,44 @@ public interface IFileStorageModule
   void AttachUrls(
     IList<SystemFiles> items);
 
-  void AttachUrls(
-    SystemFiles item);
-
   public Task MoveFileAsync(
-    string sourceFilePath,
-    string destinationFolder,
+    string relativeSourceFilePath,
+    string relativeDestinationFolder,
     CancellationToken token = default);
 
   bool FileExists(
-    string filePath);
+    string relativeFilePath);
 
   Task ReadFileAsync(
     Stream stream,
-    string filePath,
+    string relativeFilePath,
     CancellationToken token);
 
   Task<string> WriteFileAsync(
     Stream stream,
-    string fileName,
+    string relativeFilePath,
     CancellationToken token);
 
   Task<bool> DeleteFileAsync(
-    string filePath);
+    string relativeFilePath);
 
   Task DeleteFolderAsync(
-    string folderName);
+    string relativeFolderName);
 
   Task<bool> ExtractFileToStorageAsync(
-    string archiveFileName,
-    string extractDirectory,
+    string relativeArchiveFilePath,
+    string relativeExtractDirectory,
     CancellationToken token);
 
   Task<bool> CopyFolderToArchiveAsync(
     ZipArchive archive,
-    string folderName,
+    string relativeFileDirectory,
     string zipEntryFolderName,
     bool appendToStream,
     CancellationToken token);
 
   IList<string> GetFiles(
-    string folderName,
+    string relativeFileDirectory,
     CancellationToken token);
 
   /// <summary>
@@ -66,19 +63,21 @@ public interface IFileStorageModule
   /// <returns>Path string</returns>
   string BuildPath(params object[] pathParts);
 
-  /// <summary>
-  /// Calculate target directory for scoped type and id
-  /// </summary>
-  /// <param name="parentType">Scoped object type (e.g. 'Maps')</param>
-  /// <param name="parentId">Scoped object id</param>
-  /// <param name="path">Optional file name</param>
-  /// <returns>Public directory for scope</returns>
-  string GetPublicFileDirectory(string parentType, uint parentId, string fileName = "");
+  string GetPhysicalScopedFilePath(
+    string scopeLevel,
+    uint scopeId,
+    string fileName);
 
-  /// <summary>
-  /// Get import file directory 
-  /// </summary>
-  /// <param name="importFolderName">Import folder name</param>
-  /// <returns>Import directory for scope</returns>
-  string GetImportMediaFilesDirectory(string importFolderName);
+  string GetWebScopedFilePath(
+    string scopeLevel,
+    uint scopeId,
+    string fileName);
+
+  string GetPhysicalImportFilePath(
+    string importName,
+    string fileName);
+
+  string GetPhysicalImportMediaFilePath(
+    string importName,
+    string fileName);
 }

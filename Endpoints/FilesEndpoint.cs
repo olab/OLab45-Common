@@ -174,13 +174,14 @@ public partial class FilesEndpoint : OLabEndpoint
     dbContext.SystemFiles.Add(phys);
     await dbContext.SaveChangesAsync();
 
-    var filePath = _fileStorageModule.BuildPath(
-      dto.ImageableType,
-      dto.ImageableId);
+    var filePath = _fileStorageModule.GetPublicFileDirectory(
+      dto.ImageableType, 
+      dto.ImageableId, 
+      dto.FileName);
 
     await _fileStorageModule.WriteFileAsync(
       dto.GetStream(),
-      _fileStorageModule.BuildPath( filePath, dto.FileName ),
+      filePath,
       token);
 
     var newDto = builder.PhysicalToDto(phys);
