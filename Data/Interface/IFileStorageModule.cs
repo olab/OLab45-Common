@@ -24,33 +24,33 @@ public interface IFileStorageModule
   bool FileExists(
     string relativeFilePath);
 
-  Task ReadFileAsync(
-    Stream stream,
-    string relativeFilePath,
-    CancellationToken token);
+  //Task ReadFileAsync(
+  //  Stream stream,
+  //  string relativeFilePath,
+  //  CancellationToken token);
 
-  Task<string> WriteFileAsync(
-    Stream stream,
-    string physicalFilePath,
-    CancellationToken token);
+  //Task<string> WriteFileAsync(
+  //  Stream stream,
+  //  string physicalFilePath,
+  //  CancellationToken token);
 
   Task<bool> DeleteFileAsync(
     string relativeFilePath);
 
-  Task DeleteFolderAsync(
-    string relativeFolderName);
+  //Task DeleteFolderAsync(
+  //  string relativeFolderName);
 
-  Task<bool> ExtractFileToStorageAsync(
-    string relativeArchiveFilePath,
-    string relativeExtractDirectory,
-    CancellationToken token);
+  //Task<bool> ExtractFileToStorageAsync(
+  //  string relativeArchiveFilePath,
+  //  string relativeExtractDirectory,
+  //  CancellationToken token);
 
-  Task<bool> CopyFolderToArchiveAsync(
-    ZipArchive archive,
-    string relativeFileDirectory,
-    string zipEntryFolderName,
-    bool appendToStream,
-    CancellationToken token);
+  //Task<bool> CopyFolderToArchiveAsync(
+  //  ZipArchive archive,
+  //  string relativeFileDirectory,
+  //  string zipEntryFolderName,
+  //  bool appendToStream,
+  //  CancellationToken token);
 
   IList<string> GetFiles(
     string relativeFileDirectory,

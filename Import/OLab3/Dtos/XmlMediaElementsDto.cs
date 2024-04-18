@@ -104,7 +104,7 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
   //  return result;
   //}
 
-  protected virtual IList<IEnumerable<dynamic>> GetXmlElements(
+  protected override IList<IEnumerable<dynamic>> GetXmlElements(
   bool displayProgressMessage,
   dynamic outerElements)
   {

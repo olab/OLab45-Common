@@ -123,29 +123,29 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   /// Attach browseable URLS for system files
   /// </summary>
   /// <param name="items">List of system files objects to enhance</param>
-  public void AttachUrls(IList<SystemFiles> items)
-  {
-    if (items.Count == 0)
-      return;
+  //public void AttachUrls(IList<SystemFiles> items)
+  //{
+  //  if (items.Count == 0)
+  //    return;
 
-    logger.LogInformation($"Attaching URLs for {items.Count} file records");
+  //  logger.LogInformation($"Attaching URLs for {items.Count} file records");
 
-    foreach (var item in items)
-    {
-      try
-      {
-        item.OriginUrl = GetWebScopedFilePath(
-          item.ImageableType,
-          item.ImageableId,
-          item.Name);
-      }
-      catch (Exception ex)
-      {
-        logger.LogError(ex, $"AttachUrls error on '{item.Path}' id = {item.Id}");
-      }
+  //  foreach (var item in items)
+  //  {
+  //    try
+  //    {
+  //      item.OriginUrl = GetWebScopedFilePath(
+  //        item.ImageableType,
+  //        item.ImageableId,
+  //        item.Name);
+  //    }
+  //    catch (Exception ex)
+  //    {
+  //      logger.LogError(ex, $"AttachUrls error on '{item.Path}' id = {item.Id}");
+  //    }
 
-    }
-  }
+  //  }
+  //}
 
   public abstract Task<bool> CopyFolderToArchiveAsync(
     ZipArchive archive,
