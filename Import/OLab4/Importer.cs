@@ -17,11 +17,11 @@ public partial class Importer : IImporter
   private readonly IOLabConfiguration _configuration;
   private readonly IOLabLogger Logger;
   private readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
-  private readonly IFileStorageModule _fileModule;
+  private readonly IFileStorageModule _fileStorageModule;
   private readonly IDictionary<uint, uint?> _nodeIdTranslation = new Dictionary<uint, uint?>();
 
   public IOLabModuleProvider<IWikiTagModule> GetWikiProvider() { return _wikiTagProvider; }
-  public IFileStorageModule GetFileStorageModule() { return _fileModule; }
+  public IFileStorageModule GetFileStorageModule() { return _fileStorageModule; }
   public OLabDBContext GetDbContext() { return _dbContext; }
   public IOLabConfiguration GetConfiguration() { return _configuration; }
   public AppSettings Settings() { return _configuration.GetAppSettings(); }
@@ -39,7 +39,7 @@ public partial class Importer : IImporter
     Logger = logger; // OLabLogger.CreateNew<Importer>(logger, true);
 
     _wikiTagProvider = wikiTagProvider;
-    _fileModule = fileStorageModule;
+    _fileStorageModule = fileStorageModule;
 
   }
 

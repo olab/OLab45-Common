@@ -51,7 +51,10 @@ public partial class Importer : IImporter
         fileName,
         token);
 
-      _scopedObjectPhys = new ScopedObjects(Logger, _dbContext);
+      _scopedObjectPhys = new ScopedObjects(
+        Logger, 
+        _dbContext, 
+        _fileStorageModule);
 
       _newMapPhys = await WriteMapToDatabaseAsync(auth, mapFullDto, token);
 
@@ -93,25 +96,25 @@ public partial class Importer : IImporter
 
     // delete any existing import files left over
     // from previous run
-    await _fileModule.DeleteFolderAsync(
-      _fileModule.BuildPath(
+    await _fileStorageModule.DeleteFolderAsync(
+      _fileStorageModule.BuildPath(
         OLabFileStorageModule.ImportRoot,
         ExtractFolderName));
 
     // save import file to storage
-    await _fileModule.WriteFileAsync(
+    await _fileStorageModule.WriteFileAsync(
       importFileStream,
-      _fileModule.BuildPath(
+      _fileStorageModule.BuildPath(
         OLabFileStorageModule.ImportRoot,
         importFileName),
       token);
 
     // extract import file to storage
-    await _fileModule.ExtractFileToStorageAsync(
-      _fileModule.BuildPath(
+    await _fileStorageModule.ExtractFileToStorageAsync(
+      _fileStorageModule.BuildPath(
         OLabFileStorageModule.ImportRoot,
         importFileName),
-      _fileModule.BuildPath(
+      _fileStorageModule.BuildPath(
        OLabFileStorageModule.ImportRoot,
         ExtractFolderName),
       token);
@@ -121,9 +124,9 @@ public partial class Importer : IImporter
     // extract the map.json file from the extracted imported files
     using (var mapStream = new MemoryStream())
     {
-      await _fileModule.ReadFileAsync(
+      await _fileStorageModule.ReadFileAsync(
         mapStream,
-        _fileModule.BuildPath(
+        _fileStorageModule.BuildPath(
           OLabFileStorageModule.ImportRoot,
           ExtractFolderName,
           MapFileName),
@@ -136,7 +139,7 @@ public partial class Importer : IImporter
 
     // delete source import file
     await GetFileStorageModule().DeleteFileAsync(
-      _fileModule.BuildPath(
+      _fileStorageModule.BuildPath(
         OLabFileStorageModule.ImportRoot,
         Path.GetFileName(importFileName)));
 
@@ -191,8 +194,8 @@ public partial class Importer : IImporter
   {
     // delete any existing import files left over
     // from previous run
-    await _fileModule.DeleteFolderAsync(
-      _fileModule.BuildPath(
+    await _fileStorageModule.DeleteFolderAsync(
+      _fileStorageModule.BuildPath(
         OLabFileStorageModule.ImportRoot,
         ExtractFolderName));
   }
@@ -202,21 +205,21 @@ public partial class Importer : IImporter
   {
     // list and move map-level files
 
-    var importFilesFolder = _fileModule.BuildPath(
+    var importFilesFolder = _fileStorageModule.BuildPath(
       OLabFileStorageModule.ImportRoot,
       ExtractFolderName,
       Api.Utils.Constants.ScopeLevelMap);
 
-    var sourceFiles = _fileModule.GetFiles(importFilesFolder, token);
+    var sourceFiles = _fileStorageModule.GetFiles(importFilesFolder, token);
 
-    var mapFilesFolder = _fileModule.BuildPath(
+    var mapFilesFolder = _fileStorageModule.BuildPath(
       OLabFileStorageModule.FilesRoot,
       Api.Utils.Constants.ScopeLevelMap,
       _newMapPhys.Id);
 
     foreach (var sourceFile in sourceFiles)
-      await _fileModule.MoveFileAsync(
-      _fileModule.BuildPath(
+      await _fileStorageModule.MoveFileAsync(
+      _fileStorageModule.BuildPath(
         importFilesFolder,
         Path.GetFileName(sourceFile)),
       mapFilesFolder,

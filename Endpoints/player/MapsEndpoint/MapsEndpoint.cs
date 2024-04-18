@@ -266,7 +266,8 @@ public partial class MapsEndpoint : OLabEndpoint
 
     var scopedObjectsPhys = new ScopedObjects(
       Logger,
-      dbContext);
+      dbContext, 
+      fileStorageModule);
 
     // apply scoped objects to the map dto
     await scopedObjectsPhys.AddScopeFromDatabaseAsync(scopeLevel, id);

@@ -157,25 +157,9 @@ public class Importer : IImporter
     {
       Logger.LogInformation($"Module archive file: {FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, archiveFileName)}");
 
-      var archiveFilePath = FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, archiveFileName);
-
-      // write the archive file to storage
-      archiveFilePath = await FileStorageModule.WriteFileAsync(
+      var archiveFilePath = await FileStorageModule.WriteImportFileAsync(
         archiveFileStream,
-        archiveFilePath,
-        token);
-
-      // build extract direct based on archive file name without extension
-      var extractDirectory = 
-        FileStorageModule.BuildPath(
-          OLabFileStorageModule.ImportRoot, 
-          Path.GetFileNameWithoutExtension(archiveFileName));
-      Logger.LogInformation($"Folder extract directory: {extractDirectory}");
-
-      // extract archive file to extract directory
-      await FileStorageModule.ExtractFileToStorageAsync(
-        archiveFilePath,
-        extractDirectory,
+        archiveFileName,
         token);
 
       // load all the import files in extract directory
@@ -183,8 +167,9 @@ public class Importer : IImporter
         await dto.LoadAsync(Path.GetFileNameWithoutExtension(archiveFileName));
 
       // delete source archive file
-      await GetFileStorageModule().DeleteFileAsync(
-        archiveFilePath);
+      await GetFileStorageModule().DeleteImportFileAsync(
+        ".", 
+        archiveFileName);
     }
     catch (Exception ex)
     {

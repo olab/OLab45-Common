@@ -3,7 +3,9 @@ using OLab.Common.Interfaces;
 using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace OLab.Import.OLab3.Dtos;
 
@@ -31,32 +33,62 @@ public class XmlManifestDto : XmlImportDto<XmlManifest>
   /// </summary>
   /// <param name="importDirectory">Directory where import file exists</param>
   /// <returns></returns>
-  public override async Task<bool> LoadAsync(string extractPath, bool displayProgressMessage = true)
+  //public override async Task<bool> LoadAsync(string extractPath, bool displayProgressMessage = true)
+  //{
+  //  var result = await base.LoadAsync(extractPath);
+
+  //  if (result)
+  //  {
+  //    dynamic elements = GetElements(GetXmlPhys());
+
+  //    var record = 0;
+  //    foreach (var element in elements)
+  //    {
+  //      try
+  //      {
+  //        ++record;
+  //        dynamic value = Conversions.Base64Decode(element.Value) + ".xml";
+  //        GetModel().Data.Add(value);
+  //      }
+  //      catch (Exception ex)
+  //      {
+  //        Logger.LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
+  //      }
+
+  //    }
+  //  }
+
+  //  return result;
+  //}
+
+
+  protected override IList<IEnumerable<dynamic>> GetXmlElements(
+    bool displayProgressMessage,
+    dynamic outerElements)
   {
-    var result = await base.LoadAsync(extractPath);
+    var record = 0;
+    var elementSets = new List<IEnumerable<dynamic>>();
 
-    if (result)
+    if (outerElements != null)
     {
-      dynamic elements = GetElements(GetXmlPhys());
-
-      var record = 0;
-      foreach (var element in elements)
+      foreach (var innerElements in outerElements)
       {
         try
         {
           ++record;
-          dynamic value = Conversions.Base64Decode(element.Value) + ".xml";
+          dynamic value = Conversions.Base64Decode(innerElements.Value) + ".xml";
           GetModel().Data.Add(value);
         }
         catch (Exception ex)
         {
           Logger.LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
         }
-
       }
+
+      Logger.LogInformation($"imported {elementSets.Count()} {GetFileName()} objects");
     }
 
-    return result;
+    return elementSets;
   }
 
   /// <summary>

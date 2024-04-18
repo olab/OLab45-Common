@@ -35,7 +35,7 @@ public partial class ScopedObjects
   public ScopedObjects(
     IOLabLogger logger,
     OLabDBContext dbContext,
-    IFileStorageModule fileStorageModule = null) : this()
+    IFileStorageModule fileStorageModule) : this()
   {
     Logger = logger;
     _dbContext = dbContext;

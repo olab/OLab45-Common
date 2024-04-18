@@ -79,9 +79,9 @@ public partial class Importer : IImporter
     }
 
     // add any map-level media files to the archive
-    await _fileModule.CopyFolderToArchiveAsync(
+    await _fileStorageModule.CopyFolderToArchiveAsync(
       zipArchive,
-      _fileModule.BuildPath(
+      _fileStorageModule.BuildPath(
         Api.Utils.Constants.ScopeLevelMap,
         dto.Map.Id),
       Api.Utils.Constants.ScopeLevelMap,
@@ -91,12 +91,12 @@ public partial class Importer : IImporter
     // write any node-level media files to the archive
     foreach (var nodeDto in dto.MapNodes)
     {
-      await _fileModule.CopyFolderToArchiveAsync(
+      await _fileStorageModule.CopyFolderToArchiveAsync(
         zipArchive,
-        _fileModule.BuildPath(
+        _fileStorageModule.BuildPath(
           Api.Utils.Constants.ScopeLevelNode,
           nodeDto.Id),
-        _fileModule.BuildPath(
+        _fileStorageModule.BuildPath(
           Api.Utils.Constants.ScopeLevelNode,
           nodeDto.Id),
         true,
@@ -129,7 +129,8 @@ public partial class Importer : IImporter
 
     var phys = new ScopedObjects(
       Logger,
-      _dbContext);
+      _dbContext,
+      _fileStorageModule);
 
     // apply map-level scoped objects to the map dto
     await phys.AddScopeFromDatabaseAsync(Api.Utils.Constants.ScopeLevelMap, mapId);
@@ -147,7 +148,8 @@ public partial class Importer : IImporter
     {
       var phys = new ScopedObjects(
         Logger,
-        _dbContext);
+        _dbContext,
+        _fileStorageModule);
 
       // apply node-level scoped objects
       await phys.AddScopeFromDatabaseAsync(Api.Utils.Constants.ScopeLevelNode, nodeDto.Id.Value);

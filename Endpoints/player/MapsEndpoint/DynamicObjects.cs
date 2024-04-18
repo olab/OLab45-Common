@@ -74,7 +74,13 @@ public partial class MapsEndpoint : OLabEndpoint
     uint sinceTime,
     bool enableWikiTranslation)
   {
-    var phys = new DynamicScopedObjects(Logger, dbContext, serverId, node.MapId, node.Id);
+    var phys = new DynamicScopedObjects(
+      Logger, 
+      dbContext,
+      fileStorageModule,
+      serverId, 
+      node.MapId, 
+      node.Id);
     await phys.GetDynamicScopedObjectsAsync();
 
     var builder = new ObjectMapper.DynamicScopedObjects(Logger, enableWikiTranslation);
