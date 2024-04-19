@@ -88,13 +88,14 @@ public class GroupsReaderWriter : ReaderWriter<Groups>
   {
     phys = await base.CreateAsync(auth, phys, token);
 
-    // add default group security roles for all maps in group
-    dbContext.SecurityRoles.AddRange(
-      SecurityRoles.CreateDefaultForGroup(
+    var securityRolePhys = SecurityRoles.CreateDefaultForGroup(
         dbContext,
         phys.Id,
         Utils.Constants.ScopeLevelMap,
-        0));
+        0);
+
+    // add default group security roles for all maps in group
+    dbContext.SecurityRoles.AddRange(securityRolePhys);
 
     return phys;
   }
