@@ -97,15 +97,12 @@ public partial class FilesEndpoint : OLabEndpoint
       throw new OLabObjectNotFoundException("FilesPhys", id);
 
     var phys = await dbContext.SystemFiles.FirstAsync(x => x.Id == id);
-    phys.OriginUrl = fileStorageModule.GetWebScopedFilePath(
-      phys.ImageableType, 
-      phys.ImageableId, 
-      phys.Path);
+    _fileStorageModule.AttachUrls(phys);
 
     var dto = new FilesFull(Logger).PhysicalToDto(phys);
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("R", dto);
+    var accessResult = auth.HasAccess(Model.SecurityRoles.Read, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("FilesPhys", id);
 
@@ -129,7 +126,7 @@ public partial class FilesEndpoint : OLabEndpoint
     dto.ImageableId = dto.ParentInfo.Id;
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("W", dto);
+    var accessResult = auth.HasAccess(Model.SecurityRoles.Write, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("FilesPhys", id);
 
@@ -164,7 +161,7 @@ public partial class FilesEndpoint : OLabEndpoint
     var builder = new FilesFull(Logger);
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("W", dto);
+    var accessResult = auth.HasAccess(Model.SecurityRoles.Write, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("FilesPhys", 0);
 
@@ -177,11 +174,13 @@ public partial class FilesEndpoint : OLabEndpoint
     dbContext.SystemFiles.Add(phys);
     await dbContext.SaveChangesAsync();
 
-    await fileStorageModule.WriteScopedFileAsync(
-      dto.GetStream(),
+    var filePath = _fileStorageModule.BuildPath(
       dto.ImageableType,
-      dto.ImageableId,
-      dto.FileName,
+      dto.ImageableId);
+
+    await _fileStorageModule.WriteFileAsync(
+      dto.GetStream(),
+      _fileStorageModule.BuildPath( filePath, dto.FileName ),
       token);
 
     var newDto = builder.PhysicalToDto(phys);
@@ -209,17 +208,17 @@ public partial class FilesEndpoint : OLabEndpoint
       var dto = new FilesFull(Logger).PhysicalToDto(phys);
 
       // test if user has access to object
-      var accessResult = auth.HasAccess("W", dto);
+      var accessResult = auth.HasAccess(Model.SecurityRoles.Write, dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("ConstantsPhys", id);
 
-      var filePath = fileStorageModule.BuildPath(
+      var filePath = _fileStorageModule.BuildPath(
         OLabFileStorageModule.FilesRoot,
         dto.ImageableType,
         dto.ImageableId,
         dto.FileName);
 
-      await fileStorageModule.DeleteFileAsync(
+      await _fileStorageModule.DeleteFileAsync(
         filePath);
 
       dbContext.SystemFiles.Remove(phys);

@@ -36,7 +36,7 @@ public partial class NodesEndpoint : OLabEndpoint
     var phys = new ScopedObjects(
       Logger,
       dbContext,
-    fileStorageModule);
+    _fileStorageModule);
     await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelNode, node.Id);
 
     phys.ConstantsPhys.Add(new SystemConstants

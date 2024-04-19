@@ -13,50 +13,50 @@ public interface IFileStorageModule
 
   char GetFolderSeparator();
 
-  //void AttachUrls(
-  //  IList<SystemFiles> items);
+  void AttachUrls(
+    IList<SystemFiles> items);
+
+  void AttachUrls(
+    SystemFiles item);
 
   public Task MoveFileAsync(
-    string relativeSourceFilePath,
-    string relativeDestinationFolder,
+    string sourceFilePath,
+    string destinationFolder,
     CancellationToken token = default);
 
   bool FileExists(
-    string relativeFilePath);
+    string filePath);
 
-  //Task ReadFileAsync(
-  //  Stream stream,
-  //  string relativeFilePath,
-  //  CancellationToken token);
+  Task ReadFileAsync(
+    Stream stream,
+    string filePath,
+    CancellationToken token);
 
-  //Task<string> WriteFileAsync(
-  //  Stream stream,
-  //  string physicalFilePath,
-  //  CancellationToken token);
+  Task<string> WriteFileAsync(
+    Stream stream,
+    string fileName,
+    CancellationToken token);
 
   Task<bool> DeleteFileAsync(
-    string relativeFilePath);
+    string filePath);
 
-  /// <summary>
-  /// Delete folder from blob storage
-  /// </summary>
-  /// <param name="physFolderName">Folder to delete</param>
-  Task DeleteFolderAsync(string physFolderName);
+  Task DeleteFolderAsync(
+    string folderName);
 
-  //Task<bool> ExtractFileToStorageAsync(
-  //  string relativeArchiveFilePath,
-  //  string relativeExtractDirectory,
-  //  CancellationToken token);
+  Task<bool> ExtractFileToStorageAsync(
+    string archiveFileName,
+    string extractDirectory,
+    CancellationToken token);
 
   Task<bool> CopyFolderToArchiveAsync(
     ZipArchive archive,
-    string physFileDirectory,
+    string folderName,
     string zipEntryFolderName,
     bool appendToStream,
     CancellationToken token);
 
   IList<string> GetFiles(
-    string relativeFileDirectory,
+    string folderName,
     CancellationToken token);
 
   /// <summary>
@@ -66,69 +66,19 @@ public interface IFileStorageModule
   /// <returns>Path string</returns>
   string BuildPath(params object[] pathParts);
 
-  //string GetPhysicalScopedFilePath(
-  //  string scopeLevel,
-  //  uint scopeId,
-  //  string fileName = null);
-
-  Task<string> WriteScopedFileAsync(
-    Stream stream,
-    string scopeLevel,
-    uint scopeId,
-    string fileName,
-    CancellationToken token = default);
-
-  string GetWebScopedFilePath(
-    string scopeLevel,
-    uint scopeId,
-    string fileName);
-
-  string GetPhysicalImportFilePath(
-    string importName,
-    string fileName);
-
-  string GetPhysicalImportMediaFilePath(
-    string importName,
-    string fileName = "");
-
-  string GetPhysicalScopedFilePath(
-    string scopeLevel,
-    uint scopeId,
-    string fileName = "");
-
-  Task MoveImportMediaFileToScopedFolderAsync(
-    string importName,
-    string fileName,
-    string relativeTargetDirectory);
+  /// <summary>
+  /// Calculate target directory for scoped type and id
+  /// </summary>
+  /// <param name="parentType">Scoped object type (e.g. 'Maps')</param>
+  /// <param name="parentId">Scoped object id</param>
+  /// <param name="path">Optional file name</param>
+  /// <returns>Public directory for scope</returns>
+  string GetPublicFileDirectory(string parentType, uint parentId, string fileName = "");
 
   /// <summary>
-  /// Write import file to storage
+  /// Get import file directory 
   /// </summary>
-  /// <param name="stream">File stream</param>
-  /// <param name="archiveFileName">Archive file name</param>
-  /// <param name="token">Cancellation token</param>
-  /// <returns>Physical file name</returns>
-  Task<string> WriteImportFileAsync(
-    Stream stream,
-    string archiveFileName,
-    CancellationToken token);
-
-  /// <summary>
-  /// Read an import file into a stream
-  /// </summary>
-  /// <param name="importFileDirectory">Import file directoryw</param>
-  /// <param name="importFileName">Import file name</param>
-  /// <returns>MemoryStream</returns>
-  Task<MemoryStream> ReadImportFileAsync(
-    string importFileDirectory,
-    string importFileName);
-
-  /// <summary>
-  /// Delete an import file
-  /// </summary>
-  /// <param name="importFileName">Import file to delete</param>
-  /// <returns>Nothing</returns>
-  Task DeleteImportFileAsync(
-    string importFileDirectory,
-    string importFileName);
+  /// <param name="importFolderName">Import folder name</param>
+  /// <returns>Import directory for scope</returns>
+  string GetImportMediaFilesDirectory(string importFolderName);
 }

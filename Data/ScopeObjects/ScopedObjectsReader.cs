@@ -126,16 +126,15 @@ public partial class ScopedObjects
     var items = await _dbContext.SystemFiles.Where(x =>
       x.ImageableType == scopeLevel && x.ImageableId == id).ToListAsync();
 
+    // ask the module to add appropriate URLs to files
+    if (_fileStorageModule != null)
+      _fileStorageModule.AttachUrls(items);
+
     // enhance the records with mime type
     foreach (var item in items)
     {
       if (string.IsNullOrEmpty(item.Mime))
         item.Mime = MimeTypesMap.GetMimeType(Path.GetFileName(item.Path));
-
-      item.OriginUrl = _fileStorageModule.GetWebScopedFilePath(
-        item.ImageableType, 
-        item.ImageableId, 
-        item.Path);
     }
 
     if (items.Count > 0)

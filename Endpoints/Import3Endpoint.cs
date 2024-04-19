@@ -43,7 +43,7 @@ public partial class Import3Endpoint : OLabEndpoint
       _configuration,
       dbContext,
       _wikiTagProvider,
-      fileStorageModule);
+      _fileStorageModule);
   }
 
   public async Task<Maps> ImportAsync(

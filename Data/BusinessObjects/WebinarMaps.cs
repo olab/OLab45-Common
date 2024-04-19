@@ -8,8 +8,6 @@ namespace OLab.Api.Model;
 
 [Table("webinar_maps")]
 [Index("Step", Name = "step")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class WebinarMaps
 {
     [Key]

@@ -1,14 +1,10 @@
-using Humanizer;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using OLab.Data.Dtos.ScopedObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 
 namespace OLab.Api.Dto;
 
@@ -169,27 +165,6 @@ public class DynamicScopedObjectsDto
     }
 
     return dto;
-  }
-
-  public IList<CounterValueDto> ToCounterValues()
-  {
-    // abbreviate counter dto's into shorter version dto
-    var countersDto = new List<CounterValueDto>();
-
-    foreach (var counterDto in Server.Counters)
-      countersDto.Add(new CounterValueDto(counterDto));
-    foreach (var counterDto in Map.Counters)
-      countersDto.Add(new CounterValueDto(counterDto));
-    foreach (var counterDto in Node.Counters)
-      countersDto.Add(new CounterValueDto(counterDto));
-
-    return countersDto;
-  }
-
-  public string ToJson()
-  {
-    var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
-    return JToken.Parse(rawJson).ToString(Formatting.Indented);
   }
 
   public void Dump(IOLabLogger logger, string prefix)

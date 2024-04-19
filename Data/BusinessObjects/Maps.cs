@@ -14,8 +14,6 @@ namespace OLab.Api.Model;
 [Index("SecurityId", Name = "security_id")]
 [Index("SkinId", Name = "skin_id")]
 [Index("TypeId", "SkinId", "SectionId", "LanguageId", Name = "type_id")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class Maps
 {
     [Key]
@@ -172,6 +170,9 @@ public partial class Maps
 
     [InverseProperty("Map")]
     public virtual ICollection<MapFeedbackRules> MapFeedbackRules { get; } = new List<MapFeedbackRules>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapGroups> MapGroups { get; } = new List<MapGroups>();
 
     [InverseProperty("Map")]
     public virtual ICollection<MapKeys> MapKeys { get; } = new List<MapKeys>();

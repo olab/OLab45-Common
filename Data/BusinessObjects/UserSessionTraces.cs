@@ -11,8 +11,6 @@ namespace OLab.Api.Model;
 [Index("NodeId", Name = "node_id")]
 [Index("SessionId", Name = "session_id")]
 [Index("UserId", Name = "user_id")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class UserSessiontraces
 {
     [Key]
@@ -72,7 +70,4 @@ public partial class UserSessiontraces
     [ForeignKey("SessionId")]
     [InverseProperty("UserSessiontraces")]
     public virtual UserSessions Session { get; set; }
-
-    [InverseProperty("Sessiontrace")]
-    public virtual ICollection<UsersessiontraceCounterupdate> UsersessiontraceCounterupdate { get; } = new List<UsersessiontraceCounterupdate>();
 }

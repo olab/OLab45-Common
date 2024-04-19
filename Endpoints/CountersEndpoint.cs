@@ -93,7 +93,7 @@ public partial class CountersEndpoint : OLabEndpoint
     var dto = new CountersFull(Logger).PhysicalToDto(phys);
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("R", dto);
+    var accessResult = auth.HasAccess(Model.SecurityRoles.Read, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("CounterMapper", id);
 
@@ -116,7 +116,7 @@ public partial class CountersEndpoint : OLabEndpoint
     dto.ImageableId = dto.ParentInfo.Id;
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("W", dto);
+    var accessResult = auth.HasAccess(Model.SecurityRoles.Write, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("CounterMapper", id);
 
@@ -154,7 +154,7 @@ public partial class CountersEndpoint : OLabEndpoint
     dto.Value = dto.StartValue;
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("W", dto);
+    var accessResult = auth.HasAccess(Model.SecurityRoles.Write, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("CounterMapper", 0);
 
@@ -192,7 +192,7 @@ public partial class CountersEndpoint : OLabEndpoint
       var dto = new CountersFull(Logger).PhysicalToDto(phys);
 
       // test if user has access to object
-      var accessResult = auth.HasAccess("W", dto);
+      var accessResult = auth.HasAccess(Model.SecurityRoles.Write, dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("CounterMapper", id);
 

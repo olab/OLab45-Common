@@ -34,7 +34,7 @@ public partial class ResponseEndpoint : OLabEndpoint
     // test if counter associated with the question
     if (question.CounterId.HasValue && (question.CounterId.Value > 0))
     {
-      var dbCounter = await GetCounterAsync((uint)question.CounterId.Value);
+      var dbCounter = await GetCounterAsync(question.CounterId.Value);
       if (dbCounter == null)
         throw new Exception($"Counter {question.CounterId.Value} not found");
 
@@ -92,7 +92,7 @@ public partial class ResponseEndpoint : OLabEndpoint
   /// <returns>Dto counter</returns>
   private CountersDto GetTargetCounter(SystemQuestions question, SystemCounters dbCounter, QuestionResponsePostDataDto body)
   {
-    var dynamicCounter = body.DynamicObjects.GetCounter((uint)question.CounterId.Value);
+    var dynamicCounter = body.DynamicObjects.GetCounter(question.CounterId.Value);
     if (dynamicCounter == null)
       Logger.LogError($"Counter {question.CounterId.Value} not found in request. Update ignored");
     else

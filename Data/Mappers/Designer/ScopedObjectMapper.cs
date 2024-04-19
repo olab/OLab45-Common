@@ -3,7 +3,6 @@ using OLab.Api.Dto.Designer;
 using OLab.Common.Interfaces;
 using OLab.Data;
 using System;
-using System.Linq;
 
 namespace OLab.Api.ObjectMapper.Designer;
 
@@ -29,16 +28,16 @@ public class ScopedObjectMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
     var dto = GetDto(source);
 
     var dtConstantsList = new Constants(Logger).PhysicalToDto(phys.ConstantsPhys);
-    dto.Constants.AddRange(dtConstantsList.OrderBy( x => x.Name));
+    dto.Constants.AddRange(dtConstantsList);
 
     var dtoQuestionsList = new Questions(Logger).PhysicalToDto(phys.QuestionsPhys);
-    dto.Questions.AddRange(dtoQuestionsList.OrderBy(x => x.Name));
+    dto.Questions.AddRange(dtoQuestionsList);
 
     var dtCountersList = new Counters(Logger).PhysicalToDto(phys.CountersPhys);
-    dto.Counters.AddRange(dtCountersList.OrderBy(x => x.Name));
+    dto.Counters.AddRange(dtCountersList);
 
     var dtFilesList = new Files(Logger).PhysicalToDto(phys.FilesPhys);
-    dto.Files.AddRange(dtFilesList.OrderBy(x => x.Name));
+    dto.Files.AddRange(dtFilesList);
 
     return dto;
   }

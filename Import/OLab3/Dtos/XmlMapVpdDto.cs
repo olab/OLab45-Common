@@ -1,5 +1,4 @@
 using OLab.Api.Importer;
-using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using OLab.Common.Utils;
 using OLab.Import.OLab3.Model;
@@ -32,85 +31,40 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
   /// </summary>
   /// <param name="importDirectory">Directory where import file exists</param>
   /// <returns></returns>
-  //public override async Task<bool> LoadAsync(
-  //  string importFileDirectory, 
-  //  bool displayProgressMessage = true)
-  //{
-  //  var rc = true;
-
-  //  try
-  //  {
-  //    Logger.LogInformation($"Loading {GetFileName()}");
-
-  //    using var memoryStream = await GetFileModule().ReadImportFileAsync(
-  //        importFileDirectory,
-  //        GetFileName());
-  //    _phys = DynamicXml.Load(memoryStream);
-
-  //    dynamic outerElements = GetElements(GetXmlPhys());
-  //    var record = 0;
-
-  //    foreach (var innerElements in outerElements)
-  //    {
-  //      try
-  //      {
-  //        ++record;
-  //        var elements = (IEnumerable<dynamic>)innerElements.Elements();
-  //        xmlImportElementSets.Add(elements);
-
-  //        var item = _mapper.ElementsToPhys(elements);
-
-  //        var phys = new XmlMapVpd
-  //        {
-  //          Id = item.Id,
-  //          MapId = item.MapId,
-  //          VpdTypeId = item.VpdTypeId
-  //        };
-
-  //        Logger.LogInformation($"  loaded '{phys.Id}'");
-
-  //        GetModel().Data.Add(phys);
-  //        record++;
-  //      }
-  //      catch (Exception ex)
-  //      {
-  //        Logger.LogError(ex, $"error loading '{GetFileName()}' record #{record}: {ex.Message}");
-  //      }
-
-  //    }
-
-  //    Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
-
-  //    // delete data file
-  //    await GetFileModule().DeleteImportFileAsync(
-  //      importFileDirectory,
-  //      GetFileName());
-  //  }
-  //  catch (Exception ex)
-  //  {
-  //    Logger.LogError(ex, $"Load error: {ex.Message}");
-  //    rc = false;
-  //  }
-
-  //  return rc;
-  //}
-
-  protected override IList<IEnumerable<dynamic>> GetXmlElements(
-  bool displayProgressMessage,
-  dynamic outerElements)
+  public override async Task<bool> LoadAsync(string importFileDirectory, bool displayProgressMessage = true)
   {
-    var record = 0;
-    var elementSets = new List<IEnumerable<dynamic>>();
+    var rc = true;
 
-    if (outerElements != null)
+    try
     {
+      Logger.LogInformation($"Loading '{GetFileName()}'");
+
+      var physicalFilePath = GetFileModule().BuildPath(
+        OLabFileStorageModule.ImportRoot,
+        importFileDirectory,
+        GetFileName());
+
+      if (GetFileModule().FileExists(physicalFilePath))
+      {
+        using var moduleFileStream = new MemoryStream();
+        await GetFileModule().ReadFileAsync(
+          moduleFileStream,
+          physicalFilePath,
+          new System.Threading.CancellationToken());
+
+        _phys = DynamicXml.Load(moduleFileStream);
+      }
+
+      dynamic outerElements = GetElements(GetXmlPhys());
+      var record = 0;
+
       foreach (var innerElements in outerElements)
       {
         try
         {
           ++record;
           var elements = (IEnumerable<dynamic>)innerElements.Elements();
-          elementSets.Add(elements);
+          xmlImportElementSets.Add(elements);
 
           var item = _mapper.ElementsToPhys(elements);
 
@@ -130,12 +84,21 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
         {
           Logger.LogError(ex, $"error loading '{GetFileName()}' record #{record}: {ex.Message}");
         }
+
       }
 
-      Logger.LogInformation($"imported {elementSets.Count()} {GetFileName()} objects");
+      Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+
+      // delete data file
+      await GetFileModule().DeleteFileAsync(physicalFilePath);
+    }
+    catch (Exception ex)
+    {
+      Logger.LogError(ex, $"Load error: {ex.Message}");
+      rc = false;
     }
 
-    return elementSets;
+    return rc;
   }
 
   /// <summary>
@@ -154,7 +117,7 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
   /// <param name="dtos">All import dtos (for lookups into related objects)</param>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
-  public override bool SaveToDatabase(
+  public override async Task<bool> SaveToDatabaseAsync(
     string importFolderName,
     int recordIndex,
     IEnumerable<dynamic> elements)

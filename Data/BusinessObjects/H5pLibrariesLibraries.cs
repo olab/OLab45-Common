@@ -8,8 +8,6 @@ namespace OLab.Api.Model;
 
 [PrimaryKey("LibraryId", "RequiredLibraryId")]
 [Table("h5p_libraries_libraries")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class H5pLibrariesLibraries
 {
     [Key]

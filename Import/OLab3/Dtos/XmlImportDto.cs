@@ -39,7 +39,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
 
   public IFileStorageModule GetFileModule()
   {
-    return GetImporter().GetFileModule();
+    return GetImporter().GetFileStorageModule();
   }
 
   /// <summary>
@@ -119,39 +119,72 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// </summary>
   /// <param name="importFilesFolder">Folder name of extracted import files</param>
   /// <returns>Success/Failure</returns>
-  public override async Task<bool> LoadAsync(
-    string importFileDirectory, 
-    bool displayProgressMessage = true)
+  public override async Task<bool> LoadAsync(string importFileDirectory, bool displayProgressMessage = true)
   {
     var rc = true;
 
     try
     {
 
-      Logger.LogInformation($"Loading {GetFileName()}");
+      var moduleFileName = $"{importFileDirectory}{GetFileModule().GetFolderSeparator()}{GetFileName()}";
+      Logger.LogInformation($"Loading {moduleFileName}");
 
-      using var memoryStream = await GetFileModule().ReadImportFileAsync(
-          importFileDirectory,
-          GetFileName());
-      _phys = DynamicXml.Load(memoryStream);
+      var physicalFilePath = GetFileModule().BuildPath(
+        OLabFileStorageModule.ImportRoot,
+        importFileDirectory,
+        GetFileName());
+
+      if (GetFileModule().FileExists(physicalFilePath))
+      {
+        using var moduleFileStream = new MemoryStream();
+        await GetFileModule().ReadFileAsync(
+          moduleFileStream,
+          physicalFilePath,
+          new System.Threading.CancellationToken());
+        _phys = DynamicXml.Load(moduleFileStream);
+      }
+      else
+      {
+        Logger.LogInformation($"File {importFileDirectory}{GetFileModule().GetFolderSeparator()}{GetFileName()} does not exist");
+        return false;
+      }
 
       dynamic outerElements = GetElements(GetXmlPhys());
 
-      // load file records into Xml elements for processing
-      xmlImportElementSets = GetXmlElements(
-        displayProgressMessage, 
-        outerElements);
+      if (outerElements != null)
+      {
+        var record = 0;
+
+        foreach (var innerElements in outerElements)
+        {
+          try
+          {
+            ++record;
+            var elements = (IEnumerable<dynamic>)innerElements.Elements();
+            xmlImportElementSets.Add(elements);
+            if (displayProgressMessage)
+              Logger.LogInformation($"  loaded {GetLoggerString(elements)}");
+          }
+          catch (Exception ex)
+          {
+            Logger.LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
+          }
+        }
+
+        Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+      }
 
       // delete data file
-      await GetFileModule().DeleteImportFileAsync(
-        importFileDirectory, 
-        GetFileName());
+      await GetFileModule().DeleteFileAsync(
+        GetFileModule().BuildPath(
+          OLabFileStorageModule.ImportRoot,
+          importFileDirectory, 
+          GetFileName()));
 
     }
     catch (Exception ex)
     {
-      // yeah, a bit of a hack....
-      if (!ex.Message.Contains("file not found"))
+      if (!ex.Message.Contains("File not found"))
         Logger.LogError(ex, $"load error: {ex.Message}");
       rc = false;
     }
@@ -159,43 +192,12 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
     return rc;
   }
 
-  protected virtual IList<IEnumerable<dynamic>> GetXmlElements(
-    bool displayProgressMessage, 
-    dynamic outerElements)
-  {
-    var record = 0;
-    var elementSets = new List<IEnumerable<dynamic>>();
-
-    if (outerElements != null)
-    {
-      foreach (var innerElements in outerElements)
-      {
-        try
-        {
-          ++record;
-          var elements = (IEnumerable<dynamic>)innerElements.Elements();
-          elementSets.Add(elements);
-          if (displayProgressMessage)
-            Logger.LogInformation($"  loaded {GetLoggerString(elements)}");
-        }
-        catch (Exception ex)
-        {
-          Logger.LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
-        }
-      }
-
-      Logger.LogInformation($"imported {elementSets.Count()} {GetFileName()} objects");
-    }
-
-    return elementSets;
-  }
-
   /// <summary>
   /// Save XmlDto's to physical database
   /// </summary>
   /// <param name="dtos">All import dtos</param>
   /// <returns>Success/Failure</returns>
-  public override bool SaveToDatabase(string importFolderName)
+  public override async Task<bool> SaveToDatabaseAsync(string importFolderName)
   {
     Logger.LogInformation($"Saving {xmlImportElementSets.Count()} {GetFileName()} objects");
 
@@ -204,7 +206,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
     {
       try
       {
-        SaveToDatabase(importFolderName, recordIndex, elements);
+        await SaveToDatabaseAsync(importFolderName, recordIndex, elements);
       }
       catch (Exception ex)
       {
@@ -219,7 +221,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
 
   // implemented here so non-applicable derived classes
   // do not need to re-implement it
-  public virtual bool SaveToDatabase(string importFolderName, int recordIndex, IEnumerable<dynamic> elements)
+  public virtual async Task<bool> SaveToDatabaseAsync(string importFolderName, int recordIndex, IEnumerable<dynamic> elements)
   {
     return true;
   }

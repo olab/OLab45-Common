@@ -106,7 +106,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
     var dto = builder.PhysicalToDto(phys);
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("R", dto);
+    var accessResult = auth.HasAccess(Model.SecurityRoles.Read, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("QuestionsPhys", id);
 
@@ -128,10 +128,10 @@ public partial class QuestionsEndpoint : OLabEndpoint
   {
     Logger.LogInformation($"PutAsync id {id}");
 
-    dto.ImageableId = dto.ParentInfo.Id;
+    dto.ImageableId = dto.ParentInfo.Id != 0 ? dto.ParentInfo.Id : dto.ImageableId;
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("W", dto);
+    var accessResult = auth.HasAccess(Model.SecurityRoles.Write, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("QuestionsPhys", id);
 
@@ -169,7 +169,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
     dto.Prompt = !string.IsNullOrEmpty(dto.Prompt) ? dto.Prompt : "";
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("W", dto);
+    var accessResult = auth.HasAccess(Model.SecurityRoles.Write, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("QuestionsPhys", 0);
 
@@ -208,7 +208,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
       var dto = new Questions(Logger, _wikiTagProvider).PhysicalToDto(phys);
 
       // test if user has access to object
-      var accessResult = auth.HasAccess("W", dto);
+      var accessResult = auth.HasAccess(Model.SecurityRoles.Write, dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Question", id);
 

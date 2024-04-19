@@ -1,11 +1,11 @@
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
-using OLab.Common.Utils;
 using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace OLab.Import.OLab3.Dtos;
 
@@ -58,7 +58,7 @@ public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
   /// </summary>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
-  public override bool SaveToDatabase(
+  public override async Task<bool> SaveToDatabaseAsync(
     string importFolderName, 
     int recordIndex, 
     IEnumerable<dynamic> elements)
@@ -82,13 +82,11 @@ public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
     fileItem.ImageableType = "Maps";
     fileItem.Path = avItem.Image;
 
-    var physFilePath =
-      GetFileModule().GetPhysicalImportMediaFilePath(
-        importFolderName,
-        fileItem.Path);
-        
-    if (!GetFileModule().FileExists(physFilePath))
-      Logger.LogWarning(GetFileName(), 0, $"media file '{physFilePath}' does not exist in import directory");
+    var publicFile = 
+      GetFileModule().GetPublicFileDirectory(fileItem.ImageableType, fileItem.ImageableId, fileItem.Path);
+
+    if (!File.Exists(publicFile))
+      Logger.LogWarning(GetFileName(), 0, $"media file '{publicFile}' does not exist in public directory");
 
     Context.SystemFiles.Add(fileItem);
     Context.SaveChanges();

@@ -8,8 +8,6 @@ namespace OLab.Api.Model;
 
 [Table("system_questions")]
 [Index("ParentId", Name = "parent_id")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
 public partial class SystemQuestions
 {
     [Key]
@@ -50,8 +48,8 @@ public partial class SystemQuestions
     [Column("show_answer")]
     public bool ShowAnswer { get; set; }
 
-    [Column("counter_id", TypeName = "int(10)")]
-    public int? CounterId { get; set; }
+    [Column("counter_id", TypeName = "int(10) unsigned")]
+    public uint? CounterId { get; set; }
 
     [Column("num_tries", TypeName = "int(10)")]
     public int NumTries { get; set; }

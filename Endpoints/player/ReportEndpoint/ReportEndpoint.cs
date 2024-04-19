@@ -55,7 +55,7 @@ public partial class ReportEndpoint : OLabEndpoint
     _sessionTraces = dbContext.UserSessiontraces
       .Where(x => x.SessionId == _session.Id)
       .OrderBy(x => x.DateStamp).ToList();
-    Logger.LogInformation($"Found {_sessionTraces.Count} UserSessiontraces records for userSession {contextId}");
+    Logger.LogInformation($"Found {_sessionTraces.Count} UserSessionTraces records for userSession {contextId}");
 
     _sessionResponses = dbContext.UserResponses
       .Where(x => x.SessionId == _session.Id)

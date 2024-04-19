@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace OLab.Import.OLab3.Dtos;
 
@@ -40,7 +41,7 @@ public class XmlMapVpdElementDto : XmlImportDto<XmlMapVpdElements>
   /// <param name="dtos">All import dtos (for lookups into related objects)</param>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
-  public override bool SaveToDatabase(
+  public override async Task<bool> SaveToDatabaseAsync(
     string importFolderName,
     int recordIndex,
     IEnumerable<dynamic> elements)

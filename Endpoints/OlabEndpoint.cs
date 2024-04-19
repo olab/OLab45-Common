@@ -26,7 +26,7 @@ public class OLabEndpoint
   protected IUserContext _userContext;
   protected readonly IOLabConfiguration _configuration;
   protected readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
-  protected readonly IFileStorageModule fileStorageModule;
+  protected readonly IFileStorageModule _fileStorageModule;
 
   public OLabEndpoint(
     IOLabLogger logger,
@@ -68,7 +68,7 @@ public class OLabEndpoint
     if (string.IsNullOrEmpty(fileSystemModuleName))
       throw new ConfigurationErrorsException($"missing FileStorageType");
 
-    fileStorageModule = fileStorageProvider.GetModule(fileSystemModuleName);
+    _fileStorageModule = fileStorageProvider.GetModule(fileSystemModuleName);
     _wikiTagProvider = wikiTagProvider;
   }
 
@@ -130,8 +130,7 @@ public class OLabEndpoint
         .FirstOrDefaultAsync(x => x.Id == nodeId);
 
     var item = await dbContext.MapNodes
-        .Where(x => x.MapId == mapId && x.TypeId == 1)
-        .FirstOrDefaultAsync(x => x.Id == nodeId);
+        .FirstOrDefaultAsync(x => x.MapId == mapId && x.TypeId == 1);
 
     if (item == null)
       item = await dbContext.MapNodes

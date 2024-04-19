@@ -8,6 +8,10 @@ public class OLabUnauthorizedException : Exception
   {
   }
 
+  public OLabUnauthorizedException(string type, string name) : base($"Unauthorized reading {type} object with name {name}")
+  {
+  }
+
   public OLabUnauthorizedException(string message) : base(message)
   {
   }
