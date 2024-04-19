@@ -21,7 +21,7 @@ public partial class Importer : IImporter
   /// <param name="mapId">Map id to export</param>
   /// <param name="token"></param>
   /// <returns>MapsFullRelationsDto</returns>
-  public async Task<MapsFullRelationsDto> ExportAsync(
+  public override async Task<MapsFullRelationsDto> ExportAsync(
     uint mapId,
     CancellationToken token = default)
   {
@@ -42,7 +42,7 @@ public partial class Importer : IImporter
   /// <param name="stream">Target stream for export data</param>
   /// <param name="mapId">Map id to export</param>
   /// <param name="token"></param>
-  public async Task ExportAsync(
+  public override async Task ExportAsync(
     Stream stream,
     uint mapId,
     CancellationToken token = default)
@@ -79,11 +79,11 @@ public partial class Importer : IImporter
     }
 
     // add any map-level media files to the archive
-    await _fileStorageModule.CopyFolderToArchiveAsync(
+    await GetFileModule().CopyFolderToArchiveAsync(
       zipArchive,
-      _fileStorageModule.BuildPath(
+      GetFileModule().GetPhysicalScopedFilePath(
         Api.Utils.Constants.ScopeLevelMap,
-        dto.Map.Id),
+        dto.Map.Id.Value),
       Api.Utils.Constants.ScopeLevelMap,
       true,
       token);
@@ -91,12 +91,12 @@ public partial class Importer : IImporter
     // write any node-level media files to the archive
     foreach (var nodeDto in dto.MapNodes)
     {
-      await _fileStorageModule.CopyFolderToArchiveAsync(
+      await GetFileModule().CopyFolderToArchiveAsync(
         zipArchive,
-        _fileStorageModule.BuildPath(
+        GetFileModule().GetPhysicalScopedFilePath(
           Api.Utils.Constants.ScopeLevelNode,
-          nodeDto.Id),
-        _fileStorageModule.BuildPath(
+          nodeDto.Id.Value),
+        GetFileModule().BuildPath(
           Api.Utils.Constants.ScopeLevelNode,
           nodeDto.Id),
         true,
@@ -110,7 +110,7 @@ public partial class Importer : IImporter
   {
     Logger.LogInformation($"  exporting map {mapId} ");
 
-    var map = await _dbContext.Maps
+    var map = await GetDbContext().Maps
       .Include(map => map.MapNodes)
       .Include(map => map.MapNodeLinks)
       .AsNoTracking()
@@ -123,19 +123,19 @@ public partial class Importer : IImporter
 
     var dto = new MapsFullRelationsMapper(
       Logger,
-      _wikiTagProvider as WikiTagProvider,
+      GetWikiProvider() as WikiTagProvider,
       false
     ).PhysicalToDto(map);
 
     var phys = new ScopedObjects(
       Logger,
-      _dbContext,
-      _fileStorageModule);
+      GetDbContext(),
+      GetFileModule());
 
     // apply map-level scoped objects to the map dto
     await phys.AddScopeFromDatabaseAsync(Api.Utils.Constants.ScopeLevelMap, mapId);
 
-    var scopedObjectMapper = new ScopedObjectsMapper(Logger, _wikiTagProvider, false);
+    var scopedObjectMapper = new ScopedObjectsMapper(Logger, GetWikiProvider(), false);
     dto.ScopedObjects = scopedObjectMapper.PhysicalToDto(phys);
 
     return dto;
@@ -148,15 +148,15 @@ public partial class Importer : IImporter
     {
       var phys = new ScopedObjects(
         Logger,
-        _dbContext,
-        _fileStorageModule);
+        GetDbContext(),
+        GetFileModule());
 
       // apply node-level scoped objects
       await phys.AddScopeFromDatabaseAsync(Api.Utils.Constants.ScopeLevelNode, nodeDto.Id.Value);
 
       Logger.LogInformation($"  exporting node {nodeDto.Id} ");
 
-      var scopedObjectMapper = new ScopedObjectsMapper(Logger, _wikiTagProvider, false);
+      var scopedObjectMapper = new ScopedObjectsMapper(Logger, GetWikiProvider(), false);
       nodeDto.ScopedObjects = scopedObjectMapper.PhysicalToDto(phys);
     }
 

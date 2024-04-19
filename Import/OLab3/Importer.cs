@@ -1,9 +1,11 @@
+using OLab.Api.Common;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using OLab.Common.Utils;
+using OLab.Data;
 using OLab.Data.Interface;
 using OLab.Import.Interface;
 using OLab.Import.OLab3.Dtos;
@@ -17,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace OLab.Import.OLab3;
 
-public class Importer : IImporter
+public partial class Importer : OLabImporter
 {
   public enum DtoTypes
   {
@@ -40,38 +42,21 @@ public class Importer : IImporter
     XmlMapAvatarDto
   };
 
-  public IOLabAuthorization Authorization { get; set; }
-  private readonly OLabDBContext _dbContext;
-  public readonly AppSettings _appSettings;
-  private readonly IOLabConfiguration _configuration;
   private readonly IDictionary<DtoTypes, XmlDto> _dtos = new Dictionary<DtoTypes, XmlDto>();
-  private readonly IOLabLogger Logger;
-  private readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
-  public readonly IFileStorageModule FileStorageModule;
-
-  public IOLabModuleProvider<IWikiTagModule> GetWikiProvider() { return _wikiTagProvider; }
-  public IFileStorageModule GetFileStorageModule() { return FileStorageModule; }
   public XmlDto GetDto(DtoTypes type) { return _dtos[type]; }
-  public OLabDBContext GetDbContext() { return _dbContext; }
-  public IOLabConfiguration GetConfiguration() { return _configuration; }
-  public AppSettings Settings() { return _appSettings; }
 
   public Importer(
     IOLabLogger logger,
     IOLabConfiguration configuration,
     OLabDBContext context,
     IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
-    IFileStorageModule fileStorageModule)
+    IFileStorageModule fileStorageModule) : base (
+      logger,
+      configuration,
+      context,
+      wikiTagProvider,
+      fileStorageModule)
   {
-    _appSettings = configuration.GetAppSettings();
-    _dbContext = context;
-    _configuration = configuration;
-
-    Logger = logger;
-
-    _wikiTagProvider = wikiTagProvider;
-    FileStorageModule = fileStorageModule;
-
     XmlDto dto = new XmlMapDto(Logger, this);
     _dtos.Add(dto.DtoType, dto);
 
@@ -124,107 +109,12 @@ public class Importer : IImporter
     //_dtos.Add(dto.DtoType, dto);
   }
 
-  public async Task<Maps> Import(
-    IOLabAuthorization auth,
-    Stream archiveFileStream,
-    string archiveFileName,
-    CancellationToken token = default)
-  {
-    Authorization = auth;
-
-    await LoadImportFromArchiveFile(
-      archiveFileStream, 
-      archiveFileName, 
-      token);
-
-    var mapPhys = WriteImportToDatabase(
-      archiveFileName);
-    return mapPhys;
-  }
-
-  /// <summary>
-  /// Loads import files into memory
-  /// </summary>
-  /// <param name="archiveFileStream">Stream to write file to</param>
-  /// <param name="archiveFileName">Import archive ZIP file name</param>
-  /// <returns>true</returns>
-  public async Task LoadImportFromArchiveFile(
-    Stream archiveFileStream,
-    string archiveFileName,
-    CancellationToken token = default)
-  {
-    try
-    {
-      Logger.LogInformation($"Module archive file: {FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, archiveFileName)}");
-
-      var archiveFilePath = await FileStorageModule.WriteImportFileAsync(
-        archiveFileStream,
-        archiveFileName,
-        token);
-
-      // load all the import files in extract directory
-      foreach (var dto in _dtos.Values)
-        await dto.LoadAsync(Path.GetFileNameWithoutExtension(archiveFileName));
-
-      // delete source archive file
-      await GetFileStorageModule().DeleteImportFileAsync(
-        ".", 
-        archiveFileName);
-    }
-    catch (Exception ex)
-    {
-      Logger.LogError(ex, $"Read error: {ex.Message}");
-      throw;
-    }
-
-  }
-
-  /// <summary>
-  /// WRite import data in memory to database
-  /// </summary>
-  /// <param name="archiveFileName">Import archive ZIP file name</param>
-  /// <returns>true</returns>
-  public Maps WriteImportToDatabase(
-    string archiveFileName)
-  {
-
-    // if anything bad happens, rollback the entire import
-    using (var transaction = _dbContext.Database.BeginTransaction())
-    {
-      try
-      {
-        // save all import data sets to database
-        foreach (var dto in _dtos.Values)
-          dto.SaveToDatabase(Path.GetFileNameWithoutExtension(archiveFileName));
-
-        transaction.Commit();
-
-        // get the new id of thie imported map
-        var xmlMapDto = _dtos[DtoTypes.XmlMapDto] as XmlMapDto;
-        var xmlMap = (XmlMap)xmlMapDto.GetDbPhys();
-        Logger.LogInformation($"Loaded map '{xmlMap.Data[0].Name}'. id = {xmlMap.Data[0].Id}");
-
-        var mapPhys = xmlMap.Data[0];
-        return mapPhys;
-
-      }
-      catch (Exception ex)
-      {
-        Logger.LogError(ex, $"Error saving import. reason: {ex.Message} ");
-        transaction.Rollback();
-      }
-
-    }
-
-    return null;
-  }
-
-  public Task ExportAsync(Stream stream, uint mapId, CancellationToken token = default)
+  public override Task ExportAsync(Stream stream, uint mapId, CancellationToken token = default)
   {
     throw new NotImplementedException();
   }
 
-  public Task<MapsFullRelationsDto> ExportAsync(uint mapId, CancellationToken token = default)
+  public override Task<MapsFullRelationsDto> ExportAsync(uint mapId, CancellationToken token = default)
   {
     throw new NotImplementedException();
   }

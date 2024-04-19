@@ -39,7 +39,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
 
   public IFileStorageModule GetFileModule()
   {
-    return GetImporter().GetFileStorageModule();
+    return GetImporter().GetFileModule();
   }
 
   /// <summary>

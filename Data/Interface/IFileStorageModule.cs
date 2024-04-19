@@ -37,20 +37,23 @@ public interface IFileStorageModule
   Task<bool> DeleteFileAsync(
     string relativeFilePath);
 
-  //Task DeleteFolderAsync(
-  //  string relativeFolderName);
+  /// <summary>
+  /// Delete folder from blob storage
+  /// </summary>
+  /// <param name="physFolderName">Folder to delete</param>
+  Task DeleteFolderAsync(string physFolderName);
 
   //Task<bool> ExtractFileToStorageAsync(
   //  string relativeArchiveFilePath,
   //  string relativeExtractDirectory,
   //  CancellationToken token);
 
-  //Task<bool> CopyFolderToArchiveAsync(
-  //  ZipArchive archive,
-  //  string relativeFileDirectory,
-  //  string zipEntryFolderName,
-  //  bool appendToStream,
-  //  CancellationToken token);
+  Task<bool> CopyFolderToArchiveAsync(
+    ZipArchive archive,
+    string physFileDirectory,
+    string zipEntryFolderName,
+    bool appendToStream,
+    CancellationToken token);
 
   IList<string> GetFiles(
     string relativeFileDirectory,
@@ -88,9 +91,14 @@ public interface IFileStorageModule
     string importName,
     string fileName = "");
 
+  string GetPhysicalScopedFilePath(
+    string scopeLevel,
+    uint scopeId,
+    string fileName = "");
+
   Task MoveImportMediaFileToScopedFolderAsync(
     string importName,
-    string fileName, 
+    string fileName,
     string relativeTargetDirectory);
 
   /// <summary>
@@ -101,8 +109,8 @@ public interface IFileStorageModule
   /// <param name="token">Cancellation token</param>
   /// <returns>Physical file name</returns>
   Task<string> WriteImportFileAsync(
-    Stream stream, 
-    string archiveFileName, 
+    Stream stream,
+    string archiveFileName,
     CancellationToken token);
 
   /// <summary>
