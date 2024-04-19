@@ -169,12 +169,6 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<Options> Options { get; set; }
 
-    public virtual DbSet<Orphanedcountersview> Orphanedcountersview { get; set; }
-
-    public virtual DbSet<Orphanedfilesview> Orphanedfilesview { get; set; }
-
-    public virtual DbSet<Orphanedquestions0view> Orphanedquestions0view { get; set; }
-
     public virtual DbSet<Phinxlog> Phinxlog { get; set; }
 
     public virtual DbSet<QCumulative> QCumulative { get; set; }
@@ -258,10 +252,6 @@ public partial class OLabDBContext : DbContext
     public virtual DbSet<UserresponseCounterupdate> UserresponseCounterupdate { get; set; }
 
     public virtual DbSet<Users> Users { get; set; }
-
-    public virtual DbSet<UsersCopy240225> UsersCopy240225 { get; set; }
-
-    public virtual DbSet<UsersUpdates240225> UsersUpdates240225 { get; set; }
 
     public virtual DbSet<UsersessiontraceCounterupdate> UsersessiontraceCounterupdate { get; set; }
 
@@ -863,27 +853,6 @@ public partial class OLabDBContext : DbContext
             entity.Property(e => e.Name).HasDefaultValueSql("''");
         });
 
-        modelBuilder.Entity<Orphanedcountersview>(entity =>
-        {
-            entity.ToView("orphanedcountersview");
-
-            entity.Property(e => e.MapId).HasDefaultValueSql("'0'");
-        });
-
-        modelBuilder.Entity<Orphanedfilesview>(entity =>
-        {
-            entity.ToView("orphanedfilesview");
-
-            entity.Property(e => e.MapId).HasDefaultValueSql("'0'");
-        });
-
-        modelBuilder.Entity<Orphanedquestions0view>(entity =>
-        {
-            entity.ToView("orphanedquestions0view");
-
-            entity.Property(e => e.MapId).HasDefaultValueSql("'0'");
-        });
-
         modelBuilder.Entity<Phinxlog>(entity =>
         {
             entity.HasKey(e => e.Version).HasName("PRIMARY");
@@ -1219,19 +1188,6 @@ public partial class OLabDBContext : DbContext
 
             entity.Property(e => e.IsLti).HasDefaultValueSql("'0'");
             entity.Property(e => e.VisualEditorAutosaveTime).HasDefaultValueSql("'50000'");
-        });
-
-        modelBuilder.Entity<UsersCopy240225>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.Property(e => e.IsLti).HasDefaultValueSql("'0'");
-            entity.Property(e => e.VisualEditorAutosaveTime).HasDefaultValueSql("'50000'");
-        });
-
-        modelBuilder.Entity<UsersUpdates240225>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
         });
 
         modelBuilder.Entity<UsersessiontraceCounterupdate>(entity =>
