@@ -9,6 +9,8 @@ namespace OLab.Api.Model;
 [Table("security_roles")]
 [Index("GroupId", Name = "security_roles_ibfk_1")]
 [Index("RoleId", Name = "security_roles_ibfk_2")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class SecurityRoles
 {
     [Key]

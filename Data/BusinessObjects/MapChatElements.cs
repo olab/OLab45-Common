@@ -8,6 +8,8 @@ namespace OLab.Api.Model;
 
 [Table("map_chat_elements")]
 [Index("ChatId", Name = "chat_id")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class MapChatElements
 {
     [Key]

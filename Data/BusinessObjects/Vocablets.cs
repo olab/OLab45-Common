@@ -8,6 +8,8 @@ namespace OLab.Api.Model;
 
 [Table("vocablets")]
 [Index("Guid", Name = "guid", IsUnique = true)]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class Vocablets
 {
     [Required]

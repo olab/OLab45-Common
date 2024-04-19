@@ -8,6 +8,8 @@ namespace OLab.Api.Model;
 
 [Table("cron")]
 [Index("RuleId", Name = "rule_id")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class Cron
 {
     [Key]

@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace OLab.Api.Model;
 
 [Table("statistics_user_sessiontraces")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class StatisticsUserSessiontraces
 {
     [Key]

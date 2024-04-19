@@ -9,6 +9,8 @@ namespace OLab.Api.Model;
 [Table("h5p_libraries")]
 [Index("Name", "MajorVersion", "MinorVersion", "PatchVersion", Name = "name_version")]
 [Index("Runnable", Name = "runnable")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class H5pLibraries
 {
     [Key]

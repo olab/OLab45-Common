@@ -8,6 +8,8 @@ namespace OLab.Api.Model;
 
 [Table("map_node_notes")]
 [Index("MapNodeId", Name = "fk_map_node_id_idx")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class MapNodeNotes
 {
     [Key]

@@ -10,6 +10,8 @@ namespace OLab.Api.Model;
 [Index("GroupId", Name = "group_id")]
 [Index("RoleId", Name = "user_groups_ibfk_3")]
 [Index("UserId", Name = "user_id")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class UserGroups
 {
     [Key]

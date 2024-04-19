@@ -169,6 +169,12 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<Options> Options { get; set; }
 
+    public virtual DbSet<Orphanedcountersview> Orphanedcountersview { get; set; }
+
+    public virtual DbSet<Orphanedfilesview> Orphanedfilesview { get; set; }
+
+    public virtual DbSet<Orphanedquestions0view> Orphanedquestions0view { get; set; }
+
     public virtual DbSet<Phinxlog> Phinxlog { get; set; }
 
     public virtual DbSet<QCumulative> QCumulative { get; set; }
@@ -233,6 +239,8 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<UserBookmarks> UserBookmarks { get; set; }
 
+    public virtual DbSet<UserCounterUpdate> UserCounterUpdate { get; set; }
+
     public virtual DbSet<UserGroups> UserGroups { get; set; }
 
     public virtual DbSet<UserNotes> UserNotes { get; set; }
@@ -247,7 +255,15 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<UserTypes> UserTypes { get; set; }
 
+    public virtual DbSet<UserresponseCounterupdate> UserresponseCounterupdate { get; set; }
+
     public virtual DbSet<Users> Users { get; set; }
+
+    public virtual DbSet<UsersCopy240225> UsersCopy240225 { get; set; }
+
+    public virtual DbSet<UsersUpdates240225> UsersUpdates240225 { get; set; }
+
+    public virtual DbSet<UsersessiontraceCounterupdate> UsersessiontraceCounterupdate { get; set; }
 
     public virtual DbSet<Vocablets> Vocablets { get; set; }
 
@@ -270,8 +286,8 @@ public partial class OLabDBContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
-            .UseCollation("utf8mb3_general_ci")
-            .HasCharSet("utf8mb3");
+            .UseCollation("utf8mb4_general_ci")
+            .HasCharSet("utf8mb4");
 
         modelBuilder.Entity<AuthorRights>(entity =>
         {
@@ -847,6 +863,27 @@ public partial class OLabDBContext : DbContext
             entity.Property(e => e.Name).HasDefaultValueSql("''");
         });
 
+        modelBuilder.Entity<Orphanedcountersview>(entity =>
+        {
+            entity.ToView("orphanedcountersview");
+
+            entity.Property(e => e.MapId).HasDefaultValueSql("'0'");
+        });
+
+        modelBuilder.Entity<Orphanedfilesview>(entity =>
+        {
+            entity.ToView("orphanedfilesview");
+
+            entity.Property(e => e.MapId).HasDefaultValueSql("'0'");
+        });
+
+        modelBuilder.Entity<Orphanedquestions0view>(entity =>
+        {
+            entity.ToView("orphanedquestions0view");
+
+            entity.Property(e => e.MapId).HasDefaultValueSql("'0'");
+        });
+
         modelBuilder.Entity<Phinxlog>(entity =>
         {
             entity.HasKey(e => e.Version).HasName("PRIMARY");
@@ -1087,6 +1124,11 @@ public partial class OLabDBContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.UserBookmarks).HasConstraintName("user_bookmarks_ibfk_3");
         });
 
+        modelBuilder.Entity<UserCounterUpdate>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+        });
+
         modelBuilder.Entity<UserGroups>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -1162,12 +1204,43 @@ public partial class OLabDBContext : DbContext
             entity.HasKey(e => e.Id).HasName("PRIMARY");
         });
 
+        modelBuilder.Entity<UserresponseCounterupdate>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.HasOne(d => d.Counterupdate).WithMany(p => p.UserresponseCounterupdate).HasConstraintName("urcu_fk_cu");
+
+            entity.HasOne(d => d.Userresponse).WithMany(p => p.UserresponseCounterupdate).HasConstraintName("urcu_fk_ur");
+        });
+
         modelBuilder.Entity<Users>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
             entity.Property(e => e.IsLti).HasDefaultValueSql("'0'");
             entity.Property(e => e.VisualEditorAutosaveTime).HasDefaultValueSql("'50000'");
+        });
+
+        modelBuilder.Entity<UsersCopy240225>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.Property(e => e.IsLti).HasDefaultValueSql("'0'");
+            entity.Property(e => e.VisualEditorAutosaveTime).HasDefaultValueSql("'50000'");
+        });
+
+        modelBuilder.Entity<UsersUpdates240225>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+        });
+
+        modelBuilder.Entity<UsersessiontraceCounterupdate>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.HasOne(d => d.Counterupdate).WithMany(p => p.UsersessiontraceCounterupdate).HasConstraintName("stcu_fk_cu");
+
+            entity.HasOne(d => d.Sessiontrace).WithMany(p => p.UsersessiontraceCounterupdate).HasConstraintName("stcu_fk_st");
         });
 
         modelBuilder.Entity<Vocablets>(entity =>
