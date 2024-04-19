@@ -1,4 +1,4 @@
-﻿using SharpCompress.Common;
+using SharpCompress.Common;
 using SharpCompress.Readers;
 using System;
 using System.Collections.Generic;

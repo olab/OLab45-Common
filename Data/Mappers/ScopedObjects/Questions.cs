@@ -37,7 +37,7 @@ public class Questions : OLabMapper<SystemQuestions, QuestionsDto>
 
     phys.ShowAnswer = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "show_answer").Value) == 1 ? true : false;
     if (uint.TryParse(elements.FirstOrDefault(x => x.Name == "counter_id").Value, out uint id1))
-      phys.CounterId = id1;
+      phys.CounterId = (int)id1;
 
     if (int.TryParse(elements.FirstOrDefault(x => x.Name == "num_tries").Value, out int id2))
       phys.NumTries = id2;

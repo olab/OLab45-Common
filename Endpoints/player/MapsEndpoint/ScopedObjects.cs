@@ -59,7 +59,7 @@ public partial class MapsEndpoint : OLabEndpoint
     var phys = new ScopedObjects(
       Logger,
       dbContext,
-      _fileStorageModule);
+      fileStorageModule);
     await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelMap, map.Id);
 
     // add map-level derived constants

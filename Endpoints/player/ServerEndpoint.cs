@@ -100,7 +100,7 @@ public partial class ServerEndpoint : OLabEndpoint
     var phys = new ScopedObjects(
       Logger,
       dbContext,
-      _fileStorageModule);
+      fileStorageModule);
 
     await phys.AddScopeFromDatabaseAsync(Utils.Constants.ScopeLevelServer, 1);
 

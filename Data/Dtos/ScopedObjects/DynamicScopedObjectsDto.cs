@@ -1,7 +1,9 @@
+using Humanizer;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.Dtos.ScopedObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -167,6 +169,21 @@ public class DynamicScopedObjectsDto
     }
 
     return dto;
+  }
+
+  public IList<CounterValueDto> ToCounterValues()
+  {
+    // abbreviate counter dto's into shorter version dto
+    var countersDto = new List<CounterValueDto>();
+
+    foreach (var counterDto in Server.Counters)
+      countersDto.Add(new CounterValueDto(counterDto));
+    foreach (var counterDto in Map.Counters)
+      countersDto.Add(new CounterValueDto(counterDto));
+    foreach (var counterDto in Node.Counters)
+      countersDto.Add(new CounterValueDto(counterDto));
+
+    return countersDto;
   }
 
   public string ToJson()

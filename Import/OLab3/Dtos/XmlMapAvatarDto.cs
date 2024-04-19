@@ -1,6 +1,7 @@
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
@@ -82,11 +83,13 @@ public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
     fileItem.ImageableType = "Maps";
     fileItem.Path = avItem.Image;
 
-    var publicFile = 
-      GetFileModule().GetPublicFileDirectory(fileItem.ImageableType, fileItem.ImageableId, fileItem.Path);
-
-    if (!File.Exists(publicFile))
-      Logger.LogWarning(GetFileName(), 0, $"media file '{publicFile}' does not exist in public directory");
+    var physFilePath =
+      GetFileModule().GetPhysicalImportMediaFilePath(
+        importFolderName,
+        fileItem.Path);
+        
+    if (!GetFileModule().FileExists(physFilePath))
+      Logger.LogWarning(GetFileName(), 0, $"media file '{physFilePath}' does not exist in import directory");
 
     Context.SystemFiles.Add(fileItem);
     Context.SaveChanges();

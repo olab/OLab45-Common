@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -22,12 +22,4 @@ public partial class MapGroups
 
     [Column("group_id", TypeName = "int(10) unsigned")]
     public uint GroupId { get; set; }
-
-    [ForeignKey("GroupId")]
-    [InverseProperty("MapGroups")]
-    public virtual Groups Group { get; set; }
-
-    [ForeignKey("MapId")]
-    [InverseProperty("MapGroups")]
-    public virtual Maps Map { get; set; }
 }

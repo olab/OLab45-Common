@@ -270,7 +270,8 @@ public partial class MapsEndpoint : OLabEndpoint
 
     var scopedObjectsPhys = new ScopedObjects(
       Logger,
-      dbContext);
+      dbContext, 
+      fileStorageModule);
 
     // apply scoped objects to the map dto
     await scopedObjectsPhys.AddScopeFromDatabaseAsync(scopeLevel, id);
@@ -412,7 +413,7 @@ public partial class MapsEndpoint : OLabEndpoint
     dbContext.SecurityUsers.Add(acl);
 
     // update map's author
-    map.AuthorId = acl.UserId;
+    map.AuthorId = (uint)acl.UserId;
     dbContext.Entry(map).State = EntityState.Modified;
 
     await dbContext.SaveChangesAsync();

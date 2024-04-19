@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,14 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
-[Table("map_nodes")]
-[Index("LinkStyleId", Name = "link_style_id")]
-[Index("MapId", Name = "map_id")]
+[Keyless]
+[Table("map_nodes_im")]
 [MySqlCharSet("utf8mb3")]
 [MySqlCollation("utf8mb3_general_ci")]
-public partial class MapNodes
+public partial class MapNodesIm
 {
-    [Key]
     [Column("id", TypeName = "int(10) unsigned")]
     public uint Id { get; set; }
 
@@ -104,48 +102,4 @@ public partial class MapNodes
 
     [Column("updated_At", TypeName = "datetime")]
     public DateTime? UpdatedAt { get; set; }
-
-    [ForeignKey("LinkStyleId")]
-    [InverseProperty("MapNodes")]
-    public virtual MapNodeLinkStylies LinkStyle { get; set; }
-
-    [ForeignKey("MapId")]
-    [InverseProperty("MapNodes")]
-    public virtual Maps Map { get; set; }
-
-    [InverseProperty("Node")]
-    public virtual ICollection<MapNodeCounters> MapNodeCounters { get; } = new List<MapNodeCounters>();
-
-    [InverseProperty("Node")]
-    public virtual ICollection<MapNodeJumps> MapNodeJumps { get; } = new List<MapNodeJumps>();
-
-    [InverseProperty("NodeId1Navigation")]
-    public virtual ICollection<MapNodeLinks> MapNodeLinksNodeId1Navigation { get; } = new List<MapNodeLinks>();
-
-    [InverseProperty("NodeId2Navigation")]
-    public virtual ICollection<MapNodeLinks> MapNodeLinksNodeId2Navigation { get; } = new List<MapNodeLinks>();
-
-    [InverseProperty("MapNode")]
-    public virtual ICollection<MapNodeNotes> MapNodeNotes { get; } = new List<MapNodeNotes>();
-
-    [InverseProperty("Node")]
-    public virtual ICollection<MapNodeSectionNodes> MapNodeSectionNodes { get; } = new List<MapNodeSectionNodes>();
-
-    [InverseProperty("Node")]
-    public virtual ICollection<UserBookmarks> UserBookmarks { get; } = new List<UserBookmarks>();
-
-    [InverseProperty("Node")]
-    public virtual ICollection<UserSessiontraces> UserSessiontraces { get; } = new List<UserSessiontraces>();
-
-    [InverseProperty("MapNode")]
-    public virtual ICollection<UserState> UserState { get; } = new List<UserState>();
-
-    [InverseProperty("Node")]
-    public virtual ICollection<WebinarNodePoll> WebinarNodePoll { get; } = new List<WebinarNodePoll>();
-
-    [InverseProperty("OnNodeNavigation")]
-    public virtual ICollection<WebinarPoll> WebinarPollOnNodeNavigation { get; } = new List<WebinarPoll>();
-
-    [InverseProperty("ToNodeNavigation")]
-    public virtual ICollection<WebinarPoll> WebinarPollToNodeNavigation { get; } = new List<WebinarPoll>();
 }

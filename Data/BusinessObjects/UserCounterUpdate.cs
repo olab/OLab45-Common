@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,7 +15,7 @@ public partial class UserCounterUpdate
 
     [Required]
     [Column("counter_state")]
-    [StringLength(2048)]
+    [StringLength(8192)]
     public string CounterState { get; set; }
 
     [InverseProperty("Counterupdate")]

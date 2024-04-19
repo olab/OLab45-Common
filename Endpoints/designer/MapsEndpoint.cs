@@ -370,7 +370,7 @@ public partial class MapsEndpoint : OLabEndpoint
     var phys = new ScopedObjects(
       Logger,
       dbContext,
-      _fileStorageModule);
+      fileStorageModule);
 
     await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelServer, 1);
     await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelMap, map.Id);
@@ -549,7 +549,7 @@ public partial class MapsEndpoint : OLabEndpoint
       securityUser = new SecurityUsers();
 
     securityUser.ImageableId = map.Id;
-    securityUser.UserId = user.Id;
+    securityUser.UserId = (int)user.Id;
     securityUser.ImageableType = Constants.ScopeLevelMap;
     securityUser.Acl2 = SecurityUsers.AclStringToBitMask(body.Acl);
 

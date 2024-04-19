@@ -1,6 +1,6 @@
 using Dawn;
 using DocumentFormat.OpenXml.EMMA;
-using DocumentFormat.OpenXml.Wordprocessing;
+using Humanizer;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -27,7 +27,7 @@ public class OLabSession : IOLabSession
     OLabDBContext context,
     IUserContext userContext)
   {
-    return new OLabSession( logger, context, userContext);
+    return new OLabSession(logger, context, userContext);
   }
 
   private OLabSession(
@@ -127,14 +127,7 @@ public class OLabSession : IOLabSession
       return;
 
     // abbreviate counter dto's into shorter version dto
-    var countersDto = new List<CounterValueDto>();
-    foreach (var counterDto in dto.DynamicObjects.Server.Counters)
-      countersDto.Add(new CounterValueDto(counterDto));
-    foreach (var counterDto in dto.DynamicObjects.Map.Counters)
-      countersDto.Add(new CounterValueDto(counterDto));
-    foreach (var counterDto in dto.DynamicObjects.Node.Counters)
-      countersDto.Add(new CounterValueDto(counterDto));
-
+    var countersDto = dto.DynamicObjects.ToCounterValues();
     var counterJson = JsonSerializer.Serialize(countersDto);
 
     var sessionTrace = new UserSessiontraces
@@ -143,8 +136,7 @@ public class OLabSession : IOLabSession
       MapId = _mapId,
       NodeId = nodeId,
       DateStamp = Conversions.GetCurrentUnixTime(),
-      UserId = session.UserId,
-      Counters = counterJson
+      UserId = session.UserId
     };
 
     _dbContext.UserSessiontraces.Add(sessionTrace);
@@ -152,7 +144,7 @@ public class OLabSession : IOLabSession
 
     var counterUpdate = new UserCounterUpdate
     {
-      CounterState = dto.DynamicObjects.ToJson(),
+      CounterState = counterJson
     };
 
     _dbContext.UserCounterUpdate.Add(counterUpdate);
@@ -168,6 +160,7 @@ public class OLabSession : IOLabSession
 
     _dbContext.UsersessiontraceCounterupdate.Add(userSessionTraceCounterUpdate);
     _dbContext.SaveChanges();
+
   }
 
   public void OnQuestionResponse(
@@ -188,6 +181,10 @@ public class OLabSession : IOLabSession
     if (string.IsNullOrEmpty(body.Value) && (body.Value.Length > 1000))
       body.Value = body.Value[997..] + "...";
 
+    // abbreviate counter dto's into shorter version dto
+    var countersDto = body.DynamicObjects.ToCounterValues();
+    var counterJson = JsonSerializer.Serialize(countersDto);
+
     // save the response and the associated counter dump
 
     var userResponse = new UserResponses
@@ -204,7 +201,7 @@ public class OLabSession : IOLabSession
 
     var counterUpdate = new UserCounterUpdate
     {
-      CounterState = body.DynamicObjects.ToJson(),
+      CounterState = counterJson
     };
 
     _dbContext.UserCounterUpdate.Add(counterUpdate);
@@ -218,10 +215,12 @@ public class OLabSession : IOLabSession
       UserresponseId = userResponse.Id
     };
 
-    _dbContext.UserCounterUpdate.Add(counterUpdate);
+    _dbContext.UserresponseCounterupdate.Add(userResponseCounterUpdate);
     _dbContext.SaveChanges();
 
     _logger.LogInformation($"OnQuestionResponse: saved user response to session");
+
+
   }
 
   /// <summary>

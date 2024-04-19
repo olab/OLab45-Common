@@ -26,7 +26,7 @@ public class OLabEndpoint
   protected IUserContext _userContext;
   protected readonly IOLabConfiguration _configuration;
   protected readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
-  protected readonly IFileStorageModule _fileStorageModule;
+  protected readonly IFileStorageModule fileStorageModule;
 
   public OLabEndpoint(
     IOLabLogger logger,
@@ -68,7 +68,7 @@ public class OLabEndpoint
     if (string.IsNullOrEmpty(fileSystemModuleName))
       throw new ConfigurationErrorsException($"missing FileStorageType");
 
-    _fileStorageModule = fileStorageProvider.GetModule(fileSystemModuleName);
+    fileStorageModule = fileStorageProvider.GetModule(fileSystemModuleName);
     _wikiTagProvider = wikiTagProvider;
   }
 

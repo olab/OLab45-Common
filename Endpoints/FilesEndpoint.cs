@@ -97,7 +97,10 @@ public partial class FilesEndpoint : OLabEndpoint
       throw new OLabObjectNotFoundException("FilesPhys", id);
 
     var phys = await dbContext.SystemFiles.FirstAsync(x => x.Id == id);
-    _fileStorageModule.AttachUrls(phys);
+    phys.OriginUrl = fileStorageModule.GetWebScopedFilePath(
+      phys.ImageableType, 
+      phys.ImageableId, 
+      phys.Path);
 
     var dto = new FilesFull(Logger).PhysicalToDto(phys);
 
@@ -174,13 +177,11 @@ public partial class FilesEndpoint : OLabEndpoint
     dbContext.SystemFiles.Add(phys);
     await dbContext.SaveChangesAsync();
 
-    var filePath = _fileStorageModule.BuildPath(
-      dto.ImageableType,
-      dto.ImageableId);
-
-    await _fileStorageModule.WriteFileAsync(
+    await fileStorageModule.WriteScopedFileAsync(
       dto.GetStream(),
-      _fileStorageModule.BuildPath( filePath, dto.FileName ),
+      dto.ImageableType,
+      dto.ImageableId,
+      dto.FileName,
       token);
 
     var newDto = builder.PhysicalToDto(phys);
@@ -212,13 +213,13 @@ public partial class FilesEndpoint : OLabEndpoint
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("ConstantsPhys", id);
 
-      var filePath = _fileStorageModule.BuildPath(
+      var filePath = fileStorageModule.BuildPath(
         OLabFileStorageModule.FilesRoot,
         dto.ImageableType,
         dto.ImageableId,
         dto.FileName);
 
-      await _fileStorageModule.DeleteFileAsync(
+      await fileStorageModule.DeleteFileAsync(
         filePath);
 
       dbContext.SystemFiles.Remove(phys);

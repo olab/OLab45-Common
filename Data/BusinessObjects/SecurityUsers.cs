@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,8 +15,8 @@ public partial class SecurityUsers
     [Column("id", TypeName = "int(10) unsigned")]
     public uint Id { get; set; }
 
-    [Column("user_id", TypeName = "int(10) unsigned")]
-    public uint UserId { get; set; }
+    [Column("user_id", TypeName = "int(10)")]
+    public int? UserId { get; set; }
 
     [Column("iss")]
     [StringLength(45)]
@@ -34,7 +34,4 @@ public partial class SecurityUsers
     [Column("acl")]
     [StringLength(45)]
     public string Acl { get; set; }
-
-    [Column("acl2", TypeName = "bit(3)")]
-    public ulong Acl2 { get; set; }
 }

@@ -35,73 +35,104 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
   /// </summary>
   /// <param name="importDirectory">Directory where import file exists</param>
   /// <returns></returns>
-  public override async Task<bool> LoadAsync(string extractPath, bool displayProgressMessage = true)
+  //public override async Task<bool> LoadAsync(string extractPath, bool displayProgressMessage = true)
+  //{
+  //  var result = await base.LoadAsync(extractPath, false);
+  //  var record = 0;
+
+  //  if (result)
+  //  {
+  //    try
+  //    {
+  //      var outerElements = (IEnumerable<dynamic>)GetXmlPhys().media_elements.media_elements_files.Elements();
+
+  //      foreach (var element in outerElements)
+  //      {
+  //        try
+  //        {
+  //          ++record;
+  //          dynamic file = element.Value;
+  //          file = Conversions.Base64Decode(element, true);
+  //          GetModel().MediaElementsFiles.Add(file);
+  //          Logger.LogInformation($"  loaded '{file}'");
+  //        }
+  //        catch (Exception ex)
+  //        {
+  //          Logger.LogError(ex, $"Error loading '{GetFileName()}' media_elements_files record #{record}: {ex.Message}");
+  //        }
+  //      }
+  //    }
+  //    catch (RuntimeBinderException)
+  //    {
+  //      Logger.LogWarning($"No media_elements_files records in {GetFileName()}");
+  //    }
+
+  //    Logger.LogInformation($"loaded {GetModel().MediaElementsFiles.Count()} {GetFileName()} MediaElementsFiles objects");
+
+  //    record = 0;
+
+  //    try
+  //    {
+  //      var outerElements = (IEnumerable<dynamic>)GetXmlPhys().media_elements.media_elements_avatars.Elements();
+
+  //      foreach (var element in outerElements)
+  //      {
+  //        try
+  //        {
+  //          record++;
+  //          dynamic file = element.Value;
+  //          file = Conversions.Base64Decode(file);
+  //          GetModel().MediaElementsAvatars.Add(file);
+  //          Logger.LogInformation($"  loaded '{file}'");
+  //        }
+  //        catch (Exception ex)
+  //        {
+  //          Logger.LogError(ex, $"Error loading '{GetFileName()}' media_elements_avatars record #{++record}: {ex.Message}");
+  //        }
+
+  //      }
+  //    }
+  //    catch (RuntimeBinderException)
+  //    {
+  //      Logger.LogWarning($"No media_elements_avatars records in {GetFileName()}");
+  //    }
+
+  //    Logger.LogInformation($"loaded {GetModel().MediaElementsAvatars.Count()} {GetFileName()} MediaElementsAvatars objects");
+
+  //  }
+
+  //  return result;
+  //}
+
+  protected override IList<IEnumerable<dynamic>> GetXmlElements(
+  bool displayProgressMessage,
+  dynamic outerElements)
   {
-    var result = await base.LoadAsync(extractPath, false);
-    var record = 0;
-
-    if (result)
+    if (outerElements != null)
     {
-      try
-      {
-        var outerElements = (IEnumerable<dynamic>)GetXmlPhys().media_elements.media_elements_files.Elements();
+      var record = 0;
+      var xmlImportElementSets = new List<IEnumerable<dynamic>>();
 
-        foreach (var element in outerElements)
+      foreach (var innerElements in outerElements)
+      {
+        try
         {
-          try
-          {
-            ++record;
-            dynamic file = element.Value;
-            file = Conversions.Base64Decode(element, true);
-            GetModel().MediaElementsFiles.Add(file);
-            Logger.LogInformation($"  loaded '{file}'");
-          }
-          catch (Exception ex)
-          {
-            Logger.LogError(ex, $"Error loading '{GetFileName()}' media_elements_files record #{record}: {ex.Message}");
-          }
+          record++;
+          dynamic file = innerElements.Value;
+          file = Conversions.Base64Decode(file);
+          GetModel().MediaElementsAvatars.Add(file);
+          Logger.LogInformation($"  loaded '{file}'");
+        }
+        catch (Exception ex)
+        {
+          Logger.LogError(ex, $"Error loading '{GetFileName()}' media_elements_avatars record #{++record}: {ex.Message}");
         }
       }
-      catch (RuntimeBinderException)
-      {
-        Logger.LogWarning($"No media_elements_files records in {GetFileName()}");
-      }
 
-      Logger.LogInformation($"loaded {GetModel().MediaElementsFiles.Count()} {GetFileName()} MediaElementsFiles objects");
-
-      record = 0;
-
-      try
-      {
-        var outerElements = (IEnumerable<dynamic>)GetXmlPhys().media_elements.media_elements_avatars.Elements();
-
-        foreach (var element in outerElements)
-        {
-          try
-          {
-            record++;
-            dynamic file = element.Value;
-            file = Conversions.Base64Decode(file);
-            GetModel().MediaElementsAvatars.Add(file);
-            Logger.LogInformation($"  loaded '{file}'");
-          }
-          catch (Exception ex)
-          {
-            Logger.LogError(ex, $"Error loading '{GetFileName()}' media_elements_avatars record #{++record}: {ex.Message}");
-          }
-
-        }
-      }
-      catch (RuntimeBinderException)
-      {
-        Logger.LogWarning($"No media_elements_avatars records in {GetFileName()}");
-      }
-
-      Logger.LogInformation($"loaded {GetModel().MediaElementsAvatars.Count()} {GetFileName()} MediaElementsAvatars objects");
-
+      Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
     }
 
-    return result;
+    return xmlImportElementSets;
   }
 
   /// <summary>
@@ -114,13 +145,14 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
     return (IEnumerable<dynamic>)xmlPhys.media_elements.Elements();
   }
 
-
   /// <summary>
   /// Saves media files to public website directory
   /// </summary>
-  /// <param name="elements">XML doc as an array of elements</param>
-  /// <returns>Success/failure</returns>
-  public override async Task<bool> SaveToDatabaseAsync(
+  /// <param name="importFolderName">Import base folder (from archive file name)</param>
+  /// <param name="recordIndex">Record number from impor tfile</param>
+  /// <param name="elements">Record elements</param>
+  /// <returns>Success/fail</returns>
+  public override bool SaveToDatabase(
     string importFolderName,
     int recordIndex,
     IEnumerable<dynamic> elements)
@@ -129,13 +161,11 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
 
     try
     {
-      var sourceDirectory = GetFileModule().GetImportMediaFilesDirectory(importFolderName);
-
       var mapDto = GetImporter().GetDto(DtoTypes.XmlMapDto) as XmlMapDto;
       var map = mapDto.GetModel().Data.FirstOrDefault();
 
-      var targetDirectory =
-        GetFileModule().GetPublicFileDirectory("Maps", map.Id);
+      var scopedDirectory =
+        GetFileModule().BuildPath(Constants.ScopeLevelMap, map.Id);
 
       foreach (var element in elements)
       {
@@ -143,14 +173,10 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
         {
           dynamic fileName = Conversions.Base64Decode(element, true);
 
-          var sourceFilePath = GetFileModule().BuildPath(sourceDirectory, fileName);
-
-          GetFileModule().MoveFileAsync(
-            sourceFilePath,
-            targetDirectory).Wait();
-
-          Logger.LogInformation($"Moved {sourceFilePath}' -> '{targetDirectory}'");
-
+          GetFileModule().MoveImportMediaFileToScopedFolderAsync(
+            importFolderName,
+            fileName,
+            scopedDirectory).Wait();
         }
         catch (Exception ex)
         {

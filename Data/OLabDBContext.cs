@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
@@ -125,6 +125,10 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<MapNodes> MapNodes { get; set; }
 
+    public virtual DbSet<MapNodesIm> MapNodesIm { get; set; }
+
+    public virtual DbSet<MapNodesTmp> MapNodesTmp { get; set; }
+
     public virtual DbSet<MapPopupAssignTypes> MapPopupAssignTypes { get; set; }
 
     public virtual DbSet<MapPopupPositionTypes> MapPopupPositionTypes { get; set; }
@@ -169,11 +173,13 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<Options> Options { get; set; }
 
+    public virtual DbSet<Orphanedconstantsview> Orphanedconstantsview { get; set; }
+
+    public virtual DbSet<Orphanedquestionsview> Orphanedquestionsview { get; set; }
+
     public virtual DbSet<Phinxlog> Phinxlog { get; set; }
 
     public virtual DbSet<QCumulative> QCumulative { get; set; }
-
-    public virtual DbSet<Roles> Roles { get; set; }
 
     public virtual DbSet<ScenarioMaps> ScenarioMaps { get; set; }
 
@@ -571,12 +577,6 @@ public partial class OLabDBContext : DbContext
         modelBuilder.Entity<MapGroups>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.HasOne(d => d.Group).WithMany(p => p.MapGroups)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("mp_ibfk_group");
-
-            entity.HasOne(d => d.Map).WithMany(p => p.MapGroups).HasConstraintName("mp_ibfk_map");
         });
 
         modelBuilder.Entity<MapKeys>(entity =>
@@ -685,6 +685,18 @@ public partial class OLabDBContext : DbContext
                 .HasConstraintName("map_nodes_ibfk_2");
 
             entity.HasOne(d => d.Map).WithMany(p => p.MapNodes).HasConstraintName("map_nodes_ibfk_1");
+        });
+
+        modelBuilder.Entity<MapNodesIm>(entity =>
+        {
+            entity.Property(e => e.ForceReload).HasDefaultValueSql("'0'");
+            entity.Property(e => e.LinkTypeId).HasDefaultValueSql("'1'");
+        });
+
+        modelBuilder.Entity<MapNodesTmp>(entity =>
+        {
+            entity.Property(e => e.ForceReload).HasDefaultValueSql("'0'");
+            entity.Property(e => e.LinkTypeId).HasDefaultValueSql("'1'");
         });
 
         modelBuilder.Entity<MapPopupAssignTypes>(entity =>
@@ -853,6 +865,20 @@ public partial class OLabDBContext : DbContext
             entity.Property(e => e.Name).HasDefaultValueSql("''");
         });
 
+        modelBuilder.Entity<Orphanedconstantsview>(entity =>
+        {
+            entity.ToView("orphanedconstantsview");
+
+            entity.Property(e => e.MapId).HasDefaultValueSql("'0'");
+        });
+
+        modelBuilder.Entity<Orphanedquestionsview>(entity =>
+        {
+            entity.ToView("orphanedquestionsview");
+
+            entity.Property(e => e.MapId).HasDefaultValueSql("'0'");
+        });
+
         modelBuilder.Entity<Phinxlog>(entity =>
         {
             entity.HasKey(e => e.Version).HasName("PRIMARY");
@@ -871,11 +897,6 @@ public partial class OLabDBContext : DbContext
             entity.HasOne(d => d.Map).WithMany(p => p.QCumulative).HasConstraintName("q_cumulative_ibfk_2");
 
             entity.HasOne(d => d.Question).WithMany(p => p.QCumulative).HasConstraintName("q_cumulative_ibfk_1");
-        });
-
-        modelBuilder.Entity<Roles>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
         });
 
         modelBuilder.Entity<ScenarioMaps>(entity =>
@@ -908,23 +929,11 @@ public partial class OLabDBContext : DbContext
         modelBuilder.Entity<SecurityRoles>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.Property(e => e.Acl2).HasDefaultValueSql("b'0'");
-
-            entity.HasOne(d => d.Group).WithMany(p => p.SecurityRoles)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("security_roles_ibfk_1");
-
-            entity.HasOne(d => d.Role).WithMany(p => p.SecurityRoles)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("security_roles_ibfk_2");
         });
 
         modelBuilder.Entity<SecurityUsers>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.Property(e => e.Acl2).HasDefaultValueSql("b'0'");
         });
 
         modelBuilder.Entity<Servers>(entity =>
@@ -979,7 +988,9 @@ public partial class OLabDBContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.HasOne(d => d.Counter).WithMany(p => p.SystemCounterActions).HasConstraintName("fk_counter_action_counter");
+            entity.HasOne(d => d.Counter).WithMany(p => p.SystemCounterActions)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_counter_action_counter");
 
             entity.HasOne(d => d.Map).WithMany(p => p.SystemCounterActions)
                 .OnDelete(DeleteBehavior.Cascade)
@@ -1102,13 +1113,7 @@ public partial class OLabDBContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.Property(e => e.Iss).HasDefaultValueSql("'olab'");
-
             entity.HasOne(d => d.Group).WithMany(p => p.UserGroups).HasConstraintName("user_groups_ibfk_2");
-
-            entity.HasOne(d => d.Role).WithMany(p => p.UserGroups)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("user_groups_ibfk_3");
 
             entity.HasOne(d => d.User).WithMany(p => p.UserGroups).HasConstraintName("user_groups_ibfk_1");
         });

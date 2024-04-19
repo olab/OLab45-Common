@@ -14,7 +14,7 @@ public interface IImporter
 {
   OLabDBContext GetDbContext();
   IOLabModuleProvider<IWikiTagModule> GetWikiProvider();
-  IFileStorageModule GetFileStorageModule();
+  IFileStorageModule GetFileModule();
   Task<Maps> Import(IOLabAuthorization auth, Stream stream, string fileName, CancellationToken token = default);
   Task ExportAsync(IOLabAuthorization auth, Stream stream, uint mapId, CancellationToken token = default);
   Task<MapsFullRelationsDto> ExportAsync(IOLabAuthorization auth, uint mapId, CancellationToken token = default);

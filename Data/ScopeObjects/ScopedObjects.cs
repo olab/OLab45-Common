@@ -35,7 +35,7 @@ public partial class ScopedObjects
   public ScopedObjects(
     IOLabLogger logger,
     OLabDBContext dbContext,
-    IFileStorageModule fileStorageModule = null) : this()
+    IFileStorageModule fileStorageModule) : this()
   {
     Logger = logger;
     _dbContext = dbContext;
@@ -71,7 +71,7 @@ public partial class ScopedObjects
     // QCumulative = new HashSet<QCumulative>();
     // ScenarioMaps = new HashSet<ScenarioMaps>();
     // UserSessions = new HashSet<UserSessions>();
-    // UserSessionTraces = new HashSet<UserSessionTraces>();
+    // UserSessiontraces = new HashSet<UserSessiontraces>();
     // UserState = new HashSet<UserState>();
   }
 

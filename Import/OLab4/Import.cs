@@ -9,10 +9,8 @@ using OLab.Api.ObjectMapper;
 using OLab.Common.Utils;
 using OLab.Data;
 using OLab.Import.Interface;
-using OLab.Import.OLab3;
 using System;
 using System.IO;
-using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,22 +19,20 @@ namespace OLab.Import.OLab4;
 
 public partial class Importer : IImporter
 {
-  // Folder where the xtracted import file resides
-  private string ExtractFolderName;
   private ScopedObjects _scopedObjectPhys;
   private Maps _newMapPhys;
 
   /// <summary>
   /// Run the import process on the data in the stream
   /// </summary>
-  /// <param name="stream">Stream with improt archive file</param>
-  /// <param name="fileName">File name of improt file</param>
+  /// <param name="archiveFileStream">Stream with improt archive file</param>
+  /// <param name="archiveFileName">File name of improt file</param>
   /// <param name="token"></param>
   /// <returns></returns>
-  public async Task<Maps> Import(
+  public override async Task<Maps> Import(
     IOLabAuthorization auth,
-    Stream stream,
-    string fileName,
+    Stream archiveFileStream,
+    string archiveFileName,
     CancellationToken token = default)
   {
     try
@@ -48,35 +44,41 @@ public partial class Importer : IImporter
         && !auth.IsMemberOf("*", Api.Model.Roles.RoleNameImporter))
         throw new OLabUnauthorizedException();
 
-      var transaction = _dbContext.Database.BeginTransaction();
+      var transaction = GetDbContext().Database.BeginTransaction();
 
       // reset message buffer so we just save the new messages
       Logger.Clear();
 
-      var mapFullDto = await ExtractImportMapDefinition(
-        stream,
-        fileName,
+      var mapFullDto = await LoadImportFromArchiveFile(
+        archiveFileStream,
+        archiveFileName,
         token);
 
-      _scopedObjectPhys = new ScopedObjects(Logger, _dbContext);
+      _scopedObjectPhys = new ScopedObjects(
+        Logger, 
+        GetDbContext(), 
+        GetFileModule());
 
       _newMapPhys = await WriteMapToDatabaseAsync(auth, mapFullDto, token);
 
       await ProcessMapNodesAsync(mapFullDto, token);
-      await ProcessAttachedImportFiles(token);
+      await ProcessAttachedImportFiles(archiveFileName, token);
 
       await _scopedObjectPhys.WriteAllToDatabaseAsync(_newMapPhys.Id, token);
 
-      await CleanupImportAsync();
-
-      _newMapPhys.AssignAuthorization(
-        GetDbContext(), 
-        Authorization.UserContext);
+      await CleanupImportAsync(archiveFileName);
 
       if (Logger.HasErrorMessage())
-        await _dbContext.Database.RollbackTransactionAsync();
+        await GetDbContext().Database.RollbackTransactionAsync();
       else
-        await _dbContext.Database.CommitTransactionAsync();
+        await GetDbContext().Database.CommitTransactionAsync();
+
+      // delete any existing import files left over
+      // from previous run
+      await GetFileModule().DeleteFolderAsync(
+        GetFileModule().GetPhysicalImportFilePath(
+          "",
+          archiveFileName));
 
       return _newMapPhys;
 
@@ -84,72 +86,42 @@ public partial class Importer : IImporter
     catch (Exception ex)
     {
       Logger.LogError($"Import error {ex.Message}");
-      await _dbContext.Database.RollbackTransactionAsync();
+      await GetDbContext().Database.RollbackTransactionAsync();
       throw;
     }
   }
 
   /// <summary>
-  /// Loads import import file into memory
+  /// Loads import file into memory
   /// </summary>
-  /// <param name="importFileName">ExportAsync ZIP file name</param>
+  /// <param name="archiveFileName">ExportAsync ZIP file name</param>
   /// <returns>MapsFullRelationsDto</returns>
-  private async Task<MapsFullRelationsDto> ExtractImportMapDefinition(
-    Stream importFileStream,
-    string importFileName,
+  private async Task<MapsFullRelationsDto> LoadImportFromArchiveFile(
+    Stream archiveFileStream,
+    string archiveFileName,
     CancellationToken token = default)
   {
-    ExtractFolderName = Path.GetFileNameWithoutExtension(importFileName);
-    Logger.LogInformation($"Folder extract directory: {ExtractFolderName}");
+    Logger.LogInformation($"Module archive file: {GetFileModule().BuildPath(OLabFileStorageModule.ImportRoot, archiveFileName)}");
 
-    // delete any existing import files left over
-    // from previous run
-    await _fileModule.DeleteFolderAsync(
-      _fileModule.BuildPath(
-        OLabFileStorageModule.ImportRoot,
-        ExtractFolderName));
-
-    // save import file to storage
-    await _fileModule.WriteFileAsync(
-      importFileStream,
-      _fileModule.BuildPath(
-        OLabFileStorageModule.ImportRoot,
-        importFileName),
-      token);
-
-    // extract import file to storage
-    await _fileModule.ExtractFileToStorageAsync(
-      _fileModule.BuildPath(
-        OLabFileStorageModule.ImportRoot,
-        importFileName),
-      _fileModule.BuildPath(
-       OLabFileStorageModule.ImportRoot,
-        ExtractFolderName),
+    var archiveFilePath = await GetFileModule().WriteImportFileAsync(
+      archiveFileStream,
+      archiveFileName,
       token);
 
     string mapJson;
 
-    // extract the map.json file from the extracted imported files
-    using (var mapStream = new MemoryStream())
-    {
-      await _fileModule.ReadFileAsync(
-        mapStream,
-        _fileModule.BuildPath(
-          OLabFileStorageModule.ImportRoot,
-          ExtractFolderName,
-          MapFileName),
-        token);
-      mapJson = Encoding.UTF8.GetString(mapStream.ToArray());
-    }
+    using var memoryStream = await GetFileModule().ReadImportFileAsync(
+        Path.GetFileNameWithoutExtension(archiveFileName),
+        MapFileName);
+    mapJson = Encoding.UTF8.GetString(memoryStream.ToArray());
 
     // build the map object
     var mapFullDto = JsonConvert.DeserializeObject<MapsFullRelationsDto>(mapJson);
 
-    // delete source import file
-    await GetFileStorageModule().DeleteFileAsync(
-      _fileModule.BuildPath(
-        OLabFileStorageModule.ImportRoot,
-        Path.GetFileName(importFileName)));
+    // delete source archive file 
+    await GetFileModule().DeleteImportFileAsync(
+      ".",
+      archiveFileName);
 
     return mapFullDto;
 
@@ -163,12 +135,12 @@ public partial class Importer : IImporter
     var mapDto = dto.Map;
     var phys = new MapsFullMapper(Logger).DtoToPhysical(mapDto);
 
-
     phys.Id = 0;
     phys.Name = $"IMPORT: {phys.Name}";
+    phys.AuthorId = auth.UserContext.UserId;
 
-    await _dbContext.Maps.AddAsync(phys);
-    await _dbContext.SaveChangesAsync(token);
+    await GetDbContext().Maps.AddAsync(phys);
+    await GetDbContext().SaveChangesAsync(token);
 
     Logger.LogInformation($"  imported map '{mapDto.Name}' {mapDto.Id.Value} -> {phys.Id}");
 
@@ -198,36 +170,37 @@ public partial class Importer : IImporter
     }
   }
 
-  private async Task CleanupImportAsync()
+  private async Task CleanupImportAsync(string archiveFileName)
   {
     // delete any existing import files left over
     // from previous run
-    await _fileModule.DeleteFolderAsync(
-      _fileModule.BuildPath(
-        OLabFileStorageModule.ImportRoot,
-        ExtractFolderName));
+    await GetFileModule().DeleteFolderAsync(
+      GetFileModule().GetPhysicalImportFilePath(
+        "",
+        archiveFileName));
   }
 
   private async Task ProcessAttachedImportFiles(
+    string archiveFileName,
     CancellationToken token)
   {
     // list and move map-level files
 
-    var importFilesFolder = _fileModule.BuildPath(
+    var importFilesFolder = GetFileModule().BuildPath(
       OLabFileStorageModule.ImportRoot,
-      ExtractFolderName,
+      archiveFileName,
       Api.Utils.Constants.ScopeLevelMap);
 
-    var sourceFiles = _fileModule.GetFiles(importFilesFolder, token);
+    var sourceFiles = GetFileModule().GetFiles(importFilesFolder, token);
 
-    var mapFilesFolder = _fileModule.BuildPath(
+    var mapFilesFolder = GetFileModule().BuildPath(
       OLabFileStorageModule.FilesRoot,
       Api.Utils.Constants.ScopeLevelMap,
       _newMapPhys.Id);
 
     foreach (var sourceFile in sourceFiles)
-      await _fileModule.MoveFileAsync(
-      _fileModule.BuildPath(
+      await GetFileModule().MoveFileAsync(
+      GetFileModule().BuildPath(
         importFilesFolder,
         Path.GetFileName(sourceFile)),
       mapFilesFolder,
@@ -241,13 +214,13 @@ public partial class Importer : IImporter
   {
     var phys = new MapNodesFullMapper(
       Logger,
-      _wikiTagProvider as WikiTagProvider).DtoToPhysical(dto);
+      GetWikiProvider() as WikiTagProvider).DtoToPhysical(dto);
 
     phys.Id = 0;
     phys.MapId = mapId;
 
-    await _dbContext.MapNodes.AddAsync(phys);
-    await _dbContext.SaveChangesAsync(token);
+    await GetDbContext().MapNodes.AddAsync(phys);
+    await GetDbContext().SaveChangesAsync(token);
 
     Logger.LogInformation($"  imported map node '{phys.Title}' {dto.Id.Value} -> {phys.Id}");
 
@@ -261,7 +234,7 @@ public partial class Importer : IImporter
   {
     var phys = new MapNodeLinksMapper(
       Logger,
-      _wikiTagProvider as WikiTagProvider).DtoToPhysical(dto);
+      GetWikiProvider() as WikiTagProvider).DtoToPhysical(dto);
 
     phys.Id = 0;
     phys.MapId = mapId;
@@ -269,8 +242,8 @@ public partial class Importer : IImporter
     phys.NodeId1 = _scopedObjectPhys.GetMapNodeIdCrossReference(dto.SourceId.Value);
     phys.NodeId2 = _scopedObjectPhys.GetMapNodeIdCrossReference(dto.DestinationId.Value);
 
-    await _dbContext.MapNodeLinks.AddAsync(phys);
-    await _dbContext.SaveChangesAsync(token);
+    await GetDbContext().MapNodeLinks.AddAsync(phys);
+    await GetDbContext().SaveChangesAsync(token);
 
     return phys.Id;
   }
@@ -305,7 +278,7 @@ public partial class Importer : IImporter
 
   //  catch (Exception)
   //  {
-  //    await _dbContext.Database.RollbackTransactionAsync();
+  //    await GetDbContext().Database.RollbackTransactionAsync();
   //    throw;
   //  }
   //}

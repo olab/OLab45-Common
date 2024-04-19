@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -50,8 +50,8 @@ public partial class SystemQuestions
     [Column("show_answer")]
     public bool ShowAnswer { get; set; }
 
-    [Column("counter_id", TypeName = "int(10) unsigned")]
-    public uint? CounterId { get; set; }
+    [Column("counter_id", TypeName = "int(10)")]
+    public int? CounterId { get; set; }
 
     [Column("num_tries", TypeName = "int(10)")]
     public int NumTries { get; set; }

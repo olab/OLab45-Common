@@ -2,6 +2,7 @@
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ public class DynamicScopedObjects
   private readonly uint serverId;
   private readonly uint mapId;
   private readonly uint nodeId;
+  private readonly IFileStorageModule fileStorageModule;
 
   public List<SystemCounters> ServerCounters { get; set; }
   public List<SystemCounters> MapCounters { get; set; }
@@ -30,6 +32,7 @@ public class DynamicScopedObjects
   public DynamicScopedObjects(
     IOLabLogger logger,
     OLabDBContext dbContext,
+    IFileStorageModule fileStorageModule,
     uint serverId,
     uint mapId,
     uint nodeId)
@@ -39,7 +42,7 @@ public class DynamicScopedObjects
     this.serverId = serverId;
     this.mapId = mapId;
     this.nodeId = nodeId;
-
+    this.fileStorageModule = fileStorageModule;
     ServerCounters = new List<SystemCounters>();
     MapCounters = new List<SystemCounters>();
     NodeCounters = new List<SystemCounters>();
@@ -51,15 +54,15 @@ public class DynamicScopedObjects
   /// <returns></returns>
   public async Task GetDynamicScopedObjectsAsync()
   {
-    var phys = new ScopedObjects(Logger, dbContext);
+    var phys = new ScopedObjects(Logger, dbContext, fileStorageModule);
 
     await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelServer, serverId);
     await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelMap, mapId);
     await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelNode, nodeId);
 
-    ServerCounters = phys.CountersPhys;
-    NodeCounters = phys.CountersPhys;
-    MapCounters = phys.CountersPhys;
+    ServerCounters = phys.CountersPhys.Where( x => x.ImageableType == Constants.ScopeLevelServer ).ToList();
+    NodeCounters = phys.CountersPhys.Where(x => x.ImageableType == Constants.ScopeLevelNode).ToList();
+    MapCounters = phys.CountersPhys.Where(x => x.ImageableType == Constants.ScopeLevelMap).ToList();
 
     await ProcessNodeCounters(MapCounters);
   }
