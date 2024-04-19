@@ -1,9 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OLab.Api.Common;
-using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
-using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.ObjectMapper;
 using OLab.Data;
@@ -29,11 +27,6 @@ public partial class Importer : IImporter
   {
     Logger.LogInformation($"Exporting mapId: {mapId} ");
 
-    // importer must be a superuser or an importer
-    if (!auth.IsMemberOf("*", Api.Model.Roles.RoleNameSuperuser)
-      && !auth.IsMemberOf("*", Api.Model.Roles.RoleNameImporter))
-      throw new OLabUnauthorizedException();
-
     // create map json object
     var dto = await ReadMapDtoFromDatabase(mapId, token);
 
@@ -56,13 +49,8 @@ public partial class Importer : IImporter
   {
     Logger.Clear();
 
-    // importer must be a superuser or an importer
-    if (!auth.IsMemberOf("*", Api.Model.Roles.RoleNameSuperuser)
-      && !auth.IsMemberOf("*", Api.Model.Roles.RoleNameImporter))
-      throw new OLabUnauthorizedException();
-
     // create map json object
-    var dto = await ExportAsync(auth, mapId, token);
+    var dto = await ExportAsync(mapId, token);
 
     // serialize the dto into a json string
     var rawJson = JsonConvert.SerializeObject(dto);

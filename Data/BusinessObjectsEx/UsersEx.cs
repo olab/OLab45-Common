@@ -26,6 +26,8 @@ public partial class Users
     newUser.Username = model.Username;
     newUser.Nickname = model.NickName;
     newUser.Email = model.EMail;
+    newUser.Group = model.Group;
+    newUser.Role = model.Role;
 
     return newUser;
   }

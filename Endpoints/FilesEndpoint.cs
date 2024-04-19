@@ -105,7 +105,7 @@ public partial class FilesEndpoint : OLabEndpoint
     var dto = new FilesFull(Logger).PhysicalToDto(phys);
 
     // test if user has access to object
-    var accessResult = auth.HasAccess(Model.SecurityRoles.Read, dto);
+    var accessResult = auth.HasAccess("R", dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("FilesPhys", id);
 
@@ -129,7 +129,7 @@ public partial class FilesEndpoint : OLabEndpoint
     dto.ImageableId = dto.ParentInfo.Id;
 
     // test if user has access to object
-    var accessResult = auth.HasAccess(Model.SecurityRoles.Write, dto);
+    var accessResult = auth.HasAccess("W", dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("FilesPhys", id);
 
@@ -164,7 +164,7 @@ public partial class FilesEndpoint : OLabEndpoint
     var builder = new FilesFull(Logger);
 
     // test if user has access to object
-    var accessResult = auth.HasAccess(Model.SecurityRoles.Write, dto);
+    var accessResult = auth.HasAccess("W", dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("FilesPhys", 0);
 
@@ -209,7 +209,7 @@ public partial class FilesEndpoint : OLabEndpoint
       var dto = new FilesFull(Logger).PhysicalToDto(phys);
 
       // test if user has access to object
-      var accessResult = auth.HasAccess(Model.SecurityRoles.Write, dto);
+      var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("ConstantsPhys", id);
 

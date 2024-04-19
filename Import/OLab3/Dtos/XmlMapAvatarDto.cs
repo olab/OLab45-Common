@@ -6,7 +6,6 @@ using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace OLab.Import.OLab3.Dtos;
 
@@ -59,7 +58,7 @@ public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
   /// </summary>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
-  public override async Task<bool> SaveToDatabaseAsync(
+  public override bool SaveToDatabase(
     string importFolderName, 
     int recordIndex, 
     IEnumerable<dynamic> elements)

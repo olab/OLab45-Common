@@ -9,7 +9,7 @@ public class AssignSecurityUserRequest
   public uint UserId { get; set; }
   [Required]
   public string Acl { get; set; }
-  public readonly string[] AllowedAcls = { SecurityUsers.ReadChar, SecurityUsers.WriteChar, SecurityUsers.ExecuteChar };
+  public readonly string[] AllowedAcls = { "R", "W", "X", "D" };
 
   public void CheckAcl()
   {

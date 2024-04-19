@@ -5,7 +5,7 @@ using OLab.Api.Data;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
-using OLab.Api.Endpoints.ReaderWriters;
+using OLab.Api.Model.ReaderWriter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,7 +66,7 @@ public partial class MapsEndpoint : OLabEndpoint
     var dto = await GetRawNodeAsync(mapId, nodeId, hideHidden);
 
     // now that we had a real node id, test if user has explicit no access to node.
-    if (auth.HasAccess(Model.SecurityRoles.NoAccess, Utils.Constants.ScopeLevelNode, nodeId))
+    if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, nodeId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, nodeId);
 
     // filter out any destination links the user
@@ -74,7 +74,7 @@ public partial class MapsEndpoint : OLabEndpoint
     var filteredLinks = new List<MapNodeLinksDto>();
     foreach (var mapNodeLink in dto.MapNodeLinks)
     {
-      if (auth.HasAccess(Model.SecurityRoles.NoAccess, Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
+      if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
         continue;
 
       filteredLinks.Add(mapNodeLink);
@@ -102,7 +102,7 @@ public partial class MapsEndpoint : OLabEndpoint
     Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync. new play? {body.NewPlay}");
 
     // test if user has access to map.
-    if (!auth.HasAccess(Model.SecurityRoles.Read, Utils.Constants.ScopeLevelMap, mapId))
+    if (!auth.HasAccess("R", Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
     // dump out original dynamic objects for logging
@@ -112,14 +112,14 @@ public partial class MapsEndpoint : OLabEndpoint
     if (!body.IsValid())
       throw new OLabUnauthorizedException("Object validity check failed");
 
-    var map = await MapsReaderWriter.Instance(Logger, dbContext).GetAsync(mapId);
+    var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).GetSingleAsync(mapId);
     if (map == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
     var dto = await GetRawNodeAsync(mapId, nodeId, true);
 
     // now that we had a real node id, test if user has explicit no access to node.
-    if (auth.HasAccess(Model.SecurityRoles.NoAccess, Utils.Constants.ScopeLevelNode, dto.Id.Value))
+    if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, dto.Id.Value))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, dto.Id.Value);
 
     // filter out any destination links the user
@@ -127,7 +127,7 @@ public partial class MapsEndpoint : OLabEndpoint
     var filteredLinks = new List<MapNodeLinksDto>();
     foreach (var mapNodeLink in dto.MapNodeLinks)
     {
-      if (auth.HasAccess(Model.SecurityRoles.NoAccess, Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
+      if (auth.HasAccess("-", Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
         continue;
 
       filteredLinks.Add(mapNodeLink);
@@ -192,7 +192,7 @@ public partial class MapsEndpoint : OLabEndpoint
     Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.DeleteNodeAsync");
 
     // test if user has access to map.
-    if (!auth.HasAccess(Model.SecurityRoles.Write, Utils.Constants.ScopeLevelMap, mapId))
+    if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
     using var transaction = dbContext.Database.BeginTransaction();
@@ -249,7 +249,7 @@ public partial class MapsEndpoint : OLabEndpoint
     Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutNodeAsync");
 
     // test if user has access to map.
-    if (!auth.HasAccess(Model.SecurityRoles.Write, Utils.Constants.ScopeLevelMap, mapId))
+    if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
     using var transaction = dbContext.Database.BeginTransaction();

@@ -195,7 +195,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// </summary>
   /// <param name="dtos">All import dtos</param>
   /// <returns>Success/Failure</returns>
-  public override async Task<bool> SaveToDatabaseAsync(string importFolderName)
+  public override bool SaveToDatabase(string importFolderName)
   {
     Logger.LogInformation($"Saving {xmlImportElementSets.Count()} {GetFileName()} objects");
 
@@ -204,7 +204,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
     {
       try
       {
-        await SaveToDatabaseAsync(importFolderName, recordIndex, elements);
+        SaveToDatabase(importFolderName, recordIndex, elements);
       }
       catch (Exception ex)
       {
@@ -219,7 +219,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
 
   // implemented here so non-applicable derived classes
   // do not need to re-implement it
-  public virtual async Task<bool> SaveToDatabaseAsync(string importFolderName, int recordIndex, IEnumerable<dynamic> elements)
+  public virtual bool SaveToDatabase(string importFolderName, int recordIndex, IEnumerable<dynamic> elements)
   {
     return true;
   }

@@ -223,45 +223,6 @@ public class OLabSession : IOLabSession
 
   }
 
-  /// <summary>
-  /// Record a question response on the session
-  /// </summary>
-  /// <param name="nodeId">Node Id</param>
-  /// <param name="questionId">Question Id</param>
-  /// <param name="value">Question response value</param>
-  //public UserResponses OnQuestionResponse(uint nodeId, uint questionId, string value)
-  //{
-  //  Guard.Argument(_mapId, nameof(_mapId)).Positive();
-  //  Guard.Argument(nodeId, nameof(nodeId)).Positive();
-  //  Guard.Argument(questionId, nameof(questionId)).Positive();
-
-  //  var physSession = GetSessionFromDatabase(GetSessionId());
-  //  if (physSession == null)
-  //    return null;
-
-  //  _logger.LogInformation($"OnQuestionResponse: session {GetSessionId()} Map: {_mapId} Node: {nodeId} Question: {questionId} = {value} ");
-
-  //  // truncate the message in case it's too long
-  //  if (string.IsNullOrEmpty(value) && (value.Length > 1000))
-  //    value = value[997..] + "...";
-
-  //  var userResponse = new UserResponses
-  //  {
-  //    SessionId = physSession.Id,
-  //    QuestionId = questionId,
-  //    Response = value,
-  //    NodeId = nodeId,
-  //    CreatedAt = Conversions.GetCurrentUnixTime()
-  //  };
-
-  //  _dbContext.UserResponses.Add(userResponse);
-  //  _dbContext.SaveChanges();
-
-  //  _logger.LogInformation($"OnQuestionResponse: saved user response to session");
-
-  //  return userResponse;
-  //}
-
   public void SaveSessionState(uint nodeId, DynamicScopedObjectsDto dynamicObjects)
   {
     Guard.Argument(_mapId, nameof(_mapId)).Positive();

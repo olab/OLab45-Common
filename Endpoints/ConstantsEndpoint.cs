@@ -97,7 +97,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     var dto = new ObjectMapper.Constants(Logger).PhysicalToDto(phys);
 
     // test if user has access to object
-    var accessResult = auth.HasAccess(Model.SecurityRoles.Read, dto);
+    var accessResult = auth.HasAccess("R", dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("ConstantsPhys", id);
 
@@ -121,7 +121,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     dto.ImageableId = dto.ParentInfo.Id;
 
     // test if user has access to object
-    var accessResult = auth.HasAccess(Model.SecurityRoles.Write, dto);
+    var accessResult = auth.HasAccess("W", dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("ConstantsPhys", id);
 
@@ -156,7 +156,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     dto.ImageableId = dto.ParentInfo.Id != 0 ? dto.ParentInfo.Id : dto.ImageableId;
 
     // test if user has access to object
-    var accessResult = auth.HasAccess(Model.SecurityRoles.Write, dto);
+    var accessResult = auth.HasAccess("W", dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("ConstantsPhys", 0);
 
@@ -192,7 +192,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
       var dto = new ConstantsFull(Logger).PhysicalToDto(phys);
 
       // test if user has access to object
-      var accessResult = auth.HasAccess(Model.SecurityRoles.Write, dto);
+      var accessResult = auth.HasAccess("W", dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("ConstantsPhys", id);
 

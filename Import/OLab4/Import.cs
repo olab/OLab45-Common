@@ -1,7 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OLab.Api.Common;
-using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -38,11 +36,6 @@ public partial class Importer : IImporter
     try
     {
       Authorization = auth;
-
-      // importer must be a superuser or an importer
-      if (!auth.IsMemberOf("*", Api.Model.Roles.RoleNameSuperuser)
-        && !auth.IsMemberOf("*", Api.Model.Roles.RoleNameImporter))
-        throw new OLabUnauthorizedException();
 
       var transaction = GetDbContext().Database.BeginTransaction();
 

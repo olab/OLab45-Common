@@ -16,8 +16,8 @@ public interface IImporter
   IOLabModuleProvider<IWikiTagModule> GetWikiProvider();
   IFileStorageModule GetFileModule();
   Task<Maps> Import(IOLabAuthorization auth, Stream stream, string fileName, CancellationToken token = default);
-  Task ExportAsync(IOLabAuthorization auth, Stream stream, uint mapId, CancellationToken token = default);
-  Task<MapsFullRelationsDto> ExportAsync(IOLabAuthorization auth, uint mapId, CancellationToken token = default);
+  Task ExportAsync(Stream stream, uint mapId, CancellationToken token = default);
+  Task<MapsFullRelationsDto> ExportAsync(uint mapId, CancellationToken token = default);
 
   AppSettings Settings();
 }
