@@ -15,7 +15,7 @@ public partial class UserCounterUpdate
 
     [Required]
     [Column("counter_state")]
-    [StringLength(2048)]
+    [StringLength(8192)]
     public string CounterState { get; set; }
 
     [InverseProperty("Counterupdate")]
