@@ -220,6 +220,8 @@ public class Importer : IImporter
         Logger.LogInformation($"Loaded map '{xmlMap.Data[0].Name}'. id = {xmlMap.Data[0].Id}");
 
         var mapPhys = xmlMap.Data[0];
+        mapPhys.CreatedAt = DateTime.UtcNow;
+
         return mapPhys;
 
       }

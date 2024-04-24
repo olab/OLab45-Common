@@ -28,6 +28,7 @@ public class OLabAPIResponse<D> : ActionResult
     Diagnostics = new List<Diagnostics>();
     Message = MessageSuccess;
     ErrorCode = HttpStatusCode.OK;
+    Status = (int)HttpStatusCode.OK;
   }
 
   [JsonProperty("extended_status_code")]

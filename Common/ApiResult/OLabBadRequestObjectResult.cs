@@ -5,13 +5,13 @@ namespace OLab.Api.Common;
 
 public class OLabBadRequestObjectResult
 {
-  public static BadRequestObjectResult Result(string errorMessage = "Bad request")
+  public static OLabAPIResponse<string> Result(string errorMessage = "Bad request")
   {
-    return new BadRequestObjectResult(new OLabAPIResponse<string>()
+    return new OLabAPIResponse<string>
     {
       Data = errorMessage,
       ErrorCode = HttpStatusCode.BadRequest
-    });
+    };
   }
 
 }

@@ -155,6 +155,7 @@ public partial class Importer : IImporter
     phys.Id = 0;
     phys.Name = $"IMPORT: {phys.Name}";
     phys.AuthorId = auth.UserContext.UserId;
+    phys.CreatedAt = DateTime.UtcNow;
 
     await _dbContext.Maps.AddAsync(phys);
     await _dbContext.SaveChangesAsync(token);
