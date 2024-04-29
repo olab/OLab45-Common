@@ -176,16 +176,20 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   /// <returns>Public directory for scope</returns>
   public string GetPublicFileDirectory(string parentType, uint parentId, string fileName = "")
   {
-    var physicalDirectory = BuildPath(FilesRoot, parentType, parentId.ToString());
+    var physicalDirectory = BuildPath(
+      cfg.GetAppSettings().FileStorageRoot, 
+      FilesRoot, 
+      parentType, 
+      parentId.ToString());
 
     if (!string.IsNullOrEmpty(fileName))
-      physicalDirectory = $"{physicalDirectory}{GetFolderSeparator()}{fileName}";
+      physicalDirectory = BuildPath( physicalDirectory, fileName );
 
     return physicalDirectory;
   }
 
   public string GetImportMediaFilesDirectory(string importFolderName)
   {
-    return $"{ImportRoot}{GetFolderSeparator()}{importFolderName}{GetFolderSeparator()}{MediaDirectory}";
+    return BuildPath( ImportRoot, importFolderName, MediaDirectory);
   }
 }
