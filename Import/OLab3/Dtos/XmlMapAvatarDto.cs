@@ -81,11 +81,14 @@ public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
     fileItem.ImageableType = "Maps";
     fileItem.Path = avItem.Image;
 
-    var publicFile = 
-      GetFileModule().GetPublicFileDirectory(fileItem.ImageableType, fileItem.ImageableId, fileItem.Path);
+    var physFile = 
+      GetFileModule().GetPublicFileDirectory(
+        fileItem.ImageableType, 
+        fileItem.ImageableId, 
+        fileItem.Path);
 
-    if (!File.Exists(publicFile))
-      Logger.LogWarning(GetFileName(), 0, $"media file '{publicFile}' does not exist in public directory");
+    if (!File.Exists(physFile))
+      Logger.LogWarning(GetFileName(), 0, $"media file '{physFile}' does not exist in public directory");
 
     Context.SystemFiles.Add(fileItem);
     Context.SaveChanges();
