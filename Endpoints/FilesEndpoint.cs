@@ -184,6 +184,8 @@ public partial class FilesEndpoint : OLabEndpoint
       physFilePath,
       token);
 
+    Logger.LogInformation($"wrote file '{dto.Name}' to '{physFilePath}'. Size: {dto.GetStream().Length}");
+
     var newDto = builder.PhysicalToDto(phys);
     return newDto;
   }
