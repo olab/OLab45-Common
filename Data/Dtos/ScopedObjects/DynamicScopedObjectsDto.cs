@@ -1,10 +1,12 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 
 namespace OLab.Api.Dto;
 
@@ -165,6 +167,12 @@ public class DynamicScopedObjectsDto
     }
 
     return dto;
+  }
+
+  public string ToJson()
+  {
+    var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
+    return JToken.Parse(rawJson).ToString(Formatting.Indented);
   }
 
   public void Dump(IOLabLogger logger, string prefix)
