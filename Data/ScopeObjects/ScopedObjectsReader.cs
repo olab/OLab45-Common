@@ -20,7 +20,7 @@ public partial class ScopedObjects
   /// </summary>
   /// <param name="scopeLevel">Scope level to load</param>
   /// <param name="id">Scope id</param>
-  public async Task AddScopeFromDatabaseAsync(
+  public async Task<ScopedObjects> AddScopeFromDatabaseAsync(
     string scopeLevel,
     uint id)
   {
@@ -28,6 +28,8 @@ public partial class ScopedObjects
 
     var phys = await LoadAllFromDatabaseAsync(scopeLevel, id);
     Combine(phys);
+
+    return phys;
   }
 
   /// <summary>
