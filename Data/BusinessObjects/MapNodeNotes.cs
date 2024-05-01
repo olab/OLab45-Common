@@ -1,25 +1,28 @@
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
-#nullable disable
+using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
 [Table("map_node_notes")]
-[Index(nameof(MapNodeId), Name = "fk_map_node_id_idx")]
+[Index("MapNodeId", Name = "fk_map_node_id_idx")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class MapNodeNotes
 {
-  [Key]
-  [Column("id", TypeName = "int(10) unsigned")]
-  public uint Id { get; set; }
-  [Column("map_node_id", TypeName = "int(10) unsigned")]
-  public uint MapNodeId { get; set; }
-  [Column("text", TypeName = "text")]
-  public string Text { get; set; }
+    [Key]
+    [Column("id", TypeName = "int(10) unsigned")]
+    public uint Id { get; set; }
 
-  [ForeignKey(nameof(MapNodeId))]
-  [InverseProperty(nameof(MapNodes.MapNodeNotes))]
-  public virtual MapNodes MapNode { get; set; }
+    [Column("map_node_id", TypeName = "int(10) unsigned")]
+    public uint MapNodeId { get; set; }
+
+    [Column("text", TypeName = "text")]
+    public string Text { get; set; }
+
+    [ForeignKey("MapNodeId")]
+    [InverseProperty("MapNodeNotes")]
+    public virtual MapNodes MapNode { get; set; }
 }

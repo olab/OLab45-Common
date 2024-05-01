@@ -57,7 +57,6 @@ public partial class Maps
       TypeId = 11,
       Units = "",
       Verification = "{}",
-      MapNodes = new List<MapNodes>(),
       ReportNodeId = 0
     };
 
