@@ -216,7 +216,7 @@ public class OLabSession : IOLabSession
       UserresponseId = userResponse.Id
     };
 
-    _dbContext.UserCounterUpdate.Add(counterUpdate);
+    _dbContext.UserresponseCounterupdate.Add(userResponseCounterUpdate);
     _dbContext.SaveChanges();
 
     _logger.LogInformation($"OnQuestionResponse: saved user response to session");

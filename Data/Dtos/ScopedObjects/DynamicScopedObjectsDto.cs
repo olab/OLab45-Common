@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OLab.Api.Utils;
@@ -202,6 +203,31 @@ public class DynamicScopedObjectsDto
     message += $"ChkSum  {Checksum}{Environment.NewLine}";
 
     logger.LogDebug(message);
+
+  }
+
+  /// <summary>
+  /// Update counter value
+  /// </summary>
+  /// <param name="counterDto"></param>
+  /// <exception cref="NotImplementedException"></exception>
+  public void UpdateCounter(IOLabLogger logger, CountersDto counterDto)
+  {
+    CountersDto responseCounterDto = null;
+
+    if (counterDto.ImageableType == Utils.Constants.ScopeLevelMap)
+      responseCounterDto = Map.Counters.FirstOrDefault(x => x.Id == counterDto.Id);
+    else if (counterDto.ImageableType == Utils.Constants.ScopeLevelNode)
+      responseCounterDto = Node.Counters.FirstOrDefault(x => x.Id == counterDto.Id);
+    else if (counterDto.ImageableType == Utils.Constants.ScopeLevelServer)
+      responseCounterDto = Server.Counters.FirstOrDefault(x => x.Id == counterDto.Id);
+
+    if (responseCounterDto == null)
+      logger.LogError($"unable to update counter {counterDto.Name}({counterDto.Id}) value. not found in response");
+
+    responseCounterDto.SetValue(counterDto.Value);
+
+    logger.LogError($"response counter {responseCounterDto.Name}({responseCounterDto.Id}) = {responseCounterDto.Value}");
 
   }
 }
