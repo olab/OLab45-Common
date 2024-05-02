@@ -20,7 +20,15 @@ public class OLabSession : IOLabSession
   private string _sessionId;
   private uint _mapId;
 
-  public OLabSession(
+  public static IOLabSession CreateInstance(
+    IOLabLogger logger,
+    OLabDBContext context,
+    IUserContext userContext)
+  {
+    return new OLabSession( logger, context, userContext);
+  }
+
+  private OLabSession(
     IOLabLogger logger,
     OLabDBContext context,
     IUserContext userContext)
@@ -127,7 +135,7 @@ public class OLabSession : IOLabSession
 
     var counterJson = JsonSerializer.Serialize(countersDto);
 
-    var sessionTrace = new UserSessionTraces
+    var sessionTrace = new UserSessiontraces
     {
       SessionId = session.Id,
       MapId = _mapId,
@@ -137,43 +145,78 @@ public class OLabSession : IOLabSession
       Counters = counterJson
     };
 
-    _dbContext.UserSessionTraces.Add(sessionTrace);
+    _dbContext.UserSessiontraces.Add(sessionTrace);
     _dbContext.SaveChanges();
 
+    var counterUpdate = new UserCounterUpdate
+    {
+      CounterState = dto.DynamicObjects.ToJson(),
+    };
+
+    _dbContext.UserCounterUpdate.Add(counterUpdate);
+    _dbContext.SaveChanges();
+
+    // hook up session trace to counter update
+
+    var userSessionTraceCounterUpdate = new UsersessiontraceCounterupdate
+    {
+      CounterupdateId = counterUpdate.Id,
+      SessiontraceId = sessionTrace.Id
+    };
+
+    _dbContext.UsersessiontraceCounterupdate.Add(userSessionTraceCounterUpdate);
+    _dbContext.SaveChanges();
   }
 
-  /// <summary>
-  /// Record a question response on the session
-  /// </summary>
-  /// <param name="nodeId">Node Id</param>
-  /// <param name="questionId">Question Id</param>
-  /// <param name="value">Question response value</param>
-  public void OnQuestionResponse(uint nodeId, uint questionId, string value)
+  public void OnQuestionResponse(
+    QuestionResponsePostDataDto body,
+    SystemQuestions questionPhys)
   {
     Guard.Argument(_mapId, nameof(_mapId)).Positive();
-    Guard.Argument(nodeId, nameof(nodeId)).Positive();
-    Guard.Argument(questionId, nameof(questionId)).Positive();
+    Guard.Argument(body, nameof(body)).NotNull();
+    Guard.Argument(questionPhys, nameof(questionPhys)).NotNull();
 
-    var physSession = GetSessionFromDatabase(GetSessionId());
-    if (physSession == null)
+    var sessionPhys = GetSessionFromDatabase(GetSessionId());
+    if (sessionPhys == null)
       return;
 
-    _logger.LogInformation($"OnQuestionResponse: session {GetSessionId()} Map: {_mapId} Node: {nodeId} Question: {questionId} = {value} ");
+    _logger.LogInformation($"OnQuestionResponse: session {GetSessionId()} Map: {_mapId} Node: {body.NodeId} Question: {questionPhys.Id} = {body.Value} ");
 
     // truncate the message in case it's too long
-    if (string.IsNullOrEmpty(value) && (value.Length > 1000))
-      value = value[997..] + "...";
+    if (string.IsNullOrEmpty(body.Value) && (body.Value.Length > 1000))
+      body.Value = body.Value[997..] + "...";
+
+    // save the response and the associated counter dump
 
     var userResponse = new UserResponses
     {
-      SessionId = physSession.Id,
-      QuestionId = questionId,
-      Response = value,
-      NodeId = nodeId,
+      SessionId = sessionPhys.Id,
+      QuestionId = questionPhys.Id,
+      Response = body.Value,
+      NodeId = body.NodeId,
       CreatedAt = Conversions.GetCurrentUnixTime()
     };
 
     _dbContext.UserResponses.Add(userResponse);
+    _dbContext.SaveChanges();
+
+    var counterUpdate = new UserCounterUpdate
+    {
+      CounterState = body.DynamicObjects.ToJson(),
+    };
+
+    _dbContext.UserCounterUpdate.Add(counterUpdate);
+    _dbContext.SaveChanges();
+
+    // hook up user response to counter update
+
+    var userResponseCounterUpdate = new UserresponseCounterupdate
+    {
+      CounterupdateId = counterUpdate.Id,
+      UserresponseId = userResponse.Id
+    };
+
+    _dbContext.UserresponseCounterupdate.Add(userResponseCounterUpdate);
     _dbContext.SaveChanges();
 
     _logger.LogInformation($"OnQuestionResponse: saved user response to session");

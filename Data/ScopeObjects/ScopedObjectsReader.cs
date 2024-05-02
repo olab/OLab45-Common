@@ -1,6 +1,7 @@
 using Dawn;
 using HeyRed.Mime;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Packaging;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
@@ -19,7 +20,7 @@ public partial class ScopedObjects
   /// </summary>
   /// <param name="scopeLevel">Scope level to load</param>
   /// <param name="id">Scope id</param>
-  public async Task AddScopeFromDatabaseAsync(
+  public async Task<ScopedObjects> AddScopeFromDatabaseAsync(
     string scopeLevel,
     uint id)
   {
@@ -27,6 +28,8 @@ public partial class ScopedObjects
 
     var phys = await LoadAllFromDatabaseAsync(scopeLevel, id);
     Combine(phys);
+
+    return phys;
   }
 
   /// <summary>
@@ -92,21 +95,23 @@ public partial class ScopedObjects
     uint id)
   {
     Guard.Argument(_dbContext).NotNull(nameof(_dbContext));
-    var items = new List<SystemQuestions>();
+    var questionsPhys = new List<SystemQuestions>();
 
-    items.AddRange(await _dbContext.SystemQuestions
+    questionsPhys.AddRange(await _dbContext.SystemQuestions
       .Where(x => x.ImageableType == scopeLevel && x.ImageableId == id)
       .Include("SystemQuestionResponses")
       .ToListAsync());
 
     // order the responses by Order field
-    foreach (var item in items)
+    foreach (var questionPhys in questionsPhys.Where( x => x.SystemQuestionResponses.Count > 0 ))
     {
-      Logger.LogInformation($"  question '{item.Stem}'. read {item.SystemQuestionResponses.Count} responses");
-      item.SystemQuestionResponses = item.SystemQuestionResponses.OrderBy(x => x.Order).ToList();
+      Logger.LogInformation($"  question '{questionPhys.Stem}'. read {questionPhys.SystemQuestionResponses.Count} responses");
+      var orderedResponses = questionPhys.SystemQuestionResponses.OrderBy(x => x.Order).ToList();
+      questionPhys.SystemQuestionResponses.Clear();
+      questionPhys.SystemQuestionResponses.AddRange( orderedResponses );
     }
 
-    return items;
+    return questionsPhys;
   }
 
   /// <summary>

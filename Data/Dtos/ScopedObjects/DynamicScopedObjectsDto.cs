@@ -1,10 +1,13 @@
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 
 namespace OLab.Api.Dto;
 
@@ -167,6 +170,12 @@ public class DynamicScopedObjectsDto
     return dto;
   }
 
+  public string ToJson()
+  {
+    var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
+    return JToken.Parse(rawJson).ToString(Formatting.Indented);
+  }
+
   public void Dump(IOLabLogger logger, string prefix)
   {
     var message = $"{prefix}{Environment.NewLine}";
@@ -194,6 +203,31 @@ public class DynamicScopedObjectsDto
     message += $"ChkSum  {Checksum}{Environment.NewLine}";
 
     logger.LogDebug(message);
+
+  }
+
+  /// <summary>
+  /// Update counter value
+  /// </summary>
+  /// <param name="counterDto"></param>
+  /// <exception cref="NotImplementedException"></exception>
+  public void UpdateCounter(IOLabLogger logger, CountersDto counterDto)
+  {
+    CountersDto responseCounterDto = null;
+
+    if (counterDto.ImageableType == Utils.Constants.ScopeLevelMap)
+      responseCounterDto = Map.Counters.FirstOrDefault(x => x.Id == counterDto.Id);
+    else if (counterDto.ImageableType == Utils.Constants.ScopeLevelNode)
+      responseCounterDto = Node.Counters.FirstOrDefault(x => x.Id == counterDto.Id);
+    else if (counterDto.ImageableType == Utils.Constants.ScopeLevelServer)
+      responseCounterDto = Server.Counters.FirstOrDefault(x => x.Id == counterDto.Id);
+
+    if (responseCounterDto == null)
+      logger.LogError($"unable to update counter {counterDto.Name}({counterDto.Id}) value. not found in response");
+
+    responseCounterDto.SetValue(counterDto.Value);
+
+    logger.LogError($"response counter {responseCounterDto.Name}({responseCounterDto.Id}) = {responseCounterDto.Value}");
 
   }
 }

@@ -61,6 +61,9 @@ public partial class ResponseEndpoint : OLabEndpoint
         // handle questions that have no underlying responses (e.g. slider)
         ProcessValueQuestion(question, counterDto, body);
 
+      // update counter in response dto
+      body.DynamicObjects.UpdateCounter(Logger, counterDto);
+
       // if a server-level counter value has changed, write it to db
       if (dbCounter.ImageableType == Utils.Constants.ScopeLevelServer)
       {
@@ -71,6 +74,7 @@ public partial class ResponseEndpoint : OLabEndpoint
     }
     else
       Logger.LogWarning($"question {question.Id} response: question has no counter");
+
 
     // update dynamic object checksum since counter values
     // map have changed

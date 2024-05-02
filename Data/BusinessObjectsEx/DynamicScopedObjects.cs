@@ -53,13 +53,14 @@ public class DynamicScopedObjects
   {
     var phys = new ScopedObjects(Logger, dbContext);
 
-    await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelServer, serverId);
-    await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelMap, mapId);
-    await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelNode, nodeId);
+    var scopedObjects = await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelServer, serverId);
+    ServerCounters = scopedObjects.CountersPhys;
 
-    ServerCounters = phys.CountersPhys;
-    NodeCounters = phys.CountersPhys;
-    MapCounters = phys.CountersPhys;
+    scopedObjects = await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelMap, mapId);
+    MapCounters = scopedObjects.CountersPhys;
+
+    scopedObjects = await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelNode, nodeId);
+    NodeCounters = scopedObjects.CountersPhys;
 
     await ProcessNodeCounters(MapCounters);
   }

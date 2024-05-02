@@ -153,7 +153,11 @@ public partial class MapsEndpoint : OLabEndpoint
       dto.DynamicObjects.Map = body.Map;
     }
 
-    var session = new OLabSession(Logger, dbContext, auth.UserContext);
+    var session = OLabSession.CreateInstance(
+      Logger, 
+      dbContext, 
+      auth.UserContext);
+
     session.SetMapId(mapId);
 
     // if browser signals a new play, then start a new session
