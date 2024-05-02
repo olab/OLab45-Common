@@ -227,7 +227,7 @@ public class DynamicScopedObjectsDto
 
     responseCounterDto.SetValue(counterDto.Value);
 
-    logger.LogError($"response counter {responseCounterDto.Name}({responseCounterDto.Id}) = {responseCounterDto.Value}");
+    logger.LogDebug($"response counter {responseCounterDto.Name}({responseCounterDto.Id}) = {responseCounterDto.Value}");
 
   }
 }
