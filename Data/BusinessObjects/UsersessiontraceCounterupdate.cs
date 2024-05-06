@@ -9,6 +9,8 @@ namespace OLab.Api.Model;
 [Table("usersessiontrace_counterupdate")]
 [Index("CounterupdateId", Name = "stcu_fk_cu_idx")]
 [Index("SessiontraceId", Name = "stcu_fk_st_idx")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class UsersessiontraceCounterupdate
 {
     [Key]

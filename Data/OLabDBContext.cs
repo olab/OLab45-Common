@@ -15,6 +15,8 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<Cron> Cron { get; set; }
 
+    public virtual DbSet<GrouproleAcls> GrouproleAcls { get; set; }
+
     public virtual DbSet<Groups> Groups { get; set; }
 
     public virtual DbSet<H5pContents> H5pContents { get; set; }
@@ -173,13 +175,13 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<QCumulative> QCumulative { get; set; }
 
+    public virtual DbSet<Roles> Roles { get; set; }
+
     public virtual DbSet<ScenarioMaps> ScenarioMaps { get; set; }
 
     public virtual DbSet<Scenarios> Scenarios { get; set; }
 
     public virtual DbSet<ScopeTypes> ScopeTypes { get; set; }
-
-    public virtual DbSet<SecurityRoles> SecurityRoles { get; set; }
 
     public virtual DbSet<SecurityUsers> SecurityUsers { get; set; }
 
@@ -233,7 +235,7 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<UserCounterUpdate> UserCounterUpdate { get; set; }
 
-    public virtual DbSet<UserGroups> UserGroups { get; set; }
+    public virtual DbSet<UserGrouproles> UserGrouproles { get; set; }
 
     public virtual DbSet<UserNotes> UserNotes { get; set; }
 
@@ -287,6 +289,13 @@ public partial class OLabDBContext : DbContext
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
             entity.HasOne(d => d.Rule).WithMany(p => p.Cron).HasConstraintName("cron_ibfk_1");
+        });
+
+        modelBuilder.Entity<GrouproleAcls>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.Property(e => e.Acl2).HasDefaultValueSql("b'0'");
         });
 
         modelBuilder.Entity<Groups>(entity =>
@@ -569,6 +578,12 @@ public partial class OLabDBContext : DbContext
         modelBuilder.Entity<MapGroups>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.HasOne(d => d.Group).WithMany(p => p.MapGroups)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("mp_ibfk_group");
+
+            entity.HasOne(d => d.Map).WithMany(p => p.MapGroups).HasConstraintName("mp_ibfk_map");
         });
 
         modelBuilder.Entity<MapKeys>(entity =>
@@ -865,6 +880,11 @@ public partial class OLabDBContext : DbContext
             entity.HasOne(d => d.Question).WithMany(p => p.QCumulative).HasConstraintName("q_cumulative_ibfk_1");
         });
 
+        modelBuilder.Entity<Roles>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+        });
+
         modelBuilder.Entity<ScenarioMaps>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -888,11 +908,6 @@ public partial class OLabDBContext : DbContext
         });
 
         modelBuilder.Entity<ScopeTypes>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-        });
-
-        modelBuilder.Entity<SecurityRoles>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
         });
@@ -1075,13 +1090,15 @@ public partial class OLabDBContext : DbContext
             entity.HasKey(e => e.Id).HasName("PRIMARY");
         });
 
-        modelBuilder.Entity<UserGroups>(entity =>
+        modelBuilder.Entity<UserGrouproles>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.HasOne(d => d.Group).WithMany(p => p.UserGroups).HasConstraintName("user_groups_ibfk_2");
+            entity.Property(e => e.Iss).HasDefaultValueSql("'olab'");
 
-            entity.HasOne(d => d.User).WithMany(p => p.UserGroups).HasConstraintName("user_groups_ibfk_1");
+            entity.HasOne(d => d.Group).WithMany(p => p.UserGrouproles).HasConstraintName("user_grouproles_ibfk_2");
+
+            entity.HasOne(d => d.User).WithMany(p => p.UserGrouproles).HasConstraintName("user_grouproles_ibfk_1");
         });
 
         modelBuilder.Entity<UserNotes>(entity =>

@@ -91,16 +91,6 @@ public partial class Users
     [Column("settings", TypeName = "text")]
     public string Settings { get; set; }
 
-    [Required]
-    [Column("group")]
-    [StringLength(45)]
-    public string Group { get; set; }
-
-    [Required]
-    [Column("role")]
-    [StringLength(1024)]
-    public string Role { get; set; }
-
     [InverseProperty("User")]
     public virtual ICollection<MapUsers> MapUsers { get; } = new List<MapUsers>();
 
@@ -108,7 +98,7 @@ public partial class Users
     public virtual ICollection<UserBookmarks> UserBookmarks { get; } = new List<UserBookmarks>();
 
     [InverseProperty("User")]
-    public virtual ICollection<UserGroups> UserGroups { get; } = new List<UserGroups>();
+    public virtual ICollection<UserGrouproles> UserGrouproles { get; } = new List<UserGrouproles>();
 
     [InverseProperty("User")]
     public virtual ICollection<UserNotes> UserNotes { get; } = new List<UserNotes>();

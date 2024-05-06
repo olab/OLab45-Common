@@ -2,7 +2,7 @@
 
 namespace OLab.Api.Model;
 
-public partial class SecurityRoles
+public partial class GrouproleAcls
 {
   public override string ToString()
   {

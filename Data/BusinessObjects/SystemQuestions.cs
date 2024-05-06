@@ -50,7 +50,7 @@ public partial class SystemQuestions
     [Column("show_answer")]
     public bool ShowAnswer { get; set; }
 
-    [Column("counter_id", TypeName = "int(10)")]
+    [Column("counter_id", TypeName = "int(10) unsigned")]
     public uint? CounterId { get; set; }
 
     [Column("num_tries", TypeName = "int(10)")]
