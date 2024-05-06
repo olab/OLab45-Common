@@ -33,7 +33,7 @@ public partial class SystemCounterActions
     if (match.Success)
     {
       var orgValue = targetCounter.ValueAsNumber();
-      if (!decimal.TryParse(match.Value[1..], out var newValue))
+      if (!decimal.TryParse(match.Value[0..], out var newValue))
         targetCounter.ValueFromString(SystemCounters.NotANumber);
       else
         targetCounter.ValueFromNumber(orgValue + newValue);
@@ -47,7 +47,7 @@ public partial class SystemCounterActions
     match = regex.Match(Expression);
     if (match.Success)
     {
-      if (!decimal.TryParse(match.Value[1..], out var newValue))
+      if (!decimal.TryParse(match.Value[0..], out var newValue))
         targetCounter.ValueFromString(SystemCounters.NotANumber);
       else
         targetCounter.ValueFromNumber(newValue);
