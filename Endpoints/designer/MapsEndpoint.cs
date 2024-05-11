@@ -5,11 +5,11 @@ using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
-using OLab.Api.Model.ReaderWriter;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using OLab.Data;
 using OLab.Data.Interface;
+using OLab.Data.ReaderWriters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,7 +43,7 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <returns></returns>
   private async Task<Maps> GetSimpleAsync(uint mapId)
   {
-    var phys = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).GetSingleAsync(mapId)
+    var phys = await MapsReaderWriter.Instance(Logger, dbContext).GetSingleAsync(mapId)
       ?? throw new OLabObjectNotFoundException(Constants.ScopeLevelMap, mapId);
     return phys;
   }
@@ -62,7 +62,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if (!auth.HasAccess("R", Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Constants.ScopeLevelMap, mapId);
 
-    var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).GetSingleAsync(mapId)
+    var map = await MapsReaderWriter.Instance(Logger, dbContext).GetSingleAsync(mapId)
       ?? throw new OLabObjectNotFoundException(Constants.ScopeLevelMap, mapId);
 
     MapsNodesFullRelationsDto dto;
@@ -98,7 +98,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if (!auth.HasAccess("R", Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Constants.ScopeLevelMap, mapId);
 
-    var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).GetSingleAsync(mapId);
+    var map = await MapsReaderWriter.Instance(Logger, dbContext).GetSingleAsync(mapId);
     if (map == null)
       throw new OLabObjectNotFoundException(Constants.ScopeLevelMap, mapId);
 
@@ -625,7 +625,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if (!auth.HasAccess("R", Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Constants.ScopeLevelMap, mapId);
 
-    var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).GetSingleAsync(mapId)
+    var map = await MapsReaderWriter.Instance(Logger, dbContext).GetSingleAsync(mapId)
       ?? throw new OLabObjectNotFoundException(Constants.ScopeLevelMap, mapId);
 
     var phys = await dbContext.MapNodeLinks.Where(x => x.Id == id).FirstOrDefaultAsync();

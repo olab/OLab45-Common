@@ -5,7 +5,7 @@ using OLab.Api.Data;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
-using OLab.Api.Model.ReaderWriter;
+using OLab.Data.ReaderWriters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -112,7 +112,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if (!body.IsValid())
       throw new OLabUnauthorizedException("Object validity check failed");
 
-    var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).GetSingleAsync(mapId);
+    var map = await MapsReaderWriter.Instance(Logger, dbContext).GetSingleAsync(mapId);
     if (map == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 

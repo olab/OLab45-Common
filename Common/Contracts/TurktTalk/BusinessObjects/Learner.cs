@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OLab.Api.Common.Contracts;
+using OLab.Api.TurkTalk.Contracts;
 using System;
 
 namespace OLab.Api.TurkTalk.BusinessObjects;

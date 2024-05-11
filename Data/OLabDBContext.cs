@@ -296,6 +296,10 @@ public partial class OLabDBContext : DbContext
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
             entity.Property(e => e.Acl2).HasDefaultValueSql("b'0'");
+
+            entity.HasOne(d => d.Group).WithMany(p => p.GrouproleAcls).HasConstraintName("ifk_gra_group");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.GrouproleAcls).HasConstraintName("ifk_gra_role");
         });
 
         modelBuilder.Entity<Groups>(entity =>
@@ -1098,6 +1102,10 @@ public partial class OLabDBContext : DbContext
 
             entity.HasOne(d => d.Group).WithMany(p => p.UserGrouproles).HasConstraintName("user_grouproles_ibfk_2");
 
+            entity.HasOne(d => d.Role).WithMany(p => p.UserGrouproles)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("user_grouproles_ibfk_3");
+
             entity.HasOne(d => d.User).WithMany(p => p.UserGrouproles).HasConstraintName("user_grouproles_ibfk_1");
         });
 
@@ -1126,7 +1134,7 @@ public partial class OLabDBContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("user_responses_ibfk_1");
 
-            entity.HasOne(d => d.Session).WithMany(p => p.UserResponses).HasConstraintName("user_responses_ibfk_2");
+            entity.HasOne(d => d.Session).WithMany(p => p.UserResponses).HasConstraintName("user_responses_ibfk_3");
         });
 
         modelBuilder.Entity<UserSessions>(entity =>

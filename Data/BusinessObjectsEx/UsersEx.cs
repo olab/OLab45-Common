@@ -1,3 +1,4 @@
+using NuGet.Packaging;
 using System;
 using System.Linq;
 
@@ -5,6 +6,7 @@ namespace OLab.Api.Model;
 
 public partial class Users
 {
+  public const string AnonymousUserName = "anonymous";
   public const int SaltLength = 64;
   public const int PasswordLength = 8;
   private static readonly Random random = new Random();
@@ -26,8 +28,17 @@ public partial class Users
     newUser.Username = model.Username;
     newUser.Nickname = model.NickName;
     newUser.Email = model.EMail;
-    newUser.Group = model.Group;
-    newUser.Role = model.Role;
+
+    foreach (var groupRole in model.GroupRoles)
+    {
+      newUser.UserGrouproles.Add(
+        new UserGrouproles 
+        { 
+          GroupId = groupRole.GroupId, 
+          RoleId = groupRole.RoleId 
+        }
+      );
+    }
 
     return newUser;
   }

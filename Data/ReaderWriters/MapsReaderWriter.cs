@@ -6,23 +6,21 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Build.Framework;
+using OLab.Api.Model;
+using OLab.Common.Interfaces;
 
-namespace OLab.Api.Model.ReaderWriter;
+namespace OLab.Data.ReaderWriters;
 
-public partial class MapsReaderWriter
+public partial class MapsReaderWriter : ReaderWriter
 {
-  private readonly OLabDBContext _context;
-  private readonly ILogger _logger;
-
-  public static MapsReaderWriter Instance(ILogger logger, OLabDBContext context)
+  public static MapsReaderWriter Instance(IOLabLogger logger, OLabDBContext context)
   {
     return new MapsReaderWriter(logger, context);
   }
 
-  public MapsReaderWriter(ILogger logger, OLabDBContext context)
+  public MapsReaderWriter(IOLabLogger logger, OLabDBContext context) : base(logger, context)
   {
-    _context = context;
-    _logger = logger;
   }
 
   public async Task<Maps> DeleteAsync(uint id)

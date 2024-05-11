@@ -1,7 +1,7 @@
 using OLab.Api.TurkTalk.BusinessObjects;
 using System.Collections.Generic;
 
-namespace OLab.Api.Common.Contracts;
+namespace OLab.Api.TurkTalk.Contracts;
 
 public class ModeratorAssignmentPayload
 {

@@ -1,3 +1,4 @@
+using OLab.Api.Model;
 using System.Collections.Generic;
 
 namespace OLab.Api.Data.Interface;
@@ -10,7 +11,7 @@ public interface IUserContext
     set;
   }
 
-  public string Role
+  public IList<UserGrouproles> GroupRoles
   {
     get;
     set;
@@ -41,7 +42,7 @@ public interface IUserContext
 
   string ReferringCourse { get; }
 
-  public IList<string> UserRoles { get; }
+  //public IList<string> UserRoles { get; }
 
   public string ToString();
 }

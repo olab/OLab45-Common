@@ -24,4 +24,10 @@ public partial class Roles
     [Column("name")]
     [StringLength(100)]
     public string Name { get; set; }
+
+    [InverseProperty("Role")]
+    public virtual ICollection<GrouproleAcls> GrouproleAcls { get; } = new List<GrouproleAcls>();
+
+    [InverseProperty("Role")]
+    public virtual ICollection<UserGrouproles> UserGrouproles { get; } = new List<UserGrouproles>();
 }

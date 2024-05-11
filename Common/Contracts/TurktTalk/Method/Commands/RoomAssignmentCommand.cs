@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OLab.Api.Common.Contracts;
+using OLab.Api.TurkTalk.Contracts;
 using OLab.Api.TurkTalk.BusinessObjects;
 using OLab.Api.TurkTalk.Methods;
 

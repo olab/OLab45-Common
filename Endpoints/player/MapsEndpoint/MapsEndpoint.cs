@@ -7,11 +7,11 @@ using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
-using OLab.Api.Model.ReaderWriter;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
 using OLab.Data;
 using OLab.Data.Interface;
+using OLab.Data.ReaderWriters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -347,7 +347,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if (template == null)
       throw new OLabObjectNotFoundException("Maps", body.TemplateId);
 
-    map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext)
+    map = await MapsReaderWriter.Instance(Logger, dbContext)
       .CreateMapWithTemplateAsync(map, template);
 
     var mapLinks = dbContext.MapNodeLinks.AsNoTracking().Where(x => x.MapId == map.Id).ToList();
@@ -399,7 +399,7 @@ public partial class MapsEndpoint : OLabEndpoint
       if (template == null)
         throw new OLabObjectNotFoundException("Maps", body.TemplateId.Value);
 
-      map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext)
+      map = await MapsReaderWriter.Instance(Logger, dbContext)
         .CreateMapWithTemplateAsync(map, template);
     }
 
@@ -407,9 +407,7 @@ public partial class MapsEndpoint : OLabEndpoint
     var acl = SecurityUsers.CreateDefaultMapACL(auth.UserContext, map);
     dbContext.SecurityUsers.Add(acl);
 
-    // update map's author
-    if ( acl.UserId.HasValue )
-      map.AuthorId = acl.UserId.Value;
+    map.AuthorId = acl.UserId;
     dbContext.Entry(map).State = EntityState.Modified;
 
     await dbContext.SaveChangesAsync();
@@ -545,7 +543,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if (!auth.HasAccess("W", Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-    var map = await MapsReaderWriter.Instance(Logger.GetLogger(), dbContext).DeleteAsync(mapId)
+    var map = await MapsReaderWriter.Instance(Logger, dbContext).DeleteAsync(mapId)
       ?? throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
   }
