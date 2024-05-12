@@ -26,6 +26,12 @@ public partial class UserGrouproles
     return string.Join(Separator, groupRoles);
   }
 
+  public static string ToString(string groupName, string roleName)
+  {
+    return $"{groupName}{Separator}{roleName}";
+  }
+
+
   public static IList<UserGrouproles> StringToList(OLabDBContext dbContext, string source)
   {
     var items = new List<UserGrouproles>();
