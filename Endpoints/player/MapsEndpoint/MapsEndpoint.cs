@@ -404,8 +404,8 @@ public partial class MapsEndpoint : OLabEndpoint
     }
 
     // set up default ACL for map author against map
-    var acl = SecurityUsers.CreateDefaultMapACL(auth.UserContext, map);
-    dbContext.SecurityUsers.Add(acl);
+    var acl = UserAcls.CreateDefaultMapACL(auth.UserContext, map);
+    dbContext.UserAcls.Add(acl);
 
     map.AuthorId = acl.UserId;
     dbContext.Entry(map).State = EntityState.Modified;

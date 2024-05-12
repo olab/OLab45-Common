@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
-[Table("security_users")]
+[Table("user_acls")]
 [MySqlCharSet("utf8mb3")]
 [MySqlCollation("utf8mb3_general_ci")]
-public partial class SecurityUsers
+public partial class UserAcls
 {
     [Key]
     [Column("id", TypeName = "int(10) unsigned")]
@@ -34,4 +34,7 @@ public partial class SecurityUsers
     [Column("acl")]
     [StringLength(45)]
     public string Acl { get; set; }
+
+    [Column("acl2", TypeName = "bit(3)")]
+    public ulong Acl2 { get; set; }
 }

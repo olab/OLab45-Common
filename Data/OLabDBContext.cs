@@ -183,8 +183,6 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<ScopeTypes> ScopeTypes { get; set; }
 
-    public virtual DbSet<SecurityUsers> SecurityUsers { get; set; }
-
     public virtual DbSet<Servers> Servers { get; set; }
 
     public virtual DbSet<SjtResponse> SjtResponse { get; set; }
@@ -230,6 +228,8 @@ public partial class OLabDBContext : DbContext
     public virtual DbSet<TodayTips> TodayTips { get; set; }
 
     public virtual DbSet<TwitterCredits> TwitterCredits { get; set; }
+
+    public virtual DbSet<UserAcls> UserAcls { get; set; }
 
     public virtual DbSet<UserBookmarks> UserBookmarks { get; set; }
 
@@ -916,11 +916,6 @@ public partial class OLabDBContext : DbContext
             entity.HasKey(e => e.Id).HasName("PRIMARY");
         });
 
-        modelBuilder.Entity<SecurityUsers>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-        });
-
         modelBuilder.Entity<Servers>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -1076,6 +1071,13 @@ public partial class OLabDBContext : DbContext
         modelBuilder.Entity<TwitterCredits>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
+        });
+
+        modelBuilder.Entity<UserAcls>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.Property(e => e.Acl2).HasDefaultValueSql("b'0'");
         });
 
         modelBuilder.Entity<UserBookmarks>(entity =>

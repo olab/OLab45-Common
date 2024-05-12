@@ -502,12 +502,12 @@ public partial class MapsEndpoint : OLabEndpoint
   /// </summary>
   /// <param name="map">Relevent map object</param>
   /// <returns></returns>
-  public IList<SecurityUsers> GetSecurityUsersRaw(Maps map)
+  public IList<UserAcls> GetSecurityUsersRaw(Maps map)
   {
     if (map == null)
       return null;
 
-    var users = dbContext.SecurityUsers.Where(x => x.ImageableId == map.Id
+    var users = dbContext.UserAcls.Where(x => x.ImageableId == map.Id
     && (
       // note: this excludes `ImageableType == "*"` entries, allowing authors
       // to manipulate those rows may lead to unwanted side-effects
@@ -537,7 +537,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if (null == user)
       throw new OLabBadRequestException("User not found.");
 
-    var securityUser = dbContext.SecurityUsers.SingleOrDefault(x => x.ImageableId == map.Id
+    var securityUser = dbContext.UserAcls.SingleOrDefault(x => x.ImageableId == map.Id
     && (
       // note: this excludes `ImageableType == "*"` entries, allowing authors
       // to manipulate those rows may lead to unwanted side-effects
@@ -546,7 +546,7 @@ public partial class MapsEndpoint : OLabEndpoint
     ));
 
     if (null == securityUser)
-      securityUser = new SecurityUsers();
+      securityUser = new UserAcls();
 
     securityUser.ImageableId = map.Id;
     securityUser.UserId = user.Id;
@@ -557,13 +557,13 @@ public partial class MapsEndpoint : OLabEndpoint
     {
       if (securityUser.Id > 0) // update existing security user
       {
-        dbContext.SecurityUsers.Update(securityUser);
+        dbContext.UserAcls.Update(securityUser);
         var id = await dbContext.SaveChangesAsync();
         return id > 0;
       }
       else // insert security user
       {
-        await dbContext.SecurityUsers.AddAsync(securityUser);
+        await dbContext.UserAcls.AddAsync(securityUser);
         var id = await dbContext.SaveChangesAsync();
         return id > 0;
       }
@@ -588,7 +588,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if (map == null)
       return false;
 
-    var securityUser = dbContext.SecurityUsers.SingleOrDefault(x => x.ImageableId == map.Id
+    var securityUser = dbContext.UserAcls.SingleOrDefault(x => x.ImageableId == map.Id
     && (
       // note: this excludes `ImageableType == "*"` entries, allowing authors
       // to manipulate those rows may lead to unwanted side-effects
@@ -601,7 +601,7 @@ public partial class MapsEndpoint : OLabEndpoint
 
     try
     {
-      dbContext.SecurityUsers.Remove(securityUser);
+      dbContext.UserAcls.Remove(securityUser);
       var changes = await dbContext.SaveChangesAsync();
       return changes > 0;
     }

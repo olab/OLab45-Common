@@ -5,11 +5,11 @@ using OLab.Api.Utils;
 
 namespace OLab.Api.Model;
 
-public partial class SecurityUsers
+public partial class UserAcls
 {
-  public static SecurityUsers CreateDefaultMapACL(IUserContext userContext, Maps map)
+  public static UserAcls CreateDefaultMapACL(IUserContext userContext, Maps map)
   {
-    var acl = new SecurityUsers();
+    var acl = new UserAcls();
     acl.UserId = userContext.UserId;
     acl.Iss = userContext.Issuer;
     acl.ImageableId = map.Id;
