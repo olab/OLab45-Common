@@ -93,16 +93,16 @@ public partial class FilesEndpoint : OLabEndpoint
 
     Logger.LogInformation($"FilesController.ReadAsync(uint id={id})");
 
-    if (!Exists(id))
-      throw new OLabObjectNotFoundException("FilesPhys", id);
-
     var phys = await dbContext.SystemFiles.FirstAsync(x => x.Id == id);
+    if (phys == null)
+      throw new OLabObjectNotFoundException("SystemFiles", id);
+
     _fileStorageModule.AttachUrls(phys);
 
     var dto = new FilesFull(Logger).PhysicalToDto(phys);
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("R", dto);
+    var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskRead, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("FilesPhys", id);
 
@@ -126,7 +126,7 @@ public partial class FilesEndpoint : OLabEndpoint
     dto.ImageableId = dto.ParentInfo.Id;
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("W", dto);
+    var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskWrite, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("FilesPhys", id);
 
@@ -161,9 +161,9 @@ public partial class FilesEndpoint : OLabEndpoint
     var builder = new FilesFull(Logger);
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("W", dto);
+    var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskWrite, dto);
     if (accessResult is UnauthorizedResult)
-      throw new OLabUnauthorizedException("FilesPhys", 0);
+      throw new OLabUnauthorizedException("SystemFiles", 0);
 
     if (string.IsNullOrEmpty(dto.Mime))
       dto.Mime = MimeTypesMap.GetMimeType(Path.GetFileName(dto.FileName));
@@ -208,12 +208,15 @@ public partial class FilesEndpoint : OLabEndpoint
     try
     {
       var phys = await GetFileAsync(id);
+      if (phys == null)
+        throw new OLabObjectNotFoundException("SystemFiles", id);
+
       var dto = new FilesFull(Logger).PhysicalToDto(phys);
 
       // test if user has access to object
-      var accessResult = auth.HasAccess("W", dto);
+      var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskWrite, dto);
       if (accessResult is UnauthorizedResult)
-        throw new OLabUnauthorizedException("ConstantsPhys", id);
+        throw new OLabUnauthorizedException("SystemFiles", id);
 
       var filePath = _fileStorageModule.BuildPath(
         OLabFileStorageModule.FilesRoot,
@@ -231,7 +234,7 @@ public partial class FilesEndpoint : OLabEndpoint
     {
       var existingObject = await GetFileAsync(id);
       if (existingObject == null)
-        throw new OLabObjectNotFoundException("FilesPhys", id);
+        throw new OLabObjectNotFoundException("SystemFiles", id);
     }
 
   }

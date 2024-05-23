@@ -106,7 +106,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
     var dto = builder.PhysicalToDto(phys);
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("R", dto);
+    var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskRead, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("QuestionsPhys", id);
 
@@ -131,7 +131,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
     dto.ImageableId = dto.ParentInfo.Id;
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("W", dto);
+    var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskWrite, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("QuestionsPhys", id);
 
@@ -169,7 +169,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
     dto.Prompt = !string.IsNullOrEmpty(dto.Prompt) ? dto.Prompt : "";
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("W", dto);
+    var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskWrite, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("QuestionsPhys", 0);
 
@@ -208,7 +208,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
       var dto = new Questions(Logger, _wikiTagProvider).PhysicalToDto(phys);
 
       // test if user has access to object
-      var accessResult = auth.HasAccess("W", dto);
+      var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskWrite, dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Question", id);
 

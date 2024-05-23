@@ -7,7 +7,7 @@ namespace OLab.Api.Model;
 
 public partial class UserAcls
 {
-  public static UserAcls CreateDefaultMapACL(IUserContext userContext, Maps map)
+  public static UserAcls CreateDefault(IUserContext userContext, Maps map)
   {
     var acl = new UserAcls();
     acl.UserId = userContext.UserId;
@@ -15,6 +15,7 @@ public partial class UserAcls
     acl.ImageableId = map.Id;
     acl.ImageableType = Constants.ScopeLevelMap;
     acl.Acl = "RXWD";
+    acl.Acl2 = 7;
 
     return acl;
   }

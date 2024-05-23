@@ -49,25 +49,25 @@ public partial class ConstantsEndpoint : OLabEndpoint
   {
     Logger.LogInformation($"{auth.UserContext.UserId}: ConstantsEndpoint.ReadAsync");
 
-    var Constants = new List<SystemConstants>();
+    var constantsPhys = new List<SystemConstants>();
     var total = 0;
     var remaining = 0;
 
     if (!skip.HasValue)
       skip = 0;
 
-    Constants = await dbContext.SystemConstants.OrderBy(x => x.Name).ToListAsync();
-    total = Constants.Count;
+    constantsPhys = await dbContext.SystemConstants.OrderBy(x => x.Name).ToListAsync();
+    total = constantsPhys.Count;
 
     if (take.HasValue && skip.HasValue)
     {
-      Constants = Constants.Skip(skip.Value).Take(take.Value).ToList();
+      constantsPhys = constantsPhys.Skip(skip.Value).Take(take.Value).ToList();
       remaining = total - take.Value - skip.Value;
     }
 
-    Logger.LogInformation(string.Format("found {0} ConstantsPhys", Constants.Count));
+    Logger.LogInformation(string.Format("found {0} ConstantsPhys", constantsPhys.Count));
 
-    var dtoList = new ObjectMapper.Constants(Logger).PhysicalToDto(Constants);
+    var dtoList = new ObjectMapper.Constants(Logger).PhysicalToDto(constantsPhys);
 
     var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
     var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
@@ -94,10 +94,13 @@ public partial class ConstantsEndpoint : OLabEndpoint
       throw new OLabObjectNotFoundException("ConstantsPhys", id);
 
     var phys = await dbContext.SystemConstants.FirstAsync(x => x.Id == id);
+    if (phys == null)
+      throw new OLabObjectNotFoundException("SystemConstants", id);
+
     var dto = new ObjectMapper.Constants(Logger).PhysicalToDto(phys);
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("R", dto);
+    var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskRead, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("ConstantsPhys", id);
 
@@ -121,7 +124,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     dto.ImageableId = dto.ParentInfo.Id;
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("W", dto);
+    var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskWrite, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("ConstantsPhys", id);
 
@@ -156,7 +159,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     dto.ImageableId = dto.ParentInfo.Id != 0 ? dto.ParentInfo.Id : dto.ImageableId;
 
     // test if user has access to object
-    var accessResult = auth.HasAccess("W", dto);
+    var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskWrite, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("ConstantsPhys", 0);
 
@@ -192,7 +195,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
       var dto = new ConstantsFull(Logger).PhysicalToDto(phys);
 
       // test if user has access to object
-      var accessResult = auth.HasAccess("W", dto);
+      var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskWrite, dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("ConstantsPhys", id);
 

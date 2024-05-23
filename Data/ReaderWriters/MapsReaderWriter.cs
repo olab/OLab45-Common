@@ -90,6 +90,17 @@ public partial class MapsReaderWriter : ReaderWriter
     return phys;
   }
 
+  public async Task<Maps> GetSingleWithGroupsAsync(uint id)
+  {
+    var phys = await _context.Maps
+      .Include("MapGroups")
+      .FirstOrDefaultAsync(x => x.Id == id);
+
+    if (phys.Id == 0)
+      return null;
+    return phys;
+  }
+
   public async Task<Maps> GetSingleWithNodesAsync(uint id)
   {
     var phys = await GetSingleAsync(id);
