@@ -61,12 +61,12 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
 
     // test if user has access to parent object
     var accessResult = auth.HasAccess(
-      IOLabAuthorization.AclBitMaskWrite,
+      IOLabAuthorization.AclBitMaskExecute,
       Utils.Constants.ScopeLevelMap,
       dto.MapId);
 
     if (!accessResult)
-      throw new OLabUnauthorizedException("MapPhys", dto.MapId);
+      throw new OLabUnauthorizedException("Map", dto.MapId);
 
     var mapPhys = await mapReader.GetSingleWithGroupsAsync(dto.MapId);
     if (mapPhys == null)
@@ -102,12 +102,12 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
 
     // test if user has access to parent object
     var accessResult = auth.HasAccess(
-      IOLabAuthorization.AclBitMaskWrite,
+      IOLabAuthorization.AclBitMaskExecute,
       Utils.Constants.ScopeLevelMap,
       dto.MapId);
 
     if (!accessResult)
-      throw new OLabUnauthorizedException("MapPhys", dto.MapId);
+      throw new OLabUnauthorizedException("Map", dto.MapId);
 
     var mapPhys = await mapReader.GetSingleWithGroupsAsync(dto.MapId);
     if (mapPhys == null)

@@ -1,4 +1,5 @@
 ﻿
+using DocumentFormat.OpenXml.InkML;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +43,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
   }
 
   /// <summary>
-  /// Remove group from map
+  /// Remove group/role from user
   /// </summary>
   /// <param name="auth">IOLabAuthorization context</param>
   /// <param name="dto">Map group to remove</param>
@@ -59,12 +60,12 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
 
     // test if user has access to parent object
     var accessResult = auth.HasAccess(
-      IOLabAuthorization.AclBitMaskWrite,
+      IOLabAuthorization.AclBitMaskExecute,
       "UserAdmin",
       0);
 
     if (!accessResult)
-      throw new OLabUnauthorizedException("UserAdmin", dto.UserId);
+      throw new OLabUnauthorizedException("User", dto.UserId);
 
     var userPhys = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == dto.UserId, token);
     if (userPhys == null)
@@ -81,7 +82,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
   }
 
   /// <summary>
-  /// Add MapGroup to a map
+  /// Add group/role to a user
   /// </summary>
   /// <param name="auth">IOLabAuthorization context</param>
   /// <param name="dto">MapGroupsDto</param>
@@ -99,16 +100,24 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
 
     // test if user has access to parent object
     var accessResult = auth.HasAccess(
-      IOLabAuthorization.AclBitMaskWrite,
+      IOLabAuthorization.AclBitMaskExecute,
       "UserAdmin",
       0);
 
     if (!accessResult)
-      throw new OLabUnauthorizedException("UserAdmin", dto.UserId);
+      throw new OLabUnauthorizedException("User", dto.UserId);
 
     var userPhys = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == dto.UserId, token);
     if (userPhys == null)
       throw new OLabObjectNotFoundException("Users", dto.UserId);
+
+    var reader = GroupRoleReaderWriter.Instance(Logger, dbContext);
+
+    if (reader.GroupExists(dto.GroupId))
+      throw new OLabObjectNotFoundException("Group", dto.GroupId);
+
+    if (reader.RoleExists(dto.RoleId))
+      throw new OLabObjectNotFoundException("Role", dto.RoleId);
 
     var userGroupRolePhys = mapper.DtoToPhysical(dto);
     userPhys.UserGrouproles.Add(userGroupRolePhys);

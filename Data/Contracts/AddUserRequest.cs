@@ -11,11 +11,11 @@ using RequiredAttribute = System.ComponentModel.DataAnnotations.RequiredAttribut
 
 namespace OLab.Api.Model;
 
-public class GroupRole
-{
-  public uint GroupId { get; set; }
-  public uint RoleId { get; set; }
-}
+//public class GroupRole
+//{
+//  public uint GroupId { get; set; }
+//  public uint RoleId { get; set; }
+//}
 
 public class AddUserRequest
 {
@@ -30,7 +30,7 @@ public class AddUserRequest
   public string Password { get; set; }
   public string ModeUi { get; set; }
 
-  public IList<GroupRole> GroupRoles { get; set; }
+  public IList<UserGrouproles> GroupRoles { get; set; }
 
   //[Required]
   //public string Group { get; set; }
@@ -41,9 +41,7 @@ public class AddUserRequest
   {
     NickName = "";
     ModeUi = "easy";
-    GroupRoles = new List<GroupRole>();
-    //Group = "";
-    //Role = "";
+    GroupRoles = new List<UserGrouproles>();
   }
 
   /// <summary>
@@ -59,7 +57,7 @@ public class AddUserRequest
     string userRequestText)
   {
     var parts = userRequestText.Split("\t");
-    if (parts.Length != 6)
+    if (parts.Length < 5)
     {
       throw new Exception("Bad user request record");
     }
@@ -74,21 +72,25 @@ public class AddUserRequest
     if (parts.Count() <= 4)
       throw new Exception("Missing group/role arguments");
 
+    // process group.role strings
     for (int i = 4; i < parts.Length; i++)
     {
       var groupRolePart = parts[i];
       var groupRoleParts = groupRolePart.Split(":");
 
-      Groups groupPhys = null;
-      Roles rolesPhys = null;
-
       var reader = GroupRoleReaderWriter.Instance(logger, dbContext);
-      if (reader.Lookup(groupRoleParts[0], groupPhys, groupRoleParts[1], rolesPhys))
-        GroupRoles.Add(new GroupRole { GroupId = groupPhys.Id, RoleId = rolesPhys.Id });
-    }
+      var groupPhys = reader.GetGroup(groupRoleParts[0]);
+      var rolesPhys = reader.GetRole(groupRoleParts[1]);
 
-    //Group = "";
-    //Role = parts[5];
+      if ( (groupPhys != null) && (rolesPhys != null) )
+        GroupRoles.Add(new UserGrouproles 
+        { 
+          GroupId = groupPhys.Id, 
+          RoleId = rolesPhys.Id,
+          Group = groupPhys,
+          Role = rolesPhys
+        });
+    }
 
     Username = Username.ToLower();
 
