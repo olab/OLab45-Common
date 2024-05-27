@@ -78,6 +78,8 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
       mapPhys.MapGroups.Remove(mapGroupPhys);
       dbContext.SaveChanges();
     }
+    else
+      throw new OLabObjectNotFoundException("MapGroup", dto.GroupId);
 
     return mapper.PhysicalToDto(mapPhys.MapGroups.ToList());
 
@@ -113,10 +115,20 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     if (mapPhys == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, dto.MapId);
 
-    var mapGroupPhys = mapper.DtoToPhysical(dto);
-    mapPhys.MapGroups.Add(mapGroupPhys);
+    var reader = GroupRoleReaderWriter.Instance(Logger, dbContext);
 
-    dbContext.SaveChanges();
+    // ensure group exists
+    if (reader.GroupExistsAsync(dto.GroupId))
+      throw new OLabObjectNotFoundException("Group", dto.GroupId);
+
+    // test if doesn't already exist
+    if (!mapPhys.MapGroups.Any(x => x.GroupId == dto.GroupId))
+    {
+      var mapGroupPhys = mapper.DtoToPhysical(dto);
+      mapPhys.MapGroups.Add(mapGroupPhys);
+
+      dbContext.SaveChanges();
+    }
 
     return mapper.PhysicalToDto(mapPhys.MapGroups.ToList());
 

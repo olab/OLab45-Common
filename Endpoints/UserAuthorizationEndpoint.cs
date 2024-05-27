@@ -48,7 +48,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
   /// <param name="auth">IOLabAuthorization context</param>
   /// <param name="dto">Map group to remove</param>
   /// <param name="token">Cancellation token</param>
-  /// <returns>All groups for map</returns>
+  /// <returns>All group/roles for user</returns>
   /// <exception cref="OLabUnauthorizedException"></exception>
   /// <exception cref="OLabObjectNotFoundException"></exception>
   public async Task<IList<UserGroupRolesDto>> DeleteAsync(
@@ -71,11 +71,16 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     if (userPhys == null)
       throw new OLabObjectNotFoundException("Users", dto.UserId);
 
-    var mapGroupPhys = userPhys.UserGrouproles.FirstOrDefault(x => x.GroupId == dto.GroupId);
-    if (mapGroupPhys != null)
-      userPhys.UserGrouproles.Remove(mapGroupPhys);
+    var mapGroupPhys = userPhys.UserGrouproles
+      .FirstOrDefault(x => (x.GroupId == dto.GroupId) && (x.RoleId == dto.RoleId));
 
-    dbContext.SaveChanges();
+    if (mapGroupPhys != null)
+    {
+      userPhys.UserGrouproles.Remove(mapGroupPhys);
+      dbContext.SaveChanges();
+    }
+    else
+      throw new OLabObjectNotFoundException("UserGroupRole", 0);
 
     return mapper.PhysicalToDto(userPhys.UserGrouproles.ToList());
 
@@ -113,16 +118,22 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
 
     var reader = GroupRoleReaderWriter.Instance(Logger, dbContext);
 
-    if (reader.GroupExists(dto.GroupId))
+    // ensure group exists
+    if (reader.GroupExistsAsync(dto.GroupId))
       throw new OLabObjectNotFoundException("Group", dto.GroupId);
 
+    // ensure role exists
     if (reader.RoleExists(dto.RoleId))
       throw new OLabObjectNotFoundException("Role", dto.RoleId);
 
-    var userGroupRolePhys = mapper.DtoToPhysical(dto);
-    userPhys.UserGrouproles.Add(userGroupRolePhys);
+    // test if doesn't already exist
+    if (!userPhys.UserGrouproles.Any(x => (x.RoleId == dto.RoleId) && (x.GroupId == dto.GroupId)))
+    {
+      var userGroupRolePhys = mapper.DtoToPhysical(dto);
+      userPhys.UserGrouproles.Add(userGroupRolePhys);
 
-    dbContext.SaveChanges();
+      dbContext.SaveChanges();
+    }
 
     return mapper.PhysicalToDto(userPhys.UserGrouproles.ToList());
 
