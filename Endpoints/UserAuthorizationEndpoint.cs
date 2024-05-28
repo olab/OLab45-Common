@@ -119,11 +119,11 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     var reader = GroupRoleReaderWriter.Instance(Logger, dbContext);
 
     // ensure group exists
-    if (reader.GroupExistsAsync(dto.GroupId))
+    if (await reader.GroupExistsAsync(dto.GroupId))
       throw new OLabObjectNotFoundException("Group", dto.GroupId);
 
     // ensure role exists
-    if (reader.RoleExists(dto.RoleId))
+    if (await reader.RoleExistsAsync(dto.RoleId))
       throw new OLabObjectNotFoundException("Role", dto.RoleId);
 
     // test if doesn't already exist

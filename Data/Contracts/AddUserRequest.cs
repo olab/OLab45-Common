@@ -1,4 +1,5 @@
 using Microsoft.Build.Framework;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OLab.Common.Interfaces;
 using OLab.Data.ReaderWriters;
@@ -7,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 using RequiredAttribute = System.ComponentModel.DataAnnotations.RequiredAttribute;
 
 namespace OLab.Api.Model;
@@ -19,6 +21,9 @@ namespace OLab.Api.Model;
 
 public class AddUserRequest
 {
+  private readonly IOLabLogger logger;
+  private readonly OLabDBContext dbContext;
+
   //private readonly string userRequestText;
 
   [Required]
@@ -53,8 +58,13 @@ public class AddUserRequest
   /// <exception cref="Exception"></exception>
   public AddUserRequest(
     IOLabLogger logger,
-    OLabDBContext dbContext,
-    string userRequestText)
+    OLabDBContext dbContext)
+  {
+    this.logger = logger;
+    this.dbContext = dbContext;
+  }
+
+  public async Task ProcessAddUserText( string userRequestText)
   {
     var parts = userRequestText.Split("\t");
     if (parts.Length < 5)
@@ -75,17 +85,18 @@ public class AddUserRequest
     // process group.role strings
     for (int i = 4; i < parts.Length; i++)
     {
+      // split group/role string into parts
       var groupRolePart = parts[i];
       var groupRoleParts = groupRolePart.Split(":");
 
       var reader = GroupRoleReaderWriter.Instance(logger, dbContext);
-      var groupPhys = reader.GetGroup(groupRoleParts[0]);
-      var rolesPhys = reader.GetRole(groupRoleParts[1]);
+      var groupPhys = await reader.GetGroupAsync(groupRoleParts[0]);
+      var rolesPhys = await reader.GetRoleAsync(groupRoleParts[1]);
 
-      if ( (groupPhys != null) && (rolesPhys != null) )
-        GroupRoles.Add(new UserGrouproles 
-        { 
-          GroupId = groupPhys.Id, 
+      if ((groupPhys != null) && (rolesPhys != null))
+        GroupRoles.Add(new UserGrouproles
+        {
+          GroupId = groupPhys.Id,
           RoleId = rolesPhys.Id,
           Group = groupPhys,
           Role = rolesPhys

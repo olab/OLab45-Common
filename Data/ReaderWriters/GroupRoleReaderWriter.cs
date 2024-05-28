@@ -7,6 +7,9 @@ using DocumentFormat.OpenXml.Office2010.Excel;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using OLab.Api.Common;
+using OLab.Api.Dto;
+using System;
 
 namespace OLab.Data.ReaderWriters;
 
@@ -90,19 +93,33 @@ public class GroupRoleReaderWriter : ReaderWriter
   }
 
   /// <summary>
-  /// Get groups
+  /// Get groups paged
   /// </summary>
-  /// <param name="name">Group name</param>
-  /// <returns>Groups</returns>
-  public async Task<IList<Groups>> GetGroupsAsync(int? take, int? skip)
+  /// <param name="take">(optional) number of objects to return</param>
+  /// <param name="skip">(optional) number of objects to skip</param>
+  /// <returns>OLabAPIPagedResponse</returns>
+  public async Task<OLabAPIPagedResponse<Groups>> GetGroupsPagedAsync(int? take, int? skip)
   {
+    var response = new OLabAPIPagedResponse<Groups>();
+
     if (!take.HasValue && !skip.HasValue)
-      return await _context.Groups.ToListAsync();
+    {
+      response.Data = await _context.Groups.ToListAsync();
+      response.Count = response.Data.Count;
+      response.Remaining = 0;
+    }
 
-    if (take.HasValue && skip.HasValue)
-      return await _context.Groups.Skip(skip.Value).Take(take.Value).ToListAsync();
+    else if (take.HasValue && skip.HasValue)
+    {
+      response.Data = await _context.Groups.Skip(skip.Value).Take(take.Value).ToListAsync();
+      response.Count += response.Data.Count;
+      response.Remaining = _context.Groups.Count() - skip.Value - response.Count;
+    }
 
-    return new List<Groups>();
+    else
+      _logger.LogWarning($"invalid/partial take/skip parameters");
+    
+    return response;
   }
 
   /// <summary>
@@ -128,23 +145,37 @@ public class GroupRoleReaderWriter : ReaderWriter
   }
 
   /// <summary>
-  /// Get roles
+  /// Get roles paged
   /// </summary>
-  /// <param name="name">Group name</param>
-  /// <returns>Groups</returns>
-  public async Task<IList<Roles>> GetRolesAsync(int? take, int? skip)
+  /// <param name="take">(optional) number of objects to return</param>
+  /// <param name="skip">(optional) number of objects to skip</param>
+  /// <returns>OLabAPIPagedResponse</returns>
+  public async Task<OLabAPIPagedResponse<Roles>> GetRolesPagedAsync(int? take, int? skip)
   {
+    var response = new OLabAPIPagedResponse<Roles>();
+
     if (!take.HasValue && !skip.HasValue)
-      return await _context.Roles.ToListAsync();
+    {
+      response.Data = await _context.Roles.ToListAsync();
+      response.Count = response.Data.Count;
+      response.Remaining = 0;
+    }
 
-    if (take.HasValue && skip.HasValue)
-      return await _context.Roles.Skip(skip.Value).Take(take.Value).ToListAsync();
+    else if (take.HasValue && skip.HasValue)
+    {
+      response.Data = await _context.Roles.Skip(skip.Value).Take(take.Value).ToListAsync();
+      response.Count += response.Data.Count;
+      response.Remaining = _context.Roles.Count() - skip.Value - response.Count;
+    }
 
-    return new List<Roles>();
+    else
+      _logger.LogWarning($"invalid/partial take/skip parameters");
+
+    return response;
   }
 
   /// <summary>
-  /// Test if group exists
+  /// Test if group exists by id
   /// </summary>
   /// <param name="id">Group id</param>
   /// <returns>true/false</returns>
@@ -156,7 +187,7 @@ public class GroupRoleReaderWriter : ReaderWriter
   }
 
   /// <summary>
-  /// Test if role exists
+  /// Test if role exists by id
   /// </summary>
   /// <param name="id">Role id</param>
   /// <returns>true/false</returns>
@@ -177,8 +208,8 @@ public class GroupRoleReaderWriter : ReaderWriter
     uint groupId,
     uint roleId)
   {
-    var haveGroup = GroupExistsAsync(groupId);
-    var haveRole = RoleExists(roleId);
+    var haveGroup = await GroupExistsAsync(groupId);
+    var haveRole = await RoleExistsAsync(roleId);
 
     if (!haveGroup || !haveRole)
       return false;
@@ -192,12 +223,12 @@ public class GroupRoleReaderWriter : ReaderWriter
   /// <param name="groupName">Group name</param>
   /// <param name="roleName">Role name</param>
   /// <returns>true/false</returns>
-  public bool Exists(
+  public async Task<bool> Exists(
     string groupName,
     string roleName)
   {
-    var groupPhys = GetGroup(groupName);
-    var rolePhys = GetRole(roleName);
+    var groupPhys = await GetGroupAsync(groupName);
+    var rolePhys = await GetRoleAsync(roleName);
 
     if ((groupPhys == null) || (rolePhys == null))
       return false;
@@ -211,12 +242,12 @@ public class GroupRoleReaderWriter : ReaderWriter
   /// <param name="groupName">Group object</param>
   /// <param name="roleName">Role object</param>
   /// <returns>true/false</returns>
-  public bool Exists(
+  public async Task<bool> ExistsAsync(
     Groups groupPhys,
     Roles rolePhys)
   {
-    groupPhys = GetGroup(groupPhys.Id);
-    rolePhys = GetRole(rolePhys.Id);
+    groupPhys = await GetGroupAsync(groupPhys.Id);
+    rolePhys = await GetRoleAsync(rolePhys.Id);
 
     if ((groupPhys == null) || (rolePhys == null))
       return false;
@@ -224,4 +255,23 @@ public class GroupRoleReaderWriter : ReaderWriter
     return true;
   }
 
+  public async Task DeleteRoleAsync(uint id)
+  {
+    if (await GroupExistsAsync(id))
+    {
+      var phys = await _context.Roles.FirstOrDefaultAsync(x => x.Id == id);
+      _context.Roles.Remove(phys);
+      await _context.SaveChangesAsync();
+    }
+  }
+
+  public async Task DeleteGroupAsync(uint id)
+  {
+    if (await GroupExistsAsync(id))
+    {
+      var phys = await _context.Groups.FirstOrDefaultAsync(x => x.Id == id);
+      _context.Groups.Remove(phys);
+      await _context.SaveChangesAsync();
+    }
+  }
 }
