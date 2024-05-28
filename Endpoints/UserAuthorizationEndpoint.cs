@@ -78,6 +78,9 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     {
       userPhys.UserGrouproles.Remove(mapGroupPhys);
       dbContext.SaveChanges();
+
+      Logger.LogInformation($"removed group/role {dto.GroupId}/{dto.RoleId} from user {userPhys.Username}");
+
     }
     else
       throw new OLabObjectNotFoundException("UserGroupRole", 0);
@@ -133,6 +136,9 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
       userPhys.UserGrouproles.Add(userGroupRolePhys);
 
       dbContext.SaveChanges();
+
+      Logger.LogInformation($"added group/role {dto.GroupId}/{dto.RoleId} to user {userPhys.Username}");
+
     }
 
     return mapper.PhysicalToDto(userPhys.UserGrouproles.ToList());

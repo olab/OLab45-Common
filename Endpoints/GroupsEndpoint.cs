@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OLab.Api.Common;
+﻿using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Interface;
+using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
+using OLab.Data.Mappers;
 using OLab.Data.ReaderWriters;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,20 +15,22 @@ namespace OLab.Api.Endpoints;
 public partial class GroupsEndpoint : OLabEndpoint
 {
   private readonly GroupRoleReaderWriter _readerWriter;
+  private readonly GroupsMapper _mapper;
 
   public GroupsEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
-    OLabDBContext context,
+    OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
     IOLabModuleProvider<IFileStorageModule> fileStorageProvider) : base(
       logger,
       configuration,
-      context,
+      dbContext,
       wikiTagProvider,
       fileStorageProvider)
   {
-    _readerWriter = GroupRoleReaderWriter.Instance(logger, context);
+    _readerWriter = GroupRoleReaderWriter.Instance(logger, dbContext);
+    _mapper = new GroupsMapper(logger);
   }
 
   /// <summary>
@@ -36,12 +39,21 @@ public partial class GroupsEndpoint : OLabEndpoint
   /// <param name="take">(optional) number of objects to return</param>
   /// <param name="skip">(optional) number of objects to skip</param>
   /// <returns>OLabAPIPagedResponse</returns>
-  public async Task<OLabAPIPagedResponse<Groups>> GetAsync(
+  public async Task<OLabAPIPagedResponse<GroupsDto>> GetAsync(
     IOLabAuthorization auth,
     int? take, int? skip)
   {
     Logger.LogInformation($"GroupsEndpoint.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
-    return await _readerWriter.GetGroupsPagedAsync(take, skip);
+    var pagedDataPhys = await _readerWriter.GetGroupsPagedAsync(take, skip);
+
+    var pagedDataDto = new OLabAPIPagedResponse<GroupsDto>();
+
+    pagedDataDto.Data = _mapper.PhysicalToDto(pagedDataPhys.Data);
+    pagedDataDto.Remaining = pagedDataPhys.Remaining;
+    pagedDataDto.Count = pagedDataPhys.Count;
+
+    return pagedDataDto;
+
   }
 
   /// <summary>
@@ -49,13 +61,31 @@ public partial class GroupsEndpoint : OLabEndpoint
   /// </summary>
   /// <param name="id">Group Id</param>
   /// <returns></returns>
-  public async Task<Groups> GetAsync(
+  public async Task<GroupsDto> GetAsync(
     IOLabAuthorization auth,
     uint id)
   {
 
     Logger.LogInformation($"GroupsEndpoint.ReadAsync(uint id={id})");
-    return await _readerWriter.GetGroupAsync(id);
+    var phys = await _readerWriter.GetGroupAsync(id);
+
+    return _mapper.PhysicalToDto(phys);
+  }
+
+  /// <summary>
+  /// Get Group
+  /// </summary>
+  /// <param name="id">Group Id</param>
+  /// <returns></returns>
+  public async Task<GroupsDto> GetAsync(
+    IOLabAuthorization auth,
+    string name)
+  {
+
+    Logger.LogInformation($"GroupsEndpoint.ReadAsync(uint name={name})");
+    var phys = await _readerWriter.GetGroupAsync(name);
+
+    return _mapper.PhysicalToDto(phys);
   }
 
   /// <summary>
@@ -63,7 +93,7 @@ public partial class GroupsEndpoint : OLabEndpoint
   /// </summary>
   /// <param name="groupName">Group name to create</param>
   /// <returns>Groups</returns>
-  public async Task<Groups> PostAsync(
+  public async Task<GroupsDto> PostAsync(
     IOLabAuthorization auth,
     string groupName,
     CancellationToken token)
@@ -74,9 +104,8 @@ public partial class GroupsEndpoint : OLabEndpoint
     if (!await auth.IsSystemSuperuserAsync())
       throw new OLabUnauthorizedException();
 
-    var groupPhys = await _readerWriter.CreateGroupAsync(groupName);
-
-    return groupPhys;
+    var phys = await _readerWriter.CreateGroupAsync(groupName);
+    return _mapper.PhysicalToDto(phys);
   }
 
   /// <summary>

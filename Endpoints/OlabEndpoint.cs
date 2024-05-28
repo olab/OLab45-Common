@@ -42,13 +42,13 @@ public class OLabEndpoint
   public OLabEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
-    OLabDBContext context)
+    OLabDBContext dbContext)
   {
     Guard.Argument(logger).NotNull(nameof(logger));
     Guard.Argument(configuration).NotNull(nameof(configuration));
-    Guard.Argument(context).NotNull(nameof(context));
+    Guard.Argument(dbContext).NotNull(nameof(dbContext));
 
-    dbContext = context;
+    this.dbContext = dbContext;
     _configuration = configuration;
 
     Logger = logger;
@@ -57,9 +57,9 @@ public class OLabEndpoint
   public OLabEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
-    OLabDBContext context,
+    OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
-    IOLabModuleProvider<IFileStorageModule> fileStorageProvider) : this(logger, configuration, context)
+    IOLabModuleProvider<IFileStorageModule> fileStorageProvider) : this(logger, configuration, dbContext)
   {
     Guard.Argument(wikiTagProvider).NotNull(nameof(wikiTagProvider));
     Guard.Argument(fileStorageProvider).NotNull(nameof(fileStorageProvider));
