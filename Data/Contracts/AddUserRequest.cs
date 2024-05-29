@@ -1,12 +1,8 @@
-using Microsoft.Build.Framework;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OLab.Common.Interfaces;
 using OLab.Data.ReaderWriters;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using RequiredAttribute = System.ComponentModel.DataAnnotations.RequiredAttribute;
@@ -89,9 +85,10 @@ public class AddUserRequest
       var groupRolePart = parts[i];
       var groupRoleParts = groupRolePart.Split(":");
 
-      var reader = GroupRoleReaderWriter.Instance(logger, dbContext);
-      var groupPhys = await reader.GetGroupAsync(groupRoleParts[0]);
-      var rolesPhys = await reader.GetRoleAsync(groupRoleParts[1]);
+      var groupPhys = 
+        await GroupReaderWriter.Instance(logger, dbContext).GetAsync(groupRoleParts[0]);
+      var rolesPhys = 
+        await RoleReaderWriter.Instance(logger, dbContext).GetAsync(groupRoleParts[1]);
 
       if ((groupPhys != null) && (rolesPhys != null))
         GroupRoles.Add(new UserGrouproles

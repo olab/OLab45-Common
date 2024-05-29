@@ -10,6 +10,7 @@ public class OLabUnauthorizedObjectResult
     {
       Data = value,
       ErrorCode = HttpStatusCode.Unauthorized,
+      Status = (int)HttpStatusCode.Unauthorized,
       Message = "Unauthorized"
     };
 

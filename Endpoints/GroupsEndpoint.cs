@@ -1,5 +1,7 @@
-﻿using OLab.Api.Common;
+﻿using Microsoft.EntityFrameworkCore;
+using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
+using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -7,6 +9,8 @@ using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using OLab.Data.Mappers;
 using OLab.Data.ReaderWriters;
+using SharpCompress;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,7 +18,7 @@ namespace OLab.Api.Endpoints;
 
 public partial class GroupsEndpoint : OLabEndpoint
 {
-  private readonly GroupRoleReaderWriter _readerWriter;
+  private readonly GroupReaderWriter _readerWriter;
   private readonly GroupsMapper _mapper;
 
   public GroupsEndpoint(
@@ -29,7 +33,7 @@ public partial class GroupsEndpoint : OLabEndpoint
       wikiTagProvider,
       fileStorageProvider)
   {
-    _readerWriter = GroupRoleReaderWriter.Instance(logger, dbContext);
+    _readerWriter = GroupReaderWriter.Instance(logger, dbContext);
     _mapper = new GroupsMapper(logger);
   }
 
@@ -44,7 +48,7 @@ public partial class GroupsEndpoint : OLabEndpoint
     int? take, int? skip)
   {
     Logger.LogInformation($"GroupsEndpoint.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
-    var pagedDataPhys = await _readerWriter.GetGroupsPagedAsync(take, skip);
+    var pagedDataPhys = await _readerWriter.GetPagedAsync(take, skip);
 
     var pagedDataDto = new OLabAPIPagedResponse<GroupsDto>();
 
@@ -60,31 +64,18 @@ public partial class GroupsEndpoint : OLabEndpoint
   /// Get Group
   /// </summary>
   /// <param name="id">Group Id</param>
-  /// <returns></returns>
+  /// <returns>GroupsDto or null</returns>
   public async Task<GroupsDto> GetAsync(
     IOLabAuthorization auth,
-    uint id)
+    string source)
   {
 
-    Logger.LogInformation($"GroupsEndpoint.ReadAsync(uint id={id})");
-    var phys = await _readerWriter.GetGroupAsync(id);
+    Logger.LogInformation($"GroupsEndpoint.ReadAsync(source={source})");
 
-    return _mapper.PhysicalToDto(phys);
-  }
-
-  /// <summary>
-  /// Get Group
-  /// </summary>
-  /// <param name="id">Group Id</param>
-  /// <returns></returns>
-  public async Task<GroupsDto> GetAsync(
-    IOLabAuthorization auth,
-    string name)
-  {
-
-    Logger.LogInformation($"GroupsEndpoint.ReadAsync(uint name={name})");
-    var phys = await _readerWriter.GetGroupAsync(name);
-
+    var phys = await _readerWriter.GetAsync(source);
+    if (phys == null)
+      throw new OLabObjectNotFoundException("Group", source);
+    
     return _mapper.PhysicalToDto(phys);
   }
 
@@ -104,7 +95,7 @@ public partial class GroupsEndpoint : OLabEndpoint
     if (!await auth.IsSystemSuperuserAsync())
       throw new OLabUnauthorizedException();
 
-    var phys = await _readerWriter.CreateGroupAsync(groupName);
+    var phys = await _readerWriter.CreateAsync(groupName);
     return _mapper.PhysicalToDto(phys);
   }
 
@@ -114,7 +105,7 @@ public partial class GroupsEndpoint : OLabEndpoint
   /// <param name="id">Group id to delete</param>
   public async Task DeleteAsync(
     IOLabAuthorization auth,
-    uint id)
+    string source)
   {
     Logger.LogInformation($"GroupsEndpoint.DeleteAsync()");
 
@@ -122,7 +113,21 @@ public partial class GroupsEndpoint : OLabEndpoint
     if (!await auth.IsSystemSuperuserAsync())
       throw new OLabUnauthorizedException();
 
-    await _readerWriter.DeleteGroupAsync(id);
+    var phys = await _readerWriter.GetAsync(source);
+    if (phys == null)
+      throw new OLabObjectNotFoundException("Groups", source);
+
+    // test if reserved group
+    if (phys.Name == Groups.OLabGroup)
+      throw new OLabUnauthorizedException();
+
+    // test if in use somewhere
+    var inUse = await dbContext.MapGroups.AnyAsync(x => x.GroupId == phys.Id) ||
+                await dbContext.UserGrouproles.AnyAsync( x => x.GroupId == phys.Id);
+    if (inUse)
+      throw new OLabGeneralException($"Group '{source}' in use.");
+
+    await _readerWriter.DeleteAsync(source);
   }
 
 }

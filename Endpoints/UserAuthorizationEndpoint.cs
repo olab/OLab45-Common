@@ -119,14 +119,14 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     if (userPhys == null)
       throw new OLabObjectNotFoundException("Users", dto.UserId);
 
-    var reader = GroupRoleReaderWriter.Instance(Logger, dbContext);
-
+    var groupReader = GroupReaderWriter.Instance(Logger, dbContext);
     // ensure group exists
-    if (await reader.GroupExistsAsync(dto.GroupId))
+    if (await groupReader.ExistsAsync(dto.GroupId.ToString()))
       throw new OLabObjectNotFoundException("Group", dto.GroupId);
 
+    var roleReader = RoleReaderWriter.Instance(Logger, dbContext);
     // ensure role exists
-    if (await reader.RoleExistsAsync(dto.RoleId))
+    if (await roleReader.ExistsAsync(dto.RoleId.ToString()))
       throw new OLabObjectNotFoundException("Role", dto.RoleId);
 
     // test if doesn't already exist

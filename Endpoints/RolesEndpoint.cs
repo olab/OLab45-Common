@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
+using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -15,22 +16,22 @@ namespace OLab.Api.Endpoints;
 
 public partial class RolesEndpoint : OLabEndpoint
 {
-  private readonly GroupRoleReaderWriter _readerWriter;
+  private readonly RoleReaderWriter _readerWriter;
   private readonly RolesMapper _mapper;
 
   public RolesEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
-    OLabDBContext context,
+    OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
     IOLabModuleProvider<IFileStorageModule> fileStorageProvider) : base(
       logger,
       configuration,
-      context,
+      dbContext,
       wikiTagProvider,
       fileStorageProvider)
   {
-    _readerWriter = GroupRoleReaderWriter.Instance(logger, context);
+    _readerWriter = RoleReaderWriter.Instance(logger, dbContext);
     _mapper = new RolesMapper(logger);
   }
 
@@ -45,7 +46,7 @@ public partial class RolesEndpoint : OLabEndpoint
     int? take, int? skip)
   {
     Logger.LogInformation($"RolesEndpoint.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
-    var pagedDataPhys = await _readerWriter.GetRolesPagedAsync(take, skip);
+    var pagedDataPhys = await _readerWriter.GetPagedAsync(take, skip);
 
     var pagedDataDto = new OLabAPIPagedResponse<RolesDto>();
 
@@ -58,26 +59,25 @@ public partial class RolesEndpoint : OLabEndpoint
   }
 
   /// <summary>
-  /// Get Group
+  /// Get Role
   /// </summary>
-  /// <param name="id">Group Id</param>
+  /// <param name="id">Role Id</param>
   /// <returns></returns>
   public async Task<RolesDto> GetAsync(
     IOLabAuthorization auth,
-    uint id)
+    string source)
   {
 
-    Logger.LogInformation($"RolesEndpoint.ReadAsync(uint id={id})");
-    var phys = await _readerWriter.GetRoleAsync(id);
+    Logger.LogInformation($"RolesEndpoint.ReadAsync(source={source})");
+    var phys = await _readerWriter.GetAsync(source);
 
     return _mapper.PhysicalToDto(phys);
-
   }
 
   /// <summary>
   /// Create new group
   /// </summary>
-  /// <param name="groupName">Group name to create</param>
+  /// <param name="groupName">Role name to create</param>
   /// <returns>Roles</returns>
   public async Task<RolesDto> PostAsync(
     IOLabAuthorization auth,
@@ -90,25 +90,40 @@ public partial class RolesEndpoint : OLabEndpoint
     if (!await auth.IsSystemSuperuserAsync())
       throw new OLabUnauthorizedException();
 
-    var phys = await _readerWriter.CreateRoleAsync(groupName);
+    var phys = await _readerWriter.CreateAsync(groupName);
     return _mapper.PhysicalToDto(phys);
   }
 
   /// <summary>
   /// Deletes a group
   /// </summary>
-  /// <param name="id">Group id to delete</param>
+  /// <param name="id">Role id to delete</param>
   public async Task DeleteAsync(
     IOLabAuthorization auth,
-    uint id)
+    string source)
   {
-    Logger.LogInformation($"RolesEndpoint.DeleteAsync()");
+    {
+      Logger.LogInformation($"RolesEndpoint.DeleteAsync()");
 
-    // test if user has access 
-    if (!await auth.IsSystemSuperuserAsync())
-      throw new OLabUnauthorizedException();
+      // test if user has access 
+      if (!await auth.IsSystemSuperuserAsync())
+        throw new OLabUnauthorizedException();
 
-    await _readerWriter.DeleteRoleAsync(id);
+      var phys = await _readerWriter.GetAsync(source);
+      if (phys == null)
+        throw new OLabObjectNotFoundException("Roles", source);
+
+      // test if reserved group
+      if (phys.Name == Roles.SuperUserRole)
+        throw new OLabUnauthorizedException();
+
+      // test if in use somewhere
+      var inUse = await dbContext.UserGrouproles.AnyAsync(x => x.RoleId == phys.Id);
+      if (inUse)
+        throw new OLabGeneralException($"Role '{source}' in use.");
+
+      await _readerWriter.DeleteAsync(source);
+    }
   }
 
 }

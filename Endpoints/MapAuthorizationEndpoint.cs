@@ -115,10 +115,10 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     if (mapPhys == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, dto.MapId);
 
-    var reader = GroupRoleReaderWriter.Instance(Logger, dbContext);
+    var reader = GroupReaderWriter.Instance(Logger, dbContext);
 
     // ensure group exists
-    if (await reader.GroupExistsAsync(dto.GroupId))
+    if (await reader.ExistsAsync(dto.GroupId.ToString()))
       throw new OLabObjectNotFoundException("Group", dto.GroupId);
 
     // test if doesn't already exist
