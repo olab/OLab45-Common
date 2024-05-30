@@ -1,6 +1,8 @@
 #nullable disable
 
 using OLab.Api.Data.Interface;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace OLab.Api.Model;
@@ -23,10 +25,18 @@ public partial class GrouproleAcls
     acl.ImageableType = imageableType;
     acl.ImageableId = imagableId;
 
-    acl.Acl = "RXWD";
     acl.Acl2 = 7;
 
     return acl;
+  }
+
+  public static IList<GrouproleAcls> FindByGroup(
+    OLabDBContext dbContext,
+    string groupName)
+  {
+    var items = dbContext.GrouproleAcls
+      .Where(x => x.Group.Name == groupName);
+    return items.ToList();
   }
 
   public static GrouproleAcls Find( 
@@ -41,7 +51,7 @@ public partial class GrouproleAcls
 
   public override string ToString()
   {
-    return $"{Id}: {Role.Name} {ImageableType}({ImageableId}) '{Acl}'";
+    return $"{Id}: {Role.Name}{UserGrouproles.ItemSeparator}{Role.Name} {ImageableType}({ImageableId}) '{Convert.ToString((int)Acl2, 2)}'";
   }
 
 }

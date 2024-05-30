@@ -25,11 +25,11 @@ public partial class MapsReaderWriter : ReaderWriter
 
   public async Task<Maps> DeleteAsync(uint id)
   {
-    _context.Database.BeginTransaction();
+    GetDbContext().Database.BeginTransaction();
 
     try
     {
-      var physMap = await _context
+      var physMap = await GetDbContext()
         .Maps
         .Include("MapNodes")
         .FirstOrDefaultAsync(x => x.Id == id);
@@ -37,46 +37,46 @@ public partial class MapsReaderWriter : ReaderWriter
       if ( ( physMap == null ) || (physMap.Id == 0) )
         return null;
 
-      _context.Maps.Remove(physMap);
+      GetDbContext().Maps.Remove(physMap);
 
       // get all the related nodeIds so we can build requests
       // to delete all map nad node scoped objects in one shot
       var nodeIds = physMap.MapNodes.Select(x => x.Id).ToList();
 
-      var constants = _context.SystemConstants.Where(x => (
+      var constants = GetDbContext().SystemConstants.Where(x => (
         (x.ImageableId == id && x.ImageableType == Constants.ScopeLevelMap) ||
         (nodeIds.Contains(x.ImageableId) && x.ImageableType == Constants.ScopeLevelNode))).ToList();
-      _context.SystemConstants.RemoveRange(constants);
+      GetDbContext().SystemConstants.RemoveRange(constants);
 
-      var questions = _context.SystemQuestions.Where(x => (
+      var questions = GetDbContext().SystemQuestions.Where(x => (
         (x.ImageableId == id && x.ImageableType == Constants.ScopeLevelMap) ||
         (nodeIds.Contains(x.ImageableId) && x.ImageableType == Constants.ScopeLevelNode))).ToList();
-      _context.SystemQuestions.RemoveRange(questions);
+      GetDbContext().SystemQuestions.RemoveRange(questions);
 
-      var files = _context.SystemFiles.Where(x => (
+      var files = GetDbContext().SystemFiles.Where(x => (
         (x.ImageableId == id && x.ImageableType == Constants.ScopeLevelMap) ||
         (nodeIds.Contains(x.ImageableId) && x.ImageableType == Constants.ScopeLevelNode))).ToList();
-      _context.SystemFiles.RemoveRange(files);
+      GetDbContext().SystemFiles.RemoveRange(files);
 
-      var counterActions = _context.SystemCounterActions.Where(x => (
+      var counterActions = GetDbContext().SystemCounterActions.Where(x => (
         (x.ImageableId == id && x.ImageableType == Constants.ScopeLevelMap) ||
         (nodeIds.Contains(x.ImageableId) && x.ImageableType == Constants.ScopeLevelNode))).ToList();
-      _context.SystemCounterActions.RemoveRange(counterActions);
+      GetDbContext().SystemCounterActions.RemoveRange(counterActions);
 
-      var counters = _context.SystemCounters.Where(x => (
+      var counters = GetDbContext().SystemCounters.Where(x => (
         (x.ImageableId == id && x.ImageableType == Constants.ScopeLevelMap) ||
         (nodeIds.Contains(x.ImageableId) && x.ImageableType == Constants.ScopeLevelNode))).ToList();
-      _context.SystemCounters.RemoveRange(counters);
+      GetDbContext().SystemCounters.RemoveRange(counters);
 
-      _context.SaveChanges();
+      GetDbContext().SaveChanges();
 
-      _context.Database.CommitTransaction();
+      GetDbContext().Database.CommitTransaction();
 
       return physMap;
     }
     catch (Exception)
     {
-      _context.Database.RollbackTransaction();
+      GetDbContext().Database.RollbackTransaction();
     }
 
     return null;
@@ -84,7 +84,7 @@ public partial class MapsReaderWriter : ReaderWriter
 
   public async Task<Maps> GetSingleAsync(uint id)
   {
-    var phys = await _context.Maps.FirstOrDefaultAsync(x => x.Id == id);
+    var phys = await GetDbContext().Maps.FirstOrDefaultAsync(x => x.Id == id);
     if (phys.Id == 0)
       return null;
     return phys;
@@ -92,7 +92,7 @@ public partial class MapsReaderWriter : ReaderWriter
 
   public async Task<Maps> GetSingleWithGroupsAsync(uint id)
   {
-    var phys = await _context.Maps
+    var phys = await GetDbContext().Maps
       .Include("MapGroups")
       .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -105,26 +105,26 @@ public partial class MapsReaderWriter : ReaderWriter
   {
     var phys = await GetSingleAsync(id);
     if (phys != null)
-      _context.Entry(phys).Collection(b => b.MapNodes).Load();
+      GetDbContext().Entry(phys).Collection(b => b.MapNodes).Load();
 
     return phys;
   }
 
   public async Task<IList<Maps>> GetMultipleAsync(int skip = 0, int take = 0)
   {
-    var items = await _context.Maps.Skip(skip).Take(take).OrderBy(x => x.Name).ToListAsync();
+    var items = await GetDbContext().Maps.Skip(skip).Take(take).OrderBy(x => x.Name).ToListAsync();
     return items;
   }
 
   public async Task<uint> UpsertAsync(Maps phys, bool save = true)
   {
     if (phys.Id == 0)
-      await _context.Maps.AddAsync(phys);
+      await GetDbContext().Maps.AddAsync(phys);
     else
-      _context.Maps.Update(phys);
+      GetDbContext().Maps.Update(phys);
 
     if (save)
-      await _context.SaveChangesAsync();
+      await GetDbContext().SaveChangesAsync();
 
     return phys.Id;
   }
@@ -137,12 +137,12 @@ public partial class MapsReaderWriter : ReaderWriter
   /// <returns>Ammended map</returns>
   public async Task<Maps> CreateMapWithTemplateAsync(Maps map, Maps template)
   {
-    using var transaction = _context.Database.BeginTransaction();
+    using var transaction = GetDbContext().Database.BeginTransaction();
 
     try
     {
       map = await CloneMapAsync(map, template);
-      await _context.SaveChangesAsync();
+      await GetDbContext().SaveChangesAsync();
       await transaction.CommitAsync();
     }
     catch (Exception)
@@ -177,10 +177,10 @@ public partial class MapsReaderWriter : ReaderWriter
     {
       map = Maps.CreateDefault(template);
       map.Id = 0;
-      _context.Entry(map).State = EntityState.Added;
-      await _context.SaveChangesAsync();
+      GetDbContext().Entry(map).State = EntityState.Added;
+      await GetDbContext().SaveChangesAsync();
 
-      _logger.LogError($"  New Map {map.Id}");
+      GetLogger().LogError($"  New Map {map.Id}");
     }
     else
     {
@@ -196,9 +196,9 @@ public partial class MapsReaderWriter : ReaderWriter
     // and the original map
     var transformVector = templateBoundingBox.CalculateTransformTo(mapBoundingBox);
 
-    _logger.LogDebug($"map BB: {mapBoundingBox.Rect}");
-    _logger.LogDebug($"template BB: {templateBoundingBox.Rect}");
-    _logger.LogDebug($"transform vector: {transformVector}");
+    GetLogger().LogDebug($"map BB: {mapBoundingBox.Rect}");
+    GetLogger().LogDebug($"template BB: {templateBoundingBox.Rect}");
+    GetLogger().LogDebug($"transform vector: {transformVector}");
 
     // reassign nodes to target map and add to target map
     foreach (var node in template.MapNodes)
@@ -215,33 +215,33 @@ public partial class MapsReaderWriter : ReaderWriter
       var nodeCoord = new PointF((float)node.X.Value, (float)node.Y.Value);
       var newCoord = nodeCoord + transformVector;
 
-      _logger.LogDebug($"transforming: {nodeCoord} -> {newCoord}");
+      GetLogger().LogDebug($"transforming: {nodeCoord} -> {newCoord}");
 
       node.X = newCoord.X;
       node.Y = newCoord.Y;
 
-      _context.Entry(node).State = EntityState.Added;
-      await _context.SaveChangesAsync();
+      GetDbContext().Entry(node).State = EntityState.Added;
+      await GetDbContext().SaveChangesAsync();
 
-      _logger.LogDebug($"  Node {oldNodeId} -> {node.Id}");
+      GetLogger().LogDebug($"  Node {oldNodeId} -> {node.Id}");
       reverseNodeIdMap[oldNodeId] = node.Id;
     }
 
     map.AppendMapNodes(template);
 
-    _logger.LogDebug($"{reverseNodeIdMap.Count} node ids to be remapped");
+    GetLogger().LogDebug($"{reverseNodeIdMap.Count} node ids to be remapped");
 
-    var templateLinks = _context.MapNodeLinks.AsNoTracking().Where(x => x.MapId == template.Id).ToList();
+    var templateLinks = GetDbContext().MapNodeLinks.AsNoTracking().Where(x => x.MapId == template.Id).ToList();
 
     foreach (var templateLink in templateLinks)
     {
       var oldNodeLinkId = templateLink.Id;
       MapNodeLinks.Reassign(reverseNodeIdMap, map.Id, templateLink);
 
-      _context.Entry(templateLink).State = EntityState.Added;
-      await _context.SaveChangesAsync();
+      GetDbContext().Entry(templateLink).State = EntityState.Added;
+      await GetDbContext().SaveChangesAsync();
 
-      _logger.LogDebug($"  Link {oldNodeLinkId} -> {templateLink.Id}");
+      GetLogger().LogDebug($"  Link {oldNodeLinkId} -> {templateLink.Id}");
     }
 
     return map;

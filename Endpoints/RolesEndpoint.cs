@@ -90,6 +90,11 @@ public partial class RolesEndpoint : OLabEndpoint
     if (!await auth.IsSystemSuperuserAsync())
       throw new OLabUnauthorizedException();
 
+    // test for reserved object
+    var orgPhys = await _readerWriter.GetAsync(groupName);
+    if ((orgPhys != null) && (orgPhys.IsSystem == 1))
+      throw new OLabUnauthorizedException();
+
     var phys = await _readerWriter.CreateAsync(groupName);
     return _mapper.PhysicalToDto(phys);
   }
@@ -113,8 +118,8 @@ public partial class RolesEndpoint : OLabEndpoint
       if (phys == null)
         throw new OLabObjectNotFoundException("Roles", source);
 
-      // test if reserved group
-      if (phys.Name == Roles.SuperUserRole)
+      // test if reserved object
+      if ((phys != null) && (phys.IsSystem == 1))
         throw new OLabUnauthorizedException();
 
       // test if in use somewhere

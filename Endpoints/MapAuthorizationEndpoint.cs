@@ -60,7 +60,7 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     Logger.LogInformation($"AuthorizationEndpoint.DeleteAsync()");
 
     // test if user has access to parent object
-    var accessResult = auth.HasAccess(
+    var accessResult = await auth.HasAccessAsync(
       IOLabAuthorization.AclBitMaskExecute,
       Utils.Constants.ScopeLevelMap,
       dto.MapId);
@@ -103,7 +103,7 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     Logger.LogInformation($"AuthorizationEndpoint.AddAsync()");
 
     // test if user has access to parent object
-    var accessResult = auth.HasAccess(
+    var accessResult = await auth.HasAccessAsync(
       IOLabAuthorization.AclBitMaskExecute,
       Utils.Constants.ScopeLevelMap,
       dto.MapId);

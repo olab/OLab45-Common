@@ -50,7 +50,7 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
     var dtoQuestionTemp = builder.PhysicalToDto(physQuestionTemp);
 
     // test if user has access to object
-    var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskWrite, dtoQuestionTemp);
+    var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dtoQuestionTemp);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("QuestionResponses", id);
 
@@ -87,7 +87,7 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
     var dtoQuestionTemp = questionBuilder.PhysicalToDto(physQuestionTemp);
 
     // test if user has access to object
-    var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskWrite, dtoQuestionTemp);
+    var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dtoQuestionTemp);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("QuestionResponses", 0);
 
@@ -124,7 +124,7 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
       var dtoQuestion = questionBuilder.PhysicalToDto(physQuestion);
 
       // test if user has access to objectdtoQuestion
-      var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskWrite, dtoQuestion);
+      var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dtoQuestion);
       if (accessResult is UnauthorizedResult)
         return accessResult;
 

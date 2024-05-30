@@ -102,7 +102,7 @@ public partial class FilesEndpoint : OLabEndpoint
     var dto = new FilesFull(Logger).PhysicalToDto(phys);
 
     // test if user has access to object
-    var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskRead, dto);
+    var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("FilesPhys", id);
 
@@ -126,7 +126,7 @@ public partial class FilesEndpoint : OLabEndpoint
     dto.ImageableId = dto.ParentInfo.Id;
 
     // test if user has access to object
-    var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskWrite, dto);
+    var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("FilesPhys", id);
 
@@ -161,7 +161,7 @@ public partial class FilesEndpoint : OLabEndpoint
     var builder = new FilesFull(Logger);
 
     // test if user has access to object
-    var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskWrite, dto);
+    var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dto);
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("SystemFiles", 0);
 
@@ -214,7 +214,7 @@ public partial class FilesEndpoint : OLabEndpoint
       var dto = new FilesFull(Logger).PhysicalToDto(phys);
 
       // test if user has access to object
-      var accessResult = auth.HasAccess(IOLabAuthorization.AclBitMaskWrite, dto);
+      var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("SystemFiles", id);
 

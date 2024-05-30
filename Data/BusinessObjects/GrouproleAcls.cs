@@ -25,16 +25,11 @@ public partial class GrouproleAcls
     [StringLength(45)]
     public string ImageableType { get; set; }
 
-    [Required]
-    [Column("acl")]
-    [StringLength(45)]
-    public string Acl { get; set; }
-
     [Column("group_id", TypeName = "int(10) unsigned")]
     public uint GroupId { get; set; }
 
     [Column("role_id", TypeName = "int(10) unsigned")]
-    public uint RoleId { get; set; }
+    public uint? RoleId { get; set; }
 
     [Column("acl2", TypeName = "bit(3)")]
     public ulong Acl2 { get; set; }

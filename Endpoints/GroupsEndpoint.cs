@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
@@ -95,6 +96,12 @@ public partial class GroupsEndpoint : OLabEndpoint
     if (!await auth.IsSystemSuperuserAsync())
       throw new OLabUnauthorizedException();
 
+    // test for reserved object
+    var orgPhys = await _readerWriter.GetAsync(groupName);
+    if ((orgPhys != null) && (orgPhys.IsSystem == 1))
+      throw new OLabUnauthorizedException();
+
+    // test 
     var phys = await _readerWriter.CreateAsync(groupName);
     return _mapper.PhysicalToDto(phys);
   }
@@ -117,8 +124,8 @@ public partial class GroupsEndpoint : OLabEndpoint
     if (phys == null)
       throw new OLabObjectNotFoundException("Groups", source);
 
-    // test if reserved group
-    if (phys.Name == Groups.OLabGroup)
+    // test if reserved object
+    if ((phys != null) && (phys.IsSystem == 1))
       throw new OLabUnauthorizedException();
 
     // test if in use somewhere

@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace OLab.Api.Dto;
 
@@ -38,4 +40,5 @@ public class MapsFullDto : MapsDto
   public uint TypeId { get; set; }
   public uint? LanguageId { get; set; }
   public uint? ReportNodeId { get; set; }
+  public IList<MapGroupsDto> MapGroups { get; set; }
 }

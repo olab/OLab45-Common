@@ -25,6 +25,9 @@ public partial class Roles
     [StringLength(100)]
     public string Name { get; set; }
 
+    [Column("is_system", TypeName = "tinyint(4)")]
+    public sbyte? IsSystem { get; set; }
+
     [InverseProperty("Role")]
     public virtual ICollection<GrouproleAcls> GrouproleAcls { get; } = new List<GrouproleAcls>();
 

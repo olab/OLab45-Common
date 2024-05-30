@@ -13,18 +13,28 @@ public class MapGroupsMapper : OLabMapper<MapGroups, MapGroupsDto>
   private readonly OLabDBContext dbContext;
 
   public MapGroupsMapper(
-    IOLabLogger logger, 
-    OLabDBContext dbContext, 
+    IOLabLogger logger,
+    OLabDBContext dbContext,
     bool enableWikiTranslation = true) : base(logger)
   {
     this.dbContext = dbContext;
   }
 
   public MapGroupsMapper(
-    IOLabLogger logger, 
-    WikiTagProvider tagProvider, 
+    IOLabLogger logger,
+    WikiTagProvider tagProvider,
     bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
+  }
+
+  public override MapGroupsDto PhysicalToDto(MapGroups phys)
+  {
+    var dto = base.PhysicalToDto(phys);
+
+    if (phys.Group != null)
+      dto.GroupName = phys.Group.Name;
+
+    return dto;
   }
 
   public override MapGroups DtoToPhysical(MapGroupsDto dto)

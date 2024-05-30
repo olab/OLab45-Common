@@ -8,6 +8,8 @@ namespace OLab.Api.Model;
 public partial class Maps
 {
 
+  public const int MapSecurityAnonymous = 1;
+
   public static Maps CreateDefault(Maps templateMap)
   {
     // use AutoMapper to do a Deep Copy

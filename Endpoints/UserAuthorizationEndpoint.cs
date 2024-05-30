@@ -59,7 +59,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     Logger.LogInformation($"UserAuthorizationEndpoint.DeleteAsync()");
 
     // test if user has access to parent object
-    var accessResult = auth.HasAccess(
+    var accessResult = await auth.HasAccessAsync(
       IOLabAuthorization.AclBitMaskExecute,
       "UserAdmin",
       0);
@@ -107,7 +107,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     Logger.LogInformation($"UserAuthorizationEndpoint.AddAsync()");
 
     // test if user has access to parent object
-    var accessResult = auth.HasAccess(
+    var accessResult = await auth.HasAccessAsync(
       IOLabAuthorization.AclBitMaskExecute,
       "UserAdmin",
       0);

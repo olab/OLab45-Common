@@ -66,7 +66,7 @@ public partial class MapsEndpoint : OLabEndpoint
     var dto = await GetRawNodeAsync(mapId, nodeId, hideHidden);
 
     // now that we had a real node id, test if user has explicit no access to node.
-    if (auth.HasAccess(IOLabAuthorization.AclBitMaskNoAccess, Utils.Constants.ScopeLevelNode, nodeId))
+    if (await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskNoAccess, Utils.Constants.ScopeLevelNode, nodeId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, nodeId);
 
     // filter out any destination links the user
@@ -74,7 +74,7 @@ public partial class MapsEndpoint : OLabEndpoint
     var filteredLinks = new List<MapNodeLinksDto>();
     foreach (var mapNodeLink in dto.MapNodeLinks)
     {
-      if (auth.HasAccess(IOLabAuthorization.AclBitMaskNoAccess, Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
+      if (await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskNoAccess, Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
         continue;
 
       filteredLinks.Add(mapNodeLink);
@@ -102,7 +102,7 @@ public partial class MapsEndpoint : OLabEndpoint
     Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync. new play? {body.NewPlay}");
 
     // test if user has access to map.
-    if (!auth.HasAccess(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId))
+    if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
     // dump out original dynamic objects for logging
@@ -119,7 +119,7 @@ public partial class MapsEndpoint : OLabEndpoint
     var dto = await GetRawNodeAsync(mapId, nodeId, true);
 
     // now that we had a real node id, test if user has explicit no access to node.
-    if (auth.HasAccess(IOLabAuthorization.AclBitMaskNoAccess, Utils.Constants.ScopeLevelNode, dto.Id.Value))
+    if (await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskNoAccess, Utils.Constants.ScopeLevelNode, dto.Id.Value))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, dto.Id.Value);
 
     // filter out any destination links the user
@@ -127,7 +127,7 @@ public partial class MapsEndpoint : OLabEndpoint
     var filteredLinks = new List<MapNodeLinksDto>();
     foreach (var mapNodeLink in dto.MapNodeLinks)
     {
-      if (auth.HasAccess(IOLabAuthorization.AclBitMaskNoAccess, Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
+      if (await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskNoAccess, Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
         continue;
 
       filteredLinks.Add(mapNodeLink);
@@ -196,7 +196,7 @@ public partial class MapsEndpoint : OLabEndpoint
     Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.DeleteNodeAsync");
 
     // test if user has access to map.
-    if (!auth.HasAccess(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId))
+    if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
     using var transaction = dbContext.Database.BeginTransaction();
@@ -253,7 +253,7 @@ public partial class MapsEndpoint : OLabEndpoint
     Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutNodeAsync");
 
     // test if user has access to map.
-    if (!auth.HasAccess(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId))
+    if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
     using var transaction = dbContext.Database.BeginTransaction();

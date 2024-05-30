@@ -299,7 +299,9 @@ public partial class OLabDBContext : DbContext
 
             entity.HasOne(d => d.Group).WithMany(p => p.GrouproleAcls).HasConstraintName("ifk_gra_group");
 
-            entity.HasOne(d => d.Role).WithMany(p => p.GrouproleAcls).HasConstraintName("ifk_gra_role");
+            entity.HasOne(d => d.Role).WithMany(p => p.GrouproleAcls)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("ifk_gra_role");
         });
 
         modelBuilder.Entity<Groups>(entity =>
@@ -887,6 +889,8 @@ public partial class OLabDBContext : DbContext
         modelBuilder.Entity<Roles>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.Property(e => e.IsSystem).HasDefaultValueSql("'0'");
         });
 
         modelBuilder.Entity<ScenarioMaps>(entity =>

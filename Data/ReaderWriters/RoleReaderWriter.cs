@@ -35,10 +35,10 @@ public class RoleReaderWriter : ReaderWriter
 
     if (existingPhys == null)
     {
-      _logger.LogInformation($"creating grpup '{newPhys.Name}'");
+      GetLogger().LogInformation($"creating grpup '{newPhys.Name}'");
 
-      _context.Roles.Add(newPhys);
-      _context.SaveChanges();
+      GetDbContext().Roles.Add(newPhys);
+      GetDbContext().SaveChanges();
     }
     else
       newPhys = existingPhys;
@@ -56,9 +56,9 @@ public class RoleReaderWriter : ReaderWriter
     Roles phys;
 
     if (uint.TryParse(source, out uint id))
-      phys = await _context.Roles.FirstOrDefaultAsync(x => x.Id == id);
+      phys = await GetDbContext().Roles.FirstOrDefaultAsync(x => x.Id == id);
     else
-      phys = await _context.Roles.FirstOrDefaultAsync(x => x.Name == source);
+      phys = await GetDbContext().Roles.FirstOrDefaultAsync(x => x.Name == source);
 
     return phys;
   }
@@ -75,20 +75,20 @@ public class RoleReaderWriter : ReaderWriter
 
     if (!take.HasValue && !skip.HasValue)
     {
-      response.Data = await _context.Roles.ToListAsync();
+      response.Data = await GetDbContext().Roles.ToListAsync();
       response.Count = response.Data.Count;
       response.Remaining = 0;
     }
 
     else if (take.HasValue && skip.HasValue)
     {
-      response.Data = await _context.Roles.Skip(skip.Value).Take(take.Value).ToListAsync();
+      response.Data = await GetDbContext().Roles.Skip(skip.Value).Take(take.Value).ToListAsync();
       response.Count += response.Data.Count;
-      response.Remaining = _context.Roles.Count() - skip.Value - response.Count;
+      response.Remaining = GetDbContext().Roles.Count() - skip.Value - response.Count;
     }
 
     else
-      _logger.LogWarning($"invalid/partial take/skip parameters");
+      GetLogger().LogWarning($"invalid/partial take/skip parameters");
 
     return response;
   }
@@ -101,9 +101,9 @@ public class RoleReaderWriter : ReaderWriter
   public async Task<bool> ExistsAsync(string source)
   {
     if (uint.TryParse(source, out uint id))
-      return await _context.Roles.AnyAsync(x => x.Id == id);
+      return await GetDbContext().Roles.AnyAsync(x => x.Id == id);
     else
-      return await _context.Roles.AnyAsync(x => x.Name == source);
+      return await GetDbContext().Roles.AnyAsync(x => x.Name == source);
   }
 
   public async Task DeleteAsync(string source)
@@ -111,8 +111,8 @@ public class RoleReaderWriter : ReaderWriter
     var phys = await GetAsync(source);
     if (phys != null)
     {
-      _context.Roles.Remove(phys);
-      await _context.SaveChangesAsync();
+      GetDbContext().Roles.Remove(phys);
+      await GetDbContext().SaveChangesAsync();
     }
   }
 }

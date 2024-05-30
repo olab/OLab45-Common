@@ -79,7 +79,9 @@ public class OLabEndpoint
 
   protected async ValueTask<Maps> GetMapAsync(uint id)
   {
-    var phys = await dbContext.Maps.FirstOrDefaultAsync(x => x.Id == id);
+    var phys = await dbContext.Maps
+      .Include("MapGroups")
+      .FirstOrDefaultAsync(x => x.Id == id);
     if (phys != null)
       dbContext.Entry(phys).Collection(b => b.MapNodes).Load();
 

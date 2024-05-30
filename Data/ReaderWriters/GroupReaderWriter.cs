@@ -10,16 +10,17 @@ namespace OLab.Data.ReaderWriters;
 
 public class GroupReaderWriter : ReaderWriter
 {
+
   public static GroupReaderWriter Instance(
     IOLabLogger logger,
-    OLabDBContext context)
+    OLabDBContext dbContext)
   {
-    return new GroupReaderWriter(logger, context);
+    return new GroupReaderWriter(logger, dbContext);
   }
 
   public GroupReaderWriter(
     IOLabLogger logger,
-    OLabDBContext context) : base(logger, context)
+  OLabDBContext dbContext) : base(logger, dbContext)
   {
   }
 
@@ -35,9 +36,12 @@ public class GroupReaderWriter : ReaderWriter
 
     if (existingPhys == null)
     {
-      _logger.LogInformation($"creating role '{newPhys.Name}'s");
-      _context.Groups.Add(newPhys);
-      _context.SaveChanges();
+      GetLogger().LogInformation($"creating role '{newPhys.Name}'s");
+      GetDbContext().Groups.Add(newPhys);
+      GetDbContext().SaveChanges();
+
+      // add default ACL's for new group
+      await GroupRoleAclReaderWriter.Instance(GetLogger(), GetDbContext()).CreateForGroupAsync(newPhys.Id);
     }
     else
       newPhys = existingPhys;
@@ -55,9 +59,9 @@ public class GroupReaderWriter : ReaderWriter
     Groups phys;
 
     if (uint.TryParse(source, out uint id))
-      phys = await _context.Groups.FirstOrDefaultAsync(x => x.Id == id);
+      phys = await GetDbContext().Groups.FirstOrDefaultAsync(x => x.Id == id);
     else
-      phys = await _context.Groups.FirstOrDefaultAsync(x => x.Name == source);
+      phys = await GetDbContext().Groups.FirstOrDefaultAsync(x => x.Name == source);
 
     return phys;
   }
@@ -74,20 +78,20 @@ public class GroupReaderWriter : ReaderWriter
 
     if (!take.HasValue && !skip.HasValue)
     {
-      response.Data = await _context.Groups.ToListAsync();
+      response.Data = await GetDbContext().Groups.ToListAsync();
       response.Count = response.Data.Count;
       response.Remaining = 0;
     }
 
     else if (take.HasValue && skip.HasValue)
     {
-      response.Data = await _context.Groups.Skip(skip.Value).Take(take.Value).ToListAsync();
+      response.Data = await GetDbContext().Groups.Skip(skip.Value).Take(take.Value).ToListAsync();
       response.Count += response.Data.Count;
-      response.Remaining = _context.Groups.Count() - skip.Value - response.Count;
+      response.Remaining = GetDbContext().Groups.Count() - skip.Value - response.Count;
     }
 
     else
-      _logger.LogWarning($"invalid/partial take/skip parameters");
+      GetLogger().LogWarning($"invalid/partial take/skip parameters");
 
     return response;
   }
@@ -100,9 +104,9 @@ public class GroupReaderWriter : ReaderWriter
   public async Task<bool> ExistsAsync(string source)
   {
     if (uint.TryParse(source, out uint id))
-      return await _context.Groups.AnyAsync(x => x.Id == id);
+      return await GetDbContext().Groups.AnyAsync(x => x.Id == id);
     else
-      return await _context.Groups.AnyAsync(x => x.Name == source);
+      return await GetDbContext().Groups.AnyAsync(x => x.Name == source);
   }
 
   public async Task DeleteAsync(string source)
@@ -110,8 +114,8 @@ public class GroupReaderWriter : ReaderWriter
     var phys = await GetAsync(source);
     if (phys != null)
     {
-      _context.Groups.Remove(phys);
-      await _context.SaveChangesAsync();
+      GetDbContext().Groups.Remove(phys);
+      await GetDbContext().SaveChangesAsync();
     }
   }
 }

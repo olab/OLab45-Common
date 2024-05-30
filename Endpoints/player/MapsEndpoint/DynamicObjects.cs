@@ -30,7 +30,7 @@ public partial class MapsEndpoint : OLabEndpoint
     Logger.LogInformation($"userid: {auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsRawAsync");
 
     // test if user has access to map.
-    if (!auth.HasAccess(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId))
+    if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
     var node = await GetMapRootNode(mapId, nodeId);
@@ -53,7 +53,7 @@ public partial class MapsEndpoint : OLabEndpoint
     Logger.LogInformation($"userid: {auth.UserContext.UserId}: MapsEndpoint.GetDynamicScopedObjectsTranslatedAsync");
 
     // test if user has access to map.
-    if (!auth.HasAccess(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId))
+    if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
     var node = await GetMapRootNode(mapId, nodeId);

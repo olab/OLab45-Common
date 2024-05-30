@@ -31,10 +31,13 @@ public class MapsFullMapper : OLabMapper<Model.Maps, MapsFullDto>
   protected override MapperConfiguration GetConfiguration()
   {
     return new MapperConfiguration(cfg =>
-     cfg.CreateMap<Model.Maps, Dto.MapsFullDto>()
-      .ForMember(dest => dest.Description, act => act.MapFrom(src => src.Abstract))
-      .ReverseMap()
-    );
+    {
+      cfg.CreateMap<Maps, MapsFullDto>()
+        .ForMember(dest => dest.Description, act => act.MapFrom(src => src.Abstract))
+        .ReverseMap();
+      cfg.CreateMap<MapGroups, MapGroupsDto>().ReverseMap();
+    });
+
   }
 
   public override MapsFullDto PhysicalToDto(Maps mapPhys)
@@ -42,7 +45,7 @@ public class MapsFullMapper : OLabMapper<Model.Maps, MapsFullDto>
     var dto = base.PhysicalToDto(mapPhys);
 
     dto.Feedback = Conversions.Base64Decode(mapPhys.Feedback);
-    dto.CreatedAt = TimeUtils.ToUtc( mapPhys.CreatedAt );
+    dto.CreatedAt = TimeUtils.ToUtc(mapPhys.CreatedAt);
 
     return dto;
   }
