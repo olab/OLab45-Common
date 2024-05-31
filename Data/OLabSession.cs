@@ -28,7 +28,7 @@ public class OLabSession : IOLabSession
     return new OLabSession( logger, context, userContext);
   }
 
-  private OLabSession(
+  public OLabSession(
     IOLabLogger logger,
     OLabDBContext context,
     IUserContext userContext)
