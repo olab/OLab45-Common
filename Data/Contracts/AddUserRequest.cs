@@ -62,28 +62,23 @@ public class AddUserRequest
 
   public async Task ProcessAddUserText( string userRequestText)
   {
-    var parts = userRequestText.Split("\t");
-    if (parts.Length < 5)
-    {
+    var userRequestParts = userRequestText.Split("\t");
+    if (userRequestParts.Length < 5)
       throw new Exception("Bad user request record");
-    }
 
-    Username = parts[0];
-    if (parts[1].Length > 0)
-      Password = parts[1];
+    Username = userRequestParts[0];
+    if (userRequestParts[1].Length > 0)
+      Password = userRequestParts[1];
 
-    EMail = parts[2];
-    NickName = parts[3];
-
-    if (parts.Count() <= 4)
-      throw new Exception("Missing group/role arguments");
+    EMail = userRequestParts[2];
+    NickName = userRequestParts[3];
 
     // process group.role strings
-    for (int i = 4; i < parts.Length; i++)
+    for (int i = 4; i < userRequestParts.Length; i++)
     {
       // split group/role string into parts
-      var groupRolePart = parts[i];
-      var groupRoleParts = groupRolePart.Split(":");
+      var groupRolePart = userRequestParts[i];
+      var groupRoleParts = groupRolePart.Split(UserGrouproles.PartSeparator);
 
       var groupPhys = 
         await GroupReaderWriter.Instance(logger, dbContext).GetAsync(groupRoleParts[0]);
