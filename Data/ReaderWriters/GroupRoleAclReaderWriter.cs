@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using OLab.Api.Common;
 using System;
+using OLab.Api.Data.Exceptions;
 
 namespace OLab.Data.ReaderWriters;
 
@@ -59,6 +60,9 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     await CreateAsync(groupRoleAclPhys);
 
     var rolePhys = await _roleReaderWriter.GetAsync("author");
+    if (rolePhys == null)
+      throw new OLabObjectNotFoundException("Roles", "author");
+
     groupRoleAclPhys = new GrouproleAcls
     {
       ImageableId = 0,
@@ -71,6 +75,9 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     await CreateAsync(groupRoleAclPhys);
 
     rolePhys = await _roleReaderWriter.GetAsync("superuser");
+    if (rolePhys == null)
+      throw new OLabObjectNotFoundException("Roles", "superuser");
+
     groupRoleAclPhys = new GrouproleAcls
     {
       ImageableId = 0,
@@ -82,7 +89,6 @@ public class GroupRoleAclReaderWriter : ReaderWriter
 
     await CreateAsync(groupRoleAclPhys);
 
-    rolePhys = await _roleReaderWriter.GetAsync("superuser");
     groupRoleAclPhys = new GrouproleAcls
     {
       ImageableId = 0,
@@ -95,6 +101,9 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     await CreateAsync(groupRoleAclPhys);
 
     rolePhys = await _roleReaderWriter.GetAsync("director");
+    if (rolePhys == null)
+      throw new OLabObjectNotFoundException("Roles", "director");
+
     groupRoleAclPhys = new GrouproleAcls
     {
       ImageableId = 0,
@@ -107,6 +116,9 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     await CreateAsync(groupRoleAclPhys);
 
     rolePhys = await _roleReaderWriter.GetAsync("administrator");
+    if (rolePhys == null)
+      throw new OLabObjectNotFoundException("Roles", "administrator");
+
     groupRoleAclPhys = new GrouproleAcls
     {
       ImageableId = 0,
@@ -119,6 +131,9 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     await CreateAsync(groupRoleAclPhys);
 
     rolePhys = await _roleReaderWriter.GetAsync("learner");
+    if (rolePhys == null)
+      throw new OLabObjectNotFoundException("Roles", "learner");
+
     groupRoleAclPhys = new GrouproleAcls
     {
       ImageableId = 0,
@@ -130,7 +145,6 @@ public class GroupRoleAclReaderWriter : ReaderWriter
 
     await CreateAsync(groupRoleAclPhys);
 
-    rolePhys = await _roleReaderWriter.GetAsync("learner");
     groupRoleAclPhys = new GrouproleAcls
     {
       ImageableId = 0,
