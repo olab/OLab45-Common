@@ -178,7 +178,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
       await GetFileModule().DeleteFileAsync(
         GetFileModule().BuildPath(
           OLabFileStorageModule.ImportRoot,
-          importFileDirectory, 
+          importFileDirectory,
           GetFileName()));
 
     }

@@ -3,7 +3,6 @@ using OLab.Api.Data.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
-using System.IO;
 using System.Linq;
 
 namespace OLab.Api.ObjectMapper;

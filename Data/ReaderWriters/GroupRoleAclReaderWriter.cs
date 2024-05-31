@@ -1,12 +1,9 @@
-﻿using OLab.Api.Model;
-using System.Linq;
+﻿using OLab.Api.Data.Exceptions;
+using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Threading.Tasks;
-using OLab.Api.Common;
-using System;
-using OLab.Api.Data.Exceptions;
 
 namespace OLab.Data.ReaderWriters;
 
@@ -164,7 +161,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   /// <param name="groupRoles">List of user group/roles</param>
   /// <returns>List of group role acl records</returns>
   public IList<GrouproleAcls> GetForUser(IList<UserGrouproles> groupRoles)
-  {    
+  {
     var groupRoleAcls = new List<GrouproleAcls>();
 
     foreach (var groupRole in groupRoles)

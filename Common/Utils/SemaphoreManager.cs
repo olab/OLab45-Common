@@ -1,19 +1,16 @@
-﻿using DocumentFormat.OpenXml.EMMA;
-using OLab.Common.Interfaces;
+﻿using OLab.Common.Interfaces;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace OLab.Common.Utils;
 public class SemaphoreManager
 {
-  private SemaphoreSlim _dictSemaphore = new SemaphoreSlim(1, 1);
+  private readonly SemaphoreSlim _dictSemaphore = new SemaphoreSlim(1, 1);
 
-  private IDictionary<string, SemaphoreSlim> _semaphores =
+  private readonly IDictionary<string, SemaphoreSlim> _semaphores =
     new ConcurrentDictionary<string, SemaphoreSlim>();
 
   public IOLabLogger Logger;

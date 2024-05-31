@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
@@ -13,24 +12,24 @@ namespace OLab.Api.Model;
 [MySqlCollation("utf8mb3_general_ci")]
 public partial class WebinarPoll
 {
-    [Key]
-    [Column("id", TypeName = "int(10) unsigned")]
-    public uint Id { get; set; }
+  [Key]
+  [Column("id", TypeName = "int(10) unsigned")]
+  public uint Id { get; set; }
 
-    [Column("on_node", TypeName = "int(10) unsigned")]
-    public uint OnNode { get; set; }
+  [Column("on_node", TypeName = "int(10) unsigned")]
+  public uint OnNode { get; set; }
 
-    [Column("to_node", TypeName = "int(10) unsigned")]
-    public uint ToNode { get; set; }
+  [Column("to_node", TypeName = "int(10) unsigned")]
+  public uint ToNode { get; set; }
 
-    [Column("time", TypeName = "int(10)")]
-    public int Time { get; set; }
+  [Column("time", TypeName = "int(10)")]
+  public int Time { get; set; }
 
-    [ForeignKey("OnNode")]
-    [InverseProperty("WebinarPollOnNodeNavigation")]
-    public virtual MapNodes OnNodeNavigation { get; set; }
+  [ForeignKey("OnNode")]
+  [InverseProperty("WebinarPollOnNodeNavigation")]
+  public virtual MapNodes OnNodeNavigation { get; set; }
 
-    [ForeignKey("ToNode")]
-    [InverseProperty("WebinarPollToNodeNavigation")]
-    public virtual MapNodes ToNodeNavigation { get; set; }
+  [ForeignKey("ToNode")]
+  [InverseProperty("WebinarPollToNodeNavigation")]
+  public virtual MapNodes ToNodeNavigation { get; set; }
 }

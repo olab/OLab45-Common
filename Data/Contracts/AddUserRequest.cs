@@ -3,7 +3,6 @@ using OLab.Common.Interfaces;
 using OLab.Data.ReaderWriters;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using RequiredAttribute = System.ComponentModel.DataAnnotations.RequiredAttribute;
 
@@ -60,7 +59,7 @@ public class AddUserRequest
     this.dbContext = dbContext;
   }
 
-  public async Task ProcessAddUserText( string userRequestText)
+  public async Task ProcessAddUserText(string userRequestText)
   {
     var userRequestParts = userRequestText.Split("\t");
     if (userRequestParts.Length < 5)
@@ -74,15 +73,15 @@ public class AddUserRequest
     NickName = userRequestParts[3];
 
     // process group.role strings
-    for (int i = 4; i < userRequestParts.Length; i++)
+    for (var i = 4; i < userRequestParts.Length; i++)
     {
       // split group/role string into parts
       var groupRolePart = userRequestParts[i];
       var groupRoleParts = groupRolePart.Split(UserGrouproles.PartSeparator);
 
-      var groupPhys = 
+      var groupPhys =
         await GroupReaderWriter.Instance(logger, dbContext).GetAsync(groupRoleParts[0]);
-      var rolesPhys = 
+      var rolesPhys =
         await RoleReaderWriter.Instance(logger, dbContext).GetAsync(groupRoleParts[1]);
 
       if ((groupPhys != null) && (rolesPhys != null))

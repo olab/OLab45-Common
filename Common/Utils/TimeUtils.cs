@@ -25,7 +25,7 @@ public class TimeUtils
   {
     if (source.HasValue)
     {
-      if ( source.Value.Kind != DateTimeKind.Utc )
+      if (source.Value.Kind != DateTimeKind.Utc)
         return DateTime.SpecifyKind(source.Value, DateTimeKind.Utc);
       return source;
     }

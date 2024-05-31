@@ -103,12 +103,12 @@ public partial class ScopedObjects
       .ToListAsync());
 
     // order the responses by Order field
-    foreach (var questionPhys in questionsPhys.Where( x => x.SystemQuestionResponses.Count > 0 ))
+    foreach (var questionPhys in questionsPhys.Where(x => x.SystemQuestionResponses.Count > 0))
     {
       Logger.LogInformation($"  question '{questionPhys.Stem}'. read {questionPhys.SystemQuestionResponses.Count} responses");
       var orderedResponses = questionPhys.SystemQuestionResponses.OrderBy(x => x.Order).ToList();
       questionPhys.SystemQuestionResponses.Clear();
-      questionPhys.SystemQuestionResponses.AddRange( orderedResponses );
+      questionPhys.SystemQuestionResponses.AddRange(orderedResponses);
     }
 
     return questionsPhys;

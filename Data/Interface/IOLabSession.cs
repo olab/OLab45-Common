@@ -16,7 +16,7 @@ public interface IOLabSession
   public string GetSessionId();
   public void SetSessionId(string sessionId);
   public void SaveSessionState(
-    uint nodeId, 
+    uint nodeId,
     DynamicScopedObjectsDto dynamicObjects);
 
   public static string GenerateSessionId()

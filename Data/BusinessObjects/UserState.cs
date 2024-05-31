@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
@@ -14,37 +13,37 @@ namespace OLab.Api.Model;
 [MySqlCollation("utf8mb3_general_ci")]
 public partial class UserState
 {
-    [Key]
-    [Column("id", TypeName = "int(10) unsigned")]
-    public uint Id { get; set; }
+  [Key]
+  [Column("id", TypeName = "int(10) unsigned")]
+  public uint Id { get; set; }
 
-    [Column("user_id", TypeName = "int(10) unsigned")]
-    public uint UserId { get; set; }
+  [Column("user_id", TypeName = "int(10) unsigned")]
+  public uint UserId { get; set; }
 
-    [Column("map_id", TypeName = "int(10) unsigned")]
-    public uint MapId { get; set; }
+  [Column("map_id", TypeName = "int(10) unsigned")]
+  public uint MapId { get; set; }
 
-    [Column("map_node_id", TypeName = "int(10) unsigned")]
-    public uint MapNodeId { get; set; }
+  [Column("map_node_id", TypeName = "int(10) unsigned")]
+  public uint MapNodeId { get; set; }
 
-    [Required]
-    [Column("state_data", TypeName = "blob")]
-    public byte[] StateData { get; set; }
+  [Required]
+  [Column("state_data", TypeName = "blob")]
+  public byte[] StateData { get; set; }
 
-    [Column("created_at", TypeName = "datetime")]
-    public DateTime? CreatedAt { get; set; }
+  [Column("created_at", TypeName = "datetime")]
+  public DateTime? CreatedAt { get; set; }
 
-    [Column("updated_at", TypeName = "datetime")]
-    public DateTime? UpdatedAt { get; set; }
+  [Column("updated_at", TypeName = "datetime")]
+  public DateTime? UpdatedAt { get; set; }
 
-    [Column("session_id", TypeName = "int(10) unsigned")]
-    public uint SessionId { get; set; }
+  [Column("session_id", TypeName = "int(10) unsigned")]
+  public uint SessionId { get; set; }
 
-    [ForeignKey("MapId")]
-    [InverseProperty("UserState")]
-    public virtual Maps Map { get; set; }
+  [ForeignKey("MapId")]
+  [InverseProperty("UserState")]
+  public virtual Maps Map { get; set; }
 
-    [ForeignKey("MapNodeId")]
-    [InverseProperty("UserState")]
-    public virtual MapNodes MapNode { get; set; }
+  [ForeignKey("MapNodeId")]
+  [InverseProperty("UserState")]
+  public virtual MapNodes MapNode { get; set; }
 }

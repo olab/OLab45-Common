@@ -10,8 +10,8 @@ namespace OLab.Api.Model;
 public partial class GrouproleAcls
 {
   public static GrouproleAcls CreateDefault(
-    IUserContext userContext, 
-    Groups groupPhys, 
+    IUserContext userContext,
+    Groups groupPhys,
     Roles rolePhys,
     string imageableType,
     uint imagableId)
@@ -39,10 +39,10 @@ public partial class GrouproleAcls
     return items.ToList();
   }
 
-  public static GrouproleAcls Find( 
-    OLabDBContext dbContext, 
-    string groupName, 
-    string roleName )
+  public static GrouproleAcls Find(
+    OLabDBContext dbContext,
+    string groupName,
+    string roleName)
   {
     var groupRolePhys = dbContext.GrouproleAcls
       .FirstOrDefault(x => x.Role.Name == groupName && x.Group.Name == roleName);

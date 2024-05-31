@@ -1,14 +1,12 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Build.Framework;
-using OLab.Api.Model;
-using OLab.Common.Interfaces;
 
 namespace OLab.Data.ReaderWriters;
 
@@ -34,7 +32,7 @@ public partial class MapsReaderWriter : ReaderWriter
         .Include("MapNodes")
         .FirstOrDefaultAsync(x => x.Id == id);
 
-      if ( ( physMap == null ) || (physMap.Id == 0) )
+      if ((physMap == null) || (physMap.Id == 0))
         return null;
 
       GetDbContext().Maps.Remove(physMap);

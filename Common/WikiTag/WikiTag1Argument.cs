@@ -62,7 +62,8 @@ public abstract class WikiTag1Argument : WikiTagModule
 
   public override bool HaveWikiTag(string source)
   {
-    if (!base.HaveWikiTag(source)) return false;
+    if (!base.HaveWikiTag(source))
+      return false;
 
     // extract/set argument1
     GetWikiArgument1();

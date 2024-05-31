@@ -58,8 +58,8 @@ public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
   public override bool SaveToDatabase(
-    string importFolderName, 
-    int recordIndex, 
+    string importFolderName,
+    int recordIndex,
     IEnumerable<dynamic> elements)
   {
     var avItem = _avMapper.ElementsToPhys(elements);
@@ -81,10 +81,10 @@ public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
     fileItem.ImageableType = "Maps";
     fileItem.Path = avItem.Image;
 
-    var physFile = 
+    var physFile =
       GetFileModule().GetPublicFileDirectory(
-        fileItem.ImageableType, 
-        fileItem.ImageableId, 
+        fileItem.ImageableType,
+        fileItem.ImageableId,
         fileItem.Path);
 
     if (!File.Exists(physFile))

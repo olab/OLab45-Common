@@ -1,10 +1,10 @@
-﻿using OLab.Api.Model;
-using System.Linq;
+﻿using Microsoft.EntityFrameworkCore;
+using OLab.Api.Common;
+using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Threading.Tasks;
-using OLab.Api.Common;
 
 namespace OLab.Data.ReaderWriters;
 
@@ -58,7 +58,7 @@ public class GroupReaderWriter : ReaderWriter
   {
     Groups phys;
 
-    if (uint.TryParse(source, out uint id))
+    if (uint.TryParse(source, out var id))
       phys = await GetDbContext().Groups.FirstOrDefaultAsync(x => x.Id == id);
     else
       phys = await GetDbContext().Groups.FirstOrDefaultAsync(x => x.Name == source);
@@ -103,7 +103,7 @@ public class GroupReaderWriter : ReaderWriter
   /// <returns>true/false</returns>
   public async Task<bool> ExistsAsync(string source)
   {
-    if (uint.TryParse(source, out uint id))
+    if (uint.TryParse(source, out var id))
       return await GetDbContext().Groups.AnyAsync(x => x.Id == id);
     else
       return await GetDbContext().Groups.AnyAsync(x => x.Name == source);

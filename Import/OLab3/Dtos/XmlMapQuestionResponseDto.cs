@@ -37,8 +37,8 @@ public class XmlMapQuestionResponseDto : XmlImportDto<XmlMapQuestionResponses>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
   public override bool SaveToDatabase(
-    string importFolderName, 
-    int recordIndex, 
+    string importFolderName,
+    int recordIndex,
     IEnumerable<dynamic> elements)
   {
     var item = _mapper.ElementsToPhys(elements);
@@ -58,7 +58,7 @@ public class XmlMapQuestionResponseDto : XmlImportDto<XmlMapQuestionResponses>
     item.Name = item.Id.ToString();
     Context.SaveChanges();
 
-    if ( CreateIdTranslation(oldId, item.Id) )
+    if (CreateIdTranslation(oldId, item.Id))
       Logger.LogInformation($"  added {_fileName} translation {oldId} -> {item.Id}, question {oldQuestionId} -> {item.QuestionId}");
 
     return true;

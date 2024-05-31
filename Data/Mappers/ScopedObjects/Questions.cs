@@ -59,7 +59,7 @@ public class Questions : OLabMapper<SystemQuestions, QuestionsDto>
     phys.Settings = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "settings"));
 
     // post process Turktalk question to stub in a valid settings setting
-    if ( (phys.EntryTypeId == 11) || (phys.EntryTypeId == 15) )
+    if ((phys.EntryTypeId == 11) || (phys.EntryTypeId == 15))
       phys.Settings = @"{""roomName"":""roomName""}";
 
     phys.IsPrivate = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "is_private").Value);

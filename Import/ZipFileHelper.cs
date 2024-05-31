@@ -1,13 +1,10 @@
-﻿using SharpCompress.Common;
+﻿using SharpCompress.Archives.Zip;
+using SharpCompress.Common;
 using SharpCompress.Readers;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using SharpCompress.Archives.Zip;
-using System.Threading;
 
 namespace OLab.Import;
 
@@ -35,7 +32,7 @@ public static class ZipFileHelper
       using var reader = ZipArchive.Open(stream, zipReaderOptions);
 
       foreach (var archiveEntry in reader.Entries.Where(entry => !entry.IsDirectory))
-        files.Add( archiveEntry.Key );
+        files.Add(archiveEntry.Key);
 
       stream.Position = 0;
     }

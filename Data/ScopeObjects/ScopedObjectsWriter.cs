@@ -148,7 +148,7 @@ public partial class ScopedObjects
 
     AddQuestionIdCrossReference(oldId, phys.Id);
 
-    int index = 0;
+    var index = 0;
     foreach (var responsePhys in phys.SystemQuestionResponses)
       Logger.LogInformation($"    wrote response '{responsePhys.Response}', {oldResponseIds[index++]} -> {responsePhys.Id}");
 

@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
@@ -10,8 +9,6 @@ using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using OLab.Data.Mappers;
 using OLab.Data.ReaderWriters;
-using SharpCompress;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -76,7 +73,7 @@ public partial class GroupsEndpoint : OLabEndpoint
     var phys = await _readerWriter.GetAsync(source);
     if (phys == null)
       throw new OLabObjectNotFoundException("Group", source);
-    
+
     return _mapper.PhysicalToDto(phys);
   }
 
@@ -130,7 +127,7 @@ public partial class GroupsEndpoint : OLabEndpoint
 
     // test if in use somewhere
     var inUse = await dbContext.MapGroups.AnyAsync(x => x.GroupId == phys.Id) ||
-                await dbContext.UserGrouproles.AnyAsync( x => x.GroupId == phys.Id);
+                await dbContext.UserGrouproles.AnyAsync(x => x.GroupId == phys.Id);
     if (inUse)
       throw new OLabGeneralException($"Group '{source}' in use.");
 

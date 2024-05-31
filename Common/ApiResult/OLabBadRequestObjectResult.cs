@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
 namespace OLab.Api.Common;

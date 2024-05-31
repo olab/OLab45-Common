@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
@@ -11,30 +10,30 @@ namespace OLab.Api.Model;
 [MySqlCollation("utf8mb3_general_ci")]
 public partial class LtiUsers
 {
-    [Key]
-    [Column("consumer_key")]
-    public string ConsumerKey { get; set; }
+  [Key]
+  [Column("consumer_key")]
+  public string ConsumerKey { get; set; }
 
-    [Required]
-    [Column("context_id")]
-    [StringLength(255)]
-    public string ContextId { get; set; }
+  [Required]
+  [Column("context_id")]
+  [StringLength(255)]
+  public string ContextId { get; set; }
 
-    [Column("user_id")]
-    [StringLength(255)]
-    public string UserId { get; set; }
+  [Column("user_id")]
+  [StringLength(255)]
+  public string UserId { get; set; }
 
-    [Column("lti_result_sourcedid")]
-    [StringLength(255)]
-    public string LtiResultSourcedid { get; set; }
+  [Column("lti_result_sourcedid")]
+  [StringLength(255)]
+  public string LtiResultSourcedid { get; set; }
 
-    [Column("created", TypeName = "datetime")]
-    public DateTime Created { get; set; }
+  [Column("created", TypeName = "datetime")]
+  public DateTime Created { get; set; }
 
-    [Column("updated", TypeName = "datetime")]
-    public DateTime Updated { get; set; }
+  [Column("updated", TypeName = "datetime")]
+  public DateTime Updated { get; set; }
 
-    [ForeignKey("ConsumerKey")]
-    [InverseProperty("LtiUsers")]
-    public virtual LtiContexts ConsumerKeyNavigation { get; set; }
+  [ForeignKey("ConsumerKey")]
+  [InverseProperty("LtiUsers")]
+  public virtual LtiContexts ConsumerKeyNavigation { get; set; }
 }

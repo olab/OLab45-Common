@@ -1,4 +1,3 @@
-using NuGet.Packaging;
 using System;
 using System.Linq;
 
@@ -32,10 +31,10 @@ public partial class Users
     foreach (var groupRole in model.GroupRoles)
     {
       newUser.UserGrouproles.Add(
-        new UserGrouproles 
-        { 
-          GroupId = groupRole.GroupId, 
-          RoleId = groupRole.RoleId 
+        new UserGrouproles
+        {
+          GroupId = groupRole.GroupId,
+          RoleId = groupRole.RoleId
         }
       );
     }

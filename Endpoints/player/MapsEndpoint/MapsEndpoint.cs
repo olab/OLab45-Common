@@ -172,9 +172,9 @@ public partial class MapsEndpoint : OLabEndpoint
       false
     ).PhysicalToDto(mapPhys);
 
-    string author = $"({auth.UserContext.UserId}): {auth.UserContext.UserName}";
+    var author = $"({auth.UserContext.UserId}): {auth.UserContext.UserName}";
 
-    DateTime createdAt = new DateTime();
+    var createdAt = new DateTime();
     if (mapPhys.CreatedAt.HasValue)
     {
       createdAt = mapPhys.CreatedAt.Value;
@@ -227,9 +227,9 @@ public partial class MapsEndpoint : OLabEndpoint
       false
     ).PhysicalToDto(mapPhys);
 
-    string author = $"({auth.UserContext.UserId}): {auth.UserContext.UserName}";
+    var author = $"({auth.UserContext.UserId}): {auth.UserContext.UserName}";
 
-    DateTime createdAt = new DateTime();
+    var createdAt = new DateTime();
     if (mapPhys.CreatedAt.HasValue)
     {
       createdAt = mapPhys.CreatedAt.Value;
@@ -310,9 +310,9 @@ public partial class MapsEndpoint : OLabEndpoint
     // only test security if map is not anonymous
     //if (map.SecurityId == Maps.MapSecurityAnonymous)
     //{
-      // test if user has access to map.
-      if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, id))
-        throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, id);
+    // test if user has access to map.
+    if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, id))
+      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, id);
     //}
 
     var dto = new MapsFullMapper(Logger).PhysicalToDto(map);

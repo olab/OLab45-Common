@@ -154,8 +154,8 @@ public partial class MapsEndpoint : OLabEndpoint
     }
 
     var session = OLabSession.CreateInstance(
-      Logger, 
-      dbContext, 
+      Logger,
+      dbContext,
       auth.UserContext);
 
     session.SetMapId(mapId);
@@ -264,8 +264,10 @@ public partial class MapsEndpoint : OLabEndpoint
       var phys = builder.DtoToPhysical(dto);
 
       // patch up node size, just in case it's not set properly
-      if (phys.Height == 0) phys.Height = 440;
-      if (phys.Width == 0) phys.Width = 300;
+      if (phys.Height == 0)
+        phys.Height = 440;
+      if (phys.Width == 0)
+        phys.Width = 300;
 
       dbContext.MapNodes.Update(phys);
       await dbContext.SaveChangesAsync();

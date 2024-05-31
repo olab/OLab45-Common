@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Dawn;
+using System.Collections.Generic;
 using System.Linq;
-using Dawn;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
@@ -82,7 +80,7 @@ public partial class UserGrouproles
   /// <param name="sourceList">Source string of group/role strings</param>
   /// <returns>List of UserGrouproles</returns>
   public static IList<UserGrouproles> StringToObjectList(
-    OLabDBContext dbContext, 
+    OLabDBContext dbContext,
     string sourceList)
   {
     var items = new List<UserGrouproles>();

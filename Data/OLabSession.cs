@@ -25,7 +25,7 @@ public class OLabSession : IOLabSession
     OLabDBContext context,
     IUserContext userContext)
   {
-    return new OLabSession( logger, context, userContext);
+    return new OLabSession(logger, context, userContext);
   }
 
   public OLabSession(
@@ -129,7 +129,7 @@ public class OLabSession : IOLabSession
     foreach (var counterDto in dto.DynamicObjects.Server.Counters)
       countersDto.Add(new CounterValueDto(counterDto));
     foreach (var counterDto in dto.DynamicObjects.Map.Counters)
-      countersDto.Add(new CounterValueDto(counterDto)); 
+      countersDto.Add(new CounterValueDto(counterDto));
     foreach (var counterDto in dto.DynamicObjects.Node.Counters)
       countersDto.Add(new CounterValueDto(counterDto));
 

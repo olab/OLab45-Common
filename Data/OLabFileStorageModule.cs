@@ -63,7 +63,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   public string BuildPath(params object[] pathParts)
   {
     var sb = new StringBuilder();
-    for (int i = 0; i < pathParts.Length; i++)
+    for (var i = 0; i < pathParts.Length; i++)
     {
       // remove any extra trailing slashes
       var part = pathParts[i].ToString();
@@ -177,19 +177,19 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   public string GetPublicFileDirectory(string parentType, uint parentId, string fileName = "")
   {
     var physicalDirectory = BuildPath(
-      cfg.GetAppSettings().FileStorageRoot, 
-      FilesRoot, 
-      parentType, 
+      cfg.GetAppSettings().FileStorageRoot,
+      FilesRoot,
+      parentType,
       parentId.ToString());
 
     if (!string.IsNullOrEmpty(fileName))
-      physicalDirectory = BuildPath( physicalDirectory, fileName );
+      physicalDirectory = BuildPath(physicalDirectory, fileName);
 
     return physicalDirectory;
   }
 
   public string GetImportMediaFilesDirectory(string importFolderName)
   {
-    return BuildPath( ImportRoot, importFolderName, MediaDirectory);
+    return BuildPath(ImportRoot, importFolderName, MediaDirectory);
   }
 }

@@ -11,7 +11,6 @@ using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -133,8 +132,8 @@ public class Importer : IImporter
     Authorization = auth;
 
     await LoadImportFromArchiveFile(
-      archiveFileStream, 
-      archiveFileName, 
+      archiveFileStream,
+      archiveFileName,
       token);
 
     var mapPhys = WriteImportToDatabase(
@@ -166,9 +165,9 @@ public class Importer : IImporter
         token);
 
       // build extract direct based on archive file name without extension
-      var extractDirectory = 
+      var extractDirectory =
         FileStorageModule.BuildPath(
-          OLabFileStorageModule.ImportRoot, 
+          OLabFileStorageModule.ImportRoot,
           Path.GetFileNameWithoutExtension(archiveFileName));
       Logger.LogInformation($"Folder extract directory: {extractDirectory}");
 

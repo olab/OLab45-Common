@@ -1,5 +1,4 @@
 using AutoMapper;
-using Humanizer;
 using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;

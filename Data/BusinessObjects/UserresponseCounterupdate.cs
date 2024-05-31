@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
@@ -13,21 +12,21 @@ namespace OLab.Api.Model;
 [MySqlCollation("utf8mb3_general_ci")]
 public partial class UserresponseCounterupdate
 {
-    [Key]
-    [Column("id", TypeName = "int(10) unsigned")]
-    public uint Id { get; set; }
+  [Key]
+  [Column("id", TypeName = "int(10) unsigned")]
+  public uint Id { get; set; }
 
-    [Column("userresponse_id", TypeName = "int(10) unsigned")]
-    public uint UserresponseId { get; set; }
+  [Column("userresponse_id", TypeName = "int(10) unsigned")]
+  public uint UserresponseId { get; set; }
 
-    [Column("counterupdate_id", TypeName = "int(10) unsigned")]
-    public uint CounterupdateId { get; set; }
+  [Column("counterupdate_id", TypeName = "int(10) unsigned")]
+  public uint CounterupdateId { get; set; }
 
-    [ForeignKey("CounterupdateId")]
-    [InverseProperty("UserresponseCounterupdate")]
-    public virtual UserCounterUpdate Counterupdate { get; set; }
+  [ForeignKey("CounterupdateId")]
+  [InverseProperty("UserresponseCounterupdate")]
+  public virtual UserCounterUpdate Counterupdate { get; set; }
 
-    [ForeignKey("UserresponseId")]
-    [InverseProperty("UserresponseCounterupdate")]
-    public virtual UserResponses Userresponse { get; set; }
+  [ForeignKey("UserresponseId")]
+  [InverseProperty("UserresponseCounterupdate")]
+  public virtual UserResponses Userresponse { get; set; }
 }
