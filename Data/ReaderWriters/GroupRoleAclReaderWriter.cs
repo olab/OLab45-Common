@@ -82,6 +82,18 @@ public class GroupRoleAclReaderWriter : ReaderWriter
 
     await CreateAsync(groupRoleAclPhys);
 
+    rolePhys = await _roleReaderWriter.GetAsync("superuser");
+    groupRoleAclPhys = new GrouproleAcls
+    {
+      ImageableId = 0,
+      ImageableType = "Import",
+      GroupId = groupId,
+      RoleId = rolePhys.Id,
+      Acl2 = 7
+    };
+
+    await CreateAsync(groupRoleAclPhys);
+
     rolePhys = await _roleReaderWriter.GetAsync("director");
     groupRoleAclPhys = new GrouproleAcls
     {
