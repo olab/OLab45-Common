@@ -1,4 +1,5 @@
 using Dawn;
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
@@ -446,6 +447,11 @@ public partial class MapsEndpoint : OLabEndpoint
 
     if (id != map.Id)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, map.Id);
+
+    // load the entity, then detach it so it can be editted
+    var mapPhys = dbContext.Maps.FirstOrDefault(x => x.Id == map.Id);
+    if (mapPhys != null)
+      dbContext.Entry(mapPhys).State = EntityState.Detached;
 
     dbContext.Entry(map).State = EntityState.Modified;
 
