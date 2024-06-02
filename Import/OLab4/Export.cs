@@ -4,6 +4,7 @@ using OLab.Api.Common;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.ObjectMapper;
+using OLab.Common.Utils;
 using OLab.Data;
 using OLab.Import.Interface;
 using System.IO;
@@ -82,6 +83,7 @@ public partial class Importer : IImporter
     await _fileModule.CopyFolderToArchiveAsync(
       zipArchive,
       _fileModule.BuildPath(
+        OLabFileStorageModule.FilesRoot,
         Api.Utils.Constants.ScopeLevelMap,
         dto.Map.Id),
       Api.Utils.Constants.ScopeLevelMap,
@@ -94,6 +96,7 @@ public partial class Importer : IImporter
       await _fileModule.CopyFolderToArchiveAsync(
         zipArchive,
         _fileModule.BuildPath(
+          OLabFileStorageModule.FilesRoot,
           Api.Utils.Constants.ScopeLevelNode,
           nodeDto.Id),
         _fileModule.BuildPath(
