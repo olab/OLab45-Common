@@ -13,13 +13,13 @@ public partial class NodesEndpoint : OLabEndpoint
 
   public async Task<Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint nodeId)
   {
-    Logger.LogInformation($"NodesController.GetScopedObjectsRawAsync(uint nodeId={nodeId})");
+    GetLogger().LogInformation($"NodesController.GetScopedObjectsRawAsync(uint nodeId={nodeId})");
     return await GetScopedObjectsAsync(nodeId, false);
   }
 
   public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(uint nodeId)
   {
-    Logger.LogInformation($"NodesController.GetScopedObjectsAsync(uint nodeId={nodeId})");
+    GetLogger().LogInformation($"NodesController.GetScopedObjectsAsync(uint nodeId={nodeId})");
     return await GetScopedObjectsAsync(nodeId, true);
   }
 
@@ -27,15 +27,15 @@ public partial class NodesEndpoint : OLabEndpoint
     uint id,
     bool enableWikiTranslation)
   {
-    Logger.LogInformation($"NodesController.GetScopedObjectsAsync(uint nodeId={id})");
+    GetLogger().LogInformation($"NodesController.GetScopedObjectsAsync(uint nodeId={id})");
 
-    var node = GetSimple(dbContext, id);
+    var node = GetSimple(GetDbContext(), id);
     if (node == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, id);
 
     var phys = new ScopedObjects(
-      Logger,
-      dbContext,
+      GetLogger(),
+      GetDbContext(),
     _fileStorageModule);
     await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelNode, node.Id);
 
@@ -69,7 +69,7 @@ public partial class NodesEndpoint : OLabEndpoint
       Value = Encoding.ASCII.GetBytes(DateTime.UtcNow.ToString() + " UTC")
     });
 
-    var builder = new ObjectMapper.ScopedObjectsMapper(Logger, _wikiTagProvider, enableWikiTranslation);
+    var builder = new ObjectMapper.ScopedObjectsMapper(GetLogger(), _wikiTagProvider, enableWikiTranslation);
 
     var dto = builder.PhysicalToDto(phys);
     return dto;

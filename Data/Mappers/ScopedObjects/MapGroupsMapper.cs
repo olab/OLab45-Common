@@ -12,9 +12,9 @@ public class MapGroupsMapper : OLabMapper<MapGroups, MapGroupsDto>
   private readonly OLabDBContext dbContext;
 
   public MapGroupsMapper(
-    IOLabLogger logger,
-    OLabDBContext dbContext,
-    bool enableWikiTranslation = true) : base(logger)
+  IOLabLogger logger,
+  OLabDBContext dbContext,
+  bool enableWikiTranslation = true) : base(logger)
   {
     this.dbContext = dbContext;
   }

@@ -45,7 +45,7 @@ public partial class GroupsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     int? take, int? skip)
   {
-    Logger.LogInformation($"GroupsEndpoint.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
+    GetLogger().LogInformation($"GroupsEndpoint.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
     var pagedDataPhys = await _readerWriter.GetPagedAsync(take, skip);
 
     var pagedDataDto = new OLabAPIPagedResponse<GroupsDto>();
@@ -68,7 +68,7 @@ public partial class GroupsEndpoint : OLabEndpoint
     string source)
   {
 
-    Logger.LogInformation($"GroupsEndpoint.ReadAsync(source={source})");
+    GetLogger().LogInformation($"GroupsEndpoint.ReadAsync(source={source})");
 
     var phys = await _readerWriter.GetAsync(source);
     if (phys == null)
@@ -87,7 +87,7 @@ public partial class GroupsEndpoint : OLabEndpoint
     string groupName,
     CancellationToken token)
   {
-    Logger.LogInformation($"GroupsEndpoint.PostAsync()");
+    GetLogger().LogInformation($"GroupsEndpoint.PostAsync()");
 
     // test if user has access 
     if (!await auth.IsSystemSuperuserAsync())
@@ -111,7 +111,7 @@ public partial class GroupsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     string source)
   {
-    Logger.LogInformation($"GroupsEndpoint.DeleteAsync()");
+    GetLogger().LogInformation($"GroupsEndpoint.DeleteAsync()");
 
     // test if user has access 
     if (!await auth.IsSystemSuperuserAsync())
@@ -126,8 +126,8 @@ public partial class GroupsEndpoint : OLabEndpoint
       throw new OLabUnauthorizedException();
 
     // test if in use somewhere
-    var inUse = await dbContext.MapGroups.AnyAsync(x => x.GroupId == phys.Id) ||
-                await dbContext.UserGrouproles.AnyAsync(x => x.GroupId == phys.Id);
+    var inUse = await GetDbContext().MapGroups.AnyAsync(x => x.GroupId == phys.Id) ||
+                await GetDbContext().UserGrouproles.AnyAsync(x => x.GroupId == phys.Id);
     if (inUse)
       throw new OLabGeneralException($"Group '{source}' in use.");
 

@@ -39,9 +39,9 @@ public partial class Import3Endpoint : OLabEndpoint
         fileStorageProvider)
   {
     _importer = new Importer(
-      Logger,
+      GetLogger(),
       _configuration,
-      dbContext,
+      GetDbContext(),
       _wikiTagProvider,
       _fileStorageModule);
   }

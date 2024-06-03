@@ -33,7 +33,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
   /// <returns></returns>
   private bool Exists(uint id)
   {
-    return dbContext.SystemConstants.Any(e => e.Id == id);
+    return GetDbContext().SystemConstants.Any(e => e.Id == id);
   }
 
   /// <summary>
@@ -47,7 +47,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     int? take,
     int? skip)
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: ConstantsEndpoint.ReadAsync");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: ConstantsEndpoint.ReadAsync");
 
     var constantsPhys = new List<SystemConstants>();
     var total = 0;
@@ -56,7 +56,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     if (!skip.HasValue)
       skip = 0;
 
-    constantsPhys = await dbContext.SystemConstants.OrderBy(x => x.Name).ToListAsync();
+    constantsPhys = await GetDbContext().SystemConstants.OrderBy(x => x.Name).ToListAsync();
     total = constantsPhys.Count;
 
     if (take.HasValue && skip.HasValue)
@@ -65,13 +65,13 @@ public partial class ConstantsEndpoint : OLabEndpoint
       remaining = total - take.Value - skip.Value;
     }
 
-    Logger.LogInformation(string.Format("found {0} ConstantsPhys", constantsPhys.Count));
+    GetLogger().LogInformation(string.Format("found {0} ConstantsPhys", constantsPhys.Count));
 
-    var dtoList = new ObjectMapper.Constants(Logger).PhysicalToDto(constantsPhys);
+    var dtoList = new ObjectMapper.Constants(GetLogger()).PhysicalToDto(constantsPhys);
 
-    var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
-    var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
-    var servers = dbContext.Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
+    var maps = GetDbContext().Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
+    var nodes = GetDbContext().MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
+    var servers = GetDbContext().Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
 
     foreach (var dto in dtoList)
       dto.ParentInfo = FindParentInfo(dto.ImageableType, dto.ImageableId, maps, nodes, servers);
@@ -88,16 +88,16 @@ public partial class ConstantsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     uint id)
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: ConstantsEndpoint.ReadAsync");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: ConstantsEndpoint.ReadAsync");
 
     if (!Exists(id))
       throw new OLabObjectNotFoundException("ConstantsPhys", id);
 
-    var phys = await dbContext.SystemConstants.FirstAsync(x => x.Id == id);
+    var phys = await GetDbContext().SystemConstants.FirstAsync(x => x.Id == id);
     if (phys == null)
       throw new OLabObjectNotFoundException("SystemConstants", id);
 
-    var dto = new ObjectMapper.Constants(Logger).PhysicalToDto(phys);
+    var dto = new ObjectMapper.Constants(GetLogger()).PhysicalToDto(phys);
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, dto);
@@ -119,7 +119,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     uint id,
     ConstantsDto dto)
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: ConstantsEndpoint.PutAsync");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: ConstantsEndpoint.PutAsync");
 
     dto.ImageableId = dto.ParentInfo.Id;
 
@@ -130,13 +130,13 @@ public partial class ConstantsEndpoint : OLabEndpoint
 
     try
     {
-      var builder = new ConstantsFull(Logger);
+      var builder = new ConstantsFull(GetLogger());
       var phys = builder.DtoToPhysical(dto);
 
       phys.UpdatedAt = DateTime.Now;
 
-      dbContext.Entry(phys).State = EntityState.Modified;
-      await dbContext.SaveChangesAsync();
+      GetDbContext().Entry(phys).State = EntityState.Modified;
+      await GetDbContext().SaveChangesAsync();
     }
     catch (DbUpdateConcurrencyException)
     {
@@ -154,7 +154,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     ConstantsDto dto)
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: ConstantsEndpoint.PostAsync");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: ConstantsEndpoint.PostAsync");
 
     dto.ImageableId = dto.ParentInfo.Id != 0 ? dto.ParentInfo.Id : dto.ImageableId;
 
@@ -163,13 +163,13 @@ public partial class ConstantsEndpoint : OLabEndpoint
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("ConstantsPhys", 0);
 
-    var builder = new ConstantsFull(Logger);
+    var builder = new ConstantsFull(GetLogger());
     var phys = builder.DtoToPhysical(dto);
 
     phys.CreatedAt = DateTime.Now;
 
-    dbContext.SystemConstants.Add(phys);
-    await dbContext.SaveChangesAsync();
+    GetDbContext().SystemConstants.Add(phys);
+    await GetDbContext().SaveChangesAsync();
 
     dto = builder.PhysicalToDto(phys);
     return dto;
@@ -184,7 +184,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     uint id)
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: ConstantsEndpoint.DeleteAsync");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: ConstantsEndpoint.DeleteAsync");
 
     if (!Exists(id))
       throw new OLabObjectNotFoundException("ConstantsPhys", id);
@@ -192,15 +192,15 @@ public partial class ConstantsEndpoint : OLabEndpoint
     try
     {
       var phys = await GetConstantAsync(id);
-      var dto = new ConstantsFull(Logger).PhysicalToDto(phys);
+      var dto = new ConstantsFull(GetLogger()).PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("ConstantsPhys", id);
 
-      dbContext.SystemConstants.Remove(phys);
-      await dbContext.SaveChangesAsync();
+      GetDbContext().SystemConstants.Remove(phys);
+      await GetDbContext().SaveChangesAsync();
 
     }
     catch (DbUpdateConcurrencyException)

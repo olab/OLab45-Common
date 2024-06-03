@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
@@ -244,5 +245,24 @@ public partial class MapsReaderWriter : ReaderWriter
 
     return map;
 
+  }
+
+  /// <summary>
+  /// Update map groups for a map
+  /// </summary>
+  /// <param name="mapId">Map id</param>
+  /// <param name="groupIds">List of group ids</param>
+  /// <returns>New list of map groups</returns>
+  public async Task<IList<MapGroups>> UpdateGroupsAsync(uint mapId, uint[] groupIds)
+  {
+    var mapPhys = await GetSingleWithGroupsAsync(mapId);
+    mapPhys.MapGroups.Clear();
+
+    foreach (var groupId in groupIds)
+      mapPhys.MapGroups.Add(new MapGroups(mapId, groupId));
+
+    await GetDbContext().SaveChangesAsync();
+
+    return mapPhys.MapGroups.ToList();
   }
 }

@@ -45,7 +45,7 @@ public partial class RolesEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     int? take, int? skip)
   {
-    Logger.LogInformation($"RolesEndpoint.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
+    GetLogger().LogInformation($"RolesEndpoint.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
     var pagedDataPhys = await _readerWriter.GetPagedAsync(take, skip);
 
     var pagedDataDto = new OLabAPIPagedResponse<RolesDto>();
@@ -68,7 +68,7 @@ public partial class RolesEndpoint : OLabEndpoint
     string source)
   {
 
-    Logger.LogInformation($"RolesEndpoint.ReadAsync(source={source})");
+    GetLogger().LogInformation($"RolesEndpoint.ReadAsync(source={source})");
     var phys = await _readerWriter.GetAsync(source);
 
     return _mapper.PhysicalToDto(phys);
@@ -84,7 +84,7 @@ public partial class RolesEndpoint : OLabEndpoint
     string groupName,
     CancellationToken token)
   {
-    Logger.LogInformation($"RolesEndpoint.PostAsync()");
+    GetLogger().LogInformation($"RolesEndpoint.PostAsync()");
 
     // test if user has access 
     if (!await auth.IsSystemSuperuserAsync())
@@ -108,7 +108,7 @@ public partial class RolesEndpoint : OLabEndpoint
     string source)
   {
     {
-      Logger.LogInformation($"RolesEndpoint.DeleteAsync()");
+      GetLogger().LogInformation($"RolesEndpoint.DeleteAsync()");
 
       // test if user has access 
       if (!await auth.IsSystemSuperuserAsync())
@@ -123,7 +123,7 @@ public partial class RolesEndpoint : OLabEndpoint
         throw new OLabUnauthorizedException();
 
       // test if in use somewhere
-      var inUse = await dbContext.UserGrouproles.AnyAsync(x => x.RoleId == phys.Id);
+      var inUse = await GetDbContext().UserGrouproles.AnyAsync(x => x.RoleId == phys.Id);
       if (inUse)
         throw new OLabGeneralException($"Role '{source}' in use.");
 

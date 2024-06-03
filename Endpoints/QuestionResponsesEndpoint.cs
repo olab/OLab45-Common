@@ -30,7 +30,7 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
   /// <returns></returns>
   private bool Exists(uint id)
   {
-    return dbContext.SystemQuestionResponses.Any(e => e.Id == id);
+    return GetDbContext().SystemQuestionResponses.Any(e => e.Id == id);
   }
 
   /// <summary>
@@ -43,10 +43,10 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
     uint id,
     QuestionResponsesDto dto)
   {
-    Logger.LogInformation($"PutAsync(uint id={id})");
+    GetLogger().LogInformation($"PutAsync(uint id={id})");
 
     var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
-    var builder = new QuestionsFullMapper(Logger);
+    var builder = new QuestionsFullMapper(GetLogger());
     var dtoQuestionTemp = builder.PhysicalToDto(physQuestionTemp);
 
     // test if user has access to object
@@ -56,13 +56,13 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
 
     try
     {
-      var responsebuilder = new QuestionResponses(Logger, dtoQuestionTemp);
+      var responsebuilder = new QuestionResponses(GetLogger(), dtoQuestionTemp);
       var physResponse = responsebuilder.DtoToPhysical(dto);
 
       physResponse.UpdatedAt = DateTime.Now;
 
-      dbContext.SystemQuestionResponses.Update(physResponse);
-      await dbContext.SaveChangesAsync();
+      GetDbContext().SystemQuestionResponses.Update(physResponse);
+      await GetDbContext().SaveChangesAsync();
     }
     catch (DbUpdateConcurrencyException)
     {
@@ -80,10 +80,10 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     QuestionResponsesDto dto)
   {
-    Logger.LogInformation($"QuestionResponsesController.PostAsync({dto.Response})");
+    GetLogger().LogInformation($"QuestionResponsesController.PostAsync({dto.Response})");
 
     var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
-    var questionBuilder = new QuestionsFullMapper(Logger);
+    var questionBuilder = new QuestionsFullMapper(GetLogger());
     var dtoQuestionTemp = questionBuilder.PhysicalToDto(physQuestionTemp);
 
     // test if user has access to object
@@ -91,11 +91,11 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("QuestionResponses", 0);
 
-    var responsebuilder = new QuestionResponses(Logger, dtoQuestionTemp);
+    var responsebuilder = new QuestionResponses(GetLogger(), dtoQuestionTemp);
     var physResponse = responsebuilder.DtoToPhysical(dto);
 
-    dbContext.SystemQuestionResponses.Add(physResponse);
-    await dbContext.SaveChangesAsync();
+    GetDbContext().SystemQuestionResponses.Add(physResponse);
+    await GetDbContext().SaveChangesAsync();
 
     dto = responsebuilder.PhysicalToDto(physResponse);
     return dto;
@@ -111,7 +111,7 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     uint id)
   {
-    Logger.LogInformation($"QuestionResponsesController.DeleteAsync(uint id={id})");
+    GetLogger().LogInformation($"QuestionResponsesController.DeleteAsync(uint id={id})");
 
     if (!Exists(id))
       return OLabNotFoundResult<uint>.Result(id);
@@ -120,7 +120,7 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
     {
       var physResponse = await GetQuestionResponseAsync(id);
       var physQuestion = await GetQuestionAsync(physResponse.QuestionId.Value);
-      var questionBuilder = new QuestionsFullMapper(Logger);
+      var questionBuilder = new QuestionsFullMapper(GetLogger());
       var dtoQuestion = questionBuilder.PhysicalToDto(physQuestion);
 
       // test if user has access to objectdtoQuestion
@@ -128,8 +128,8 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
       if (accessResult is UnauthorizedResult)
         return accessResult;
 
-      dbContext.SystemQuestionResponses.Remove(physResponse);
-      await dbContext.SaveChangesAsync();
+      GetDbContext().SystemQuestionResponses.Remove(physResponse);
+      await GetDbContext().SaveChangesAsync();
       return null;
     }
     catch (Exception ex)

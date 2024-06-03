@@ -38,7 +38,7 @@ public partial class MapsEndpoint : OLabEndpoint
     uint linkId,
     MapNodeLinksFullDto linkdto)
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutMapNodeLinksAsync");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutMapNodeLinksAsync");
 
     // test if user has access to map.
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId))
@@ -46,15 +46,15 @@ public partial class MapsEndpoint : OLabEndpoint
 
     try
     {
-      var builder = new MapNodeLinksFullMapper(Logger);
+      var builder = new MapNodeLinksFullMapper(GetLogger());
       var phys = builder.DtoToPhysical(linkdto);
 
-      dbContext.Entry(phys).State = EntityState.Modified;
-      await dbContext.SaveChangesAsync();
+      GetDbContext().Entry(phys).State = EntityState.Modified;
+      await GetDbContext().SaveChangesAsync();
     }
     catch (DbUpdateConcurrencyException)
     {
-      var existingMap = GetLinkSimple(dbContext, linkId);
+      var existingMap = GetLinkSimple(GetDbContext(), linkId);
       if (existingMap == null)
         throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
     }

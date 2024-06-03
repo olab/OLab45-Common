@@ -38,7 +38,7 @@ public partial class FilesEndpoint : OLabEndpoint
 
   private bool Exists(uint id)
   {
-    return dbContext.SystemFiles.Any(e => e.Id == id);
+    return GetDbContext().SystemFiles.Any(e => e.Id == id);
   }
 
   /// <summary>
@@ -49,7 +49,7 @@ public partial class FilesEndpoint : OLabEndpoint
   /// <returns></returns>
   public async Task<OLabAPIPagedResponse<FilesDto>> GetAsync(int? take, int? skip)
   {
-    Logger.LogInformation($"FilesController.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
+    GetLogger().LogInformation($"FilesController.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
 
     var Files = new List<SystemFiles>();
     var total = 0;
@@ -58,7 +58,7 @@ public partial class FilesEndpoint : OLabEndpoint
     if (!skip.HasValue)
       skip = 0;
 
-    Files = await dbContext.SystemFiles.OrderBy(x => x.Name).ToListAsync();
+    Files = await GetDbContext().SystemFiles.OrderBy(x => x.Name).ToListAsync();
     total = Files.Count;
 
     if (take.HasValue && skip.HasValue)
@@ -67,9 +67,9 @@ public partial class FilesEndpoint : OLabEndpoint
       remaining = total - take.Value - skip.Value;
     }
 
-    Logger.LogInformation(string.Format("found {0} FilesPhys", Files.Count));
+    GetLogger().LogInformation(string.Format("found {0} FilesPhys", Files.Count));
 
-    var dtoList = new Files(Logger).PhysicalToDto(Files);
+    var dtoList = new Files(GetLogger()).PhysicalToDto(Files);
 
     var maps = GetMapIdNames();
     var nodes = GetNodeIdNames();
@@ -91,15 +91,15 @@ public partial class FilesEndpoint : OLabEndpoint
     uint id)
   {
 
-    Logger.LogInformation($"FilesController.ReadAsync(uint id={id})");
+    GetLogger().LogInformation($"FilesController.ReadAsync(uint id={id})");
 
-    var phys = await dbContext.SystemFiles.FirstAsync(x => x.Id == id);
+    var phys = await GetDbContext().SystemFiles.FirstAsync(x => x.Id == id);
     if (phys == null)
       throw new OLabObjectNotFoundException("SystemFiles", id);
 
     _fileStorageModule.AttachUrls(phys);
 
-    var dto = new FilesFull(Logger).PhysicalToDto(phys);
+    var dto = new FilesFull(GetLogger()).PhysicalToDto(phys);
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, dto);
@@ -121,7 +121,7 @@ public partial class FilesEndpoint : OLabEndpoint
     uint id, FilesFullDto dto)
   {
 
-    Logger.LogInformation($"PutAsync(uint id={id})");
+    GetLogger().LogInformation($"PutAsync(uint id={id})");
 
     dto.ImageableId = dto.ParentInfo.Id;
 
@@ -132,13 +132,13 @@ public partial class FilesEndpoint : OLabEndpoint
 
     try
     {
-      var builder = new FilesFull(Logger);
+      var builder = new FilesFull(GetLogger());
       var phys = builder.DtoToPhysical(dto);
 
       phys.UpdatedAt = DateTime.Now;
 
-      dbContext.Entry(phys).State = EntityState.Modified;
-      await dbContext.SaveChangesAsync();
+      GetDbContext().Entry(phys).State = EntityState.Modified;
+      await GetDbContext().SaveChangesAsync();
     }
     catch (DbUpdateConcurrencyException)
     {
@@ -157,8 +157,8 @@ public partial class FilesEndpoint : OLabEndpoint
     FilesFullDto dto,
     CancellationToken token)
   {
-    Logger.LogInformation($"FilesController.PostAsync()");
-    var builder = new FilesFull(Logger);
+    GetLogger().LogInformation($"FilesController.PostAsync()");
+    var builder = new FilesFull(GetLogger());
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dto);
@@ -171,8 +171,8 @@ public partial class FilesEndpoint : OLabEndpoint
     var phys = builder.DtoToPhysical(dto);
     phys.CreatedAt = DateTime.Now;
 
-    dbContext.SystemFiles.Add(phys);
-    await dbContext.SaveChangesAsync();
+    GetDbContext().SystemFiles.Add(phys);
+    await GetDbContext().SaveChangesAsync();
 
     var physFilePath = _fileStorageModule.GetPublicFileDirectory(
       dto.ImageableType,
@@ -184,7 +184,7 @@ public partial class FilesEndpoint : OLabEndpoint
       physFilePath,
       token);
 
-    Logger.LogInformation($"wrote file '{dto.Name}' to '{physFilePath}'. Size: {dto.GetStream().Length}");
+    GetLogger().LogInformation($"wrote file '{dto.Name}' to '{physFilePath}'. Size: {dto.GetStream().Length}");
 
     var newDto = builder.PhysicalToDto(phys);
     return newDto;
@@ -200,7 +200,7 @@ public partial class FilesEndpoint : OLabEndpoint
     uint id)
   {
 
-    Logger.LogInformation($"ConstantsEndpoint.DeleteAsync(uint id={id})");
+    GetLogger().LogInformation($"ConstantsEndpoint.DeleteAsync(uint id={id})");
 
     if (!Exists(id))
       throw new OLabObjectNotFoundException("FilesPhys", id);
@@ -211,7 +211,7 @@ public partial class FilesEndpoint : OLabEndpoint
       if (phys == null)
         throw new OLabObjectNotFoundException("SystemFiles", id);
 
-      var dto = new FilesFull(Logger).PhysicalToDto(phys);
+      var dto = new FilesFull(GetLogger()).PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dto);
@@ -227,8 +227,8 @@ public partial class FilesEndpoint : OLabEndpoint
       await _fileStorageModule.DeleteFileAsync(
         filePath);
 
-      dbContext.SystemFiles.Remove(phys);
-      await dbContext.SaveChangesAsync();
+      GetDbContext().SystemFiles.Remove(phys);
+      await GetDbContext().SaveChangesAsync();
     }
     catch (DbUpdateConcurrencyException)
     {

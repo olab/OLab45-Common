@@ -49,7 +49,7 @@ public partial class NodesEndpoint : OLabEndpoint
     var phys = await GetMapNodeAsync(id);
 
     var builder = new ObjectMapper.MapsNodesFullRelationsMapper(
-      Logger,
+      GetLogger(),
       _wikiTagProvider as WikiTagProvider,
       enableWikiTranslation);
     var dto = builder.PhysicalToDto(phys);
@@ -64,7 +64,7 @@ public partial class NodesEndpoint : OLabEndpoint
   /// <returns>MapsNodesFullRelationsDto response</returns>
   public async Task<MapsNodesFullRelationsDto> GetNodeTranslatedAsync(IOLabAuthorization auth, uint nodeId)
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: NodesEndpoint.GetNodeTranslatedAsync");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: NodesEndpoint.GetNodeTranslatedAsync");
     return await GetNodeAsync(nodeId, true);
   }
 
@@ -76,7 +76,7 @@ public partial class NodesEndpoint : OLabEndpoint
   /// <returns></returns>
   public async Task PutNodeAsync(IOLabAuthorization auth, uint id, MapNodesFullDto dto)
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: NodesEndpoint.PutNodeAsync");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: NodesEndpoint.PutNodeAsync");
 
     var phys = await GetMapNodeAsync(id);
     if (phys == null)
@@ -86,12 +86,12 @@ public partial class NodesEndpoint : OLabEndpoint
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelNode, id))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, id);
 
-    var builder = new ObjectMapper.MapNodesFullMapper(Logger);
+    var builder = new ObjectMapper.MapNodesFullMapper(GetLogger());
     phys = builder.DtoToPhysical(dto);
 
-    dbContext.Entry(phys).State = EntityState.Modified;
+    GetDbContext().Entry(phys).State = EntityState.Modified;
 
-    await dbContext.SaveChangesAsync();
+    await GetDbContext().SaveChangesAsync();
 
   }
 
@@ -107,9 +107,9 @@ public partial class NodesEndpoint : OLabEndpoint
     MapNodeLinksPostDataDto data
   )
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: NodesEndpoint.PostLinkAsync");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: NodesEndpoint.PostLinkAsync");
 
-    var node = GetSimple(dbContext, nodeId);
+    var node = GetSimple(GetDbContext(), nodeId);
     if (node == null)
       throw new OLabObjectNotFoundException(Constants.ScopeLevelNode, nodeId);
 
@@ -118,9 +118,9 @@ public partial class NodesEndpoint : OLabEndpoint
     phys.NodeId2 = data.DestinationId;
     phys.MapId = node.MapId;
 
-    dbContext.MapNodeLinks.Add(phys);
-    await dbContext.SaveChangesAsync();
-    Logger.LogInformation($"created MapNodeLink id = {phys.Id}");
+    GetDbContext().MapNodeLinks.Add(phys);
+    await GetDbContext().SaveChangesAsync();
+    GetLogger().LogInformation($"created MapNodeLink id = {phys.Id}");
 
     var dto = new MapNodeLinksPostResponseDto
     {
@@ -142,9 +142,9 @@ public partial class NodesEndpoint : OLabEndpoint
     [FromBody] MapNodesPostDataDto data
   )
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: NodesEndpoint.PostNodeAsync");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: NodesEndpoint.PostNodeAsync");
 
-    using var transaction = dbContext.Database.BeginTransaction();
+    using var transaction = GetDbContext().Database.BeginTransaction();
 
     try
     {
@@ -153,9 +153,9 @@ public partial class NodesEndpoint : OLabEndpoint
       phys.Y = data.Y;
       phys.MapId = mapId;
 
-      dbContext.MapNodes.Add(phys);
-      await dbContext.SaveChangesAsync();
-      Logger.LogInformation($"created MapNode id = {phys.Id}");
+      GetDbContext().MapNodes.Add(phys);
+      await GetDbContext().SaveChangesAsync();
+      GetLogger().LogInformation($"created MapNode id = {phys.Id}");
 
       var link = new MapNodeLinks
       {
@@ -164,9 +164,9 @@ public partial class NodesEndpoint : OLabEndpoint
         NodeId2 = phys.Id
       };
 
-      dbContext.MapNodeLinks.Add(link);
-      await dbContext.SaveChangesAsync();
-      Logger.LogInformation($"created MapNodeLink id = {link.Id}");
+      GetDbContext().MapNodeLinks.Add(link);
+      await GetDbContext().SaveChangesAsync();
+      GetLogger().LogInformation($"created MapNodeLink id = {link.Id}");
 
       await transaction.CommitAsync();
 

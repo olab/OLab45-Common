@@ -22,17 +22,17 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
   public MapAuthorizationEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
-    OLabDBContext context,
+    OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
     IOLabModuleProvider<IFileStorageModule> fileStorageProvider) : base(
       logger,
       configuration,
-      context,
+      dbContext,
       wikiTagProvider,
       fileStorageProvider)
   {
-    mapper = new MapGroupsMapper(Logger, dbContext);
-    mapReader = new MapsReaderWriter(Logger, dbContext);
+    mapper = new MapGroupsMapper(GetLogger(), GetDbContext());
+    mapReader = new MapsReaderWriter(GetLogger(), GetDbContext());
   }
 
   /// <summary>
@@ -49,7 +49,7 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     MapGroupsDto dto,
     CancellationToken token)
   {
-    Logger.LogInformation($"AuthorizationEndpoint.DeleteAsync()");
+    GetLogger().LogInformation($"AuthorizationEndpoint.DeleteAsync()");
 
     // test if user has access to parent object
     var accessResult = await auth.HasAccessAsync(
@@ -68,7 +68,7 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     if (mapGroupPhys != null)
     {
       mapPhys.MapGroups.Remove(mapGroupPhys);
-      dbContext.SaveChanges();
+      GetDbContext().SaveChanges();
     }
     else
       throw new OLabObjectNotFoundException("MapGroup", dto.GroupId);
@@ -92,7 +92,7 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     CancellationToken token)
 
   {
-    Logger.LogInformation($"AuthorizationEndpoint.AddAsync()");
+    GetLogger().LogInformation($"AuthorizationEndpoint.AddAsync()");
 
     // test if user has access to parent object
     var accessResult = await auth.HasAccessAsync(
@@ -107,7 +107,7 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     if (mapPhys == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, dto.MapId);
 
-    var reader = GroupReaderWriter.Instance(Logger, dbContext);
+    var reader = GroupReaderWriter.Instance(GetLogger(), GetDbContext());
 
     // ensure group exists
     if (await reader.ExistsAsync(dto.GroupId.ToString()))
@@ -119,7 +119,7 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
       var mapGroupPhys = mapper.DtoToPhysical(dto);
       mapPhys.MapGroups.Add(mapGroupPhys);
 
-      dbContext.SaveChanges();
+      GetDbContext().SaveChanges();
     }
 
     return mapper.PhysicalToDto(mapPhys.MapGroups.ToList());

@@ -30,7 +30,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
       wikiTagProvider,
       fileStorageProvider)
   {
-    mapper = new UserGroupRolesMapper(Logger, dbContext);
+    mapper = new UserGroupRolesMapper(GetLogger(), GetDbContext());
   }
 
   /// <summary>
@@ -47,7 +47,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     UserGroupRolesDto dto,
     CancellationToken token)
   {
-    Logger.LogInformation($"UserAuthorizationEndpoint.DeleteAsync()");
+    GetLogger().LogInformation($"UserAuthorizationEndpoint.DeleteAsync()");
 
     // test if user has access to parent object
     var accessResult = await auth.HasAccessAsync(
@@ -58,7 +58,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     if (!accessResult)
       throw new OLabUnauthorizedException("User", dto.UserId);
 
-    var userPhys = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == dto.UserId, token);
+    var userPhys = await GetDbContext().Users.FirstOrDefaultAsync(x => x.Id == dto.UserId, token);
     if (userPhys == null)
       throw new OLabObjectNotFoundException("Users", dto.UserId);
 
@@ -68,9 +68,9 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     if (mapGroupPhys != null)
     {
       userPhys.UserGrouproles.Remove(mapGroupPhys);
-      dbContext.SaveChanges();
+      GetDbContext().SaveChanges();
 
-      Logger.LogInformation($"removed group/role {dto.GroupId}/{dto.RoleId} from user {userPhys.Username}");
+      GetLogger().LogInformation($"removed group/role {dto.GroupId}/{dto.RoleId} from user {userPhys.Username}");
 
     }
     else
@@ -95,7 +95,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     CancellationToken token)
 
   {
-    Logger.LogInformation($"UserAuthorizationEndpoint.AddAsync()");
+    GetLogger().LogInformation($"UserAuthorizationEndpoint.AddAsync()");
 
     // test if user has access to parent object
     var accessResult = await auth.HasAccessAsync(
@@ -106,16 +106,16 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     if (!accessResult)
       throw new OLabUnauthorizedException("User", dto.UserId);
 
-    var userPhys = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == dto.UserId, token);
+    var userPhys = await GetDbContext().Users.FirstOrDefaultAsync(x => x.Id == dto.UserId, token);
     if (userPhys == null)
       throw new OLabObjectNotFoundException("Users", dto.UserId);
 
-    var groupReader = GroupReaderWriter.Instance(Logger, dbContext);
+    var groupReader = GroupReaderWriter.Instance(GetLogger(), GetDbContext());
     // ensure group exists
     if (await groupReader.ExistsAsync(dto.GroupId.ToString()))
       throw new OLabObjectNotFoundException("Group", dto.GroupId);
 
-    var roleReader = RoleReaderWriter.Instance(Logger, dbContext);
+    var roleReader = RoleReaderWriter.Instance(GetLogger(), GetDbContext());
     // ensure role exists
     if (await roleReader.ExistsAsync(dto.RoleId.ToString()))
       throw new OLabObjectNotFoundException("Role", dto.RoleId);
@@ -126,9 +126,9 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
       var userGroupRolePhys = mapper.DtoToPhysical(dto);
       userPhys.UserGrouproles.Add(userGroupRolePhys);
 
-      dbContext.SaveChanges();
+      GetDbContext().SaveChanges();
 
-      Logger.LogInformation($"added group/role {dto.GroupId}/{dto.RoleId} to user {userPhys.Username}");
+      GetLogger().LogInformation($"added group/role {dto.GroupId}/{dto.RoleId} to user {userPhys.Username}");
 
     }
 

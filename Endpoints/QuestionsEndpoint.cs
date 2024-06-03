@@ -41,7 +41,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
   /// <returns></returns>
   private bool Exists(uint id)
   {
-    return dbContext.SystemQuestions.Any(e => e.Id == id);
+    return GetDbContext().SystemQuestions.Any(e => e.Id == id);
   }
 
   /// <summary>
@@ -53,7 +53,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
   public async Task<OLabAPIPagedResponse<QuestionsDto>> GetAsync([FromQuery] int? take, [FromQuery] int? skip)
   {
 
-    Logger.LogInformation($"ReadAsync take={take} skip={skip}");
+    GetLogger().LogInformation($"ReadAsync take={take} skip={skip}");
 
     var physList = new List<SystemQuestions>();
     var total = 0;
@@ -62,7 +62,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
     if (!skip.HasValue)
       skip = 0;
 
-    physList = await dbContext.SystemQuestions.OrderBy(x => x.Name).ToListAsync();
+    physList = await GetDbContext().SystemQuestions.OrderBy(x => x.Name).ToListAsync();
     total = physList.Count;
 
     if (take.HasValue && skip.HasValue)
@@ -71,13 +71,13 @@ public partial class QuestionsEndpoint : OLabEndpoint
       remaining = total - take.Value - skip.Value;
     }
 
-    Logger.LogInformation(string.Format("found {0} questions", physList.Count));
+    GetLogger().LogInformation(string.Format("found {0} questions", physList.Count));
 
-    var dtoList = new Questions(Logger, _wikiTagProvider).PhysicalToDto(physList);
+    var dtoList = new Questions(GetLogger(), _wikiTagProvider).PhysicalToDto(physList);
 
-    var maps = dbContext.Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
-    var nodes = dbContext.MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
-    var servers = dbContext.Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
+    var maps = GetDbContext().Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
+    var nodes = GetDbContext().MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
+    var servers = GetDbContext().Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
 
     foreach (var dto in dtoList)
       dto.ParentInfo = FindParentInfo(dto.ImageableType, dto.ImageableId, maps, nodes, servers);
@@ -96,13 +96,13 @@ public partial class QuestionsEndpoint : OLabEndpoint
     uint id)
   {
 
-    Logger.LogInformation($"ReadAsync id {id}");
+    GetLogger().LogInformation($"ReadAsync id {id}");
 
     if (!Exists(id))
       throw new OLabObjectNotFoundException("QuestionsPhys", id);
 
-    var phys = await dbContext.SystemQuestions.Include("SystemQuestionResponses").FirstAsync(x => x.Id == id);
-    var builder = new QuestionsFullMapper(Logger);
+    var phys = await GetDbContext().SystemQuestions.Include("SystemQuestionResponses").FirstAsync(x => x.Id == id);
+    var builder = new QuestionsFullMapper(GetLogger());
     var dto = builder.PhysicalToDto(phys);
 
     // test if user has access to object
@@ -126,7 +126,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
     uint id,
     QuestionsFullDto dto)
   {
-    Logger.LogInformation($"PutAsync id {id}");
+    GetLogger().LogInformation($"PutAsync id {id}");
 
     dto.ImageableId = dto.ParentInfo.Id;
 
@@ -137,13 +137,13 @@ public partial class QuestionsEndpoint : OLabEndpoint
 
     try
     {
-      var builder = new QuestionsFullMapper(Logger);
+      var builder = new QuestionsFullMapper(GetLogger());
       var phys = builder.DtoToPhysical(dto);
 
       phys.UpdatedAt = DateTime.Now;
 
-      dbContext.Entry(phys).State = EntityState.Modified;
-      await dbContext.SaveChangesAsync();
+      GetDbContext().Entry(phys).State = EntityState.Modified;
+      await GetDbContext().SaveChangesAsync();
     }
     catch (DbUpdateConcurrencyException)
     {
@@ -163,7 +163,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     QuestionsFullDto dto)
   {
-    Logger.LogInformation($"PostAsync name = {dto.Name}");
+    GetLogger().LogInformation($"PostAsync name = {dto.Name}");
 
     dto.ImageableId = dto.ParentInfo.Id != 0 ? dto.ParentInfo.Id : dto.ImageableId;
     dto.Prompt = !string.IsNullOrEmpty(dto.Prompt) ? dto.Prompt : "";
@@ -173,13 +173,13 @@ public partial class QuestionsEndpoint : OLabEndpoint
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("QuestionsPhys", 0);
 
-    var builder = new QuestionsFullMapper(Logger);
+    var builder = new QuestionsFullMapper(GetLogger());
     var phys = builder.DtoToPhysical(dto);
 
     phys.CreatedAt = DateTime.Now;
 
-    dbContext.SystemQuestions.Add(phys);
-    await dbContext.SaveChangesAsync();
+    GetDbContext().SystemQuestions.Add(phys);
+    await GetDbContext().SaveChangesAsync();
 
     var newPhys = await GetQuestionAsync(phys.Id);
     dto = builder.PhysicalToDto(newPhys);
@@ -197,7 +197,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     uint id)
   {
-    Logger.LogInformation($"DeleteAsync id {id}");
+    GetLogger().LogInformation($"DeleteAsync id {id}");
 
     if (!Exists(id))
       throw new OLabObjectNotFoundException("Question", id);
@@ -205,22 +205,22 @@ public partial class QuestionsEndpoint : OLabEndpoint
     try
     {
       var phys = await GetQuestionAsync(id);
-      var dto = new Questions(Logger, _wikiTagProvider).PhysicalToDto(phys);
+      var dto = new Questions(GetLogger(), _wikiTagProvider).PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dto);
       if (accessResult is UnauthorizedResult)
         throw new OLabUnauthorizedException("Question", id);
 
-      if (dbContext.UserResponses.Any(x => x.QuestionId == id))
+      if (GetDbContext().UserResponses.Any(x => x.QuestionId == id))
         throw new Exception($"Question {id} is in use. Cannot delete.");
 
       if (phys.SystemQuestionResponses.Count > 0)
-        dbContext.SystemQuestionResponses.RemoveRange(phys.SystemQuestionResponses.ToArray());
+        GetDbContext().SystemQuestionResponses.RemoveRange(phys.SystemQuestionResponses.ToArray());
 
-      dbContext.SystemQuestions.Remove(phys);
+      GetDbContext().SystemQuestions.Remove(phys);
 
-      await dbContext.SaveChangesAsync();
+      await GetDbContext().SaveChangesAsync();
 
     }
     catch (DbUpdateConcurrencyException)

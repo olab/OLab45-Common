@@ -26,10 +26,10 @@ public partial class ResponseEndpoint : OLabEndpoint
     SystemQuestions question,
     QuestionResponsePostDataDto body)
   {
-    Logger.LogInformation($"PostQuestionResponseAsync(questionId={body.QuestionId}, response={body.PreviousValue}->{body.Value}");
+    GetLogger().LogInformation($"PostQuestionResponseAsync(questionId={body.QuestionId}, response={body.PreviousValue}->{body.Value}");
 
     // dump out original dynamic objects for logging
-    body.DynamicObjects.Dump(Logger, "Response Original");
+    body.DynamicObjects.Dump(GetLogger(), "Response Original");
 
     // test if counter associated with the question
     if (question.CounterId.HasValue && (question.CounterId.Value > 0))
@@ -62,18 +62,18 @@ public partial class ResponseEndpoint : OLabEndpoint
         ProcessValueQuestion(question, counterDto, body);
 
       // update counter in response dto
-      body.DynamicObjects.UpdateCounter(Logger, counterDto);
+      body.DynamicObjects.UpdateCounter(GetLogger(), counterDto);
 
       // if a server-level counter value has changed, write it to db
       if (dbCounter.ImageableType == Utils.Constants.ScopeLevelServer)
       {
         dbCounter.ValueFromNumber(counterDto.ValueAsNumber());
-        dbContext.SystemCounters.Update(dbCounter);
-        await dbContext.SaveChangesAsync();
+        GetDbContext().SystemCounters.Update(dbCounter);
+        await GetDbContext().SaveChangesAsync();
       }
     }
     else
-      Logger.LogWarning($"question {question.Id} response: question has no counter");
+      GetLogger().LogWarning($"question {question.Id} response: question has no counter");
 
 
     // update dynamic object checksum since counter values
@@ -81,7 +81,7 @@ public partial class ResponseEndpoint : OLabEndpoint
     body.DynamicObjects.RefreshChecksum();
 
     // dump out original dynamic objects for logging
-    body.DynamicObjects.Dump(Logger, "Response New");
+    body.DynamicObjects.Dump(GetLogger(), "Response New");
 
     return body.DynamicObjects;
 
@@ -98,7 +98,7 @@ public partial class ResponseEndpoint : OLabEndpoint
   {
     var dynamicCounter = body.DynamicObjects.GetCounter(question.CounterId.Value);
     if (dynamicCounter == null)
-      Logger.LogError($"Counter {question.CounterId.Value} not found in request. Update ignored");
+      GetLogger().LogError($"Counter {question.CounterId.Value} not found in request. Update ignored");
     else
     {
       // if counter is server-level, then take db value and copy
@@ -127,7 +127,7 @@ public partial class ResponseEndpoint : OLabEndpoint
 
     var score = question.GetScoreFromResponses(body.Value);
 
-    Logger.LogInformation($"counter {counterDto.Id} value = {score}");
+    GetLogger().LogInformation($"counter {counterDto.Id} value = {score}");
     counterDto.SetValue(score);
   }
 
@@ -172,7 +172,7 @@ public partial class ResponseEndpoint : OLabEndpoint
       if (currentResponse.Score.HasValue)
         currentScore = currentResponse.Score.Value;
       else
-        Logger.LogWarning($"Response {body.ResponseId.Value} does not have a score value");
+        GetLogger().LogWarning($"Response {body.ResponseId.Value} does not have a score value");
     }
     else
       throw new Exception($"Question id = {question.Id} current response not valid.");
@@ -186,24 +186,24 @@ public partial class ResponseEndpoint : OLabEndpoint
       if (previousResponse.Score.HasValue)
         previousScore = previousResponse.Score.Value;
       else
-        Logger.LogWarning($"Response {body.ResponseId.Value} does not have a score value");
+        GetLogger().LogWarning($"Response {body.ResponseId.Value} does not have a score value");
     }
 
     // back out any previous response value
     if (previousResponse != null)
     {
-      Logger.LogInformation($"reverting previous question reponse {body.PreviousResponseId.Value} = {previousScore}");
+      GetLogger().LogInformation($"reverting previous question reponse {body.PreviousResponseId.Value} = {previousScore}");
       score -= previousScore;
     }
 
     // add in current response score
     if (currentResponse != null)
     {
-      Logger.LogInformation($"adjusting question with reponse {body.ResponseId.Value} = {currentScore}");
+      GetLogger().LogInformation($"adjusting question with reponse {body.ResponseId.Value} = {currentScore}");
       score += currentScore;
     }
 
-    Logger.LogInformation($"counter {counterDto.Id} value = {score}");
+    GetLogger().LogInformation($"counter {counterDto.Id} value = {score}");
 
     counterDto.SetValue(score);
 

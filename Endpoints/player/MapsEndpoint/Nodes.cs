@@ -61,7 +61,7 @@ public partial class MapsEndpoint : OLabEndpoint
     uint nodeId,
     bool hideHidden = true)
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
 
     var dto = await GetRawNodeAsync(mapId, nodeId, hideHidden);
 
@@ -99,20 +99,20 @@ public partial class MapsEndpoint : OLabEndpoint
     uint nodeId,
     DynamicScopedObjectsDto body)
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync. new play? {body.NewPlay}");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync. new play? {body.NewPlay}");
 
     // test if user has access to map.
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
     // dump out original dynamic objects for logging
-    body.Dump(Logger, "Original");
+    body.Dump(GetLogger(), "Original");
 
     // test for valid dynamic objects
     if (!body.IsValid())
       throw new OLabUnauthorizedException("Object validity check failed");
 
-    var map = await MapsReaderWriter.Instance(Logger, dbContext).GetSingleAsync(mapId);
+    var map = await MapsReaderWriter.Instance(GetLogger(), GetDbContext()).GetSingleAsync(mapId);
     if (map == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
@@ -154,8 +154,8 @@ public partial class MapsEndpoint : OLabEndpoint
     }
 
     var session = OLabSession.CreateInstance(
-      Logger,
-      dbContext,
+      GetLogger(),
+      GetDbContext(),
       auth.UserContext);
 
     session.SetMapId(mapId);
@@ -176,7 +176,7 @@ public partial class MapsEndpoint : OLabEndpoint
     dto.DynamicObjects.RefreshChecksum();
 
     // dump out the dynamic objects for logging
-    dto.DynamicObjects.Dump(Logger, "New");
+    dto.DynamicObjects.Dump(GetLogger(), "New");
 
     return dto;
   }
@@ -193,31 +193,31 @@ public partial class MapsEndpoint : OLabEndpoint
     uint nodeId
   )
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.DeleteNodeAsync");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.DeleteNodeAsync");
 
     // test if user has access to map.
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-    using var transaction = dbContext.Database.BeginTransaction();
+    using var transaction = GetDbContext().Database.BeginTransaction();
 
     try
     {
-      var links = dbContext.MapNodeLinks.
+      var links = GetDbContext().MapNodeLinks.
         Where(x => (x.NodeId1 == nodeId) || (x.NodeId2 == nodeId)).ToArray();
 
-      Logger.LogInformation($"deleting {links.Count()} links");
-      dbContext.MapNodeLinks.RemoveRange(links);
+      GetLogger().LogInformation($"deleting {links.Count()} links");
+      GetDbContext().MapNodeLinks.RemoveRange(links);
 
-      var node = await dbContext.MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
+      var node = await GetDbContext().MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
 
       if (node == null)
         throw new OLabObjectNotFoundException("MapNodes", nodeId);
 
-      dbContext.MapNodes.Remove(node);
-      Logger.LogInformation($"deleting node id: {node.Id}");
+      GetDbContext().MapNodes.Remove(node);
+      GetLogger().LogInformation($"deleting node id: {node.Id}");
 
-      await dbContext.SaveChangesAsync();
+      await GetDbContext().SaveChangesAsync();
 
       await transaction.CommitAsync();
 
@@ -250,17 +250,17 @@ public partial class MapsEndpoint : OLabEndpoint
     [FromBody] MapNodesFullDto dto
   )
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutNodeAsync");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutNodeAsync");
 
     // test if user has access to map.
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-    using var transaction = dbContext.Database.BeginTransaction();
+    using var transaction = GetDbContext().Database.BeginTransaction();
 
     try
     {
-      var builder = new ObjectMapper.MapNodesFullMapper(Logger);
+      var builder = new ObjectMapper.MapNodesFullMapper(GetLogger());
       var phys = builder.DtoToPhysical(dto);
 
       // patch up node size, just in case it's not set properly
@@ -269,8 +269,8 @@ public partial class MapsEndpoint : OLabEndpoint
       if (phys.Width == 0)
         phys.Width = 300;
 
-      dbContext.MapNodes.Update(phys);
-      await dbContext.SaveChangesAsync();
+      GetDbContext().MapNodes.Update(phys);
+      await GetDbContext().SaveChangesAsync();
       await transaction.CommitAsync();
 
       var responseDto = new MapNodesPostResponseDto
@@ -296,14 +296,14 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <returns>MapsNodesFullRelationsDto</returns>
   private async Task<MapsNodesFullRelationsDto> GetRootNodeAsync(uint mapId, bool hideHidden)
   {
-    var phys = await dbContext.MapNodes
+    var phys = await GetDbContext().MapNodes
       .FirstOrDefaultAsync(x => x.MapId == mapId && x.TypeId.Value == (int)Model.MapNodes.NodeType.RootNode);
 
     if (phys == null)
     {
       // if no map node by this point, then the map doesn't have a root node
       // defined so take the first one (by id)        
-      phys = await dbContext.MapNodes
+      phys = await GetDbContext().MapNodes
         .Where(x => x.MapId == mapId)
         .OrderBy(x => x.Id)
         .FirstOrDefaultAsync();
@@ -320,15 +320,15 @@ public partial class MapsEndpoint : OLabEndpoint
   /// </summary>
   public void UpdateNodeCounter()
   {
-    var counter = dbContext.SystemCounters.Where(x => x.Name == "nodeCounter").FirstOrDefault();
+    var counter = GetDbContext().SystemCounters.Where(x => x.Name == "nodeCounter").FirstOrDefault();
 
     var value = counter.ValueAsNumber();
 
     value++;
     counter.ValueFromNumber(value);
 
-    dbContext.SystemCounters.Update(counter);
-    dbContext.SaveChanges();
+    GetDbContext().SystemCounters.Update(counter);
+    GetDbContext().SaveChanges();
   }
 
 }

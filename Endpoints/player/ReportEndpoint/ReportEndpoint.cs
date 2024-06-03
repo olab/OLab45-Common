@@ -36,11 +36,11 @@ public partial class ReportEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     string contextId)
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: ReportEndpoint.ReadAsync");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: ReportEndpoint.ReadAsync");
 
     var dto = new SessionReport();
 
-    _session = await dbContext.UserSessions.FirstOrDefaultAsync(x => x.Uuid == contextId);
+    _session = await GetDbContext().UserSessions.FirstOrDefaultAsync(x => x.Uuid == contextId);
     if (_session == null)
       throw new OLabObjectNotFoundException("Session", contextId);
 
@@ -52,38 +52,38 @@ public partial class ReportEndpoint : OLabEndpoint
 
   private void ReadSessionFromDb(string contextId)
   {
-    _sessionTraces = dbContext.UserSessiontraces
+    _sessionTraces = GetDbContext().UserSessiontraces
       .Where(x => x.SessionId == _session.Id)
       .OrderBy(x => x.DateStamp).ToList();
-    Logger.LogInformation($"Found {_sessionTraces.Count} UserSessionTraces records for userSession {contextId}");
+    GetLogger().LogInformation($"Found {_sessionTraces.Count} UserSessionTraces records for userSession {contextId}");
 
-    _sessionResponses = dbContext.UserResponses
+    _sessionResponses = GetDbContext().UserResponses
       .Where(x => x.SessionId == _session.Id)
       .OrderBy(x => x.CreatedAt).ToList();
-    Logger.LogInformation($"Found {_sessionResponses.Count} UserResponses records for userSession {contextId}");
+    GetLogger().LogInformation($"Found {_sessionResponses.Count} UserResponses records for userSession {contextId}");
 
-    _userStates = dbContext.UserState
+    _userStates = GetDbContext().UserState
       .Where(x => x.SessionId == _session.Id).ToList();
-    Logger.LogInformation($"Found {_userStates.Count} UserState records for userSession {contextId}");
+    GetLogger().LogInformation($"Found {_userStates.Count} UserState records for userSession {contextId}");
 
-    _questionsTypes = dbContext.SystemQuestionTypes.ToList();
+    _questionsTypes = GetDbContext().SystemQuestionTypes.ToList();
 
     var questionIds = _sessionResponses.Select(x => x.QuestionId).ToList();
-    _questions = dbContext.SystemQuestions
+    _questions = GetDbContext().SystemQuestions
       .Where(x => questionIds.Contains(x.Id)).ToList();
-    Logger.LogInformation($"Found {_questions.Count} question records for userSession {contextId}");
+    GetLogger().LogInformation($"Found {_questions.Count} question records for userSession {contextId}");
 
-    _questionsResponses = dbContext.SystemQuestionResponses
+    _questionsResponses = GetDbContext().SystemQuestionResponses
       .Where(x => questionIds.Contains(x.QuestionId.Value)).ToList();
-    Logger.LogInformation($"Found {_questionsResponses.Count} question correctREsponses records for userSession {contextId}");
+    GetLogger().LogInformation($"Found {_questionsResponses.Count} question correctREsponses records for userSession {contextId}");
 
     var nodeIds = _sessionTraces.Select(x => x.NodeId).ToList();
-    _nodes = dbContext.MapNodes
+    _nodes = GetDbContext().MapNodes
       .Where(x => nodeIds.Contains(x.Id)).ToList();
-    Logger.LogInformation($"Found {_nodes.Count} node records for userSession {contextId}");
+    GetLogger().LogInformation($"Found {_nodes.Count} node records for userSession {contextId}");
 
     var mapId = _session.MapId;
-    _map = dbContext.Maps.FirstOrDefault(x => x.Id == mapId);
+    _map = GetDbContext().Maps.FirstOrDefault(x => x.Id == mapId);
   }
 
 

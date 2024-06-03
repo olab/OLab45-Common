@@ -17,7 +17,7 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <returns></returns>
   public async Task<Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(IOLabAuthorization auth, uint id)
   {
-    Logger.LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetScopedObjectsRawAsync");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetScopedObjectsRawAsync");
 
     // test if user has access to map.
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, id))
@@ -52,13 +52,13 @@ public partial class MapsEndpoint : OLabEndpoint
     uint id,
     bool enableWikiTranslation)
   {
-    var map = GetSimple(dbContext, id);
+    var map = GetSimple(GetDbContext(), id);
     if (map == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 
     var phys = new ScopedObjects(
-      Logger,
-      dbContext,
+      GetLogger(),
+      GetDbContext(),
       _fileStorageModule);
     await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelMap, map.Id);
 
@@ -83,10 +83,10 @@ public partial class MapsEndpoint : OLabEndpoint
       Value = Encoding.UTF8.GetBytes(map.Name)
     });
 
-    var builder = new ObjectMapper.ScopedObjectsMapper(Logger, _wikiTagProvider, enableWikiTranslation);
+    var builder = new ObjectMapper.ScopedObjectsMapper(GetLogger(), _wikiTagProvider, enableWikiTranslation);
 
     var dto = builder.PhysicalToDto(phys);
-    dto.Dump(Logger);
+    dto.Dump(GetLogger());
 
     return dto;
   }
