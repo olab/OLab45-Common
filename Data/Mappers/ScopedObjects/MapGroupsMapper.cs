@@ -44,9 +44,9 @@ public class MapGroupsMapper : OLabMapper<MapGroups, MapGroupsDto>
     if (phys.Group == null)
       throw new OLabObjectNotFoundException("Groups", dto.GroupId);
 
-    phys.Map = dbContext.Maps.FirstOrDefault(x => x.Id == dto.MapId);
-    if (phys.Map == null)
-      throw new OLabObjectNotFoundException("Maps", dto.MapId);
+    //phys.Map = dbContext.Maps.FirstOrDefault(x => x.Id == dto.MapId);
+    //if (phys.Map == null)
+    //  throw new OLabObjectNotFoundException("Maps", dto.MapId);
 
     return phys;
   }
