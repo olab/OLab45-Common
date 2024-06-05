@@ -1,4 +1,6 @@
-﻿using OLab.Api.Common.Exceptions;
+﻿using Humanizer;
+using NuGet.Packaging;
+using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
@@ -7,6 +9,7 @@ using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using OLab.Data.ReaderWriters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -49,16 +52,16 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     MapGroupsDto dto,
     CancellationToken token)
   {
-    GetLogger().LogInformation($"AuthorizationEndpoint.DeleteAsync()");
+    GetLogger().LogInformation($"MapAuthorizationEndpoint.DeleteAsync()");
 
     // test if user has access to parent object
     var accessResult = await auth.HasAccessAsync(
-      IOLabAuthorization.AclBitMaskExecute,
+      IOLabAuthorization.AclBitMaskWrite,
       Utils.Constants.ScopeLevelMap,
       dto.MapId);
 
     if (!accessResult)
-      throw new OLabUnauthorizedException("Map", dto.MapId);
+      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, dto.MapId);
 
     var mapPhys = await mapReader.GetSingleWithGroupsAsync(dto.MapId);
     if (mapPhys == null)
@@ -92,11 +95,11 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     CancellationToken token)
 
   {
-    GetLogger().LogInformation($"AuthorizationEndpoint.AddAsync()");
+    GetLogger().LogInformation($"MapAuthorizationEndpoint.AddAsync()");
 
     // test if user has access to parent object
     var accessResult = await auth.HasAccessAsync(
-      IOLabAuthorization.AclBitMaskExecute,
+      IOLabAuthorization.AclBitMaskWrite,
       Utils.Constants.ScopeLevelMap,
       dto.MapId);
 
@@ -124,5 +127,51 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
 
     return mapper.PhysicalToDto(mapPhys.MapGroups.ToList());
 
+  }
+
+  /// <summary>
+  /// Replace map groups with a new set
+  /// </summary>
+  /// <param name="auth">IOLabAuthorization</param>
+  /// <param name="mapId">Map id</param>
+  /// <param name="dtos">List of group dtos</param>
+  /// <param name="token">CancellationToken</param>
+  /// <returns>New list of map groups</returns>
+  public async Task<IList<MapGroupsDto>> ReplaceAsync(
+    IOLabAuthorization auth,
+    uint mapId,
+    IList<GroupsDto> dtos,
+    CancellationToken token)
+  {
+    GetLogger().LogInformation($"MapAuthorizationEndpoint.ReplaceAsync()");
+
+    // test if user has access to parent object
+    var accessResult = await auth.HasAccessAsync(
+      IOLabAuthorization.AclBitMaskWrite,
+      Utils.Constants.ScopeLevelMap,
+      mapId);
+
+    if (!accessResult)
+      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+
+    var readerWriter = MapsReaderWriter.Instance(GetLogger(), GetDbContext());
+    var mapPhys = await readerWriter.GetSingleWithGroupsAsync(mapId);
+
+    // ensure map exists
+    if (mapPhys == null)
+      throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
+
+    mapPhys.MapGroups.Clear();
+
+    var mapper = new MapGroupsMapper(GetLogger(), GetDbContext());
+    var mapGroupsPhys = mapper.DtoToPhysical(mapId, dtos);
+
+    mapPhys.MapGroups.AddRange(mapGroupsPhys);
+
+    GetDbContext().SaveChanges();
+
+    var mapGroupsDto = mapper.PhysicalToDto(mapPhys.MapGroups.ToList());
+
+    return mapGroupsDto;
   }
 }

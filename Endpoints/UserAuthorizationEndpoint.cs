@@ -1,12 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Humanizer;
+using Microsoft.EntityFrameworkCore;
+using NuGet.Packaging;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
+using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
+using OLab.Data.Mappers;
 using OLab.Data.ReaderWriters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -136,4 +141,36 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
 
   }
 
+  /// <summary>
+  /// Get user's assigned groups
+  /// </summary>
+  /// <param name="auth">IOLabAuthorization</param>
+  /// <param name="token"></param>
+  /// <returns></returns>
+  /// <exception cref="OLabObjectNotFoundException"></exception>
+  public async Task<IList<GroupsDto>> GetUserGroups(IOLabAuthorization auth, CancellationToken token)
+  {
+    var userId = auth.UserContext.UserId;
+    var groupsPhys = new List<Groups>();
+
+    if (await auth.IsSystemSuperuserAsync())
+    {
+      var readerWriter = GroupReaderWriter.Instance(GetLogger(), GetDbContext());
+      groupsPhys.AddRange(await readerWriter.GetAsync());
+    }
+    else
+    {
+      var userPhys = await GetDbContext().Users
+        .Include("UserGrouproles")
+        .FirstOrDefaultAsync(x => x.Id == userId, token);
+      if (userPhys == null)
+        throw new OLabObjectNotFoundException("Users", userId);
+
+      groupsPhys.AddRange(userPhys.UserGrouproles.Select(x => x.Group).Distinct());
+    }
+
+    var groupsDto = new GroupsMapper(GetLogger()).PhysicalToDto(groupsPhys);
+
+    return groupsDto;
+  }
 }

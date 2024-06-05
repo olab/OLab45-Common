@@ -3,6 +3,7 @@ using OLab.Api.Data.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace OLab.Api.ObjectMapper;
@@ -36,6 +37,26 @@ public class MapGroupsMapper : OLabMapper<MapGroups, MapGroupsDto>
     return dto;
   }
 
+  public MapGroups DtoToPhysical(uint mapId, GroupsDto dto)
+  {
+    var mapGroupPhys = new MapGroups
+    {
+      MapId = mapId,
+      GroupId = dto.Id
+    };
+
+    return mapGroupPhys;
+  }
+
+  public IList<MapGroups> DtoToPhysical(uint mapId, IList<GroupsDto> dtos)
+  {
+    var mapGroupsPhys = new List<MapGroups>();
+    foreach (var dto in dtos)
+      mapGroupsPhys.Add(DtoToPhysical(mapId, dto));
+
+    return mapGroupsPhys;
+  }
+
   public override MapGroups DtoToPhysical(MapGroupsDto dto)
   {
     var phys = base.DtoToPhysical(dto);
@@ -43,10 +64,6 @@ public class MapGroupsMapper : OLabMapper<MapGroups, MapGroupsDto>
     phys.Group = dbContext.Groups.FirstOrDefault(x => x.Id == dto.GroupId);
     if (phys.Group == null)
       throw new OLabObjectNotFoundException("Groups", dto.GroupId);
-
-    //phys.Map = dbContext.Maps.FirstOrDefault(x => x.Id == dto.MapId);
-    //if (phys.Map == null)
-    //  throw new OLabObjectNotFoundException("Maps", dto.MapId);
 
     return phys;
   }
