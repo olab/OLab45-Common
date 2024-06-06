@@ -304,7 +304,8 @@ public partial class MapsEndpoint : OLabEndpoint
   {
     GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.ReadAsync");
 
-    var map = await GetMapAsync(id);
+    var readerWriter = MapsReaderWriter.Instance(GetLogger(), GetDbContext());
+    var map = await readerWriter.GetSingleWithGroupsAsync(id);
     if (map == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 
@@ -439,32 +440,29 @@ public partial class MapsEndpoint : OLabEndpoint
   {
     GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutAsync");
 
-    var map = new MapsFullMapper(GetLogger()).DtoToPhysical(mapdto);
+    var newMapPhys = new MapsFullMapper(GetLogger()).DtoToPhysical(mapdto);
 
     // test if user has access to map.
-    if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, map.Id))
-      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, map.Id);
+    if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, newMapPhys.Id))
+      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, newMapPhys.Id);
 
-    if (id != map.Id)
-      throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, map.Id);
+    var mapReadWriter = MapsReaderWriter.Instance(GetLogger(), GetDbContext());
+    await mapReadWriter.UpsertAsync(newMapPhys);
 
-    // load the entity, then detach it so it can be editted
-    var mapPhys = GetDbContext().Maps.FirstOrDefault(x => x.Id == map.Id);
-    if (mapPhys != null)
-      GetDbContext().Entry(mapPhys).State = EntityState.Detached;
+    //await mapReadWriter.UpdateGroupsAsync(
+    //  newMapPhys.Id, 
+    //  newMapPhys.MapGroups.Select(x => x.GroupId).ToArray());
 
-    GetDbContext().Entry(map).State = EntityState.Modified;
-
-    try
-    {
-      await GetDbContext().SaveChangesAsync();
-    }
-    catch (DbUpdateConcurrencyException)
-    {
-      var existingMap = GetSimple(GetDbContext(), id);
-      if (existingMap == null)
-        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
-    }
+    //try
+    //{
+    //  await GetDbContext().SaveChangesAsync();
+    //}
+    //catch (DbUpdateConcurrencyException)
+    //{
+    //  var existingMap = GetSimple(GetDbContext(), id);
+    //  if (existingMap == null)
+    //    throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
+    //}
 
   }
 

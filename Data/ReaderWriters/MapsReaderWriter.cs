@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using NuGet.Packaging;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
@@ -83,7 +84,8 @@ public partial class MapsReaderWriter : ReaderWriter
 
   public async Task<Maps> GetSingleAsync(uint id)
   {
-    var phys = await GetDbContext().Maps.FirstOrDefaultAsync(x => x.Id == id);
+    var phys = await GetDbContext().Maps
+      .FirstOrDefaultAsync(x => x.Id == id);
     if (phys.Id == 0)
       return null;
     return phys;
@@ -93,6 +95,7 @@ public partial class MapsReaderWriter : ReaderWriter
   {
     var phys = await GetDbContext().Maps
       .Include("MapGroups")
+      .Include("MapGroups.Group")
       .FirstOrDefaultAsync(x => x.Id == id);
 
     if (phys.Id == 0)
@@ -115,17 +118,35 @@ public partial class MapsReaderWriter : ReaderWriter
     return items;
   }
 
-  public async Task<uint> UpsertAsync(Maps phys, bool save = true)
+  public async Task<uint> UpsertAsync(Maps mapPhys, bool save = true)
   {
-    if (phys.Id == 0)
-      await GetDbContext().Maps.AddAsync(phys);
+    if (mapPhys.Id == 0)
+    {
+      await GetDbContext().Maps.AddAsync(mapPhys);
+      if (save)
+        await GetDbContext().SaveChangesAsync();
+    }
     else
-      GetDbContext().Maps.Update(phys);
+    {
+      IList<MapGroups> mapGroupsPhys = new List<MapGroups>();
+      mapGroupsPhys.AddRange( mapPhys.MapGroups );
 
-    if (save)
-      await GetDbContext().SaveChangesAsync();
+      // load the entity, then detach it so it can be editted
+      var tempMapPhys = GetDbContext().Maps.FirstOrDefault(x => x.Id == mapPhys.Id);
+      if (tempMapPhys != null)
+        GetDbContext().Entry(tempMapPhys).State = EntityState.Detached;
 
-    return phys.Id;
+      mapPhys.MapGroups.Clear();
+      mapPhys.MapGroups.AddRange(tempMapPhys.MapGroups);
+
+      GetDbContext().Maps.Update(mapPhys);
+      if (save)
+        await GetDbContext().SaveChangesAsync();
+
+      await UpdateGroupsAsync(mapPhys.Id, mapGroupsPhys.ToList(), save);
+    }
+
+    return mapPhys.Id;
   }
 
   /// <summary>
@@ -251,9 +272,31 @@ public partial class MapsReaderWriter : ReaderWriter
   /// Update map groups for a map
   /// </summary>
   /// <param name="mapId">Map id</param>
-  /// <param name="groupIds">List of group ids</param>
+  /// <param name="groupIds">List of map groups</param>
+  /// <param name="save">(optional) include commit to database</param>
   /// <returns>New list of map groups</returns>
-  public async Task<IList<MapGroups>> UpdateGroupsAsync(uint mapId, uint[] groupIds)
+  public async Task<IList<MapGroups>> UpdateGroupsAsync(
+    uint mapId,
+    IList<MapGroups> groupsPhys,
+    bool save = true)
+  {
+    return await UpdateGroupsAsync(
+      mapId,
+      groupsPhys.Select(x => x.GroupId).ToArray(),
+      save);
+  }
+
+  /// <summary>
+  /// Update map groups for a map
+  /// </summary>
+  /// <param name="mapId">Map id</param>
+  /// <param name="groupIds">List of group ids</param>
+  /// <param name="save">(optional) include commit to database</param>
+  /// <returns>New list of map groups</returns>
+  public async Task<IList<MapGroups>> UpdateGroupsAsync(
+    uint mapId,
+    uint[] groupIds,
+    bool save = true)
   {
     var mapPhys = await GetSingleWithGroupsAsync(mapId);
     mapPhys.MapGroups.Clear();
@@ -261,7 +304,8 @@ public partial class MapsReaderWriter : ReaderWriter
     foreach (var groupId in groupIds)
       mapPhys.MapGroups.Add(new MapGroups(mapId, groupId));
 
-    await GetDbContext().SaveChangesAsync();
+    if (save)
+      await GetDbContext().SaveChangesAsync();
 
     return mapPhys.MapGroups.ToList();
   }
