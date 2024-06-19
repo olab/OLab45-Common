@@ -7,6 +7,7 @@ using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 
 namespace OLab.Api.Data;
@@ -149,6 +150,6 @@ public abstract class UserContextService : IUserContext
 
   public override string ToString()
   {
-    return $"{UserId} {Issuer} {UserName} {GroupRoles} {IPAddress} {ReferringCourse}";
+    return $"{UserId} {Issuer} {UserName} {UserGrouproles.ListToString(GroupRoles)} {IPAddress} {ReferringCourse}";
   }
 }
