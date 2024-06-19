@@ -104,19 +104,21 @@ public abstract class UserContextService : IUserContext
     _dbContext = dbContext;
   }
 
-  protected void SetClaims(IDictionary<string, string> headers)
+  protected void SetClaims(IDictionary<string, string> claims)
   {
-    _headers = headers;
-    GetLogger().LogInformation($"Headers:");
-    foreach (var item in _headers)
+    _claims = claims;
+
+    GetLogger().LogInformation($"Claims:");
+    foreach (var item in _claims)
       GetLogger().LogInformation($" '{item.Key}'");
   }
 
-  protected void SetHeaders(IDictionary<string, string> claims)
+  protected void SetHeaders(IDictionary<string, string> headers)
   {
-    _claims = claims;
-    GetLogger().LogInformation($"Claims:");
-    foreach (var item in _claims)
+    _headers = headers;
+
+    GetLogger().LogInformation($"Headers:");
+    foreach (var item in _headers)
       GetLogger().LogInformation($" '{item.Key}'");
   }
 
