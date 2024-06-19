@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Http;
 using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
+using Newtonsoft.Json.Linq;
 using OLab.Api.Data.Interface;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
@@ -84,8 +85,8 @@ public abstract class UserContextService : IUserContext
 
   public string CourseName { get { return _courseName; } }
 
-  protected IDictionary<string, string> Claims;
-  protected IDictionary<string, string> Headers;
+  private IDictionary<string, string> _claims = new Dictionary<string, string>();
+  private IDictionary<string, string> _headers = new Dictionary<string, string>();
 
   // default ctor, needed for services Dependancy Injection
   public UserContextService()
@@ -103,9 +104,25 @@ public abstract class UserContextService : IUserContext
     _dbContext = dbContext;
   }
 
+  protected void SetClaims(IDictionary<string, string> headers)
+  {
+    _headers = headers;
+    GetLogger().LogInformation($"Headers:");
+    foreach (var item in _headers)
+      GetLogger().LogInformation($" '{item.Key}'");
+  }
+
+  protected void SetHeaders(IDictionary<string, string> claims)
+  {
+    _claims = claims;
+    GetLogger().LogInformation($"Claims:");
+    foreach (var item in _claims)
+      GetLogger().LogInformation($" '{item.Key}'");
+  }
+
   protected string GetClaimValue(string key, bool isRequired = true)
   {
-    if (Claims.TryGetValue(key, out var value))
+    if (_claims.TryGetValue(key, out var value))
       return value;
 
     if (isRequired)
@@ -116,7 +133,7 @@ public abstract class UserContextService : IUserContext
 
   protected string GetHeaderValue(string key, bool isRequired = true)
   {
-    if (Headers.TryGetValue(key, out var value))
+    if (_headers.TryGetValue(key, out var value))
       return value;
 
     if ( isRequired )
