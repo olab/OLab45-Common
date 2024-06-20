@@ -189,7 +189,8 @@ public partial class MapsEndpoint : OLabEndpoint
       NodeCount = mapDto.MapNodes.Count,
       NodeLinkCount = mapDto.MapNodeLinks.Count,
       Author = author,
-      CreatedAt = createdAt
+      CreatedAt = createdAt,
+      Abstract = mapDto.Map.Abstract
     };
 
     return dto;
