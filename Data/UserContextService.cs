@@ -27,7 +27,7 @@ public abstract class UserContextService : IUserContext
   protected OLabDBContext GetDbContext() { return _dbContext; }
   protected IOLabLogger GetLogger() { return _logger; }
 
-  private IList<UserGrouproles> _groupRoles;
+  private IList<UserGrouproles> _groupRoles = new List<UserGrouproles>();
   private uint _userId;
   private string _userName;
   private string _ipAddress;
@@ -157,8 +157,14 @@ public abstract class UserContextService : IUserContext
       }
     }
 
-    UserName = GetClaimValue(ClaimTypes.Name);
-    ReferringCourse = GetClaimValue(ClaimTypes.UserData);
+    // add special case to detect 2 possible forms of the 'name' claim
+    // "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name" or "name"
+    UserName = GetClaimValue(ClaimTypes.Name, false);
+    if ( string.IsNullOrEmpty(UserName) )
+      UserName = GetClaimValue("name");
+
+    ReferringCourse = "olabinternal";
+    ReferringCourse = GetClaimValue(ClaimTypes.UserData, false);
     Issuer = GetClaimValue("iss");
     UserId = (uint)Convert.ToInt32(GetClaimValue("id"));
 
