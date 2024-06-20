@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Http;
 using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
+using Newtonsoft.Json.Linq;
 using OLab.Api.Data.Interface;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
@@ -27,7 +28,7 @@ public abstract class UserContextService : IUserContext
   protected OLabDBContext GetDbContext() { return _dbContext; }
   protected IOLabLogger GetLogger() { return _logger; }
 
-  private IList<UserGrouproles> _groupRoles;
+  private IList<UserGrouproles> _groupRoles = new List<UserGrouproles>();
   private uint _userId;
   private string _userName;
   private string _ipAddress;
@@ -85,8 +86,8 @@ public abstract class UserContextService : IUserContext
 
   public string CourseName { get { return _courseName; } }
 
-  protected IDictionary<string, string> Claims;
-  protected IDictionary<string, string> Headers;
+  private IDictionary<string, string> _claims = new Dictionary<string, string>();
+  private IDictionary<string, string> _headers = new Dictionary<string, string>();
 
   // default ctor, needed for services Dependancy Injection
   public UserContextService()
@@ -104,9 +105,27 @@ public abstract class UserContextService : IUserContext
     _dbContext = dbContext;
   }
 
+  protected void SetClaims(IDictionary<string, string> claims)
+  {
+    _claims = claims;
+
+    GetLogger().LogInformation($"Claims:");
+    foreach (var item in _claims)
+      GetLogger().LogInformation($" '{item.Key}'");
+  }
+
+  protected void SetHeaders(IDictionary<string, string> headers)
+  {
+    _headers = headers;
+
+    GetLogger().LogInformation($"Headers:");
+    foreach (var item in _headers)
+      GetLogger().LogInformation($" '{item.Key}'");
+  }
+
   protected string GetClaimValue(string key, bool isRequired = true)
   {
-    if (Claims.TryGetValue(key, out var value))
+    if (_claims.TryGetValue(key, out var value))
       return value;
 
     if (isRequired)
@@ -117,7 +136,7 @@ public abstract class UserContextService : IUserContext
 
   protected string GetHeaderValue(string key, bool isRequired = true)
   {
-    if (Headers.TryGetValue(key, out var value))
+    if (_headers.TryGetValue(key, out var value))
       return value;
 
     if ( isRequired )
@@ -139,12 +158,23 @@ public abstract class UserContextService : IUserContext
       }
     }
 
-    UserName = GetClaimValue(ClaimTypes.Name);
-    ReferringCourse = GetClaimValue(ClaimTypes.UserData);
+    // add special case to detect 2 possible forms of the 'name' claim
+    // "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name" or "name"
+    UserName = GetClaimValue(ClaimTypes.Name, false);
+    if ( string.IsNullOrEmpty(UserName) )
+      UserName = GetClaimValue("name");
+
+    ReferringCourse = "olabinternal";
+    ReferringCourse = GetClaimValue(ClaimTypes.UserData, false);
     Issuer = GetClaimValue("iss");
     UserId = (uint)Convert.ToInt32(GetClaimValue("id"));
 
-    var groupRoleString = GetClaimValue(ClaimTypes.Role);
+    // add special case to detect 2 possible forms of the 'role' claim
+    // "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role" or "role"
+    var groupRoleString = GetClaimValue(ClaimTypes.Role, false);
+    if (string.IsNullOrEmpty(groupRoleString))
+      groupRoleString = GetClaimValue("role");
+
     GroupRoles = UserGrouproles.StringToObjectList(GetDbContext(), groupRoleString);
   }
 
