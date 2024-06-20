@@ -168,7 +168,12 @@ public abstract class UserContextService : IUserContext
     Issuer = GetClaimValue("iss");
     UserId = (uint)Convert.ToInt32(GetClaimValue("id"));
 
-    var groupRoleString = GetClaimValue(ClaimTypes.Role);
+    // add special case to detect 2 possible forms of the 'role' claim
+    // "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role" or "role"
+    var groupRoleString = GetClaimValue(ClaimTypes.Role, false);
+    if (string.IsNullOrEmpty(groupRoleString))
+      groupRoleString = GetClaimValue("role");
+
     GroupRoles = UserGrouproles.StringToObjectList(GetDbContext(), groupRoleString);
   }
 
