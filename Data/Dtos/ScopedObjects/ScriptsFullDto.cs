@@ -5,7 +5,7 @@ namespace OLab.Api.Dto;
 public class ScriptsFullDto : ScriptsDto
 {
   [JsonProperty("source")]
-  public byte[] Source { get; set; }
+  public string Source { get; set; }
   [JsonProperty("isRaw")]
   public ulong? IsRaw { get; set; }
   [JsonProperty("order")]

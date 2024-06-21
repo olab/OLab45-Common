@@ -17,17 +17,19 @@ public class FilesFull : OLabMapper<SystemFiles, FilesFullDto>
   {
   }
 
-  public override FilesFullDto PhysicalToDto(SystemFiles phys, FilesFullDto source)
+  public override FilesFullDto PhysicalToDto(
+    SystemFiles phys, 
+    FilesFullDto source)
   {
     var dto = base.PhysicalToDto(phys, source);
     dto.FileName = Path.GetFileName(phys.Path);
     return dto;
   }
 
-  public override SystemFiles DtoToPhysical(FilesFullDto source)
+  public override SystemFiles DtoToPhysical(FilesFullDto dto)
   {
-    var phys = base.DtoToPhysical(source);
-    phys.Path = source.FileName;
+    var phys = base.DtoToPhysical(dto);
+    phys.Path = dto.FileName;
     return phys;
   }
 }

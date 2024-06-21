@@ -39,7 +39,7 @@ public class ScopedObjectsMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
     dto.Files.AddRange(dtoFilesList);
 
     var dtoScriptsList
-      = new Scripts(Logger, _enableWikiTranslation).PhysicalToDto(phys.ScriptsPhys);
+      = new ScriptsFull(Logger, _enableWikiTranslation).PhysicalToDto(phys.ScriptsPhys);
     dto.Scripts.AddRange(dtoScriptsList);
 
     if (_wikiTagModules != null)
@@ -79,7 +79,7 @@ public class ScopedObjectsMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
     phys.FilesPhys.AddRange(physFiles);
 
     var physScripts
-      = new Scripts(Logger, _enableWikiTranslation).DtoToPhysical(dto.Scripts);
+      = new ScriptsFull(Logger, _enableWikiTranslation).DtoToPhysical(dto.Scripts);
     phys.ScriptsPhys.AddRange(physScripts);
 
     if (_wikiTagModules != null)

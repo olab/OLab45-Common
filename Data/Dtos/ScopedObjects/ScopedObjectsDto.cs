@@ -12,7 +12,7 @@ public class ScopedObjectsDto
     Constants = new List<ConstantsDto>();
     Counters = new List<CountersDto>();
     Files = new List<FilesFullDto>();
-    Scripts = new List<ScriptsDto>();
+    Scripts = new List<ScriptsFullDto>();
     Themes = new List<ThemesFullDto>();
     CounterActions = new List<CounterActionsDto>();
   }
@@ -26,7 +26,7 @@ public class ScopedObjectsDto
   [JsonProperty("files")]
   public List<FilesFullDto> Files { get; set; }
   [JsonProperty("scripts")]
-  public List<ScriptsDto> Scripts { get; set; }
+  public List<ScriptsFullDto> Scripts { get; set; }
   [JsonProperty("themes")]
   public List<ThemesFullDto> Themes { get; set; }
   [JsonProperty("counteractions")]
