@@ -214,6 +214,12 @@ public class DynamicScopedObjectsDto
   {
     CountersDto responseCounterDto = null;
 
+    if (counterDto == null)
+    {
+      logger.LogDebug($"no counter to update");
+      return;
+    }
+
     if (counterDto.ImageableType == Utils.Constants.ScopeLevelMap)
       responseCounterDto = Map.Counters.FirstOrDefault(x => x.Id == counterDto.Id);
     else if (counterDto.ImageableType == Utils.Constants.ScopeLevelNode)

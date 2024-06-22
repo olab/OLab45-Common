@@ -29,7 +29,7 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
 {
   protected readonly Mapper _mapper;
 
-  protected IOLabLogger Logger;
+  protected IOLabLogger _logger;
   protected WikiTagProvider _wikiTagModules = null;
 
   // used to hold on to id translation between origin system and new one
@@ -38,11 +38,12 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   public virtual P ElementsToPhys(IEnumerable<dynamic> elements, Object source = null) { return default; }
   public WikiTagProvider GetWikiProvider() { return _wikiTagModules; }
 
+  protected IOLabLogger GetLogger() { return _logger; }
 
   public OLabMapper(
     IOLabLogger logger)
   {
-    Logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
+    _logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
     _mapper = new Mapper(GetConfiguration());
   }
 
@@ -50,7 +51,7 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
     IOLabLogger logger,
     IOLabModuleProvider<IWikiTagModule> wikiTagProvider)
   {
-    Logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
+    _logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
 
     _wikiTagModules = wikiTagProvider as WikiTagProvider;
     _mapper = new Mapper(GetConfiguration());

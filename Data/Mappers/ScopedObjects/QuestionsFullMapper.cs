@@ -44,7 +44,7 @@ public class QuestionsFullMapper : OLabMapper<SystemQuestions, QuestionsFullDto>
 
   public override SystemQuestions DtoToPhysical(QuestionsFullDto dto, SystemQuestions phys)
   {
-    var builder = new QuestionResponses(Logger, GetWikiProvider(), dto);
+    var builder = new QuestionResponses(_logger, GetWikiProvider(), dto);
     phys.SystemQuestionResponses.AddRange(builder.DtoToPhysical(dto.Responses));
 
     return phys;
@@ -60,7 +60,17 @@ public class QuestionsFullMapper : OLabMapper<SystemQuestions, QuestionsFullDto>
     dto.Value = null;
     dto.Settings = Conversions.Base64Decode(phys.Settings);
 
-    var builder = new QuestionResponses(Logger, GetWikiProvider(), dto);
+    // catch if empty settings string. replace with default object
+    if (string.IsNullOrEmpty(dto.Settings))
+    {
+      if (phys.EntryTypeId == (uint)SystemQuestionTypes.Type.Slider)
+      {
+        GetLogger().LogWarning("default slider settings applied");
+        dto.Settings = "{\"minValue\":\"1\",\"maxValue\":\"100\",\"stepValue\":\"5\",\"orientation\":\"hor\",\"showValue\":\"0\",\"sliderSkin\":\"\",\"abilityValue\":\"1\",\"defaultValue\":\"50\"}";
+      }
+    }
+
+    var builder = new QuestionResponses(_logger, GetWikiProvider(), dto);
     dto.Responses.AddRange(builder.PhysicalToDto(phys.SystemQuestionResponses.ToList()));
 
     return dto;

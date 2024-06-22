@@ -57,12 +57,12 @@ public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
     var dto = new MapsFullRelationsDto
     {
       Map = new MapsFullMapper(
-        Logger,
+        _logger,
         _wikiTagModules,
         _enableWikiTranslation
       ).PhysicalToDto(mapPhys),
       MapNodes = new MapNodesFullMapper(
-        Logger,
+        _logger,
         _wikiTagModules,
         _enableWikiTranslation
       ).PhysicalToDto(mapPhys.MapNodes.ToList())
@@ -74,7 +74,7 @@ public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
     var links = new List<MapNodeLinks>();
     links.AddRange(mapPhys.MapNodeLinks);
 
-    dto.MapNodeLinks = new MapNodeLinksMapper(Logger, _enableWikiTranslation).PhysicalToDto(links);
+    dto.MapNodeLinks = new MapNodeLinksMapper(_logger, _enableWikiTranslation).PhysicalToDto(links);
 
     return dto;
   }
