@@ -33,7 +33,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-    var node = await GetMapRootNode(mapId, nodeId);
+    var node = await  _nodesReaderWriter.GetMapRootNode(mapId, nodeId);
     return await GetDynamicScopedObjectsAsync(1, node, sinceTime, false);
   }
 
@@ -56,7 +56,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-    var node = await GetMapRootNode(mapId, nodeId);
+    var node = await _nodesReaderWriter.GetMapRootNode(mapId, nodeId);
     return await GetDynamicScopedObjectsAsync(1, node, sinceTime, true);
   }
 
@@ -86,7 +86,7 @@ public partial class MapsEndpoint : OLabEndpoint
   private async Task<IList<CountersDto>> ProcessNodeOpenCountersAsync(uint nodeId, IList<CountersDto> orgDtoList)
   {
     var newDtoList = new List<CountersDto>();
-    var node = await GetDbContext().MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
+    var node = await _nodesReaderWriter.GetNodeAsync(nodeId);
 
     if (node == null)
       throw new OLabObjectNotFoundException("MapNodes", nodeId);

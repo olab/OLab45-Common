@@ -9,10 +9,12 @@ using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
+using OLab.Data.ReaderWriters;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Constants = OLab.Api.Utils.Constants;
 
@@ -28,6 +30,10 @@ public class OLabEndpoint
   protected readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
   protected readonly IFileStorageModule _fileStorageModule;
 
+
+  protected readonly MapNodesReaderWriter _nodesReaderWriter;
+  protected readonly MapsReaderWriter _mapsReaderWriter;
+
   public OLabDBContext GetDbContext() { return _dbContext; }
   public IOLabLogger GetLogger() { return _logger; }
 
@@ -40,21 +46,20 @@ public class OLabEndpoint
 
     _dbContext = context;
     _logger = logger;
+
+    _nodesReaderWriter = new MapNodesReaderWriter(GetLogger(), GetDbContext(), _wikiTagProvider as WikiTagProvider);
+    _mapsReaderWriter = new MapsReaderWriter(GetLogger(), GetDbContext());
+
   }
 
   public OLabEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
-    OLabDBContext dbContext)
+    OLabDBContext dbContext) : this(logger, dbContext)
   {
-    Guard.Argument(logger).NotNull(nameof(logger));
     Guard.Argument(configuration).NotNull(nameof(configuration));
-    Guard.Argument(dbContext).NotNull(nameof(dbContext));
 
-    _dbContext = dbContext;
     _configuration = configuration;
-
-    _logger = logger;
   }
 
   public OLabEndpoint(
@@ -80,16 +85,16 @@ public class OLabEndpoint
     _userContext = userContext;
   }
 
-  protected async ValueTask<Maps> GetMapAsync(uint id)
-  {
-    var phys = await GetDbContext().Maps
-      .Include("MapGroups")
-      .FirstOrDefaultAsync(x => x.Id == id);
-    if (phys != null)
-      GetDbContext().Entry(phys).Collection(b => b.MapNodes).Load();
+  //protected async ValueTask<Maps> GetMapAsync(uint id)
+  //{
+  //  var phys = await GetDbContext().Maps
+  //    .Include("MapGroups")
+  //    .FirstOrDefaultAsync(x => x.Id == id);
+  //  if (phys != null)
+  //    GetDbContext().Entry(phys).Collection(b => b.MapNodes).Load();
 
-    return phys;
-  }
+  //  return phys;
+  //}
 
   /// <summary>
   /// Attach parent information to scoped object
@@ -126,38 +131,38 @@ public class OLabEndpoint
     }
   }
 
-  [NonAction]
-  protected async Task<MapNodes> GetMapRootNode(uint mapId, uint nodeId)
-  {
-    if (nodeId != 0)
-      return await GetDbContext().MapNodes
-        .Where(x => x.MapId == mapId && x.Id == nodeId)
-        .FirstOrDefaultAsync(x => x.Id == nodeId);
+  //[NonAction]
+  //protected async Task<MapNodes> GetMapRootNode(uint mapId, uint nodeId)
+  //{
+  //  if (nodeId != 0)
+  //    return await GetDbContext().MapNodes
+  //      .Where(x => x.MapId == mapId && x.Id == nodeId)
+  //      .FirstOrDefaultAsync(x => x.Id == nodeId);
 
-    var item = await GetDbContext().MapNodes
-        .Where(x => x.MapId == mapId && x.TypeId == 1)
-        .FirstOrDefaultAsync(x => x.Id == nodeId);
+  //  var item = await GetDbContext().MapNodes
+  //      .Where(x => x.MapId == mapId && x.TypeId == 1)
+  //      .FirstOrDefaultAsync(x => x.Id == nodeId);
 
-    if (item == null)
-      item = await GetDbContext().MapNodes
-                .Where(x => x.MapId == mapId)
-                .OrderBy(x => x.Id)
-                .FirstAsync();
+  //  if (item == null)
+  //    item = await GetDbContext().MapNodes
+  //              .Where(x => x.MapId == mapId)
+  //              .OrderBy(x => x.Id)
+  //              .FirstAsync();
 
-    return item;
-  }
+  //  return item;
+  //}
 
-  protected IList<IdName> GetMapIdNames()
-  {
-    return GetDbContext().Maps
-      .Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
-  }
+  //protected IList<IdName> GetMapIdNames()
+  //{
+  //  return GetDbContext().Maps
+  //    .Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
+  //}
 
-  protected IList<IdName> GetNodeIdNames()
-  {
-    return GetDbContext().MapNodes
-      .Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
-  }
+  //protected IList<IdName> GetNodeIdNames()
+  //{
+  //  return GetDbContext().MapNodes
+  //    .Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
+  //}
 
   protected IList<IdName> GetServerIdNames()
   {
@@ -172,13 +177,13 @@ public class OLabEndpoint
     IList<IdName> nodes,
     IList<IdName> servers)
   {
-    if (scopeLevel == Utils.Constants.ScopeLevelServer)
+    if (scopeLevel == Constants.ScopeLevelServer)
       return servers.FirstOrDefault(x => x.Id == parentId);
 
-    if (scopeLevel == Utils.Constants.ScopeLevelMap)
+    if (scopeLevel == Constants.ScopeLevelMap)
       return maps.FirstOrDefault(x => x.Id == parentId);
 
-    if (scopeLevel == Utils.Constants.ScopeLevelNode)
+    if (scopeLevel == Constants.ScopeLevelNode)
       return nodes.FirstOrDefault(x => x.Id == parentId);
 
     return null;
@@ -193,11 +198,10 @@ public class OLabEndpoint
   [NonAction]
   protected async Task<IList<MapNodesFullDto>> GetNodesAsync(Maps map, bool enableWikiTanslation = true)
   {
-    var physList = await GetDbContext().MapNodes.Where(x => x.MapId == map.Id).ToListAsync();
-    GetLogger().LogInformation(string.Format("found {0} mapNodes", physList.Count));
+    var physList = await _nodesReaderWriter.GetByMapAsync(map.Id);
 
-    // patch up any malformed nodes that have 0/0 sizes, 
-    // whic prevent them from being displayed
+    // patch up any malformed nodes that have 0-by-0 size, 
+    // which prevent them from being displayed
     var physNodes = physList.Where(x => (x.Height == 0) || (x.Width == 0)).ToList();
     foreach (var physNode in physNodes)
     {
@@ -226,9 +230,7 @@ public class OLabEndpoint
     bool hideHidden,
     bool enableWikiTranslation)
   {
-    var phys = await GetDbContext().MapNodes
-      .FirstOrDefaultAsync(x => x.MapId == mapId && x.Id == nodeId);
-
+    var phys = await _nodesReaderWriter.GetNodeAsync(mapId, nodeId);
     if (phys == null)
     {
       GetLogger().LogError($"GetNodeSync unable to find map {mapId}, node {nodeId}");
@@ -247,8 +249,7 @@ public class OLabEndpoint
     var linkedIds =
       phys.MapNodeLinksNodeId1Navigation.Select(x => x.NodeId2).Distinct().ToList();
 
-    var linkedNodes =
-      GetDbContext().MapNodes.Where(x => linkedIds.Contains(x.Id)).ToList();
+    var linkedNodes = await _nodesReaderWriter.GetNodesAsync(linkedIds);
 
     // add destination node title to link information
     foreach (var item in dto.MapNodeLinks)
@@ -280,9 +281,7 @@ public class OLabEndpoint
   [NonAction]
   public async ValueTask<MapNodes> GetMapNodeAsync(uint nodeId)
   {
-    var item = await GetDbContext().MapNodes
-    .FirstOrDefaultAsync(x => x.Id == nodeId);
-
+    var item = await _nodesReaderWriter.GetNodeAsync(nodeId);    
     if (item == null)
       throw new OLabObjectNotFoundException("MapNodes", nodeId);
 
@@ -378,158 +377,6 @@ public class OLabEndpoint
   }
 
   /// <summary>
-  /// 
-  /// </summary>
-  /// <param name="parentId"></param>
-  /// <param name="sinceTime"></param>
-  /// <param name="scopeLevel"></param>
-  /// <returns></returns>
-  //[NonAction]
-  //protected async ValueTask<ScopedObjectsMapper> GetScopedObjectsDynamicAsync(
-  //  uint ScopeId,
-  //  uint sinceTime,
-  //  string ScopeLevel)
-  //{
-  //  var phys = new ScopedObjectsMapper
-  //  {
-  //    CounterMapper = await ReadCountersAsync(ScopeLevel, ScopeId, sinceTime)
-  //  };
-
-  //  return phys;
-  //}
-
-  /// <summary>
-  /// ReadAsync scoped objects for a olab parent 
-  /// </summary>
-  /// <param name="parentId">Id pf parent object</param>
-  /// <param name="scopeLevel">Type of parent object</param>
-  /// <param name="fileStorageModule">File storage module that provides URL</param>
-  /// <returns>ScopedObject dto</returns>
-  //[NonAction]
-  //protected async ValueTask<ScopedObjectsMapper> ReadAsync(
-  //  uint ScopeId,
-  //  string ScopeLevel,
-  //  IFileStorageModule fileStorageModule)
-  //{
-  //  var phys = new ScopedObjectsMapper
-  //  {
-  //    ConstantsPhys = await ReadConstantsAsync(ScopeId, ScopeLevel),
-  //    QuestionsPhys = await ReadQuestionsAsync(ScopeId, ScopeLevel),
-  //    FilesPhys = await ReadFileAsync(ScopeId, ScopeLevel, fileStorageModule),
-  //    ScriptsPhys = await ReadScriptsAsync(ScopeId, ScopeLevel),
-  //    ThemesPhys = await ReadThemesAsync(ScopeId, ScopeLevel),
-  //    CounterMapper = await ReadCountersAsync(ScopeLevel, ScopeId, 0)
-  //  };
-
-  //  if (ScopeLevel == ConstantsPhys.ScopeLevelMap)
-  //  {
-  //    var items = new List<SystemCounterActions>();
-  //    items.AddRange(await _dbContext.SystemCounterActions.Where(x =>
-  //        x.MapId == ScopeId).ToListAsync());
-
-  //    phys.CounterActionsPhys.AddRange(items);
-  //  }
-
-  //  return phys;
-  //}
-
-  /// <summary>
-  /// 
-  /// </summary>
-  /// <param name="parentId"></param>
-  /// <param name="scopeLevel"></param>
-  /// <returns></returns>
-  //[NonAction]
-  //protected async Task<List<SystemConstants>> ReadConstantsAsync(uint ScopeId, string ScopeLevel)
-  //{
-  //  var items = new List<SystemConstants>();
-
-  //  items.AddRange(await _dbContext.SystemConstants.Where(x =>
-  //    x.ImageableType == ScopeLevel && x.ImageableId == ScopeId).ToListAsync());
-
-  //  return items;
-  //}
-
-  /// <summary>
-  /// Gets scoped object for an olab object
-  /// </summary>
-  /// <param name="parentId">Id pf parent object</param>
-  /// <param name="scopeLevel">Type of parent object</param>
-  /// <param name="fileStorageModule">File storage module that provides URL</param>
-  /// <returns></returns>
-  //[NonAction]
-  //protected async Task<List<SystemFiles>> ReadFileAsync(
-  //  uint ScopeId,
-  //  string ScopeLevel,
-  //  IFileStorageModule fileStorageModule)
-  //{
-  //  var items = await _dbContext.SystemFiles.Where(x =>
-  //    x.ImageableType == ScopeLevel && x.ImageableId == ScopeId).ToListAsync();
-
-  //  // ask the module to add appropriate URLs to files
-  //  fileStorageModule.AttachUrls(items);
-
-  //  return items;
-  //}
-
-  /// <summary>
-  /// 
-  /// </summary>
-  /// <param name="parentId"></param>
-  /// <param name="scopeLevel"></param>
-  /// <returns></returns>
-  //[NonAction]
-  //protected async Task<List<SystemQuestions>> ReadQuestionsAsync(uint ScopeId, string ScopeLevel)
-  //{
-  //  var items = new List<SystemQuestions>();
-
-  //  items.AddRange(await _dbContext.SystemQuestions
-  //    .Where(x => x.ImageableType == ScopeLevel && x.ImageableId == ScopeId)
-  //    .Include("SystemQuestionResponses")
-  //    .ToListAsync());
-
-  //  // order the responses by Order field
-  //  foreach (var item in items)
-  //    item.SystemQuestionResponses = item.SystemQuestionResponses.OrderBy(x => x.Order).ToList();
-
-  //  return items;
-  //}
-
-  /// <summary>
-  /// 
-  /// </summary>
-  /// <param name="parentId"></param>
-  /// <param name="scopeLevel"></param>
-  /// <returns></returns>
-  //[NonAction]
-  //protected async Task<List<SystemThemes>> ReadThemesAsync(uint ScopeId, string ScopeLevel)
-  //{
-  //  var items = new List<SystemThemes>();
-
-  //  items.AddRange(await _dbContext.SystemThemes.Where(x =>
-  //    x.ImageableType == ScopeLevel && x.ImageableId == ScopeId).ToListAsync());
-
-  //  return items;
-  //}
-
-  /// <summary>
-  /// 
-  /// </summary>
-  /// <param name="parentId"></param>
-  /// <param name="scopeLevel"></param>
-  /// <returns></returns>
-  //[NonAction]
-  //protected async Task<List<SystemScripts>> ReadScriptsAsync(uint ScopeId, string ScopeLevel)
-  //{
-  //  var items = new List<SystemScripts>();
-
-  //  items.AddRange(await _dbContext.SystemScripts.Where(x =>
-  //    x.ImageableType == ScopeLevel && x.ImageableId == ScopeId).ToListAsync());
-
-  //  return items;
-  //}
-
-  /// <summary>
   /// ReadAsync counter 
   /// </summary>
   /// <param name="id">counter id</param>
@@ -545,32 +392,4 @@ public class OLabEndpoint
     return phys;
   }
 
-  /// <summary>
-  /// ReadAsync counters associated with a 'parent' object 
-  /// </summary>
-  /// <param name="scopeLevel">Scope level of parent (Maps, MapNodes, etc)</param>
-  /// <param name="parentId">Id of parent object</param>
-  /// <param name="sinceTime">(optional) looks for values changed since a (unix) time</param>
-  /// <returns>List of counters</returns>
-  //[NonAction]
-  //protected async Task<List<SystemCounters>> ReadCountersAsync(string ScopeLevel, uint ScopeId, uint sinceTime = 0)
-  //{
-  //  var items = new List<SystemCounters>();
-
-  //  if (sinceTime != 0)
-  //  {
-  //    // generate DateTime from sinceTime
-  //    var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-  //    dateTime = dateTime.AddSeconds(sinceTime).ToLocalTime();
-  //    items.AddRange(await _dbContext.SystemCounters.Where(x =>
-  //      x.ImageableType == ScopeLevel && x.ImageableId == ScopeId && x.UpdatedAt >= dateTime).ToListAsync());
-  //  }
-  //  else
-  //  {
-  //    items.AddRange(await _dbContext.SystemCounters.Where(x =>
-  //      x.ImageableType == ScopeLevel && x.ImageableId == ScopeId).ToListAsync());
-  //  }
-
-  //  return items;
-  //}
 }

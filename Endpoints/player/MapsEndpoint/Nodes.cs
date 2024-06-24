@@ -93,7 +93,7 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <param name="nodeId">node id</param>
   /// <param name="sessionId">session id</param>
   /// <returns>IActionResult</returns>
-  public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(
+  public async Task<MapsNodesFullRelationsDto> PostMapNodeAsync(
     IOLabAuthorization auth,
     uint mapId,
     uint nodeId,
@@ -119,16 +119,34 @@ public partial class MapsEndpoint : OLabEndpoint
     var dto = await GetRawNodeAsync(mapId, nodeId, true);
 
     // now that we had a real node id, test if user has explicit no access to node.
-    if (await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskNoAccess, Utils.Constants.ScopeLevelNode, dto.Id.Value))
+    if (await auth.HasAccessAsync(
+      IOLabAuthorization.AclBitMaskNoAccess,
+      Utils.Constants.ScopeLevelNode,
+      dto.Id.Value))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, dto.Id.Value);
+
+    var mapNodesPhys = await _nodesReaderWriter.GetByMapAsync(mapId);
 
     // filter out any destination links the user
     // does not have access to 
     var filteredLinks = new List<MapNodeLinksDto>();
     foreach (var mapNodeLink in dto.MapNodeLinks)
     {
-      if (await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskNoAccess, Utils.Constants.ScopeLevelNode, mapNodeLink.DestinationId))
+      if (await auth.HasAccessAsync(
+        IOLabAuthorization.AclBitMaskNoAccess,
+        Utils.Constants.ScopeLevelNode,
+        mapNodeLink.DestinationId))
         continue;
+
+      // test if the destination node is visit-once
+      // AND has been visited previously
+      var destinationNodePhys =
+        mapNodesPhys.FirstOrDefault(x => x.Id == mapNodeLink.DestinationId);
+      if (destinationNodePhys.VisitOnce.HasValue && destinationNodePhys.VisitOnce.Value == 1)
+      {
+        if (body.NodesVisited.Contains(destinationNodePhys.Id))
+          continue;
+      }
 
       filteredLinks.Add(mapNodeLink);
     }
@@ -177,6 +195,11 @@ public partial class MapsEndpoint : OLabEndpoint
 
     // dump out the dynamic objects for logging
     dto.DynamicObjects.Dump(GetLogger(), "New");
+
+    // initialize/update the nodes visited
+    dto.DynamicObjects.NodesVisited = body.NodesVisited;
+    if (!body.NodesVisited.Contains(dto.Id.Value))
+      dto.DynamicObjects.NodesVisited.Add(dto.Id.Value);
 
     return dto;
   }

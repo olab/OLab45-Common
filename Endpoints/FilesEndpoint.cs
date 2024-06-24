@@ -71,8 +71,8 @@ public partial class FilesEndpoint : OLabEndpoint
 
     var dtoList = new Files(GetLogger()).PhysicalToDto(Files);
 
-    var maps = GetMapIdNames();
-    var nodes = GetNodeIdNames();
+    var maps = _mapsReaderWriter.GetMapIdNames();
+    var nodes = _nodesReaderWriter.GetNodeIdNames();
     var servers = GetServerIdNames();
 
     foreach (var dto in dtoList)

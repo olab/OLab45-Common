@@ -23,6 +23,16 @@ public partial class MapsReaderWriter : ReaderWriter
   {
   }
 
+  /// <summary>
+  /// Get list of map ids
+  /// </summary>
+  /// <returns>List of map ids</returns>
+  public IList<IdName> GetMapIdNames()
+  {
+    return GetDbContext().Maps
+      .Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
+  }
+
   public async Task<Maps> DeleteAsync(uint id)
   {
     GetDbContext().Database.BeginTransaction();

@@ -70,7 +70,7 @@ public partial class MapsEndpoint : OLabEndpoint
     // if node id = 0, get the root node
     if (nodeId == 0)
     {
-      var nodePhys = await GetMapRootNode(mapId, 0);
+      var nodePhys = await _nodesReaderWriter.GetMapRootNode(mapId, 0);
       nodeId = nodePhys.Id;
     }
 

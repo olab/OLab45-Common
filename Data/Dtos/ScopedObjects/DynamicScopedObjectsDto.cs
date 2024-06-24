@@ -62,12 +62,16 @@ public class DynamicScopedObjectsDto
   [JsonProperty("node")]
   public NodeDynamicScopedObjects Node { get; set; }
 
+  [JsonProperty("nodesVisitedList")]
+  public IList<uint> NodesVisited { get; set; }
+
   public DynamicScopedObjectsDto()
   {
     UpdatedAt = DateTime.Now;
     Server = new ServerDynamicScopedObjects();
     Map = new MapDynamicScopedObjects();
     Node = new NodeDynamicScopedObjects();
+    NodesVisited = new List<uint>();  
   }
 
   public bool IsEmpty()

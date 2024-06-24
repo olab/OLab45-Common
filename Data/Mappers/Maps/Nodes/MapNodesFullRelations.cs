@@ -11,7 +11,7 @@ public class MapsNodesFullRelationsMapper : OLabMapper<Model.MapNodes, MapsNodes
 
   public MapsNodesFullRelationsMapper(
     IOLabLogger logger,
-    WikiTagProvider tagProvider,
+    WikiTagProvider tagProvider, 
     bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
     this.enableWikiTranslation = enableWikiTranslation;
