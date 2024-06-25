@@ -281,7 +281,7 @@ public class OLabEndpoint
   [NonAction]
   public async ValueTask<MapNodes> GetMapNodeAsync(uint nodeId)
   {
-    var item = await _nodesReaderWriter.GetNodeAsync(nodeId);    
+    var item = await _nodesReaderWriter.GetNodeAsync(nodeId);
     if (item == null)
       throw new OLabObjectNotFoundException("MapNodes", nodeId);
 
@@ -385,10 +385,14 @@ public class OLabEndpoint
   protected async Task<SystemCounters> GetCounterAsync(uint id)
   {
     var phys = await GetDbContext().SystemCounters.SingleOrDefaultAsync(x => x.Id == id);
-    if (phys.Value == null)
-      phys.Value = new List<byte>().ToArray();
-    if (phys.StartValue == null)
-      phys.StartValue = new List<byte>().ToArray();
+    if (phys != null)
+    {
+      if (phys.Value == null)
+        phys.Value = new List<byte>().ToArray();
+      if (phys.StartValue == null)
+        phys.StartValue = new List<byte>().ToArray();
+    }
+
     return phys;
   }
 

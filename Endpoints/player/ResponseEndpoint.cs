@@ -36,41 +36,46 @@ public partial class ResponseEndpoint : OLabEndpoint
     {
       var dbCounter = await GetCounterAsync(question.CounterId.Value);
       if (dbCounter == null)
-        throw new Exception($"Counter {question.CounterId.Value} not found");
+        GetLogger().LogError($"Counter {question.CounterId.Value} not found");
 
-      var counterDto = GetTargetCounter(question, dbCounter, body);
-
-      if (question.SystemQuestionResponses.Count > 0)
-      {
-        if (question.EntryTypeId == 4)
-          // handle questions that have a single response
-          ProcessSingleResponseQuestion(question, counterDto, body);
-
-        else if (question.EntryTypeId == 3)
-          // handle questions that have multiple responses
-          ProcessMultipleResponseQuestion(question, counterDto, body);
-
-        else if (question.EntryTypeId == 12)
-          // handle questions that have a slider
-          ProcessSingleResponseQuestion(question, counterDto, body);
-
-        else
-          throw new OLabGeneralException($"question {question.Id} not implemented");
-      }
       else
-        // handle questions that have no underlying responses (e.g. slider)
-        ProcessValueQuestion(question, counterDto, body);
-
-      // update counter in response dto
-      body.DynamicObjects.UpdateCounter(GetLogger(), counterDto);
-
-      // if a server-level counter value has changed, write it to db
-      if (dbCounter.ImageableType == Utils.Constants.ScopeLevelServer)
       {
-        dbCounter.ValueFromNumber(counterDto.ValueAsNumber());
-        GetDbContext().SystemCounters.Update(dbCounter);
-        await GetDbContext().SaveChangesAsync();
+        var counterDto = GetTargetCounter(question, dbCounter, body);
+
+        if (question.SystemQuestionResponses.Count > 0)
+        {
+          if (question.EntryTypeId == 4)
+            // handle questions that have a single response
+            ProcessSingleResponseQuestion(question, counterDto, body);
+
+          else if (question.EntryTypeId == 3)
+            // handle questions that have multiple responses
+            ProcessMultipleResponseQuestion(question, counterDto, body);
+
+          else if (question.EntryTypeId == 12)
+            // handle questions that have a slider
+            ProcessSingleResponseQuestion(question, counterDto, body);
+
+          else
+            throw new OLabGeneralException($"question {question.Id} not implemented");
+        }
+        else
+          // handle questions that have no underlying responses (e.g. slider)
+          ProcessValueQuestion(question, counterDto, body);
+
+        // update counter in response dto
+        body.DynamicObjects.UpdateCounter(GetLogger(), counterDto);
+
+        // if a server-level counter value has changed, write it to db
+        if (dbCounter.ImageableType == Utils.Constants.ScopeLevelServer)
+        {
+          dbCounter.ValueFromNumber(counterDto.ValueAsNumber());
+          GetDbContext().SystemCounters.Update(dbCounter);
+          await GetDbContext().SaveChangesAsync();
+        }
+
       }
+
     }
     else
       GetLogger().LogWarning($"question {question.Id} response: question has no counter");
