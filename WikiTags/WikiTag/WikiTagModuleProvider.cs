@@ -1,10 +1,11 @@
+using OLab.Api.Common;
 using OLab.Common.Interfaces;
 
-namespace OLab.Api.Common;
+namespace OLab.Api.WikiTag;
 
-public class WikiTagProvider : OLabModuleProvider<IWikiTagModule>
+public class WikiTagModuleProvider : OLabModuleProvider<IWikiTagModule>
 {
-  public WikiTagProvider(
+  public WikiTagModuleProvider(
     IOLabLogger logger,
     IOLabConfiguration configuration) : base(logger, configuration)
   {

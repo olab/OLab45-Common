@@ -3,7 +3,7 @@ using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 
 [OLabModule("INFO")]
-public class InfoWikiTag : WikiTag1Argument
+public class InfoWikiTag : WikiTag1ArgumentModule
 {
   public InfoWikiTag(
     IOLabLogger logger,

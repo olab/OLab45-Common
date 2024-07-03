@@ -2,6 +2,7 @@ using AutoMapper;
 using OLab.Api.Common;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using OLab.Data.Dtos.Session;
 using System;
@@ -17,7 +18,7 @@ public class SessionMapper : OLabMapper<UserSessions, SessionDto>
   }
   public SessionMapper(
     IOLabLogger logger,
-    WikiTagProvider tagProvider,
+    WikiTagModuleProvider tagProvider,
     bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
   }

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using OLab.Api.WikiTag;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -16,7 +17,7 @@ public class Constants : OLabMapper<SystemConstants, ConstantsDto>
   {
   }
 
-  public Constants(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public Constants(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
   }
 

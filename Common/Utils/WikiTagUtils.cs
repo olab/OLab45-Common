@@ -1,0 +1,49 @@
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.CodeAnalysis.Differencing;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+
+namespace OLab.Common.Utils;
+
+public class WikiTagUtils
+{
+  public static IList<string> GetTagNamePatterns()
+  {
+    return new string[] {
+    "\"[.A-Za-z0-9\\- ]*\"",
+    "[.A-Za-z0-9\\- ]*",
+    "[0-9]*" };
+  }
+
+  public static IList<string> GetTagPatterns(string wikiTag)
+  {
+    return new string[] {
+      $"\\[\\[{wikiTag}:[0-9]*\\]\\]",
+      $"\\[\\[{wikiTag}:\"[.A-Za-z0-9\\- ]*\"\\]\\]",
+      $"\\[\\[{wikiTag}:[.A-Za-z0-9\\- ]*\\]\\]"
+    };
+  }
+
+  /// <summary>
+  /// Get wiki matches from string
+  /// </summary>
+  /// <param name="wikiTagPatterns">Regex tag patterns for match</param>
+  /// <param name="source">source string</param>
+  /// <returns>All matches</returns>
+  public static IList<string> GetWikiTags(IList<string> wikiTagPatterns, string source)
+  {
+    var matches = new List<string>();
+
+    foreach (var pattern in wikiTagPatterns)
+    {
+      foreach (var patternMatch in Regex.Matches(source, pattern))
+        matches.Add(patternMatch.ToString());
+    }
+
+    return matches.Distinct().ToList();
+  }
+}

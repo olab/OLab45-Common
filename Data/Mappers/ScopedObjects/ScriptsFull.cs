@@ -5,6 +5,7 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using System.Text;
+using OLab.Api.WikiTag;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -17,7 +18,7 @@ public class ScriptsFull : OLabMapper<SystemScripts, ScriptsFullDto>
   }
   public ScriptsFull(
     IOLabLogger logger,
-    WikiTagProvider tagProvider,
+    WikiTagModuleProvider tagProvider,
     bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
   }

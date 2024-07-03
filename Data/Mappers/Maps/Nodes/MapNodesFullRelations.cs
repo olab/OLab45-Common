@@ -2,6 +2,7 @@ using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Common.Interfaces;
 using System.Linq;
+using OLab.Api.WikiTag;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -11,7 +12,7 @@ public class MapsNodesFullRelationsMapper : OLabMapper<Model.MapNodes, MapsNodes
 
   public MapsNodesFullRelationsMapper(
     IOLabLogger logger,
-    WikiTagProvider tagProvider, 
+    WikiTagModuleProvider tagProvider, 
     bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
     this.enableWikiTranslation = enableWikiTranslation;

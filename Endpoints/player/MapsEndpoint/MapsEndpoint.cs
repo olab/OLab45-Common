@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using OLab.Api.WikiTag;
 
 namespace OLab.Api.Endpoints.Player;
 
@@ -169,7 +170,7 @@ public partial class MapsEndpoint : OLabEndpoint
 
     var mapDto = new MapsFullRelationsMapper(
       GetLogger(),
-      _wikiTagProvider as WikiTagProvider,
+      _wikiTagProvider as WikiTagModuleProvider,
       false
     ).PhysicalToDto(mapPhys);
 
@@ -225,7 +226,7 @@ public partial class MapsEndpoint : OLabEndpoint
 
     var mapDto = new MapsFullRelationsMapper(
       GetLogger(),
-      _wikiTagProvider as WikiTagProvider,
+      _wikiTagProvider as WikiTagModuleProvider,
       false
     ).PhysicalToDto(mapPhys);
 
@@ -423,7 +424,7 @@ public partial class MapsEndpoint : OLabEndpoint
 
     var dto = new MapsFullRelationsMapper(
       GetLogger(),
-      _wikiTagProvider as WikiTagProvider
+      _wikiTagProvider as WikiTagModuleProvider
     ).PhysicalToDto(map);
     return dto;
   }

@@ -4,6 +4,7 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using System.Text;
+using OLab.Api.WikiTag;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -14,7 +15,7 @@ public class ConstantsFull : OLabMapper<SystemConstants, ConstantsDto>
   {
   }
 
-  public ConstantsFull(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public ConstantsFull(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
   }
 

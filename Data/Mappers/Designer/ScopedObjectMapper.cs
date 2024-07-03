@@ -1,5 +1,6 @@
 using OLab.Api.Common;
 using OLab.Api.Dto.Designer;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using OLab.Data;
 using System;
@@ -17,7 +18,7 @@ public class ScopedObjectMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
   {
   }
 
-  public ScopedObjectMapper(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public ScopedObjectMapper(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
   }
 

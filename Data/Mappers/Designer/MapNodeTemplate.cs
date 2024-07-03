@@ -1,5 +1,6 @@
 using OLab.Api.Common;
 using OLab.Api.Dto.Designer;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper;
@@ -13,7 +14,7 @@ public class MapNodeTemplate : OLabMapper<Model.MapNodes, MapNodeTemplateDto>
     this.enableWikiTranslation = enableWikiTranslation;
   }
 
-  public MapNodeTemplate(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public MapNodeTemplate(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
     this.enableWikiTranslation = enableWikiTranslation;
   }

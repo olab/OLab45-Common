@@ -3,6 +3,7 @@ using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using OLab.Common.Utils;
 
@@ -17,7 +18,7 @@ public class MapsFullMapper : OLabMapper<Model.Maps, MapsFullDto>
   }
   public MapsFullMapper(
     IOLabLogger logger,
-    WikiTagProvider tagProvider,
+    WikiTagModuleProvider tagProvider,
     bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
   }

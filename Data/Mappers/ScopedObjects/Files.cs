@@ -6,6 +6,7 @@ using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OLab.Api.WikiTag;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -15,7 +16,7 @@ public class Files : OLabMapper<SystemFiles, FilesDto>
   {
   }
 
-  public Files(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public Files(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
   }
 

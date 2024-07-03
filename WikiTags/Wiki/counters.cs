@@ -3,7 +3,7 @@ using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 
 [OLabModule("COUNTERS")]
-public class CountersWikiTag : WikiTag0Argument
+public class CountersWikiTag : WikiTag0ArgumentModule
 {
   public CountersWikiTag(
     IOLabLogger logger,

@@ -140,7 +140,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     return rc;
   }
 
-  public bool RemapWikiTags<T>(MapNodes item, Importer.DtoTypes dtoType) where T : WikiTag1Argument
+  public bool RemapWikiTags<T>(MapNodes item, Importer.DtoTypes dtoType) where T : WikiTag1ArgumentModule
   {
     var rc = true;
 

@@ -12,6 +12,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using OLab.Api.WikiTag;
 
 namespace OLab.Import.OLab4;
 
@@ -229,7 +230,7 @@ public partial class Importer : IImporter
   {
     var phys = new MapNodesFullMapper(
       Logger,
-      _wikiTagProvider as WikiTagProvider).DtoToPhysical(dto);
+      _wikiTagProvider as WikiTagModuleProvider).DtoToPhysical(dto);
 
     phys.Id = 0;
     phys.MapId = mapId;
@@ -249,7 +250,7 @@ public partial class Importer : IImporter
   {
     var phys = new MapNodeLinksMapper(
       Logger,
-      _wikiTagProvider as WikiTagProvider).DtoToPhysical(dto);
+      _wikiTagProvider as WikiTagModuleProvider).DtoToPhysical(dto);
 
     phys.Id = 0;
     phys.MapId = mapId;

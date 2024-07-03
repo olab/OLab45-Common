@@ -3,7 +3,7 @@ using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 
 [OLabModule("AV")]
-public class AvatarWikiTag : WikiTag1Argument
+public class AvatarWikiTag : WikiTag1ArgumentModule
 {
   public AvatarWikiTag(
     IOLabLogger logger,

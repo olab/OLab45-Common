@@ -7,6 +7,7 @@ using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using OLab.Api.WikiTag;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -17,7 +18,7 @@ public class CountersFull : OLabMapper<SystemCounters, CountersFullDto>
   {
   }
 
-  public CountersFull(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public CountersFull(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
   }
 

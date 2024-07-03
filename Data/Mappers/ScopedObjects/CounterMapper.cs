@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using OLab.Api.WikiTag;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -21,7 +22,7 @@ public class CounterValueResolver : IValueResolver<SystemCounters, CountersDto, 
 
 public class CounterMapper : OLabMapper<SystemCounters, CountersDto>
 {
-  public CounterMapper(IOLabLogger logger, WikiTagProvider tagProvider) : base(logger, tagProvider)
+  public CounterMapper(IOLabLogger logger, WikiTagModuleProvider tagProvider) : base(logger, tagProvider)
   {
 
   }
@@ -30,7 +31,7 @@ public class CounterMapper : OLabMapper<SystemCounters, CountersDto>
   {
   }
 
-  public CounterMapper(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public CounterMapper(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
   }
 

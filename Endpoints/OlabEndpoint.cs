@@ -17,6 +17,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Constants = OLab.Api.Utils.Constants;
+using OLab.Api.WikiTag;
 
 namespace OLab.Api.Endpoints;
 
@@ -47,7 +48,7 @@ public class OLabEndpoint
     _dbContext = context;
     _logger = logger;
 
-    _nodesReaderWriter = new MapNodesReaderWriter(GetLogger(), GetDbContext(), _wikiTagProvider as WikiTagProvider);
+    _nodesReaderWriter = new MapNodesReaderWriter(GetLogger(), GetDbContext(), _wikiTagProvider as WikiTagModuleProvider);
     _mapsReaderWriter = new MapsReaderWriter(GetLogger(), GetDbContext());
 
   }
@@ -242,7 +243,7 @@ public class OLabEndpoint
 
     var builder = new ObjectMapper.MapsNodesFullRelationsMapper(
       GetLogger(),
-      _wikiTagProvider as WikiTagProvider,
+      _wikiTagProvider as WikiTagModuleProvider,
       enableWikiTranslation);
     var dto = builder.PhysicalToDto(phys);
 

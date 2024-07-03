@@ -4,6 +4,7 @@ using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
+using OLab.Api.WikiTag;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -30,13 +31,13 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   protected readonly Mapper _mapper;
 
   protected IOLabLogger _logger;
-  protected WikiTagProvider _wikiTagModules = null;
+  protected WikiTagModuleProvider _wikiTagModules = null;
 
   // used to hold on to id translation between origin system and new one
   protected IDictionary<uint, uint?> _idTranslation = new Dictionary<uint, uint?>();
 
   public virtual P ElementsToPhys(IEnumerable<dynamic> elements, Object source = null) { return default; }
-  public WikiTagProvider GetWikiProvider() { return _wikiTagModules; }
+  public WikiTagModuleProvider GetWikiProvider() { return _wikiTagModules; }
 
   protected IOLabLogger GetLogger() { return _logger; }
 
@@ -53,7 +54,7 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   {
     _logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
 
-    _wikiTagModules = wikiTagProvider as WikiTagProvider;
+    _wikiTagModules = wikiTagProvider as WikiTagModuleProvider;
     _mapper = new Mapper(GetConfiguration());
   }
 

@@ -12,6 +12,7 @@ using OLab.Data.Interface;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using OLab.Api.WikiTag;
 
 namespace OLab.Api.Endpoints.Player;
 
@@ -50,7 +51,7 @@ public partial class NodesEndpoint : OLabEndpoint
 
     var builder = new ObjectMapper.MapsNodesFullRelationsMapper(
       GetLogger(),
-      _wikiTagProvider as WikiTagProvider,
+      _wikiTagProvider as WikiTagModuleProvider,
       enableWikiTranslation);
     var dto = builder.PhysicalToDto(phys);
 

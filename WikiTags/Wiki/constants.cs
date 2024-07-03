@@ -3,7 +3,7 @@ using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 
 [OLabModule("CONST")]
-public class ConstantWikiTag : WikiTag1Argument
+public class ConstantWikiTag : WikiTag1ArgumentModule
 {
   public ConstantWikiTag(
     IOLabLogger logger,

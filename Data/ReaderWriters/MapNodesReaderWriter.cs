@@ -8,6 +8,7 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Api.Utils;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -19,14 +20,14 @@ namespace OLab.Data.ReaderWriters;
 
 public partial class MapNodesReaderWriter : ReaderWriter
 {
-  private WikiTagProvider _tagProvider;
+  private WikiTagModuleProvider _tagProvider;
 
-  public static MapNodesReaderWriter Instance(IOLabLogger logger, OLabDBContext context, WikiTagProvider tagProvider)
+  public static MapNodesReaderWriter Instance(IOLabLogger logger, OLabDBContext context, WikiTagModuleProvider tagProvider)
   {
     return new MapNodesReaderWriter(logger, context, tagProvider);
   }
 
-  public MapNodesReaderWriter(IOLabLogger logger, OLabDBContext context, WikiTagProvider tagProvider) : base(logger, context)
+  public MapNodesReaderWriter(IOLabLogger logger, OLabDBContext context, WikiTagModuleProvider tagProvider) : base(logger, context)
   {
     _tagProvider = tagProvider;
   }

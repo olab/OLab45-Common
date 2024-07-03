@@ -1,26 +1,33 @@
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace OLab.Api.Common;
 
-public abstract class WikiTag1Argument : WikiTagModule
+public abstract class WikiTag1ArgumentModule : WikiTagModule
 {
   protected string wikiTagIdPart;
   protected List<string> wikiTagNamePatterns = new();
 
-  public WikiTag1Argument(
+  public WikiTag1ArgumentModule(
     IOLabLogger logger,
     IOLabConfiguration configuration,
     string htmlElementName) : base(logger, configuration, htmlElementName)
   {
-    wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:[0-9]*\\]\\]");
-    wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:\"[.A-Za-z0-9\\- ]*\"\\]\\]");
-    wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:[.A-Za-z0-9\\- ]*\\]\\]");
-    wikiTagNamePatterns.Add("\"[.A-Za-z0-9\\- ]*\"");
-    wikiTagNamePatterns.Add("[.A-Za-z0-9\\- ]*");
-    wikiTagNamePatterns.Add("[0-9]*");
+    wikiTagPatterns = WikiTagUtils.GetTagPatterns(GetWikiType()).ToList();
+
+    //wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:[0-9]*\\]\\]");
+    //wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:\"[.A-Za-z0-9\\- ]*\"\\]\\]");
+    //wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:[.A-Za-z0-9\\- ]*\\]\\]");
+
+    wikiTagPatterns = WikiTagUtils.GetTagNamePatterns().ToList();
+
+    //wikiTagNamePatterns.Add("\"[.A-Za-z0-9\\- ]*\"");
+    //wikiTagNamePatterns.Add("[.A-Za-z0-9\\- ]*");
+    //wikiTagNamePatterns.Add("[0-9]*");
   }
 
   public string Set(string wikiType, string wikiId)
@@ -101,8 +108,13 @@ public abstract class WikiTag1Argument : WikiTagModule
 
   public override string Translate(string source)
   {
-    if (!HaveWikiTag(source))
+    var regexPatterns = WikiTagUtils.GetTagPatterns("QU");
+    var wikiTagMatches = WikiTagUtils.GetWikiTags(regexPatterns, source);
+
+    if (wikiTagMatches.Count == 0)
       return source;
+
+    XXXXX;
 
     while (HaveWikiTag(source))
     {

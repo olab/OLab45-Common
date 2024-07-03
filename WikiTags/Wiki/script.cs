@@ -3,7 +3,7 @@ using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 
 [OLabModule("SCRIPT")]
-public class ScriptWikiTag : WikiTag1Argument
+public class ScriptWikiTag : WikiTag1ArgumentModule
 {
   public ScriptWikiTag(
     IOLabLogger logger,

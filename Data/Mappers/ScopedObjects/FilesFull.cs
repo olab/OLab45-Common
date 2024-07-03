@@ -3,6 +3,7 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using System.IO;
+using OLab.Api.WikiTag;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -13,7 +14,7 @@ public class FilesFull : OLabMapper<SystemFiles, FilesFullDto>
   {
   }
 
-  public FilesFull(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public FilesFull(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
   }
 

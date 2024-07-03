@@ -3,7 +3,7 @@ using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 
 [OLabModule("MODERATOR")]
-public class ModeratorWikiTag : WikiTag1Argument
+public class ModeratorWikiTag : WikiTag1ArgumentModule
 {
   public ModeratorWikiTag(
     IOLabLogger logger,

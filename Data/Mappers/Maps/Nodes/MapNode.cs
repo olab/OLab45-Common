@@ -5,6 +5,7 @@ using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OLab.Api.WikiTag;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -15,7 +16,7 @@ public class MapNodesMapper : OLabMapper<Model.MapNodes, MapNodesDto>
 
   public MapNodesMapper(
     IOLabLogger logger,
-    WikiTagProvider tagProvider,
+    WikiTagModuleProvider tagProvider,
     bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
   }

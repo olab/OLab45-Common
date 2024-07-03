@@ -3,7 +3,7 @@ using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 
 [OLabModule("REPORT")]
-public class ReportWikiTag : WikiTag0Argument
+public class ReportWikiTag : WikiTag0ArgumentModule
 {
   public ReportWikiTag(
     IOLabLogger logger,

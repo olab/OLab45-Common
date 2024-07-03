@@ -4,9 +4,9 @@ using System.Xml.Linq;
 
 namespace OLab.Api.Common;
 
-public abstract class WikiTag0Argument : WikiTagModule
+public abstract class WikiTag0ArgumentModule : WikiTagModule
 {
-  public WikiTag0Argument(
+  public WikiTag0ArgumentModule(
     IOLabLogger logger,
     IOLabConfiguration configuration,
     string htmlElementName) : base(logger, configuration, htmlElementName)

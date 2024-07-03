@@ -11,6 +11,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading;
 using System.Threading.Tasks;
+using OLab.Api.WikiTag;
 
 namespace OLab.Import.OLab4;
 
@@ -126,7 +127,7 @@ public partial class Importer : IImporter
 
     var dto = new MapsFullRelationsMapper(
       Logger,
-      _wikiTagProvider as WikiTagProvider,
+      _wikiTagProvider as WikiTagModuleProvider,
       false
     ).PhysicalToDto(map);
 

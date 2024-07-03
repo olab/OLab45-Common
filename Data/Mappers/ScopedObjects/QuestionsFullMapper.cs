@@ -6,6 +6,7 @@ using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System.Linq;
+using OLab.Api.WikiTag;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -15,7 +16,7 @@ public class QuestionsFullMapper : OLabMapper<SystemQuestions, QuestionsFullDto>
   {
   }
 
-  public QuestionsFullMapper(IOLabLogger logger, WikiTagProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public QuestionsFullMapper(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
   {
   }
 
