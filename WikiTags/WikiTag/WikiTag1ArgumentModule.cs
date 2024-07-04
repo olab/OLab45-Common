@@ -23,7 +23,7 @@ public abstract class WikiTag1ArgumentModule : WikiTagModule
     //wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:\"[.A-Za-z0-9\\- ]*\"\\]\\]");
     //wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:[.A-Za-z0-9\\- ]*\\]\\]");
 
-    wikiTagPatterns = WikiTagUtils.GetTagNamePatterns().ToList();
+    wikiTagNamePatterns = WikiTagUtils.GetTagNamePatterns().ToList();
 
     //wikiTagNamePatterns.Add("\"[.A-Za-z0-9\\- ]*\"");
     //wikiTagNamePatterns.Add("[.A-Za-z0-9\\- ]*");
@@ -108,13 +108,8 @@ public abstract class WikiTag1ArgumentModule : WikiTagModule
 
   public override string Translate(string source)
   {
-    var regexPatterns = WikiTagUtils.GetTagPatterns("QU");
-    var wikiTagMatches = WikiTagUtils.GetWikiTags(regexPatterns, source);
-
-    if (wikiTagMatches.Count == 0)
+    if (!HaveWikiTag(source))
       return source;
-
-    XXXXX;
 
     while (HaveWikiTag(source))
     {
