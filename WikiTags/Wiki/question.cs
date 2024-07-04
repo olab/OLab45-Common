@@ -21,8 +21,8 @@ public class QuestionWikiTag : WikiTag1ArgumentModule
 
     foreach (var wikiMatch in wikiMatches)
     {
-      var name = WikiTagUtils.GetWikiArgument1(wikiMatch);
-      if (string.IsNullOrEmpty(name))
+      wikiTagIdPart = WikiTagUtils.GetWikiArgument1(wikiMatch);
+      if (string.IsNullOrEmpty(wikiTagIdPart))
       {
         var str = $"**Invalid wiki tag {GetWiki()}**";
         Logger.LogDebug($"replacing {GetWiki()} <= {str}");
@@ -31,8 +31,8 @@ public class QuestionWikiTag : WikiTag1ArgumentModule
       else
       {
         var element = BuildWikiTagHTMLElement();
-        Logger.LogDebug($"replacing {GetWiki()} <= {element}");
-        source = ReplaceWikiTag(source, element);
+        Logger.LogDebug($"replacing {wikiMatch} <= {element}");
+        source = source.Replace(wikiMatch, element);
       }
     }
 
