@@ -15,7 +15,7 @@ public class XmlMapDto : XmlImportDto<XmlMap>
 
   public XmlMapDto(IOLabLogger logger, Importer importer) : base(logger, importer, Importer.DtoTypes.XmlMapDto, "map.xml")
   {
-    _mapper = new MapsMapper(logger);
+    _mapper = new MapsMapper(GetLogger(), GetDbContext(), GetWikiProvider());
   }
 
   public override string GetLoggerString(IEnumerable<dynamic> elements)
@@ -67,8 +67,8 @@ public class XmlMapDto : XmlImportDto<XmlMap>
     item.Name = $"IMPORT: {item.Name}";
     item.AuthorId = _importer.Authorization.UserContext.UserId;
 
-    Context.Maps.Add(item);
-    Context.SaveChanges();
+    GetDbContext().Maps.Add(item);
+    GetDbContext().SaveChanges();
 
     CreateIdTranslation(oldId, item.Id);
     GetModel().Data.Add(item);

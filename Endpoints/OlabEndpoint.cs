@@ -24,19 +24,24 @@ namespace OLab.Api.Endpoints;
 public class OLabEndpoint
 {
   private readonly OLabDBContext _dbContext;
+  public OLabDBContext GetDbContext() { return _dbContext; }
+
   private IOLabLogger _logger;
+  public IOLabLogger GetLogger() { return _logger; }
+
+  protected IOLabModuleProvider<IWikiTagModule> _wikiTagModules = null;
+  public WikiTagModuleProvider GetWikiProvider() { return _wikiTagModules as WikiTagModuleProvider; }
+
   protected string token;
   protected IUserContext _userContext;
   protected readonly IOLabConfiguration _configuration;
-  protected readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
+
   protected readonly IFileStorageModule _fileStorageModule;
 
 
   protected readonly MapNodesReaderWriter _nodesReaderWriter;
   protected readonly MapsReaderWriter _mapsReaderWriter;
 
-  public OLabDBContext GetDbContext() { return _dbContext; }
-  public IOLabLogger GetLogger() { return _logger; }
 
   public OLabEndpoint(
     IOLabLogger logger,
@@ -48,7 +53,7 @@ public class OLabEndpoint
     _dbContext = context;
     _logger = logger;
 
-    _nodesReaderWriter = new MapNodesReaderWriter(GetLogger(), GetDbContext(), _wikiTagProvider as WikiTagModuleProvider);
+    _nodesReaderWriter = new MapNodesReaderWriter(GetLogger(), GetDbContext(), GetWikiProvider());
     _mapsReaderWriter = new MapsReaderWriter(GetLogger(), GetDbContext());
 
   }
@@ -78,7 +83,7 @@ public class OLabEndpoint
       throw new ConfigurationErrorsException($"missing FileStorageType");
 
     _fileStorageModule = fileStorageProvider.GetModule(fileSystemModuleName);
-    _wikiTagProvider = wikiTagProvider;
+    _wikiTagModules = wikiTagProvider;
   }
 
   public void SetUserContext(IUserContext userContext)
@@ -132,39 +137,6 @@ public class OLabEndpoint
     }
   }
 
-  //[NonAction]
-  //protected async Task<MapNodes> GetMapRootNode(uint mapId, uint nodeId)
-  //{
-  //  if (nodeId != 0)
-  //    return await GetDbContext().MapNodes
-  //      .Where(x => x.MapId == mapId && x.Id == nodeId)
-  //      .FirstOrDefaultAsync(x => x.Id == nodeId);
-
-  //  var item = await GetDbContext().MapNodes
-  //      .Where(x => x.MapId == mapId && x.TypeId == 1)
-  //      .FirstOrDefaultAsync(x => x.Id == nodeId);
-
-  //  if (item == null)
-  //    item = await GetDbContext().MapNodes
-  //              .Where(x => x.MapId == mapId)
-  //              .OrderBy(x => x.Id)
-  //              .FirstAsync();
-
-  //  return item;
-  //}
-
-  //protected IList<IdName> GetMapIdNames()
-  //{
-  //  return GetDbContext().Maps
-  //    .Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
-  //}
-
-  //protected IList<IdName> GetNodeIdNames()
-  //{
-  //  return GetDbContext().MapNodes
-  //    .Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
-  //}
-
   protected IList<IdName> GetServerIdNames()
   {
     return GetDbContext().Servers
@@ -212,6 +184,8 @@ public class OLabEndpoint
 
     var dtoList = new ObjectMapper.MapNodesFullMapper(
       GetLogger(),
+      GetDbContext(),
+      GetWikiProvider(),
       enableWikiTanslation).PhysicalToDto(physList);
     return dtoList;
   }
@@ -243,7 +217,8 @@ public class OLabEndpoint
 
     var builder = new ObjectMapper.MapsNodesFullRelationsMapper(
       GetLogger(),
-      _wikiTagProvider as WikiTagModuleProvider,
+      GetDbContext(),
+      GetWikiProvider(),
       enableWikiTranslation);
     var dto = builder.PhysicalToDto(phys);
 

@@ -12,11 +12,19 @@ namespace OLab.Api.ObjectMapper;
 
 public class Files : OLabMapper<SystemFiles, FilesDto>
 {
-  public Files(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+  public Files(
+    IOLabLogger logger,
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 
-  public Files(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public Files(
+    IOLabLogger logger, 
+    OLabDBContext dbContext, 
+    WikiTagModuleProvider tagProvider, 
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 

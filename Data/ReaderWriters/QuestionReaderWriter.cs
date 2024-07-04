@@ -15,22 +15,22 @@ namespace OLab.Data.ReaderWriters;
 
 public class QuestionReaderWriter : ReaderWriter
 {
-  private WikiTagModuleProvider _tagProvider;
+  private IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
 
   public static QuestionReaderWriter Instance(
     IOLabLogger logger,
-    OLabDBContext context, 
-    WikiTagModuleProvider tagProvider)
+    OLabDBContext context,
+    IOLabModuleProvider<IWikiTagModule> wikiTagProvider)
   {
-    return new QuestionReaderWriter(logger, context, tagProvider);
+    return new QuestionReaderWriter(logger, context, wikiTagProvider);
   }
 
   public QuestionReaderWriter(
     IOLabLogger logger,
     OLabDBContext context,
-    WikiTagModuleProvider tagProvider) : base(logger, context)
+    IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, context)
   {
-    _tagProvider = tagProvider;
+    _wikiTagProvider = wikiTagProvider;
   }
 
   /// <summary>

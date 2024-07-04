@@ -1,6 +1,7 @@
 using Dawn;
 using HeyRed.Mime;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Common;
 using NuGet.Packaging;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -24,7 +25,7 @@ public partial class ScopedObjects
     string scopeLevel,
     uint id)
   {
-    Logger.LogInformation($"  Reading scope {scopeLevel} {id} from database");
+    _logger.LogInformation($"  Reading scope {scopeLevel} {id} from database");
 
     var phys = await LoadAllFromDatabaseAsync(scopeLevel, id);
     Combine(phys);
@@ -39,7 +40,7 @@ public partial class ScopedObjects
   public void AddScopeFromDto(
     ScopedObjectsDto dto)
   {
-    var builder = new ScopedObjectsMapper(Logger);
+    var builder = new ScopedObjectsMapper(GetLogger(), GetDbContext(), GetWikiProvider());
 
     var phys = builder.DtoToPhysical(dto);
     Combine(phys);
@@ -81,7 +82,7 @@ public partial class ScopedObjects
       x.ImageableType == scopeLevel && x.ImageableId == id).ToListAsync());
 
     if (items.Count > 0)
-      Logger.LogInformation($"  constants read {items.Count}");
+      _logger.LogInformation($"  constants read {items.Count}");
 
     return items;
   }
@@ -105,7 +106,7 @@ public partial class ScopedObjects
     // order the responses by Order field
     foreach (var questionPhys in questionsPhys.Where(x => x.SystemQuestionResponses.Count > 0))
     {
-      Logger.LogInformation($"  question '{questionPhys.Stem}'. read {questionPhys.SystemQuestionResponses.Count} responses");
+      _logger.LogInformation($"  question '{questionPhys.Stem}'. read {questionPhys.SystemQuestionResponses.Count} responses");
       var orderedResponses = questionPhys.SystemQuestionResponses.OrderBy(x => x.Order).ToList();
       questionPhys.SystemQuestionResponses.Clear();
       questionPhys.SystemQuestionResponses.AddRange(orderedResponses);
@@ -140,7 +141,7 @@ public partial class ScopedObjects
     }
 
     if (items.Count > 0)
-      Logger.LogInformation($"  files read {items.Count}");
+      _logger.LogInformation($"  files read {items.Count}");
 
     return items;
   }
@@ -160,7 +161,7 @@ public partial class ScopedObjects
       x.ImageableType == scopeLevel && x.ImageableId == id).ToListAsync());
 
     if (items.Count > 0)
-      Logger.LogInformation($"  themes read {items.Count}");
+      _logger.LogInformation($"  themes read {items.Count}");
 
     return items;
   }
@@ -180,7 +181,7 @@ public partial class ScopedObjects
       x.ImageableType == scopeLevel && x.ImageableId == id).ToListAsync());
 
     if (items.Count > 0)
-      Logger.LogInformation($"  script read {items.Count}");
+      _logger.LogInformation($"  script read {items.Count}");
 
     return items;
   }
@@ -212,7 +213,7 @@ public partial class ScopedObjects
     }
 
     if (items.Count > 0)
-      Logger.LogInformation($"  counters read {items.Count}");
+      _logger.LogInformation($"  counters read {items.Count}");
 
     return items;
   }
@@ -232,7 +233,7 @@ public partial class ScopedObjects
           x.MapId == ScopeId).ToListAsync());
 
       if (items.Count > 0)
-        Logger.LogInformation($"  counter actions read {items.Count}");
+        _logger.LogInformation($"  counter actions read {items.Count}");
 
       return items;
     }

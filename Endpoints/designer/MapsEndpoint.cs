@@ -370,6 +370,7 @@ public partial class MapsEndpoint : OLabEndpoint
     var phys = new ScopedObjects(
       GetLogger(),
       GetDbContext(),
+      GetWikiProvider(),
       _fileStorageModule);
 
     await phys.AddScopeFromDatabaseAsync(Utils.Constants.ScopeLevelServer, 1);
@@ -405,7 +406,11 @@ public partial class MapsEndpoint : OLabEndpoint
       Value = Encoding.ASCII.GetBytes(DateTime.UtcNow.ToString() + " UTC")
     });
 
-    var builder = new ObjectMapper.Designer.ScopedObjectMapper(GetLogger(), _wikiTagProvider, enableWikiTranslation);
+    var builder = new ObjectMapper.Designer.ScopedObjectMapper(
+      GetLogger(), 
+      GetDbContext(), 
+      GetWikiProvider(), enableWikiTranslation);
+
     var dto = builder.PhysicalToDto(phys);
 
     var maps = GetDbContext().Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
@@ -635,6 +640,8 @@ public partial class MapsEndpoint : OLabEndpoint
 
     var dto = new ObjectMapper.MapNodeLinksMapper(
       GetLogger(),
+      GetDbContext(),
+      GetWikiProvider(),
       false).PhysicalToDto(phys);
 
     return dto;

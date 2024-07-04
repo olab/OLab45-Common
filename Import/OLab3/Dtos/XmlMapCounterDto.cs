@@ -19,7 +19,7 @@ public class XmlMapCounterDto : XmlImportDto<XmlMapCounters>
       Importer.DtoTypes.XmlMapCounterDto,
       "map_counter.xml")
   {
-    _mapper = new Api.ObjectMapper.CounterMapper(logger);
+    _mapper = new Api.ObjectMapper.CounterMapper(GetLogger(), GetDbContext(), GetWikiProvider());
   }
 
   /// <summary>
@@ -54,8 +54,8 @@ public class XmlMapCounterDto : XmlImportDto<XmlMapCounters>
     item.ImageableId = mapDto.GetIdTranslation(GetFileName(), item.ImageableId).Value;
     item.ImageableType = "Maps";
 
-    Context.SystemCounters.Add(item);
-    Context.SaveChanges();
+    GetDbContext().SystemCounters.Add(item);
+    GetDbContext().SaveChanges();
 
     CreateIdTranslation(oldId, item.Id);
 

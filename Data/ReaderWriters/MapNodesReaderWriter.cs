@@ -143,6 +143,7 @@ public partial class MapNodesReaderWriter : ReaderWriter
 
     var builder = new MapsNodesFullRelationsMapper(
       GetLogger(),
+      GetDbContext(),
       _tagProvider,
       enableWikiTranslation);
     var dto = builder.PhysicalToDto(phys);

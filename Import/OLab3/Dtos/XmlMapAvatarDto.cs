@@ -21,8 +21,14 @@ public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
       Importer.DtoTypes.XmlMapAvatarDto,
       "map_avatar.xml")
   {
-    _avMapper = new AvatarsMapper(logger);
-    _fileMapper = new Files(logger);
+    _avMapper = new AvatarsMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
+    _fileMapper = new Files(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
   }
 
   /// <summary>
@@ -70,10 +76,10 @@ public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
     var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
     avItem.MapId = mapDto.GetIdTranslation(GetFileName(), avItem.MapId).Value;
 
-    Context.MapAvatars.Add(avItem);
-    Context.SaveChanges();
+    GetDbContext().MapAvatars.Add(avItem);
+    GetDbContext().SaveChanges();
 
-    Logger.LogInformation($"Saved {GetFileName()} id {avItem.Id}");
+    GetLogger().LogInformation($"Saved {GetFileName()} id {avItem.Id}");
 
     var fileItem = CreateAvatarSystemFile(elements, avItem);
 
@@ -88,13 +94,13 @@ public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
         fileItem.Path);
 
     if (!File.Exists(physFile))
-      Logger.LogWarning(GetFileName(), 0, $"media file '{physFile}' does not exist in public directory");
+      GetLogger().LogWarning(GetFileName(), 0, $"media file '{physFile}' does not exist in public directory");
 
-    Context.SystemFiles.Add(fileItem);
-    Context.SaveChanges();
+    GetDbContext().SystemFiles.Add(fileItem);
+    GetDbContext().SaveChanges();
 
     CreateIdTranslation(oldId, fileItem.Id);
-    Logger.LogInformation($"Saved SystemFile {fileItem.Id}");
+    GetLogger().LogInformation($"Saved SystemFile {fileItem.Id}");
 
     return true;
   }

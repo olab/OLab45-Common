@@ -100,11 +100,16 @@ public partial class ServerEndpoint : OLabEndpoint
     var phys = new ScopedObjects(
       GetLogger(),
       GetDbContext(),
-      _fileStorageModule);
+      GetWikiProvider(), _fileStorageModule);
 
     await phys.AddScopeFromDatabaseAsync(Utils.Constants.ScopeLevelServer, 1);
 
-    var builder = new ScopedObjectsMapper(GetLogger(), _wikiTagProvider, enableWikiTranslation);
+    var builder = new ScopedObjectsMapper(
+      GetLogger(), 
+      GetDbContext(), 
+      GetWikiProvider(), 
+      enableWikiTranslation);
+
     var dto = builder.PhysicalToDto(phys);
 
     return dto;

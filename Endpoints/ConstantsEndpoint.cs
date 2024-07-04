@@ -67,7 +67,10 @@ public partial class ConstantsEndpoint : OLabEndpoint
 
     GetLogger().LogInformation(string.Format("found {0} ConstantsPhys", constantsPhys.Count));
 
-    var dtoList = new ObjectMapper.Constants(GetLogger()).PhysicalToDto(constantsPhys);
+    var dtoList = new ObjectMapper.Constants(
+      GetLogger(), 
+      GetDbContext(), 
+      GetWikiProvider()).PhysicalToDto(constantsPhys);
 
     var maps = GetDbContext().Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
     var nodes = GetDbContext().MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
@@ -97,7 +100,10 @@ public partial class ConstantsEndpoint : OLabEndpoint
     if (phys == null)
       throw new OLabObjectNotFoundException("SystemConstants", id);
 
-    var dto = new ObjectMapper.Constants(GetLogger()).PhysicalToDto(phys);
+    var dto = new ObjectMapper.Constants(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider()).PhysicalToDto(phys);
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, dto);
@@ -130,7 +136,10 @@ public partial class ConstantsEndpoint : OLabEndpoint
 
     try
     {
-      var builder = new ConstantsFull(GetLogger());
+      var builder = new ConstantsFull(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
       var phys = builder.DtoToPhysical(dto);
 
       phys.UpdatedAt = DateTime.Now;
@@ -163,7 +172,10 @@ public partial class ConstantsEndpoint : OLabEndpoint
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("ConstantsPhys", 0);
 
-    var builder = new ConstantsFull(GetLogger());
+    var builder = new ConstantsFull(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
     var phys = builder.DtoToPhysical(dto);
 
     phys.CreatedAt = DateTime.Now;
@@ -192,7 +204,10 @@ public partial class ConstantsEndpoint : OLabEndpoint
     try
     {
       var phys = await GetConstantAsync(id);
-      var dto = new ConstantsFull(GetLogger()).PhysicalToDto(phys);
+      var dto = new ConstantsFull(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider()).PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dto);

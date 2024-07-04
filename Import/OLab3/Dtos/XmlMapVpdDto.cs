@@ -23,7 +23,7 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
       Importer.DtoTypes.XmlMapVpdDto,
       "map_vpd.xml")
   {
-    _mapper = new Api.ObjectMapper.MapVpd(logger);
+    _mapper = new Api.ObjectMapper.MapVpd(GetLogger(), GetDbContext(), GetWikiProvider());
   }
 
   /// <summary>
@@ -37,7 +37,7 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
 
     try
     {
-      Logger.LogInformation($"Loading '{GetFileName()}'");
+      GetLogger().LogInformation($"Loading '{GetFileName()}'");
 
       var physicalFilePath = GetFileModule().BuildPath(
         OLabFileStorageModule.ImportRoot,
@@ -75,26 +75,26 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
             VpdTypeId = item.VpdTypeId
           };
 
-          Logger.LogInformation($"  loaded '{phys.Id}'");
+          GetLogger().LogInformation($"  loaded '{phys.Id}'");
 
           GetModel().Data.Add(phys);
           record++;
         }
         catch (Exception ex)
         {
-          Logger.LogError(ex, $"error loading '{GetFileName()}' record #{record}: {ex.Message}");
+          GetLogger().LogError(ex, $"error loading '{GetFileName()}' record #{record}: {ex.Message}");
         }
 
       }
 
-      Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+      GetLogger().LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
 
       // delete data file
       await GetFileModule().DeleteFileAsync(physicalFilePath);
     }
     catch (Exception ex)
     {
-      Logger.LogError(ex, $"Load error: {ex.Message}");
+      GetLogger().LogError(ex, $"Load error: {ex.Message}");
       rc = false;
     }
 
@@ -126,8 +126,8 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
     var oldId = item.Id;
     item.Id = 0;
 
-    Context.MapVpds.Add(item);
-    Context.SaveChanges();
+    GetDbContext().MapVpds.Add(item);
+    GetDbContext().SaveChanges();
 
     CreateIdTranslation(oldId, item.Id);
 

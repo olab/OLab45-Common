@@ -21,7 +21,7 @@ public class XmlMapVpdElementDto : XmlImportDto<XmlMapVpdElements>
       Importer.DtoTypes.XmlMapVpdElementDto,
       "map_vpd_element.xml")
   {
-    _mapper = new Api.ObjectMapper.MapVpdElement(logger);
+    _mapper = new Api.ObjectMapper.MapVpdElement(GetLogger(), GetDbContext(), GetWikiProvider());
   }
 
   /// <summary>
@@ -53,7 +53,7 @@ public class XmlMapVpdElementDto : XmlImportDto<XmlMapVpdElements>
     // only support the VPDTextType type at this time
     if (vpdPhys.VpdTypeId != 1)
     {
-      Logger.LogInformation($"  skipped vpd type {vpdPhys.VpdTypeId} {vpdElementPhys.Id} MapVpdElement record");
+      GetLogger().LogInformation($"  skipped vpd type {vpdPhys.VpdTypeId} {vpdElementPhys.Id} MapVpdElement record");
       return true;
     }
 
@@ -70,12 +70,12 @@ public class XmlMapVpdElementDto : XmlImportDto<XmlMapVpdElements>
     var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
     item.ImageableId = mapDto.GetIdTranslation(GetFileName(), vpdPhys.MapId).Value;
 
-    Context.SystemConstants.Add(item);
-    Context.SaveChanges();
+    GetDbContext().SystemConstants.Add(item);
+    GetDbContext().SaveChanges();
 
     // don't have a name, so save the id as the new name
     item.Name = item.Id.ToString();
-    Context.SaveChanges();
+    GetDbContext().SaveChanges();
 
     CreateIdTranslation(oldId, item.Id, Encoding.Default.GetString(item.Value));
 
@@ -91,13 +91,13 @@ public class XmlMapVpdElementDto : XmlImportDto<XmlMapVpdElements>
   {
     if (_idTranslation.ContainsKey(originalId))
     {
-      Logger.LogInformation($"  replaced {_fileName} = {value}. translation id {originalId} -> {newId.Value} ");
+      GetLogger().LogInformation($"  replaced {_fileName} = {value}. translation id {originalId} -> {newId.Value} ");
       _idTranslation[originalId] = newId;
       return false;
     }
 
     _idTranslation.Add(originalId, newId);
-    Logger.LogInformation($"  added {_fileName} = {value}. translation id {originalId} -> {newId.Value} ");
+    GetLogger().LogInformation($"  added {_fileName} = {value}. translation id {originalId} -> {newId.Value} ");
 
     return true;
   }

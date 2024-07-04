@@ -13,11 +13,12 @@ namespace OLab.Api.ObjectMapper;
 
 public class Constants : OLabMapper<SystemConstants, ConstantsDto>
 {
-  public Constants(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
-  {
-  }
 
-  public Constants(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public Constants(
+    IOLabLogger logger,
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 

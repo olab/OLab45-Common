@@ -1,6 +1,7 @@
 using OLab.Api.Data.Interface;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using OLab.Import.Interface;
@@ -12,33 +13,37 @@ public partial class Importer : IImporter
 {
   public const string MapFileName = "map.json";
 
-  public IOLabAuthorization Authorization { get; set; }
+  protected IOLabLogger _logger;
+  public IOLabLogger GetLogger() { return _logger; }
+
+  protected IOLabModuleProvider<IWikiTagModule> _wikiTagModules = null;
+  public WikiTagModuleProvider GetWikiProvider() { return _wikiTagModules as WikiTagModuleProvider; }
+
   private readonly OLabDBContext _dbContext;
+  public OLabDBContext GetDbContext() { return _dbContext; }
+
+  public IOLabAuthorization Authorization { get; set; }
   private readonly IOLabConfiguration _configuration;
-  private readonly IOLabLogger Logger;
-  private readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
   private readonly IFileStorageModule _fileModule;
   private readonly IDictionary<uint, uint?> _nodeIdTranslation = new Dictionary<uint, uint?>();
 
-  public IOLabModuleProvider<IWikiTagModule> GetWikiProvider() { return _wikiTagProvider; }
   public IFileStorageModule GetFileStorageModule() { return _fileModule; }
-  public OLabDBContext GetDbContext() { return _dbContext; }
   public IOLabConfiguration GetConfiguration() { return _configuration; }
   public AppSettings Settings() { return _configuration.GetAppSettings(); }
 
   public Importer(
     IOLabLogger logger,
     IOLabConfiguration configuration,
-    OLabDBContext context,
-    IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> wikiTagModules,
     IFileStorageModule fileStorageModule)
   {
-    _dbContext = context;
+    _dbContext = dbContext;
+    _logger = logger;
+
     _configuration = configuration;
 
-    Logger = logger; // OLabLogger.CreateNew<Importer>(logger, true);
-
-    _wikiTagProvider = wikiTagProvider;
+    _wikiTagModules = wikiTagModules;
     _fileModule = fileStorageModule;
 
   }

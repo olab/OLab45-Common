@@ -14,11 +14,19 @@ namespace OLab.Api.ObjectMapper;
 public class CountersFull : OLabMapper<SystemCounters, CountersFullDto>
 {
 
-  public CountersFull(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+  public CountersFull(
+    IOLabLogger logger,
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 
-  public CountersFull(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public CountersFull(
+    IOLabLogger logger, 
+    OLabDBContext dbContext, 
+    WikiTagModuleProvider tagProvider, 
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 

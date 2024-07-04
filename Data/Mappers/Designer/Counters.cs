@@ -9,11 +9,12 @@ namespace OLab.Api.ObjectMapper.Designer;
 
 public class Counters : OLabMapper<SystemCounters, ScopedObjectDto>
 {
-  public Counters(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
-  {
-  }
 
-  public Counters(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public Counters(
+    IOLabLogger logger,
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 

@@ -46,7 +46,10 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
     GetLogger().LogInformation($"PutAsync(uint id={id})");
 
     var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
-    var builder = new QuestionsFullMapper(GetLogger());
+    var builder = new QuestionsFullMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
     var dtoQuestionTemp = builder.PhysicalToDto(physQuestionTemp);
 
     // test if user has access to object
@@ -56,7 +59,10 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
 
     try
     {
-      var responsebuilder = new QuestionResponses(GetLogger(), dtoQuestionTemp);
+      var responsebuilder = new QuestionResponses(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider(), dtoQuestionTemp);
       var physResponse = responsebuilder.DtoToPhysical(dto);
 
       physResponse.UpdatedAt = DateTime.Now;
@@ -83,7 +89,10 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
     GetLogger().LogInformation($"QuestionResponsesController.PostAsync({dto.Response})");
 
     var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
-    var questionBuilder = new QuestionsFullMapper(GetLogger());
+    var questionBuilder = new QuestionsFullMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
     var dtoQuestionTemp = questionBuilder.PhysicalToDto(physQuestionTemp);
 
     // test if user has access to object
@@ -91,7 +100,10 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("QuestionResponses", 0);
 
-    var responsebuilder = new QuestionResponses(GetLogger(), dtoQuestionTemp);
+    var responsebuilder = new QuestionResponses(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider(), dtoQuestionTemp);
     var physResponse = responsebuilder.DtoToPhysical(dto);
 
     GetDbContext().SystemQuestionResponses.Add(physResponse);
@@ -120,7 +132,10 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
     {
       var physResponse = await GetQuestionResponseAsync(id);
       var physQuestion = await GetQuestionAsync(physResponse.QuestionId.Value);
-      var questionBuilder = new QuestionsFullMapper(GetLogger());
+      var questionBuilder = new QuestionsFullMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
       var dtoQuestion = questionBuilder.PhysicalToDto(physQuestion);
 
       // test if user has access to objectdtoQuestion

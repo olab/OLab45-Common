@@ -19,7 +19,7 @@ public class XmlMapNodeCounterDto : XmlImportDto<XmlMapNodeCounters>
       Importer.DtoTypes.XmlMapNodeCounterDto,
       "map_node_counter.xml")
   {
-    _mapper = new CounterActionsMapper(logger);
+    _mapper = new CounterActionsMapper(GetLogger(), GetDbContext(), GetWikiProvider());
   }
 
   /// <summary>
@@ -49,7 +49,7 @@ public class XmlMapNodeCounterDto : XmlImportDto<XmlMapNodeCounters>
     // test for empty value/expression.  if so, igmore this save
     if (string.IsNullOrEmpty(item.Expression))
     {
-      Logger.LogInformation($"  empty {GetFileName()} id = {oldId} value.  Skipping");
+      GetLogger().LogInformation($"  empty {GetFileName()} id = {oldId} value.  Skipping");
       return true;
     }
 
@@ -65,8 +65,8 @@ public class XmlMapNodeCounterDto : XmlImportDto<XmlMapNodeCounters>
     var node = nodeDto.GetModel().Data.Where(x => x.Id == item.ImageableId).FirstOrDefault();
     item.MapId = node.MapId;
 
-    Context.SystemCounterActions.Add(item);
-    Context.SaveChanges();
+    GetDbContext().SystemCounterActions.Add(item);
+    GetDbContext().SaveChanges();
 
     CreateIdTranslation(oldId, item.Id);
 

@@ -169,7 +169,10 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
       groupsPhys.AddRange(userPhys.UserGrouproles.Select(x => x.Group).Distinct());
     }
 
-    var groupsDto = new GroupsMapper(GetLogger()).PhysicalToDto(groupsPhys);
+    var groupsDto = new GroupsMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider()).PhysicalToDto(groupsPhys);
 
     return groupsDto;
   }

@@ -7,7 +7,11 @@ namespace OLab.Api.ObjectMapper.Designer;
 
 public class Constants : OLabMapper<SystemConstants, ScopedObjectDto>
 {
-  public Constants(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+  public Constants(
+    IOLabLogger logger, 
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 

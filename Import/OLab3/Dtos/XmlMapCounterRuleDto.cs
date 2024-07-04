@@ -19,7 +19,10 @@ public class XmlMapCounterRuleDto : XmlImportDto<XmlMapCounterRule>
       Importer.DtoTypes.XmlMapCounterRuleDto,
       "map_counter_rule.xml")
   {
-    _mapper = new Api.ObjectMapper.CounterActionsMapper(logger);
+    _mapper = new Api.ObjectMapper.CounterActionsMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
   }
 
   /// <summary>
@@ -53,8 +56,8 @@ public class XmlMapCounterRuleDto : XmlImportDto<XmlMapCounterRule>
     var dto = GetImporter().GetDto(Importer.DtoTypes.XmlMapCounterDto);
     item.CounterId = dto.GetIdTranslation(GetFileName(), item.CounterId).Value;
 
-    Context.SystemCounterActions.Add(item);
-    Context.SaveChanges();
+    GetDbContext().SystemCounterActions.Add(item);
+    GetDbContext().SaveChanges();
 
     CreateIdTranslation(oldId, item.Id);
 

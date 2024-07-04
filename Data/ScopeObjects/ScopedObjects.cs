@@ -1,4 +1,5 @@
 using OLab.Api.Model;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using System.Collections.Generic;
@@ -7,7 +8,6 @@ namespace OLab.Data;
 
 public partial class ScopedObjects
 {
-  public IOLabLogger Logger { get; }
   private readonly IDictionary<uint, uint> _counterIds =
     new Dictionary<uint, uint>();
   private readonly IDictionary<uint, uint> _nodeIds =
@@ -17,7 +17,13 @@ public partial class ScopedObjects
   private readonly IDictionary<uint, uint> _mapIds =
     new Dictionary<uint, uint>();
 
+  private IOLabLogger _logger { get; }
+  protected IOLabLogger GetLogger() { return _logger; }
   private OLabDBContext _dbContext { get; set; }
+  protected OLabDBContext GetDbContext() { return _dbContext; }
+
+  protected IOLabModuleProvider<IWikiTagModule> _wikiTagModules = null;
+  public WikiTagModuleProvider GetWikiProvider() { return _wikiTagModules as WikiTagModuleProvider; }
 
   public uint ScopeId { get; private set; }
   public string ScopeLevel { get; private set; }
@@ -35,11 +41,13 @@ public partial class ScopedObjects
   public ScopedObjects(
     IOLabLogger logger,
     OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider,
     IFileStorageModule fileStorageModule = null) : this()
   {
-    Logger = logger;
+    _logger = logger;
     _dbContext = dbContext;
     _fileStorageModule = fileStorageModule;
+    _wikiTagModules = tagProvider;
   }
 
   /// <summary>

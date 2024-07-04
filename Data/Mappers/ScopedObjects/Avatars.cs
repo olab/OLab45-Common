@@ -12,7 +12,9 @@ public class AvatarsMapper : OLabMapper<MapAvatars, AvatarsDto>
 {
   public AvatarsMapper(
     IOLabLogger logger,
-    bool enableWikiTranslation = true) : base(logger)
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 

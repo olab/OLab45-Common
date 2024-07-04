@@ -51,20 +51,20 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
             dynamic file = element.Value;
             file = Conversions.Base64Decode(element, true);
             GetModel().MediaElementsFiles.Add(file);
-            Logger.LogInformation($"  loaded '{file}'");
+            GetLogger().LogInformation($"  loaded '{file}'");
           }
           catch (Exception ex)
           {
-            Logger.LogError(ex, $"Error loading '{GetFileName()}' media_elements_files record #{record}: {ex.Message}");
+            GetLogger().LogError(ex, $"Error loading '{GetFileName()}' media_elements_files record #{record}: {ex.Message}");
           }
         }
       }
       catch (RuntimeBinderException)
       {
-        Logger.LogWarning($"No media_elements_files records in {GetFileName()}");
+        GetLogger().LogWarning($"No media_elements_files records in {GetFileName()}");
       }
 
-      Logger.LogInformation($"loaded {GetModel().MediaElementsFiles.Count()} {GetFileName()} MediaElementsFiles objects");
+      GetLogger().LogInformation($"loaded {GetModel().MediaElementsFiles.Count()} {GetFileName()} MediaElementsFiles objects");
 
       record = 0;
 
@@ -80,21 +80,21 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
             dynamic file = element.Value;
             file = Conversions.Base64Decode(file);
             GetModel().MediaElementsAvatars.Add(file);
-            Logger.LogInformation($"  loaded '{file}'");
+            GetLogger().LogInformation($"  loaded '{file}'");
           }
           catch (Exception ex)
           {
-            Logger.LogError(ex, $"Error loading '{GetFileName()}' media_elements_avatars record #{++record}: {ex.Message}");
+            GetLogger().LogError(ex, $"Error loading '{GetFileName()}' media_elements_avatars record #{++record}: {ex.Message}");
           }
 
         }
       }
       catch (RuntimeBinderException)
       {
-        Logger.LogWarning($"No media_elements_avatars records in {GetFileName()}");
+        GetLogger().LogWarning($"No media_elements_avatars records in {GetFileName()}");
       }
 
-      Logger.LogInformation($"loaded {GetModel().MediaElementsAvatars.Count()} {GetFileName()} MediaElementsAvatars objects");
+      GetLogger().LogInformation($"loaded {GetModel().MediaElementsAvatars.Count()} {GetFileName()} MediaElementsAvatars objects");
 
     }
 
@@ -146,12 +146,12 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
             sourceFilePath,
             targetDirectory).Wait();
 
-          Logger.LogInformation($"Moved {sourceFilePath}' -> '{targetDirectory}'");
+          GetLogger().LogInformation($"Moved {sourceFilePath}' -> '{targetDirectory}'");
 
         }
         catch (Exception ex)
         {
-          Logger.LogError($"Error importing {GetFileName()} '{element.Name}' = '{element.Value}': reason : {ex.Message}");
+          GetLogger().LogError($"Error importing {GetFileName()} '{element.Name}' = '{element.Value}': reason : {ex.Message}");
           rc = false;
         }
 
@@ -160,7 +160,7 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
     }
     catch (Exception ex)
     {
-      Logger.LogError($"Error importing {GetFileName()}: reason : {ex.Message}");
+      GetLogger().LogError($"Error importing {GetFileName()}: reason : {ex.Message}");
       rc = false;
     }
 

@@ -1,6 +1,7 @@
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,9 @@ public class Questions : OLabMapper<SystemQuestions, QuestionsDto>
 {
   public Questions(
     IOLabLogger logger,
-    IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
-    bool enableWikiTranslation = true) : base(logger, wikiTagProvider)
+    OLabDBContext dbContext,
+    WikiTagModuleProvider tagProvider,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 

@@ -8,7 +8,10 @@ namespace OLab.Data.Mappers;
 public class RolesMapper : OLabMapper<Roles, RolesDto>
 {
   public RolesMapper(
-    IOLabLogger logger) : base(logger)
+    IOLabLogger logger,
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 

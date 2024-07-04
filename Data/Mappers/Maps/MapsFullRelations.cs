@@ -17,15 +17,9 @@ public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
 
   public MapsFullRelationsMapper(
     IOLabLogger logger,
-    bool enableWikiTranslation = true) : base(logger)
-  {
-    _enableWikiTranslation = enableWikiTranslation;
-  }
-
-  public MapsFullRelationsMapper(
-    IOLabLogger logger,
-    WikiTagModuleProvider tagProvider,
-    bool enableWikiTranslation = true) : base(logger, tagProvider)
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
     _enableWikiTranslation = enableWikiTranslation;
   }
@@ -59,11 +53,14 @@ public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
     {
       Map = new MapsFullMapper(
         _logger,
+        GetDbContext(),
         _wikiTagModules,
         _enableWikiTranslation
       ).PhysicalToDto(mapPhys),
+
       MapNodes = new MapNodesFullMapper(
         _logger,
+        GetDbContext(),
         _wikiTagModules,
         _enableWikiTranslation
       ).PhysicalToDto(mapPhys.MapNodes.ToList())
@@ -75,7 +72,11 @@ public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
     var links = new List<MapNodeLinks>();
     links.AddRange(mapPhys.MapNodeLinks);
 
-    dto.MapNodeLinks = new MapNodeLinksMapper(_logger, _enableWikiTranslation).PhysicalToDto(links);
+    dto.MapNodeLinks = new MapNodeLinksMapper(
+      _logger, 
+      GetDbContext(), 
+      GetWikiProvider(),
+      _enableWikiTranslation).PhysicalToDto(links);
 
     return dto;
   }

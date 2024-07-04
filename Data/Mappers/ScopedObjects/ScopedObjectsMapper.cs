@@ -1,4 +1,6 @@
 using OLab.Api.Dto;
+using OLab.Api.Model;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using OLab.Data;
 
@@ -10,8 +12,9 @@ public class ScopedObjectsMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
 
   public ScopedObjectsMapper(
     IOLabLogger logger,
-    IOLabModuleProvider<IWikiTagModule> wikiTagProvider = null,
-    bool enableWikiTranslation = true) : base(logger, wikiTagProvider)
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
     _enableWikiTranslation = enableWikiTranslation;
   }
@@ -23,34 +26,57 @@ public class ScopedObjectsMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
     var dto = GetDto(source);
 
     var dtoQuestionsList
-      = new QuestionsFullMapper(Logger, _enableWikiTranslation).PhysicalToDto(phys.QuestionsPhys);
+      = new QuestionsFullMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider(),
+        _enableWikiTranslation).PhysicalToDto(phys.QuestionsPhys);
     dto.Questions.AddRange(dtoQuestionsList);
 
     var dtoCountersList
-      = new CounterMapper(Logger, _enableWikiTranslation).PhysicalToDto(phys.CountersPhys);
+      = new CounterMapper(GetLogger(),
+        GetDbContext(),
+        GetWikiProvider(),
+        _enableWikiTranslation).PhysicalToDto(phys.CountersPhys);
     dto.Counters.AddRange(dtoCountersList);
 
     var dtoConstantsList
-      = new ConstantsFull(Logger, _enableWikiTranslation).PhysicalToDto(phys.ConstantsPhys);
+      = new ConstantsFull(GetLogger(),
+        GetDbContext(),
+        GetWikiProvider(),
+        _enableWikiTranslation).PhysicalToDto(phys.ConstantsPhys);
     dto.Constants.AddRange(dtoConstantsList);
 
     var dtoFilesList
-      = new FilesFull(Logger, _enableWikiTranslation).PhysicalToDto(phys.FilesPhys);
+      = new FilesFull(GetLogger(),
+        GetDbContext(),
+        GetWikiProvider(),
+        _enableWikiTranslation).PhysicalToDto(phys.FilesPhys);
     dto.Files.AddRange(dtoFilesList);
 
     var dtoScriptsList
-      = new ScriptsFull(Logger, _enableWikiTranslation).PhysicalToDto(phys.ScriptsPhys);
+      = new ScriptsFull(GetLogger(),
+        GetDbContext(),
+        GetWikiProvider(),
+        _enableWikiTranslation).PhysicalToDto(phys.ScriptsPhys);
     dto.Scripts.AddRange(dtoScriptsList);
 
     if (_wikiTagModules != null)
     {
       var dtoThemesList
-        = new ThemesFull(Logger, _wikiTagModules, _enableWikiTranslation).PhysicalToDto(phys.ThemesPhys);
+        = new ThemesFull(
+          GetLogger(),
+        GetDbContext(),
+        GetWikiProvider(),
+        _enableWikiTranslation).PhysicalToDto(phys.ThemesPhys);
       dto.Themes.AddRange(dtoThemesList);
     }
 
     var dtoCounterActionsList
-      = new CounterActionsMapper(Logger).PhysicalToDto(phys.CounterActionsPhys);
+      = new CounterActionsMapper(GetLogger(),
+        GetDbContext(),
+        GetWikiProvider(),
+        _enableWikiTranslation).PhysicalToDto(phys.CounterActionsPhys);
     dto.CounterActions.AddRange(dtoCounterActionsList);
 
     return dto;
@@ -63,34 +89,34 @@ public class ScopedObjectsMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
     var phys = new ScopedObjects();
 
     var physQuestions
-      = new QuestionsFullMapper(Logger, _enableWikiTranslation).DtoToPhysical(dto.Questions);
+      = new QuestionsFullMapper(GetLogger(), GetDbContext(), GetWikiProvider(), _enableWikiTranslation).DtoToPhysical(dto.Questions);
     phys.QuestionsPhys.AddRange(physQuestions);
 
     var physCounters
-      = new CounterMapper(Logger, _enableWikiTranslation).DtoToPhysical(dto.Counters);
+      = new CounterMapper(GetLogger(), GetDbContext(), GetWikiProvider(), _enableWikiTranslation).DtoToPhysical(dto.Counters);
     phys.CountersPhys.AddRange(physCounters);
 
     var physConstants
-      = new ConstantsFull(Logger, _enableWikiTranslation).DtoToPhysical(dto.Constants);
+      = new ConstantsFull(GetLogger(), GetDbContext(), GetWikiProvider(), _enableWikiTranslation).DtoToPhysical(dto.Constants);
     phys.ConstantsPhys.AddRange(physConstants);
 
     var physFiles
-      = new FilesFull(Logger, _enableWikiTranslation).DtoToPhysical(dto.Files);
+      = new FilesFull(GetLogger(), GetDbContext(), GetWikiProvider(), _enableWikiTranslation).DtoToPhysical(dto.Files);
     phys.FilesPhys.AddRange(physFiles);
 
     var physScripts
-      = new ScriptsFull(Logger, _enableWikiTranslation).DtoToPhysical(dto.Scripts);
+      = new ScriptsFull(GetLogger(), GetDbContext(), GetWikiProvider(), _enableWikiTranslation).DtoToPhysical(dto.Scripts);
     phys.ScriptsPhys.AddRange(physScripts);
 
     if (_wikiTagModules != null)
     {
       var physThemes
-        = new ThemesFull(Logger, _wikiTagModules, _enableWikiTranslation).DtoToPhysical(dto.Themes);
+        = new ThemesFull(GetLogger(), GetDbContext(), GetWikiProvider(), _enableWikiTranslation).DtoToPhysical(dto.Themes);
       phys.ThemesPhys.AddRange(physThemes);
     }
 
     var physActions
-      = new CounterActionsMapper(Logger, _enableWikiTranslation).DtoToPhysical(dto.CounterActions);
+      = new CounterActionsMapper(GetLogger(), GetDbContext(), GetWikiProvider(), _enableWikiTranslation).DtoToPhysical(dto.CounterActions);
     phys.CounterActionsPhys.AddRange(physActions);
 
     return phys;

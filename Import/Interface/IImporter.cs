@@ -2,6 +2,7 @@
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using System.IO;
@@ -13,7 +14,7 @@ namespace OLab.Import.Interface;
 public interface IImporter
 {
   OLabDBContext GetDbContext();
-  IOLabModuleProvider<IWikiTagModule> GetWikiProvider();
+  WikiTagModuleProvider GetWikiProvider();
   IFileStorageModule GetFileStorageModule();
   Task<Maps> Import(IOLabAuthorization auth, Stream stream, string fileName, CancellationToken token = default);
   Task ExportAsync(Stream stream, uint mapId, CancellationToken token = default);

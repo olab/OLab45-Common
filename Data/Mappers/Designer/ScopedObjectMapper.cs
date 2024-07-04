@@ -1,5 +1,6 @@
 using OLab.Api.Common;
 using OLab.Api.Dto.Designer;
+using OLab.Api.Model;
 using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using OLab.Data;
@@ -13,12 +14,9 @@ public class ScopedObjectMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
 
   public ScopedObjectMapper(
     IOLabLogger logger,
-    IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
-    bool enableWikiTranslation = true) : base(logger, wikiTagProvider)
-  {
-  }
-
-  public ScopedObjectMapper(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 
@@ -28,16 +26,16 @@ public class ScopedObjectMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
   {
     var dto = GetDto(source);
 
-    var dtConstantsList = new Constants(Logger).PhysicalToDto(phys.ConstantsPhys);
+    var dtConstantsList = new Constants(GetLogger(), GetDbContext(), GetWikiProvider()).PhysicalToDto(phys.ConstantsPhys);
     dto.Constants.AddRange(dtConstantsList);
 
-    var dtoQuestionsList = new Questions(Logger).PhysicalToDto(phys.QuestionsPhys);
+    var dtoQuestionsList = new Questions(GetLogger(), GetDbContext(), GetWikiProvider()).PhysicalToDto(phys.QuestionsPhys);
     dto.Questions.AddRange(dtoQuestionsList);
 
-    var dtCountersList = new Counters(Logger).PhysicalToDto(phys.CountersPhys);
+    var dtCountersList = new Counters(GetLogger(), GetDbContext(), GetWikiProvider()).PhysicalToDto(phys.CountersPhys);
     dto.Counters.AddRange(dtCountersList);
 
-    var dtFilesList = new Files(Logger).PhysicalToDto(phys.FilesPhys);
+    var dtFilesList = new Files(GetLogger(), GetDbContext(), GetWikiProvider()).PhysicalToDto(phys.FilesPhys);
     dto.Files.AddRange(dtFilesList);
 
     return dto;

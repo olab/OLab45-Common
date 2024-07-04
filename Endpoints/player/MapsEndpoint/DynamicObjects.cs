@@ -33,7 +33,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-    var node = await  _nodesReaderWriter.GetMapRootNode(mapId, nodeId);
+    var node = await _nodesReaderWriter.GetMapRootNode(mapId, nodeId);
     return await GetDynamicScopedObjectsAsync(1, node, sinceTime, false);
   }
 
@@ -74,10 +74,16 @@ public partial class MapsEndpoint : OLabEndpoint
     uint sinceTime,
     bool enableWikiTranslation)
   {
-    var phys = new DynamicScopedObjects(GetLogger(), GetDbContext(), serverId, node.MapId, node.Id);
+    var phys = new DynamicScopedObjects(
+      GetLogger(),
+      GetDbContext(),
+      GetWikiProvider(), serverId, node.MapId, node.Id);
     await phys.GetDynamicScopedObjectsAsync();
 
-    var builder = new ObjectMapper.DynamicScopedObjects(GetLogger(), enableWikiTranslation);
+    var builder = new ObjectMapper.DynamicScopedObjects(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider(), enableWikiTranslation);
     var dto = builder.PhysicalToDto(phys);
 
     return dto;
@@ -107,7 +113,10 @@ public partial class MapsEndpoint : OLabEndpoint
       else
       {
         // convert to physical object so we can use the counterActions code
-        var phys = new ObjectMapper.CounterMapper(GetLogger()).DtoToPhysical(dto);
+        var phys = new ObjectMapper.CounterMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider()).DtoToPhysical(dto);
 
         // test if there's a counter action to apply
         if (counterAction.ApplyFunctionToCounter(phys))
@@ -115,7 +124,10 @@ public partial class MapsEndpoint : OLabEndpoint
           // remove original counter from list
           orgDtoList.Remove(dto);
 
-          dto = new ObjectMapper.CounterMapper(GetLogger()).PhysicalToDto(phys);
+          dto = new ObjectMapper.CounterMapper(
+            GetLogger(),
+            GetDbContext(),
+            GetWikiProvider()).PhysicalToDto(phys);
           GetLogger().LogInformation($"Updated counter '{dto.Name}' ({dto.Id}) with function '{counterAction.Expression}'. now = {dto.Value}");
 
           // add updated counter back to list

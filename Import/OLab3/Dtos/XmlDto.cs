@@ -7,7 +7,9 @@ namespace OLab.Import.OLab3.Dtos;
 
 public abstract class XmlDto
 {
-  protected readonly IOLabLogger Logger;
+  protected IOLabLogger _logger;
+  protected IOLabLogger GetLogger() { return _logger; }
+
   public abstract Task<bool> LoadAsync(string extractPath, bool displayProgressMessage = true);
   public abstract bool PostProcess(IDictionary<DtoTypes, XmlDto> dtos);
   public abstract bool SaveToDatabase(string importFolderName);
@@ -22,7 +24,7 @@ public abstract class XmlDto
   public XmlDto(IOLabLogger logger, DtoTypes dtoType)
   {
     DtoType = dtoType;
-    Logger = logger;
+    _logger = logger;
   }
 
   protected abstract bool CreateIdTranslation(uint originalId, uint? newId = null);

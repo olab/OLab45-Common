@@ -11,11 +11,19 @@ namespace OLab.Api.ObjectMapper;
 public class ConstantsFull : OLabMapper<SystemConstants, ConstantsDto>
 {
 
-  public ConstantsFull(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+  public ConstantsFull(
+    IOLabLogger logger,
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 
-  public ConstantsFull(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public ConstantsFull(
+    IOLabLogger logger, 
+    OLabDBContext dbContext, 
+    WikiTagModuleProvider tagProvider, 
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 

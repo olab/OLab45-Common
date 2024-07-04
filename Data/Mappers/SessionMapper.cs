@@ -13,13 +13,9 @@ public class SessionMapper : OLabMapper<UserSessions, SessionDto>
 {
   public SessionMapper(
     IOLabLogger logger,
-    bool enableWikiTranslation = true) : base(logger)
-  {
-  }
-  public SessionMapper(
-    IOLabLogger logger,
+    OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,
-    bool enableWikiTranslation = true) : base(logger, tagProvider)
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 

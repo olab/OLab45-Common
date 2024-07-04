@@ -8,7 +8,11 @@ namespace OLab.Api.ObjectMapper;
 
 public class Themes : OLabMapper<SystemThemes, ThemesDto>
 {
-  public Themes(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public Themes(
+    IOLabLogger logger, 
+    OLabDBContext dbContext,
+    WikiTagModuleProvider tagProvider,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 }

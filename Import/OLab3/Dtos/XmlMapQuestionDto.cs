@@ -16,7 +16,7 @@ public class XmlMapQuestionDto : XmlImportDto<XmlMapQuestions>
       importer,
       Importer.DtoTypes.XmlMapQuestionDto, "map_question.xml")
   {
-    _mapper = new Api.ObjectMapper.Questions(logger, GetWikiProvider());
+    _mapper = new Api.ObjectMapper.Questions(logger, GetDbContext(), GetWikiProvider());
   }
 
   /// <summary>
@@ -53,12 +53,12 @@ public class XmlMapQuestionDto : XmlImportDto<XmlMapQuestions>
     if (item.CounterId.HasValue)
       item.CounterId = counterDto.GetIdTranslation(GetFileName(), item.CounterId.Value);
 
-    Context.SystemQuestions.Add(item);
-    Context.SaveChanges();
+    GetDbContext().SystemQuestions.Add(item);
+    GetDbContext().SaveChanges();
 
     // don't have a name, so save the id as the new name
     item.Name = item.Id.ToString();
-    Context.SaveChanges();
+    GetDbContext().SaveChanges();
 
     CreateIdTranslation(oldId, item.Id);
 

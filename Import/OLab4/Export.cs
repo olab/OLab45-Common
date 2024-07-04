@@ -27,7 +27,7 @@ public partial class Importer : IImporter
     uint mapId,
     CancellationToken token = default)
   {
-    Logger.LogInformation($"Exporting mapId: {mapId} ");
+    GetLogger().LogInformation($"Exporting mapId: {mapId} ");
 
     // create map json object
     var dto = await ReadMapDtoFromDatabase(mapId, token);
@@ -49,7 +49,7 @@ public partial class Importer : IImporter
     uint mapId,
     CancellationToken token = default)
   {
-    Logger.Clear();
+    GetLogger().Clear();
 
     // create map json object
     var dto = await ExportAsync(mapId, token);
@@ -73,7 +73,7 @@ public partial class Importer : IImporter
       writer.Flush();
       mapJsonStream.Position = 0;
 
-      Logger.LogInformation($"Writing map '{dto.Map.Name}'. json size = {mapJsonStream.Length} ");
+      GetLogger().LogInformation($"Writing map '{dto.Map.Name}'. json size = {mapJsonStream.Length} ");
 
       using var entryStream = zipEntry.Open();
       mapJsonStream.CopyTo(entryStream);
@@ -112,9 +112,9 @@ public partial class Importer : IImporter
     uint mapId,
     CancellationToken token)
   {
-    Logger.LogInformation($"  exporting map {mapId} ");
+    GetLogger().LogInformation($"  exporting map {mapId} ");
 
-    var map = await _dbContext.Maps
+    var map = await GetDbContext().Maps
       .Include(map => map.MapNodes)
       .Include(map => map.MapNodeLinks)
       .AsNoTracking()
@@ -126,19 +126,23 @@ public partial class Importer : IImporter
       throw new OLabObjectNotFoundException("Maps", mapId);
 
     var dto = new MapsFullRelationsMapper(
-      Logger,
-      _wikiTagProvider as WikiTagModuleProvider,
+
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider(),
       false
     ).PhysicalToDto(map);
 
     var phys = new ScopedObjects(
-      Logger,
-      _dbContext);
+      GetLogger(), GetDbContext(), GetWikiProvider());
 
     // apply map-level scoped objects to the map dto
     await phys.AddScopeFromDatabaseAsync(Api.Utils.Constants.ScopeLevelMap, mapId);
 
-    var scopedObjectMapper = new ScopedObjectsMapper(Logger, _wikiTagProvider, false);
+    var scopedObjectMapper = new ScopedObjectsMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider(), false);
     dto.ScopedObjects = scopedObjectMapper.PhysicalToDto(phys);
 
     return dto;
@@ -150,15 +154,19 @@ public partial class Importer : IImporter
     foreach (var nodeDto in dto.MapNodes)
     {
       var phys = new ScopedObjects(
-        Logger,
-        _dbContext);
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
 
       // apply node-level scoped objects
       await phys.AddScopeFromDatabaseAsync(Api.Utils.Constants.ScopeLevelNode, nodeDto.Id.Value);
 
-      Logger.LogInformation($"  exporting node {nodeDto.Id} ");
+      GetLogger().LogInformation($"  exporting node {nodeDto.Id} ");
 
-      var scopedObjectMapper = new ScopedObjectsMapper(Logger, _wikiTagProvider, false);
+      var scopedObjectMapper = new ScopedObjectsMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider(), false);
       nodeDto.ScopedObjects = scopedObjectMapper.PhysicalToDto(phys);
     }
 

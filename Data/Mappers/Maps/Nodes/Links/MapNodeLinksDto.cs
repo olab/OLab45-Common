@@ -16,14 +16,9 @@ public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
 
   public MapNodeLinksMapper(
     IOLabLogger logger,
-    bool enableWikiTranslation = true) : base(logger)
-  {
-  }
-
-  public MapNodeLinksMapper(
-    IOLabLogger logger,
-    WikiTagModuleProvider tagProvider,
-    bool enableWikiTranslation = true) : base(logger, tagProvider)
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> wikiTagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, wikiTagProvider)
   {
     if (random == null)
       random = new Random((int)DateTime.Now.Ticks);

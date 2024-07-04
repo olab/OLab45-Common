@@ -32,7 +32,9 @@ public partial class GroupsEndpoint : OLabEndpoint
       fileStorageProvider)
   {
     _readerWriter = GroupReaderWriter.Instance(logger, dbContext);
-    _mapper = new GroupsMapper(logger);
+    _mapper = new GroupsMapper(GetLogger(),
+      GetDbContext(),
+      GetWikiProvider());
   }
 
   /// <summary>

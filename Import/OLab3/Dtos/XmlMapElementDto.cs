@@ -17,7 +17,7 @@ public class XmlMapElementDto : XmlImportDto<XmlMapElements>
       Importer.DtoTypes.XmlMapElementDto,
       "map_element.xml")
   {
-    _mapper = new Api.ObjectMapper.Files(logger);
+    _mapper = new Api.ObjectMapper.Files(GetLogger(), GetDbContext(), GetWikiProvider());
   }
 
   /// <summary>
@@ -54,8 +54,8 @@ public class XmlMapElementDto : XmlImportDto<XmlMapElements>
 
     item.Path = Path.GetFileName(item.Path);
 
-    Context.SystemFiles.Add(item);
-    Context.SaveChanges();
+    GetDbContext().SystemFiles.Add(item);
+    GetDbContext().SaveChanges();
 
     CreateIdTranslation(oldId, item.Id);
 

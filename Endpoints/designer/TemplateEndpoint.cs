@@ -81,7 +81,10 @@ public partial class TemplateEndpoint : OLabEndpoint
 
     GetLogger().LogInformation(string.Format("found {0} templates", items.Count));
 
-    var dtoList = new MapsMapper(GetLogger()).PhysicalToDto(items);
+    var dtoList = new MapsMapper(
+      GetLogger(),
+      GetDbContext(),
+      GetWikiProvider()).PhysicalToDto(items);
     return new OLabAPIPagedResponse<MapsDto> { Data = dtoList, Remaining = remaining, Count = total };
   }
 
@@ -95,7 +98,10 @@ public partial class TemplateEndpoint : OLabEndpoint
 
     var phys = MapNodeLinks.CreateDefault();
 
-    var dto = new ObjectMapper.MapNodeLinkTemplate(GetLogger()).PhysicalToDto(phys);
+    var dto = new MapNodeLinkTemplate(
+      GetLogger(),
+      GetDbContext(),
+      GetWikiProvider()).PhysicalToDto(phys);
     return dto;
   }
 
@@ -107,8 +113,11 @@ public partial class TemplateEndpoint : OLabEndpoint
   {
     GetLogger().LogInformation($"TemplatesController.Nodes()");
 
-    var phys = Model.MapNodes.CreateDefault();
-    var dto = new ObjectMapper.MapNodeTemplate(GetLogger()).PhysicalToDto(phys);
+    var phys = MapNodes.CreateDefault();
+    var dto = new MapNodeTemplate(
+      GetLogger(),
+      GetDbContext(),
+      GetWikiProvider()).PhysicalToDto(phys);
     return dto;
   }
 }

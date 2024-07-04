@@ -124,7 +124,10 @@ public partial class MapsEndpoint : OLabEndpoint
 
     total = items.Count;
 
-    var tempDtoList = new MapsMapper(GetLogger()).PhysicalToDto(items);
+    var tempDtoList = new MapsMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider()).PhysicalToDto(items);
 
     GetLogger().LogInformation(string.Format("found {0} maps", tempDtoList.Count));
 
@@ -169,8 +172,10 @@ public partial class MapsEndpoint : OLabEndpoint
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
     var mapDto = new MapsFullRelationsMapper(
-      GetLogger(),
-      _wikiTagProvider as WikiTagModuleProvider,
+
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider(),
       false
     ).PhysicalToDto(mapPhys);
 
@@ -225,8 +230,10 @@ public partial class MapsEndpoint : OLabEndpoint
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
     var mapDto = new MapsFullRelationsMapper(
-      GetLogger(),
-      _wikiTagProvider as WikiTagModuleProvider,
+
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider(),
       false
     ).PhysicalToDto(mapPhys);
 
@@ -274,8 +281,9 @@ public partial class MapsEndpoint : OLabEndpoint
       dto = new ScopeObjectCount();
 
     var scopedObjectsPhys = new ScopedObjects(
-      GetLogger(),
-      GetDbContext());
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
 
     // apply scoped objects to the map dto
     await scopedObjectsPhys.AddScopeFromDatabaseAsync(scopeLevel, id);
@@ -319,7 +327,10 @@ public partial class MapsEndpoint : OLabEndpoint
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, id);
     //}
 
-    var dto = new MapsFullMapper(GetLogger()).PhysicalToDto(map);
+    var dto = new MapsFullMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider()).PhysicalToDto(map);
 
     return dto;
   }
@@ -361,10 +372,13 @@ public partial class MapsEndpoint : OLabEndpoint
       .CreateMapWithTemplateAsync(map, template);
 
     var mapLinks = GetDbContext().MapNodeLinks.AsNoTracking().Where(x => x.MapId == map.Id).ToList();
-    var linksDto = new MapNodeLinksMapper(GetLogger()).PhysicalToDto(mapLinks);
+    var linksDto = new MapNodeLinksMapper(GetLogger(), GetDbContext()).PhysicalToDto(mapLinks);
 
     var mapNodes = GetDbContext().MapNodes.AsNoTracking().Where(x => x.MapId == map.Id).ToList();
-    var nodesDto = new MapNodesFullMapper(GetLogger(), _wikiTagProvider).PhysicalToDto(mapNodes);
+    var nodesDto = new MapNodesFullMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider()).PhysicalToDto(mapNodes);
 
     var dto = new ExtendMapResponse
     {
@@ -423,8 +437,10 @@ public partial class MapsEndpoint : OLabEndpoint
     await GetDbContext().SaveChangesAsync();
 
     var dto = new MapsFullRelationsMapper(
-      GetLogger(),
-      _wikiTagProvider as WikiTagModuleProvider
+
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider()
     ).PhysicalToDto(map);
     return dto;
   }
@@ -442,7 +458,10 @@ public partial class MapsEndpoint : OLabEndpoint
   {
     GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutAsync");
 
-    var newMapPhys = new MapsFullMapper(GetLogger()).DtoToPhysical(mapdto);
+    var newMapPhys = new MapsFullMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider()).DtoToPhysical(mapdto);
 
     // test if user has access to map.
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, newMapPhys.Id))
@@ -490,7 +509,10 @@ public partial class MapsEndpoint : OLabEndpoint
     var items = await GetDbContext().MapNodeLinks.Where(x => x.MapId == mapId).ToListAsync();
     GetLogger().LogInformation(string.Format("found {0} MapNodeLinks", items.Count));
 
-    var dtoList = new MapNodeLinksFullMapper(GetLogger()).PhysicalToDto(items);
+    var dtoList = new MapNodeLinksFullMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider()).PhysicalToDto(items);
     return dtoList;
   }
 

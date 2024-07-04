@@ -17,7 +17,7 @@ public class XmlMapQuestionResponseDto : XmlImportDto<XmlMapQuestionResponses>
       Importer.DtoTypes.XmlMapQuestionResponseDto,
       "map_question_response.xml")
   {
-    _mapper = new Api.ObjectMapper.QuestionResponses(logger, GetWikiProvider());
+    _mapper = new Api.ObjectMapper.QuestionResponses(GetLogger(), GetDbContext(), GetWikiProvider());
   }
 
   /// <summary>
@@ -51,15 +51,15 @@ public class XmlMapQuestionResponseDto : XmlImportDto<XmlMapQuestionResponses>
     item.QuestionId = questionDto.GetIdTranslation(GetFileName(), item.QuestionId.Value);
     item.Description = $"Imported from {GetFileName()} id = {oldId}";
 
-    Context.SystemQuestionResponses.Add(item);
-    Context.SaveChanges();
+    GetDbContext().SystemQuestionResponses.Add(item);
+    GetDbContext().SaveChanges();
 
     // don't have a name, so save the id as the new name
     item.Name = item.Id.ToString();
-    Context.SaveChanges();
+    GetDbContext().SaveChanges();
 
     if (CreateIdTranslation(oldId, item.Id))
-      Logger.LogInformation($"  added {_fileName} translation {oldId} -> {item.Id}, question {oldQuestionId} -> {item.QuestionId}");
+      GetLogger().LogInformation($"  added {_fileName} translation {oldId} -> {item.Id}, question {oldQuestionId} -> {item.QuestionId}");
 
     return true;
   }
@@ -73,7 +73,7 @@ public class XmlMapQuestionResponseDto : XmlImportDto<XmlMapQuestionResponses>
   {
     if (_idTranslation.ContainsKey(originalId))
     {
-      Logger.LogInformation($"  replaced {_fileName} translation {originalId} -> {newId.Value}");
+      GetLogger().LogInformation($"  replaced {_fileName} translation {originalId} -> {newId.Value}");
       _idTranslation[originalId] = newId;
       return false;
     }

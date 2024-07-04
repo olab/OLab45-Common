@@ -68,7 +68,10 @@ public partial class CountersEndpoint : OLabEndpoint
       remaining = total - take.Value - skip.Value;
     }
 
-    var dtoList = new ObjectMapper.CounterMapper(GetLogger()).PhysicalToDto(countersPhys);
+    var dtoList = new CounterMapper(
+      GetLogger(),
+      GetDbContext(),
+      GetWikiProvider()).PhysicalToDto(countersPhys);
 
     var maps = GetDbContext().Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
     var nodes = GetDbContext().MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
@@ -93,7 +96,10 @@ public partial class CountersEndpoint : OLabEndpoint
     if (phys == null)
       throw new OLabObjectNotFoundException("SystemCounters", id);
 
-    var dto = new CountersFull(GetLogger()).PhysicalToDto(phys);
+    var dto = new CountersFull(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider()).PhysicalToDto(phys);
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, dto);
@@ -125,7 +131,10 @@ public partial class CountersEndpoint : OLabEndpoint
 
     try
     {
-      var builder = new CountersFull(GetLogger());
+      var builder = new CountersFull(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
       var phys = builder.DtoToPhysical(dto);
 
       phys.UpdatedAt = DateTime.Now;
@@ -161,7 +170,10 @@ public partial class CountersEndpoint : OLabEndpoint
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("CounterMapper", 0);
 
-    var builder = new CountersFull(GetLogger());
+    var builder = new CountersFull(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
     var phys = builder.DtoToPhysical(dto);
 
     phys.CreatedAt = DateTime.Now;
@@ -192,7 +204,10 @@ public partial class CountersEndpoint : OLabEndpoint
     try
     {
       var phys = await GetCounterAsync(id);
-      var dto = new CountersFull(GetLogger()).PhysicalToDto(phys);
+      var dto = new CountersFull(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider()).PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dto);

@@ -38,7 +38,10 @@ public partial class SessionEndpoint : OLabEndpoint
     if (session == null)
       throw new OLabObjectNotFoundException("UserSession", sessionUuid);
 
-    var dto = new SessionMapper(GetLogger()).PhysicalToDto(session);
+    var dto = new SessionMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider()).PhysicalToDto(session);
 
     return dto;
   }

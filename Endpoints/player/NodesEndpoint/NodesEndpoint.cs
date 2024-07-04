@@ -51,7 +51,8 @@ public partial class NodesEndpoint : OLabEndpoint
 
     var builder = new ObjectMapper.MapsNodesFullRelationsMapper(
       GetLogger(),
-      _wikiTagProvider as WikiTagModuleProvider,
+      GetDbContext(),
+      GetWikiProvider(),
       enableWikiTranslation);
     var dto = builder.PhysicalToDto(phys);
 
@@ -87,7 +88,10 @@ public partial class NodesEndpoint : OLabEndpoint
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelNode, id))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, id);
 
-    var builder = new ObjectMapper.MapNodesFullMapper(GetLogger());
+    var builder = new ObjectMapper.MapNodesFullMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
     phys = builder.DtoToPhysical(dto);
 
     GetDbContext().Entry(phys).State = EntityState.Modified;

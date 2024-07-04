@@ -12,11 +12,12 @@ namespace OLab.Api.ObjectMapper;
 
 public class QuestionsFullMapper : OLabMapper<SystemQuestions, QuestionsFullDto>
 {
-  public QuestionsFullMapper(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
-  {
-  }
 
-  public QuestionsFullMapper(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public QuestionsFullMapper(
+    IOLabLogger logger,
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 
@@ -45,7 +46,7 @@ public class QuestionsFullMapper : OLabMapper<SystemQuestions, QuestionsFullDto>
 
   public override SystemQuestions DtoToPhysical(QuestionsFullDto dto, SystemQuestions phys)
   {
-    var builder = new QuestionResponses(_logger, GetWikiProvider(), dto);
+    var builder = new QuestionResponses(_logger, GetDbContext(), GetWikiProvider(), dto);
     phys.SystemQuestionResponses.AddRange(builder.DtoToPhysical(dto.Responses));
 
     return phys;
@@ -71,7 +72,7 @@ public class QuestionsFullMapper : OLabMapper<SystemQuestions, QuestionsFullDto>
       }
     }
 
-    var builder = new QuestionResponses(_logger, GetWikiProvider(), dto);
+    var builder = new QuestionResponses(_logger, GetDbContext(), GetWikiProvider(), dto);
     dto.Responses.AddRange(builder.PhysicalToDto(phys.SystemQuestionResponses.ToList()));
 
     return dto;

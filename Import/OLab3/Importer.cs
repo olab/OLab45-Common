@@ -2,6 +2,7 @@ using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using OLab.Common.Utils;
 using OLab.Data.Interface;
@@ -45,10 +46,10 @@ public class Importer : IImporter
   private readonly IOLabConfiguration _configuration;
   private readonly IDictionary<DtoTypes, XmlDto> _dtos = new Dictionary<DtoTypes, XmlDto>();
   private readonly IOLabLogger Logger;
-  private readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
+  private readonly WikiTagModuleProvider _wikiTagProvider;
   public readonly IFileStorageModule FileStorageModule;
 
-  public IOLabModuleProvider<IWikiTagModule> GetWikiProvider() { return _wikiTagProvider; }
+  public WikiTagModuleProvider GetWikiProvider() { return _wikiTagProvider; }
   public IFileStorageModule GetFileStorageModule() { return FileStorageModule; }
   public XmlDto GetDto(DtoTypes type) { return _dtos[type]; }
   public OLabDBContext GetDbContext() { return _dbContext; }
@@ -68,7 +69,7 @@ public class Importer : IImporter
 
     Logger = logger;
 
-    _wikiTagProvider = wikiTagProvider;
+    _wikiTagProvider = wikiTagProvider as WikiTagModuleProvider;
     FileStorageModule = fileStorageModule;
 
     XmlDto dto = new XmlMapDto(Logger, this);

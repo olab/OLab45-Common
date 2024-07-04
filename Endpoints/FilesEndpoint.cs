@@ -69,7 +69,10 @@ public partial class FilesEndpoint : OLabEndpoint
 
     GetLogger().LogInformation(string.Format("found {0} FilesPhys", Files.Count));
 
-    var dtoList = new Files(GetLogger()).PhysicalToDto(Files);
+    var dtoList = new Files(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider()).PhysicalToDto(Files);
 
     var maps = _mapsReaderWriter.GetMapIdNames();
     var nodes = _nodesReaderWriter.GetNodeIdNames();
@@ -99,7 +102,10 @@ public partial class FilesEndpoint : OLabEndpoint
 
     _fileStorageModule.AttachUrls(phys);
 
-    var dto = new FilesFull(GetLogger()).PhysicalToDto(phys);
+    var dto = new FilesFull(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider()).PhysicalToDto(phys);
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, dto);
@@ -132,7 +138,10 @@ public partial class FilesEndpoint : OLabEndpoint
 
     try
     {
-      var builder = new FilesFull(GetLogger());
+      var builder = new FilesFull(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
       var phys = builder.DtoToPhysical(dto);
 
       phys.UpdatedAt = DateTime.Now;
@@ -158,7 +167,10 @@ public partial class FilesEndpoint : OLabEndpoint
     CancellationToken token)
   {
     GetLogger().LogInformation($"FilesController.PostAsync()");
-    var builder = new FilesFull(GetLogger());
+    var builder = new FilesFull(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dto);
@@ -211,7 +223,10 @@ public partial class FilesEndpoint : OLabEndpoint
       if (phys == null)
         throw new OLabObjectNotFoundException("SystemFiles", id);
 
-      var dto = new FilesFull(GetLogger()).PhysicalToDto(phys);
+      var dto = new FilesFull(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider()).PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dto);

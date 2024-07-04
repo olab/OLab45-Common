@@ -13,13 +13,9 @@ public class MapsFullMapper : OLabMapper<Model.Maps, MapsFullDto>
 {
   public MapsFullMapper(
     IOLabLogger logger,
-    bool enableWikiTranslation = true) : base(logger)
-  {
-  }
-  public MapsFullMapper(
-    IOLabLogger logger,
-    WikiTagModuleProvider tagProvider,
-    bool enableWikiTranslation = true) : base(logger, tagProvider)
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 

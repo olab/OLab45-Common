@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using OLab.Api.Dto;
 using OLab.Api.Model;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper;
@@ -11,8 +12,9 @@ public class ThemesFull : OLabMapper<SystemThemes, ThemesFullDto>
 
   public ThemesFull(
     IOLabLogger logger,
-    IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
-    bool enableWikiTranslation = true) : base(logger, wikiTagProvider)
+    OLabDBContext dbContext,
+    WikiTagModuleProvider tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
     this.enableWikiTranslation = enableWikiTranslation;
   }

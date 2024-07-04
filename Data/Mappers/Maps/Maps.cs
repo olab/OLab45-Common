@@ -1,6 +1,7 @@
 using AutoMapper;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using OLab.Common.Utils;
 using System;
@@ -13,7 +14,9 @@ public class MapsMapper : OLabMapper<Maps, Dto.MapsDto>
 {
   public MapsMapper(
     IOLabLogger logger,
-    bool enableWikiTranslation = true) : base(logger)
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 

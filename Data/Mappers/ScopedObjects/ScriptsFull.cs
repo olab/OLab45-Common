@@ -13,15 +13,12 @@ public class ScriptsFull : OLabMapper<SystemScripts, ScriptsFullDto>
 {
   public ScriptsFull(
     IOLabLogger logger,
-    bool enableWikiTranslation = true) : base(logger)
-  {
-  }
-  public ScriptsFull(
-    IOLabLogger logger,
+    OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,
-    bool enableWikiTranslation = true) : base(logger, tagProvider)
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
+
   public override ScriptsFullDto PhysicalToDto(
     SystemScripts phys,
     ScriptsFullDto source)

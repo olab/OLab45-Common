@@ -15,7 +15,9 @@ public class CounterActionsMapper : OLabMapper<SystemCounterActions, CounterActi
 
   public CounterActionsMapper(
     IOLabLogger logger,
-    bool enableWikiTranslation = true) : base(logger)
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 

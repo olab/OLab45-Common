@@ -46,7 +46,10 @@ public partial class MapsEndpoint : OLabEndpoint
 
     try
     {
-      var builder = new MapNodeLinksFullMapper(GetLogger());
+      var builder = new MapNodeLinksFullMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
       var phys = builder.DtoToPhysical(linkdto);
 
       GetDbContext().Entry(phys).State = EntityState.Modified;

@@ -5,6 +5,8 @@ using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using OLab.Api.WikiTag;
+using OLab.Api.Model;
+using Dawn;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -31,30 +33,32 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   protected readonly Mapper _mapper;
 
   protected IOLabLogger _logger;
-  protected WikiTagModuleProvider _wikiTagModules = null;
+  protected IOLabLogger GetLogger() { return _logger; }
+
+  protected IOLabModuleProvider<IWikiTagModule> _wikiTagModules = null;
+  public WikiTagModuleProvider GetWikiProvider() { return _wikiTagModules as WikiTagModuleProvider; }
+
+  private readonly OLabDBContext _dbContext;
+  protected OLabDBContext GetDbContext() { return _dbContext; }
 
   // used to hold on to id translation between origin system and new one
   protected IDictionary<uint, uint?> _idTranslation = new Dictionary<uint, uint?>();
 
   public virtual P ElementsToPhys(IEnumerable<dynamic> elements, Object source = null) { return default; }
-  public WikiTagModuleProvider GetWikiProvider() { return _wikiTagModules; }
-
-  protected IOLabLogger GetLogger() { return _logger; }
-
-  public OLabMapper(
-    IOLabLogger logger)
-  {
-    _logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
-    _mapper = new Mapper(GetConfiguration());
-  }
 
   public OLabMapper(
     IOLabLogger logger,
-    IOLabModuleProvider<IWikiTagModule> wikiTagProvider)
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> wikiTagModules = null)
   {
-    _logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
+    Guard.Argument(logger).NotNull(nameof(logger));
+    Guard.Argument(dbContext).NotNull(nameof(dbContext));
 
-    _wikiTagModules = wikiTagProvider as WikiTagModuleProvider;
+    _logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
+    _dbContext = dbContext;
+
+    if (wikiTagModules != null)
+      _wikiTagModules = wikiTagModules as WikiTagModuleProvider;
     _mapper = new Mapper(GetConfiguration());
   }
 

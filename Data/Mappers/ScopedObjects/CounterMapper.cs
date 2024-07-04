@@ -22,16 +22,12 @@ public class CounterValueResolver : IValueResolver<SystemCounters, CountersDto, 
 
 public class CounterMapper : OLabMapper<SystemCounters, CountersDto>
 {
-  public CounterMapper(IOLabLogger logger, WikiTagModuleProvider tagProvider) : base(logger, tagProvider)
-  {
 
-  }
-
-  public CounterMapper(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
-  {
-  }
-
-  public CounterMapper(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public CounterMapper(
+    IOLabLogger logger,
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 

@@ -43,7 +43,7 @@ public partial class Import4Endpoint : OLabEndpoint
       GetLogger(),
       _configuration,
       GetDbContext(),
-      _wikiTagProvider,
+      GetWikiProvider(),
       _fileStorageModule);
   }
 

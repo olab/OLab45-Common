@@ -1,6 +1,7 @@
 using AutoMapper;
 using OLab.Api.Common;
 using OLab.Api.Dto;
+using OLab.Api.Model;
 using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 
@@ -10,14 +11,9 @@ public class MapNodeLinksFullMapper : OLabMapper<Model.MapNodeLinks, MapNodeLink
 {
   public MapNodeLinksFullMapper(
     IOLabLogger logger,
-    bool enableWikiTranslation = true) : base(logger)
-  {
-  }
-
-  public MapNodeLinksFullMapper(
-    IOLabLogger logger,
-    WikiTagModuleProvider tagProvider,
-    bool enableWikiTranslation = true) : base(logger, tagProvider)
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 

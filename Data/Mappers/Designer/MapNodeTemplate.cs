@@ -1,5 +1,6 @@
 using OLab.Api.Common;
 using OLab.Api.Dto.Designer;
+using OLab.Api.Model;
 using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 
@@ -9,13 +10,13 @@ public class MapNodeTemplate : OLabMapper<Model.MapNodes, MapNodeTemplateDto>
 {
   protected readonly bool enableWikiTranslation = false;
 
-  public MapNodeTemplate(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+  public MapNodeTemplate(
+    IOLabLogger logger,
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
     this.enableWikiTranslation = enableWikiTranslation;
   }
 
-  public MapNodeTemplate(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
-  {
-    this.enableWikiTranslation = enableWikiTranslation;
-  }
 }

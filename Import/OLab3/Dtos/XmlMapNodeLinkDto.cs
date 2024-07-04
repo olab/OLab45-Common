@@ -18,7 +18,7 @@ public class XmlMapNodeLinkDto : XmlImportDto<XmlMapNodeLinks>
       Importer.DtoTypes.XmlMapNodeLinkDto,
       "map_node_link.xml")
   {
-    _mapper = new MapNodeLinksMapper(logger);
+    _mapper = new MapNodeLinksMapper(logger, GetDbContext());
   }
 
   /// <summary>
@@ -54,8 +54,8 @@ public class XmlMapNodeLinkDto : XmlImportDto<XmlMapNodeLinks>
     item.NodeId1 = nodeDto.GetIdTranslation(GetFileName(), item.NodeId1).Value;
     item.NodeId2 = nodeDto.GetIdTranslation(GetFileName(), item.NodeId2).Value;
 
-    Context.MapNodeLinks.Add(item);
-    Context.SaveChanges();
+    GetDbContext().MapNodeLinks.Add(item);
+    GetDbContext().SaveChanges();
 
     CreateIdTranslation(oldId, item.Id);
 

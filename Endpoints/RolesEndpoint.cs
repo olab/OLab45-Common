@@ -32,7 +32,10 @@ public partial class RolesEndpoint : OLabEndpoint
       fileStorageProvider)
   {
     _readerWriter = RoleReaderWriter.Instance(logger, dbContext);
-    _mapper = new RolesMapper(logger);
+    _mapper = new RolesMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
   }
 
   /// <summary>

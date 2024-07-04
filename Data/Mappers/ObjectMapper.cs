@@ -1,4 +1,8 @@
+using Dawn;
+using Microsoft.Extensions.Logging;
+using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -7,8 +11,14 @@ namespace OLab.Api.ObjectMapper;
 
 public abstract class ObjectMapper<P, D> : object where P : new() where D : new()
 {
-  protected IOLabLogger Logger;
+  protected IOLabLogger _logger;
+  protected IOLabLogger GetLogger() { return _logger; }
+
+  private readonly OLabDBContext _dbContext;
+  protected OLabDBContext GetDbContext() { return _dbContext; }
+
   protected IOLabModuleProvider<IWikiTagModule> _wikiTagModules = null;
+  public WikiTagModuleProvider GetWikiProvider() { return _wikiTagModules as WikiTagModuleProvider; }
 
   // used to hold on to id translation between origin system and new one
   protected IDictionary<uint, uint?> _idTranslation = new Dictionary<uint, uint?>();
@@ -18,17 +28,16 @@ public abstract class ObjectMapper<P, D> : object where P : new() where D : new(
   public virtual P ElementsToPhys(IEnumerable<dynamic> elements, Object source = null) { return default; }
 
   public ObjectMapper(
-    IOLabLogger logger)
-  {
-    Logger = OLabLogger.CreateNew<ObjectMapper<P, D>>(logger);
-  }
-
-  public ObjectMapper(
     IOLabLogger logger,
-    IOLabModuleProvider<IWikiTagModule> wikiTagProvider)
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> wikiTagProvider = null)
   {
-    Logger = OLabLogger.CreateNew<ObjectMapper<P, D>>(logger);
-    _wikiTagModules = wikiTagProvider;
+    Guard.Argument(logger).NotNull(nameof(logger));
+    Guard.Argument(dbContext).NotNull(nameof(dbContext));
+
+    _logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
+    _dbContext = dbContext;
+    _wikiTagModules = wikiTagProvider as WikiTagModuleProvider;
   }
 
   public virtual D GetDto(Object source = null)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +11,15 @@ namespace OLab.Data.BusinessObjects;
 
 public class DynamicScopedObjects
 {
-  private readonly IOLabLogger Logger;
-  private readonly OLabDBContext dbContext;
+  protected IOLabLogger _logger;
+  protected IOLabLogger GetLogger() { return _logger; }
+
+  private readonly OLabDBContext _dbContext;
+  protected OLabDBContext GetDbContext() { return _dbContext; }
+
+  protected IOLabModuleProvider<IWikiTagModule> _wikiTagModules = null;
+  public WikiTagModuleProvider GetWikiProvider() { return _wikiTagModules as WikiTagModuleProvider; }
+
   private readonly uint serverId;
   private readonly uint mapId;
   private readonly uint nodeId;
@@ -30,12 +38,15 @@ public class DynamicScopedObjects
   public DynamicScopedObjects(
     IOLabLogger logger,
     OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> wikiTagModules,
     uint serverId,
     uint mapId,
     uint nodeId)
   {
-    Logger = logger;
-    this.dbContext = dbContext;
+    _logger = logger;
+    _dbContext = dbContext;
+    _wikiTagModules = wikiTagModules;
+
     this.serverId = serverId;
     this.mapId = mapId;
     this.nodeId = nodeId;
@@ -51,7 +62,7 @@ public class DynamicScopedObjects
   /// <returns></returns>
   public async Task GetDynamicScopedObjectsAsync()
   {
-    var phys = new ScopedObjects(Logger, dbContext);
+    var phys = new ScopedObjects(GetLogger(), GetDbContext(), GetWikiProvider());
 
     var scopedObjects = await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelServer, serverId);
     ServerCounters = scopedObjects.CountersPhys;
@@ -73,21 +84,21 @@ public class DynamicScopedObjects
   /// <returns>void</returns>
   private async Task<IList<SystemCounters>> ProcessNodeCounters(IList<SystemCounters> physList)
   {
-    var counterActions = await dbContext.SystemCounterActions.Where(x =>
+    var counterActions = await GetDbContext().SystemCounterActions.Where(x =>
       (x.ImageableId == nodeId) &&
-      (x.ImageableType == Api.Utils.Constants.ScopeLevelNode) &&
+      (x.ImageableType == Constants.ScopeLevelNode) &&
       (x.OperationType == "open")).ToListAsync();
 
-    Logger.LogDebug($"Found {counterActions.Count} counterActions records for node {nodeId} ");
+    GetLogger().LogDebug($"Found {counterActions.Count} counterActions records for node {nodeId} ");
 
     foreach (var counterAction in counterActions)
     {
       var phys = physList.FirstOrDefault(x => x.Id == counterAction.CounterId);
       if (phys == null)
-        Logger.LogError($"Enable to lookup counter {counterAction.CounterId} in action {counterAction.Id}");
+        GetLogger().LogError($"Enable to lookup counter {counterAction.CounterId} in action {counterAction.Id}");
 
       else if (counterAction.ApplyFunctionToCounter(phys))
-        Logger.LogDebug($"Updated counter '{phys.Name}' ({phys.Id}) with function '{counterAction.Expression}'. now = {phys.Value}");
+        GetLogger().LogDebug($"Updated counter '{phys.Name}' ({phys.Id}) with function '{counterAction.Expression}'. now = {phys.Value}");
     }
 
     return physList;

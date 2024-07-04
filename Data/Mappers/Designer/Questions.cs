@@ -9,11 +9,11 @@ namespace OLab.Api.ObjectMapper.Designer;
 
 public class Questions : OLabMapper<SystemQuestions, ScopedObjectDto>
 {
-  public Questions(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
-  {
-  }
-
-  public Questions(IOLabLogger logger, WikiTagModuleProvider tagProvider, bool enableWikiTranslation = true) : base(logger, tagProvider)
+  public Questions(
+    IOLabLogger logger,
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 

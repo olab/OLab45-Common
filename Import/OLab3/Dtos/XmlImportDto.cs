@@ -1,5 +1,6 @@
 using OLab.Api.Importer;
 using OLab.Api.Model;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using OLab.Common.Utils;
 using OLab.Data.Interface;
@@ -21,11 +22,13 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   protected dynamic _phys;
   protected readonly string _fileName;
   protected readonly Importer _importer;
-  protected OLabDBContext Context;
   protected int CurrentRecordIndex = 0;
 
-  private readonly IOLabModuleProvider<IWikiTagModule> _tagProvider;
-  public IOLabModuleProvider<IWikiTagModule> GetWikiProvider() { return _tagProvider; }
+  private readonly WikiTagModuleProvider _tagProvider;
+  public WikiTagModuleProvider GetWikiProvider() { return _tagProvider; }
+
+  private readonly OLabDBContext _dbContext;
+  protected OLabDBContext GetDbContext() { return _dbContext; }
 
   protected readonly P _modelObject = new P();
 
@@ -56,8 +59,8 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
     _importer = importer;
     _fileName = fileName;
 
-    _tagProvider = GetImporter().GetWikiProvider();
-    Context = GetImporter().GetDbContext();
+    _tagProvider = GetImporter().GetWikiProvider() as WikiTagModuleProvider;
+    _dbContext = GetImporter().GetDbContext();
   }
 
   public virtual string GetLoggerString(IEnumerable<dynamic> elements)
@@ -74,13 +77,13 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   {
     if (_idTranslation.ContainsKey(originalId))
     {
-      Logger.LogInformation($"  replaced {_fileName} translation id {originalId} -> {newId.Value}");
+      GetLogger().LogInformation($"  replaced {_fileName} translation id {originalId} -> {newId.Value}");
       _idTranslation[originalId] = newId;
       return false;
     }
 
     _idTranslation.Add(originalId, newId);
-    Logger.LogInformation($"  added {_fileName} translation id {originalId} -> {newId.Value}");
+    GetLogger().LogInformation($"  added {_fileName} translation id {originalId} -> {newId.Value}");
 
     return true;
   }
@@ -127,7 +130,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
     {
 
       var moduleFileName = $"{importFileDirectory}{GetFileModule().GetFolderSeparator()}{GetFileName()}";
-      Logger.LogInformation($"Loading {moduleFileName}");
+      GetLogger().LogInformation($"Loading {moduleFileName}");
 
       var physicalFilePath = GetFileModule().BuildPath(
         OLabFileStorageModule.ImportRoot,
@@ -145,7 +148,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
       }
       else
       {
-        Logger.LogInformation($"File {importFileDirectory}{GetFileModule().GetFolderSeparator()}{GetFileName()} does not exist");
+        GetLogger().LogInformation($"File {importFileDirectory}{GetFileModule().GetFolderSeparator()}{GetFileName()} does not exist");
         return false;
       }
 
@@ -163,15 +166,15 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
             var elements = (IEnumerable<dynamic>)innerElements.Elements();
             xmlImportElementSets.Add(elements);
             if (displayProgressMessage)
-              Logger.LogInformation($"  loaded {GetLoggerString(elements)}");
+              GetLogger().LogInformation($"  loaded {GetLoggerString(elements)}");
           }
           catch (Exception ex)
           {
-            Logger.LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
+            GetLogger().LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
           }
         }
 
-        Logger.LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+        GetLogger().LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
       }
 
       // delete data file
@@ -185,7 +188,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
     catch (Exception ex)
     {
       if (!ex.Message.Contains("File not found"))
-        Logger.LogError(ex, $"load error: {ex.Message}");
+        GetLogger().LogError(ex, $"load error: {ex.Message}");
       rc = false;
     }
 
@@ -199,7 +202,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// <returns>Success/Failure</returns>
   public override bool SaveToDatabase(string importFolderName)
   {
-    Logger.LogInformation($"Saving {xmlImportElementSets.Count()} {GetFileName()} objects");
+    GetLogger().LogInformation($"Saving {xmlImportElementSets.Count()} {GetFileName()} objects");
 
     var recordIndex = 1;
     foreach (var elements in xmlImportElementSets)
@@ -210,7 +213,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
       }
       catch (Exception ex)
       {
-        Logger.LogError($"Error {GetFileName()} record #{recordIndex}: {ex.Message}");
+        GetLogger().LogError($"Error {GetFileName()} record #{recordIndex}: {ex.Message}");
       }
 
       recordIndex++;

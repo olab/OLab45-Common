@@ -36,7 +36,8 @@ public partial class NodesEndpoint : OLabEndpoint
     var phys = new ScopedObjects(
       GetLogger(),
       GetDbContext(),
-    _fileStorageModule);
+      GetWikiProvider(),
+      _fileStorageModule);
     await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelNode, node.Id);
 
     phys.ConstantsPhys.Add(new SystemConstants
@@ -69,7 +70,11 @@ public partial class NodesEndpoint : OLabEndpoint
       Value = Encoding.ASCII.GetBytes(DateTime.UtcNow.ToString() + " UTC")
     });
 
-    var builder = new ObjectMapper.ScopedObjectsMapper(GetLogger(), _wikiTagProvider, enableWikiTranslation);
+    var builder = new ObjectMapper.ScopedObjectsMapper(
+      GetLogger(), 
+      GetDbContext(),
+      GetWikiProvider(), 
+      enableWikiTranslation);
 
     var dto = builder.PhysicalToDto(phys);
     return dto;

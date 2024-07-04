@@ -1,26 +1,37 @@
 using OLab.Api.Dto;
 using OLab.Api.Model;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
+using OLab.Data.ReaderWriters;
 
 namespace OLab.Api.ObjectMapper;
 
 public class MapNodesFullMapper : OLabMapper<MapNodes, MapNodesFullDto>
 {
   protected readonly bool enableWikiTranslation = false;
+  private readonly QuestionReaderWriter _reader;
 
   public MapNodesFullMapper(
     IOLabLogger logger,
-    bool enableWikiTranslation = true) : base(logger)
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
     this.enableWikiTranslation = enableWikiTranslation;
   }
 
   public MapNodesFullMapper(
     IOLabLogger logger,
-    IOLabModuleProvider<IWikiTagModule> tagProvider,
-    bool enableWikiTranslation = true) : base(logger, tagProvider)
+    OLabDBContext dbContext,
+    WikiTagModuleProvider tagProvider,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider )
   {
     this.enableWikiTranslation = enableWikiTranslation;
+
+    _reader = new QuestionReaderWriter(
+      GetLogger(), 
+      GetDbContext(), 
+      tagProvider);
   }
 
   public override MapNodes DtoToPhysical(MapNodesFullDto dto, MapNodes source)
@@ -34,10 +45,11 @@ public class MapNodesFullMapper : OLabMapper<MapNodes, MapNodesFullDto>
     dto.Height = phys.Height.HasValue ? phys.Height : MapNodesMapper.DefaultHeight;
 
     if (enableWikiTranslation)
+    {
       dto.Text = GetWikiProvider().Translate(phys.Text);
+    }
     else
       dto.Text = phys.Text;
-    dto.Width = phys.Width.HasValue ? phys.Width : MapNodesMapper.DefaultWidth;
 
     dto.Width = phys.Width.HasValue ? phys.Width : MapNodesMapper.DefaultWidth;
     dto.Color = phys.Rgb;

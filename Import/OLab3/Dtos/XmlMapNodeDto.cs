@@ -15,7 +15,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
 
   public XmlMapNodeDto(IOLabLogger logger, Importer importer) : base(logger, importer, Importer.DtoTypes.XmlMapNodeDto, "map_node.xml")
   {
-    _mapper = new Api.ObjectMapper.MapNodesMapper(logger);
+    _mapper = new Api.ObjectMapper.MapNodesMapper(GetLogger(), GetDbContext(), GetWikiProvider());
     _configuration = importer.GetConfiguration();
   }
 
@@ -60,8 +60,8 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
 
     item.Info = $"\nImported from map_node.xml. id = {oldId}";
 
-    Context.MapNodes.Add(item);
-    Context.SaveChanges();
+    GetDbContext().MapNodes.Add(item);
+    GetDbContext().SaveChanges();
 
     CreateIdTranslation(oldId, item.Id);
     GetModel().Data.Add(item);
@@ -81,7 +81,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     // replace all VPD with CONST in node text
     var dto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto) as XmlMapVpdElementDto;
 
-    var wiki = new VpdWikiTag(Logger, _configuration);
+    var wiki = new VpdWikiTag(GetLogger(), _configuration);
     while (wiki.HaveWikiTag(item.Text))
     {
       try
@@ -89,17 +89,17 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
         var id = Convert.ToUInt32(wiki.GetWikiArgument1());
         var newId = dto.GetIdTranslation(GetFileName(), id);
 
-        var newWiki = new VpdWikiTag(Logger, _configuration);
+        var newWiki = new VpdWikiTag(GetLogger(), _configuration);
         newWiki.Set("CONST", newId.Value.ToString());
 
-        Logger.LogInformation($"    replacing '{wiki.GetWiki()}' -> '{newWiki.GetWiki()}'");
+        GetLogger().LogInformation($"    replacing '{wiki.GetWiki()}' -> '{newWiki.GetWiki()}'");
         item.Text = item.Text.Replace(wiki.GetWiki(), newWiki.GetWiki());
 
         rc = true;
       }
       catch (KeyNotFoundException)
       {
-        Logger.LogError($"ERROR: MapNode '{item.Title}': could not resolve: '{wiki.GetWiki()}'");
+        GetLogger().LogError($"ERROR: MapNode '{item.Title}': could not resolve: '{wiki.GetWiki()}'");
 
         item.Text = item.Text.Replace(wiki.GetWiki(), $"{wiki.GetUnquotedWiki()}: could not resolve");
 
@@ -122,16 +122,16 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     // replace all VPD with CONST in node text
     var dto = GetImporter().GetDto(Importer.DtoTypes.XmlMapAvatarDto) as XmlMapAvatarDto;
 
-    var wiki = new AvatarWikiTag(Logger, _configuration);
+    var wiki = new AvatarWikiTag(GetLogger(), _configuration);
     while (wiki.HaveWikiTag(item.Text))
     {
       var id = Convert.ToUInt16(wiki.GetWikiArgument1());
       var newId = dto.GetIdTranslation(GetFileName(), id);
 
-      var newWiki = new AvatarWikiTag(Logger, _configuration);
+      var newWiki = new AvatarWikiTag(GetLogger(), _configuration);
       newWiki.Set("MR", newId.Value.ToString());
 
-      Logger.LogInformation($"    replacing '{wiki.GetWiki()}' -> '{newWiki.GetWiki()}'");
+      GetLogger().LogInformation($"    replacing '{wiki.GetWiki()}' -> '{newWiki.GetWiki()}'");
       item.Text = item.Text.Replace(wiki.GetWiki(), newWiki.GetWiki());
 
       rc = true;
@@ -148,7 +148,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     var dto = GetImporter().GetDto(dtoType);
     var mappedWikiTags = new Dictionary<string, string>();
 
-    var wiki = (T)Activator.CreateInstance(typeof(T), Logger, _configuration);
+    var wiki = (T)Activator.CreateInstance(typeof(T), GetLogger(), _configuration);
     while (wiki.HaveWikiTag(item.Text))
     {
       var id = Convert.ToUInt32(wiki.GetWikiArgument1());
@@ -157,7 +157,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
       {
         var newId = dto.GetIdTranslation(GetFileName(), id);
 
-        var newWiki = (T)Activator.CreateInstance(typeof(T), Logger, _configuration);
+        var newWiki = (T)Activator.CreateInstance(typeof(T), GetLogger(), _configuration);
         newWiki.Set(wiki.GetWikiType().ToLower(), newId.Value.ToString());
 
         item.Text = item.Text.Replace(wiki.GetWiki(), newWiki.GetWiki());
@@ -166,7 +166,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
       }
       catch (KeyNotFoundException)
       {
-        Logger.LogError($"ERROR: MapNode '{item.Title}': could not resolve: '{wiki.GetWiki()}'");
+        GetLogger().LogError($"ERROR: MapNode '{item.Title}': could not resolve: '{wiki.GetWiki()}'");
 
         item.Text = item.Text.Replace(wiki.GetWiki(), $"{wiki.GetUnquotedWiki()}: could not resolve");
 
@@ -177,7 +177,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
 
     foreach (var key in mappedWikiTags.Keys)
     {
-      Logger.LogInformation($"    remapping '{mappedWikiTags[key]}' -> {key.ToUpper()}");
+      GetLogger().LogInformation($"    remapping '{mappedWikiTags[key]}' -> {key.ToUpper()}");
       item.Text = item.Text.Replace(key, key.ToUpper());
     }
 
@@ -193,14 +193,14 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     var dto = GetImporter().GetDto(Importer.DtoTypes.XmlMapElementDto);
     var mappedWikiTags = new Dictionary<string, string>();
 
-    var wiki = new MediaResourceWikiTag(Logger, _configuration);
+    var wiki = new MediaResourceWikiTag(GetLogger(), _configuration);
     while (wiki.HaveWikiTag(item.Text))
     {
       var id = Convert.ToUInt32(wiki.GetWikiArgument1());
 
       var newId = dto.GetIdTranslation(GetFileName(), id);
 
-      var newWiki = new MediaResourceWikiTag(Logger, _configuration);
+      var newWiki = new MediaResourceWikiTag(GetLogger(), _configuration);
       newWiki.Set(wiki.GetWikiType().ToLower(), newId.Value.ToString());
 
       item.Text = item.Text.Replace(wiki.GetWiki(), newWiki.GetWiki());
@@ -210,7 +210,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
 
     foreach (var key in mappedWikiTags.Keys)
     {
-      Logger.LogInformation($"    remapping '{key.ToUpper()}' -> '{mappedWikiTags[key]}'");
+      GetLogger().LogInformation($"    remapping '{key.ToUpper()}' -> '{mappedWikiTags[key]}'");
       item.Text = item.Text.Replace(key, mappedWikiTags[key]);
     }
 
@@ -225,14 +225,14 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     var dto = GetImporter().GetDto(Importer.DtoTypes.XmlMapQuestionDto);
     var mappedWikiTags = new Dictionary<string, string>();
 
-    var wiki = new QuestionWikiTag(Logger, _configuration);
+    var wiki = new QuestionWikiTag(GetLogger(), _configuration);
     while (wiki.HaveWikiTag(item.Text))
     {
       var id = Convert.ToUInt32(wiki.GetWikiArgument1());
 
       var newId = dto.GetIdTranslation(GetFileName(), id);
 
-      var newWiki = new QuestionWikiTag(Logger, _configuration);
+      var newWiki = new QuestionWikiTag(GetLogger(), _configuration);
       newWiki.Set(wiki.GetWikiType().ToLower(), newId.Value.ToString());
 
       item.Text = item.Text.Replace(wiki.GetWiki(), newWiki.GetWiki());
@@ -242,7 +242,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
 
     foreach (var key in mappedWikiTags.Keys)
     {
-      Logger.LogInformation($"    remapping '{key.ToUpper()}' -> '{mappedWikiTags[key]}'");
+      GetLogger().LogInformation($"    remapping '{key.ToUpper()}' -> '{mappedWikiTags[key]}'");
       item.Text = item.Text.Replace(key, mappedWikiTags[key]);
     }
 
@@ -257,7 +257,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     var dto = GetImporter().GetDto(Importer.DtoTypes.XmlMapCounterDto);
     var mappedWikiTags = new Dictionary<string, string>();
 
-    var wiki = new CounterWikiTag(Logger, _configuration);
+    var wiki = new CounterWikiTag(GetLogger(), _configuration);
     while (wiki.HaveWikiTag(item.Text))
     {
 
@@ -265,7 +265,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
 
       var newId = dto.GetIdTranslation(GetFileName(), id);
 
-      var newWiki = new CounterWikiTag(Logger, _configuration);
+      var newWiki = new CounterWikiTag(GetLogger(), _configuration);
       newWiki.Set(wiki.GetWikiType().ToLower(), newId.Value.ToString());
 
       item.Text = item.Text.Replace(wiki.GetWiki(), newWiki.GetWiki());
@@ -275,7 +275,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
 
     foreach (var key in mappedWikiTags.Keys)
     {
-      Logger.LogInformation($"    remapping '{key.ToUpper()}' -> '{mappedWikiTags[key]}'");
+      GetLogger().LogInformation($"    remapping '{key.ToUpper()}' -> '{mappedWikiTags[key]}'");
       item.Text = item.Text.Replace(key, mappedWikiTags[key]);
     }
 
@@ -290,7 +290,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     var dto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto);
     var mappedWikiTags = new Dictionary<string, string>();
 
-    var wiki = new ConstantWikiTag(Logger, _configuration);
+    var wiki = new ConstantWikiTag(GetLogger(), _configuration);
     while (wiki.HaveWikiTag(item.Text))
     {
 
@@ -298,7 +298,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
 
       var newId = dto.GetIdTranslation(GetFileName(), id);
 
-      var newWiki = new ConstantWikiTag(Logger, _configuration);
+      var newWiki = new ConstantWikiTag(GetLogger(), _configuration);
       newWiki.Set(wiki.GetWikiType().ToLower(), newId.Value.ToString());
 
       item.Text = item.Text.Replace(wiki.GetWiki(), newWiki.GetWiki());
@@ -308,7 +308,7 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
 
     foreach (var key in mappedWikiTags.Keys)
     {
-      Logger.LogInformation($"    remapping '{key.ToUpper()}' -> '{mappedWikiTags[key]}'");
+      GetLogger().LogInformation($"    remapping '{key.ToUpper()}' -> '{mappedWikiTags[key]}'");
       item.Text = item.Text.Replace(key, mappedWikiTags[key]);
     }
 

@@ -50,7 +50,7 @@ public class XmlManifestDto : XmlImportDto<XmlManifest>
         }
         catch (Exception ex)
         {
-          Logger.LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
+          GetLogger().LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
         }
 
       }

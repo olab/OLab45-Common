@@ -6,7 +6,11 @@ namespace OLab.Api.ObjectMapper;
 
 public class Scripts : OLabMapper<SystemScripts, ScriptsDto>
 {
-  public Scripts(IOLabLogger logger, bool enableWikiTranslation = true) : base(logger)
+  public Scripts(
+    IOLabLogger logger,
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 }

@@ -14,17 +14,19 @@ public class MapGroupsMapper : OLabMapper<MapGroups, MapGroupsDto>
   private readonly OLabDBContext dbContext;
 
   public MapGroupsMapper(
-  IOLabLogger logger,
-  OLabDBContext dbContext,
-  bool enableWikiTranslation = true) : base(logger)
+    IOLabLogger logger,
+    OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
     this.dbContext = dbContext;
   }
 
   public MapGroupsMapper(
     IOLabLogger logger,
+    OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,
-    bool enableWikiTranslation = true) : base(logger, tagProvider)
+    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }
 

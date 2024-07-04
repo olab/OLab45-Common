@@ -73,7 +73,10 @@ public partial class QuestionsEndpoint : OLabEndpoint
 
     GetLogger().LogInformation(string.Format("found {0} questions", physList.Count));
 
-    var dtoList = new Questions(GetLogger(), _wikiTagProvider).PhysicalToDto(physList);
+    var dtoList = new Questions(
+      GetLogger(), 
+      GetDbContext(), 
+      GetWikiProvider()).PhysicalToDto(physList);
 
     var maps = GetDbContext().Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
     var nodes = GetDbContext().MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
@@ -102,7 +105,10 @@ public partial class QuestionsEndpoint : OLabEndpoint
       throw new OLabObjectNotFoundException("QuestionsPhys", id);
 
     var phys = await GetDbContext().SystemQuestions.Include("SystemQuestionResponses").FirstAsync(x => x.Id == id);
-    var builder = new QuestionsFullMapper(GetLogger());
+    var builder = new QuestionsFullMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
     var dto = builder.PhysicalToDto(phys);
 
     // test if user has access to object
@@ -137,7 +143,10 @@ public partial class QuestionsEndpoint : OLabEndpoint
 
     try
     {
-      var builder = new QuestionsFullMapper(GetLogger());
+      var builder = new QuestionsFullMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
       var phys = builder.DtoToPhysical(dto);
 
       phys.UpdatedAt = DateTime.Now;
@@ -173,7 +182,10 @@ public partial class QuestionsEndpoint : OLabEndpoint
     if (accessResult is UnauthorizedResult)
       throw new OLabUnauthorizedException("QuestionsPhys", 0);
 
-    var builder = new QuestionsFullMapper(GetLogger());
+    var builder = new QuestionsFullMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
     var phys = builder.DtoToPhysical(dto);
 
     phys.CreatedAt = DateTime.Now;
@@ -205,7 +217,10 @@ public partial class QuestionsEndpoint : OLabEndpoint
     try
     {
       var phys = await GetQuestionAsync(id);
-      var dto = new Questions(GetLogger(), _wikiTagProvider).PhysicalToDto(phys);
+      var dto = new Questions(
+        GetLogger(), 
+        GetDbContext(), 
+        GetWikiProvider()).PhysicalToDto(phys);
 
       // test if user has access to object
       var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dto);

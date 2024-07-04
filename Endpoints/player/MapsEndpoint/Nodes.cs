@@ -283,7 +283,10 @@ public partial class MapsEndpoint : OLabEndpoint
 
     try
     {
-      var builder = new ObjectMapper.MapNodesFullMapper(GetLogger());
+      var builder = new ObjectMapper.MapNodesFullMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider());
       var phys = builder.DtoToPhysical(dto);
 
       // patch up node size, just in case it's not set properly
