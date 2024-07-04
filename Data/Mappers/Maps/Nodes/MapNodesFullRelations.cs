@@ -27,7 +27,7 @@ public class MapsNodesFullRelationsMapper : OLabMapper<Model.MapNodes, MapsNodes
     else
       dto.Text = phys.Text;
 
-    dto.Width = phys.Width.HasValue ? phys.Width : ObjectMapper.MapNodesMapper.DefaultWidth;
+    dto.Width = phys.Width.HasValue ? phys.Width : MapNodesMapper.DefaultWidth;
     dto.MapNodeLinks = new MapNodeLinksMapper(
       _logger,
       GetWikiProvider()).PhysicalToDto(phys.MapNodeLinksNodeId1Navigation.ToList());

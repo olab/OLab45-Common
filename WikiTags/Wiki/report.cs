@@ -7,7 +7,8 @@ public class ReportWikiTag : WikiTag0ArgumentModule
 {
   public ReportWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration, "OlabReportTag")
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
+    SetHtmlElementName("OlabReportTag");
   }
 }

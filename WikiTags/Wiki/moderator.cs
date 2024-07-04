@@ -7,7 +7,8 @@ public class ModeratorWikiTag : WikiTag1ArgumentModule
 {
   public ModeratorWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration, "OlabModeratorTag")
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
+    SetHtmlElementName("OlabModeratorTag");
   }
 }

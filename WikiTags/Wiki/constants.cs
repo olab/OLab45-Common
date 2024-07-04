@@ -7,7 +7,8 @@ public class ConstantWikiTag : WikiTag1ArgumentModule
 {
   public ConstantWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration, "OlabConstantTag")
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
+    SetHtmlElementName("OlabConstantTag");
   }
 }

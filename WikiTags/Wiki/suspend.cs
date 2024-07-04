@@ -7,7 +7,8 @@ public class SuspendWikiTag : WikiTag0ArgumentModule
 {
   public SuspendWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration, "OlabSuspendTag")
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
+    SetHtmlElementName("OlabSuspendTag");
   }
 }

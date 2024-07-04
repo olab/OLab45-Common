@@ -5,6 +5,7 @@ using OLab.Api.Common;
 using OLab.Api.Model;
 using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,7 +58,7 @@ public class QuestionReaderWriter : ReaderWriter
   /// <returns>Revised node text string</returns>
   public string DisambiguateWikiQuestions(string source)
   {
-    var questionTagModule = _tagProvider.GetModule("QU");
+    var wikiMatches = WikiTagUtils.GetWikiTags("QU", source);
 
     return source;
   }

@@ -7,7 +7,8 @@ public class CounterWikiTag : WikiTag1ArgumentModule
 {
   public CounterWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration, "OlabCounterTag")
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
+    SetHtmlElementName("OlabCounterTag");
   }
 }

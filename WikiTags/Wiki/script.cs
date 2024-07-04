@@ -7,7 +7,8 @@ public class ScriptWikiTag : WikiTag1ArgumentModule
 {
   public ScriptWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration, "OlabScriptTag")
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
+    SetHtmlElementName("OlabScriptTag");
   }
 }

@@ -7,7 +7,8 @@ public class InfoWikiTag : WikiTag1ArgumentModule
 {
   public InfoWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration, "OlabInfoTag")
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
+    SetHtmlElementName("OlabInfoTag");
   }
 }

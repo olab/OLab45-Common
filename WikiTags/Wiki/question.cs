@@ -8,8 +8,9 @@ public class QuestionWikiTag : WikiTag1ArgumentModule
 {
   public QuestionWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration, "OlabQuestionTag")
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
+    SetHtmlElementName("OlabQuestionTag");
   }
 
   public override string Translate(string source)

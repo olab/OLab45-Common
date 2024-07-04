@@ -7,7 +7,8 @@ public class DownloadWikiTag : WikiTag1ArgumentModule
 {
   public DownloadWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration, "OlabDownloadTag")
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
+    SetHtmlElementName("OlabDownloadTag");
   }
 }

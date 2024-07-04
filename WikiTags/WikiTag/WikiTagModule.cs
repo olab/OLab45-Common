@@ -1,7 +1,9 @@
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace OLab.Api.Common;
@@ -11,7 +13,7 @@ public abstract class WikiTagModule : IWikiTagModule
   protected List<string> wikiTagPatterns = new();
   protected string _wikiType;
   protected string _wiki;
-  private readonly string _htmlElementName;
+  private string _htmlElementName;
   protected readonly IOLabConfiguration _configuration;
 
   protected int wikiStart = 0;
@@ -20,14 +22,12 @@ public abstract class WikiTagModule : IWikiTagModule
 
   public WikiTagModule(
     IOLabLogger logger,
-    IOLabConfiguration configuration,
-    string htmlElementName)
+    IOLabConfiguration configuration)
   {
     var t = GetType();
     var attribute =
         (OLabModuleAttribute)Attribute.GetCustomAttribute(t, typeof(OLabModuleAttribute));
     _wikiType = attribute.Name;
-    _htmlElementName = htmlElementName;
 
     Logger = logger;
     _configuration = configuration;
@@ -38,6 +38,12 @@ public abstract class WikiTagModule : IWikiTagModule
   public string GetHtmlElementName() { return _htmlElementName; }
   public abstract string Translate(string source);
   protected abstract string BuildWikiTagHTMLElement();
+
+  public virtual void SetHtmlElementName(string elementName) 
+  { 
+    _htmlElementName = elementName;
+    wikiTagPatterns = WikiTagUtils.GetTagPatterns(GetWikiType()).ToList();
+  }
 
   public string GetUnquotedWiki()
   {

@@ -88,7 +88,7 @@ public class OLabModuleProvider<T> : IOLabModuleProvider<T> where T : class
       availableTypes.AddRange(currentAssembly.GetTypes());
 
     // get a list of objects that implement the desired interface AND 
-    // have the WikiTagModuleAttribute
+    // have the OLabModule attribute
     var typeList = availableTypes.FindAll(delegate (Type t)
     {
       var interfaceTypes = new List<Type>(t.GetInterfaces());

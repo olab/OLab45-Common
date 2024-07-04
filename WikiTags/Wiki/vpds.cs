@@ -7,7 +7,8 @@ public class VpdWikiTag : WikiTag1ArgumentModule
 {
   public VpdWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration, "")
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
+    SetHtmlElementName("");
   }
 }

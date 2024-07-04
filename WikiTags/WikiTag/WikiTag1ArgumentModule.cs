@@ -14,20 +14,14 @@ public abstract class WikiTag1ArgumentModule : WikiTagModule
 
   public WikiTag1ArgumentModule(
     IOLabLogger logger,
-    IOLabConfiguration configuration,
-    string htmlElementName) : base(logger, configuration, htmlElementName)
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
-    wikiTagPatterns = WikiTagUtils.GetTagPatterns(GetWikiType()).ToList();
+  }
 
-    //wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:[0-9]*\\]\\]");
-    //wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:\"[.A-Za-z0-9\\- ]*\"\\]\\]");
-    //wikiTagPatterns.Add($"\\[\\[{GetWikiType()}:[.A-Za-z0-9\\- ]*\\]\\]");
-
+  public override void SetHtmlElementName(string elementName)
+  {
+    base.SetHtmlElementName(elementName);
     wikiTagNamePatterns = WikiTagUtils.GetTagNamePatterns().ToList();
-
-    //wikiTagNamePatterns.Add("\"[.A-Za-z0-9\\- ]*\"");
-    //wikiTagNamePatterns.Add("[.A-Za-z0-9\\- ]*");
-    //wikiTagNamePatterns.Add("[0-9]*");
   }
 
   public string Set(string wikiType, string wikiId)

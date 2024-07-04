@@ -6,7 +6,8 @@ using OLab.Common.Interfaces;
 public class SessionWikiTag : WikiTag0ArgumentModule
 {
   public SessionWikiTag(IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration, "OlabSessionTag")
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
+    SetHtmlElementName("OlabSessionTag");
   }
 }

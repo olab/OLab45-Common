@@ -7,7 +7,8 @@ public class MediaResourceWikiTag : WikiTag1ArgumentModule
 {
   public MediaResourceWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration, "OlabMediaResourceTag")
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
+    SetHtmlElementName("OlabMediaResourceTag");
   }
 }

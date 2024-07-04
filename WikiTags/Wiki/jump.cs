@@ -7,7 +7,8 @@ public class JumpWikiTag : WikiTag1ArgumentModule
 {
   public JumpWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration, "OlabJumpTag")
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
+    SetHtmlElementName("OlabJumpTag");
   }
 }

@@ -7,7 +7,8 @@ public class LinksWikiTag : WikiTag0ArgumentModule
 {
   public LinksWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration, "OlabLinksTag")
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
+    SetHtmlElementName("OlabLinksTag");
   }
 }

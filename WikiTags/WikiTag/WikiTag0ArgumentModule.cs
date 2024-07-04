@@ -1,4 +1,5 @@
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
@@ -8,10 +9,8 @@ public abstract class WikiTag0ArgumentModule : WikiTagModule
 {
   public WikiTag0ArgumentModule(
     IOLabLogger logger,
-    IOLabConfiguration configuration,
-    string htmlElementName) : base(logger, configuration, htmlElementName)
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
-    wikiTagPatterns.Add($"\\[\\[{GetWikiType()}\\]\\]");
   }
 
   protected override string BuildWikiTagHTMLElement()

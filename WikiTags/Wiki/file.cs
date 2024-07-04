@@ -7,7 +7,8 @@ public class FileWikiTag : WikiTag1ArgumentModule
 {
   public FileWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration, "OlabFileTag")
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
+    SetHtmlElementName("OlabFileTag");
   }
 }

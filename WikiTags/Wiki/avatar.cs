@@ -7,8 +7,9 @@ public class AvatarWikiTag : WikiTag1ArgumentModule
 {
   public AvatarWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration, "OlabAvatarTag")
+    IOLabConfiguration configuration) : base(logger, configuration)
   {
+    SetHtmlElementName("OlabAvatarTag");
   }
 
 }
