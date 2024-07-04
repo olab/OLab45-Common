@@ -50,6 +50,23 @@ public abstract class WikiTag1ArgumentModule : WikiTagModule
     _wiki = $"[[{GetWikiType()}:{GetWikiId()}]]";
   }
 
+  public string GetWikiArgument1(string wikiTag)
+  {
+    var source = wikiTag[(wikiTag.IndexOf(':') + 1)..].Replace("]]", "");
+    foreach (var pattern in wikiTagNamePatterns)
+    {
+      var regex = new Regex(pattern);
+      var match = regex.Match(source);
+      if (match.Success)
+      {
+        wikiTagIdPart = match.Value.Replace("\"", "");
+        return wikiTagIdPart;
+      }
+    }
+
+    return null;
+  }
+
   public string GetWikiArgument1()
   {
     var source = GetWiki()[(GetWiki().IndexOf(':') + 1)..].Replace("]]", "");

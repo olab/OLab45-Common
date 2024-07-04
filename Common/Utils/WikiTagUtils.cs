@@ -34,8 +34,10 @@ public class WikiTagUtils
   /// <param name="wikiTagPatterns">Regex tag patterns for match</param>
   /// <param name="source">source string</param>
   /// <returns>All matches</returns>
-  public static IList<string> GetWikiTags(IList<string> wikiTagPatterns, string source)
+  public static IList<string> GetWikiTags(string wikiTag, string source)
   {
+    var wikiTagPatterns = GetTagPatterns(wikiTag);
+
     var matches = new List<string>();
 
     foreach (var pattern in wikiTagPatterns)
@@ -45,5 +47,22 @@ public class WikiTagUtils
     }
 
     return matches.Distinct().ToList();
+  }
+
+  public static string GetWikiArgument1(string wikiTag)
+  {
+    var source = wikiTag[(wikiTag.IndexOf(':') + 1)..].Replace("]]", "");
+    foreach (var pattern in GetTagNamePatterns())
+    {
+      var regex = new Regex(pattern);
+      var match = regex.Match(source);
+      if (match.Success)
+      {
+        var wikiTagIdPart = match.Value.Replace("\"", "");
+        return wikiTagIdPart;
+      }
+    }
+
+    return null;
   }
 }
