@@ -17,7 +17,7 @@ public class Constants : OLabMapper<SystemConstants, ConstantsDto>
   public Constants(
     IOLabLogger logger,
     OLabDBContext dbContext,
-    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    IOLabModuleProvider<IWikiTagModule> tagProvider,
     bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }

@@ -13,7 +13,7 @@ public class Counters : OLabMapper<SystemCounters, ScopedObjectDto>
   public Counters(
     IOLabLogger logger,
     OLabDBContext dbContext,
-    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    IOLabModuleProvider<IWikiTagModule> tagProvider,
     bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }

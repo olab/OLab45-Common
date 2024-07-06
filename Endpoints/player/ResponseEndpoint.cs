@@ -53,6 +53,10 @@ public partial class ResponseEndpoint : OLabEndpoint
             ProcessMultipleResponseQuestion(question, counterDto, body);
 
           else if (question.EntryTypeId == 12)
+            // handle questions that have a drop down
+            ProcessSingleResponseQuestion(question, counterDto, body);
+
+          else if (question.EntryTypeId == 5)
             // handle questions that have a slider
             ProcessSingleResponseQuestion(question, counterDto, body);
 

@@ -13,7 +13,7 @@ public class DynamicScopedObjects : ObjectMapper<OLab.Data.BusinessObjects.Dynam
   public DynamicScopedObjects(
     IOLabLogger logger,
     OLabDBContext dbContext,
-    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    IOLabModuleProvider<IWikiTagModule> tagProvider,
     bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }

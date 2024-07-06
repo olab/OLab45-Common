@@ -14,8 +14,7 @@ public class UserGroupRolesMapper : OLabMapper<UserGrouproles, UserGroupRolesDto
   public UserGroupRolesMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
-    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base(logger, dbContext)
   {
     this.dbContext = dbContext;
   }

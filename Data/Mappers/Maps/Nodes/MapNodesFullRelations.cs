@@ -4,12 +4,14 @@ using OLab.Common.Interfaces;
 using System.Linq;
 using OLab.Api.WikiTag;
 using OLab.Api.Model;
+using OLab.Data.ReaderWriters;
 
 namespace OLab.Api.ObjectMapper;
 
 public class MapsNodesFullRelationsMapper : OLabMapper<Model.MapNodes, MapsNodesFullRelationsDto>
 {
   protected readonly bool enableWikiTranslation = false;
+  private readonly QuestionReaderWriter _reader;
 
   public MapsNodesFullRelationsMapper(
     IOLabLogger logger,
@@ -18,15 +20,22 @@ public class MapsNodesFullRelationsMapper : OLabMapper<Model.MapNodes, MapsNodes
     bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
     this.enableWikiTranslation = enableWikiTranslation;
+
+    _reader = new QuestionReaderWriter(
+      GetLogger(),
+      GetDbContext(),
+      tagProvider);
   }
 
   public override MapsNodesFullRelationsDto PhysicalToDto(Model.MapNodes phys, MapsNodesFullRelationsDto dto)
   {
     dto.Height = phys.Height.HasValue ? phys.Height : MapNodesMapper.DefaultHeight;
+    dto.Text = phys.Text;
 
     if (enableWikiTranslation)
     {
-      dto.Text = GetWikiProvider().Translate(phys.Text);
+      dto.Text = _reader.DisambiguateWikiQuestions(dto.Text);
+      dto.Text = GetWikiProvider().Translate(dto.Text);
     }
     else
       dto.Text = phys.Text;

@@ -16,8 +16,8 @@ public class QuestionResponses : OLabMapper<SystemQuestionResponses, QuestionRes
   public QuestionResponses(
     IOLabLogger logger,
     OLabDBContext dbContext,
+    IOLabModuleProvider<IWikiTagModule> tagProvider,
     QuestionsFullDto parentQuestion = null,
-    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
     bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
     ParentQuestionDto = parentQuestion;

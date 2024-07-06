@@ -1,12 +1,7 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.CodeAnalysis.Elfie.Model.Strings;
-using Microsoft.EntityFrameworkCore;
-using OLab.Api.Common;
+﻿using Microsoft.EntityFrameworkCore;
 using OLab.Api.Model;
-using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using OLab.Common.Utils;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -38,6 +33,23 @@ public class QuestionReaderWriter : ReaderWriter
   /// </summary>
   /// <param name="id">Role Id</param>
   /// <returns>Roles</returns>
+  public SystemQuestions Get(string source)
+  {
+    SystemQuestions phys;
+
+    if (uint.TryParse(source, out var id))
+      phys = GetDbContext().SystemQuestions.FirstOrDefault(x => x.Id == id);
+    else
+      phys = GetDbContext().SystemQuestions.FirstOrDefault(x => x.Name == source);
+
+    return phys;
+  }
+
+  /// <summary>
+  /// Get question by id or name
+  /// </summary>
+  /// <param name="id">Role Id</param>
+  /// <returns>Roles</returns>
   public async Task<SystemQuestions> GetAsync(string source)
   {
     SystemQuestions phys;
@@ -59,6 +71,36 @@ public class QuestionReaderWriter : ReaderWriter
   public string DisambiguateWikiQuestions(string source)
   {
     var wikiMatches = WikiTagUtils.GetWikiTags("QU", source);
+    foreach (var wikiMatch in wikiMatches)
+    {
+      var idName = WikiTagUtils.GetWikiArgument1(wikiMatch);
+      GetLogger().LogInformation($"disambiguating question '{wikiMatch}'");
+
+      var questionPhys = Get(idName);
+      if (questionPhys == null)
+      {
+        GetLogger().LogError($"unable to disambiguate question '{wikiMatch}'");
+        continue;
+      }
+
+      string newWikiType = "QU";
+      switch ( questionPhys.EntryTypeId )
+      {
+        case 1: newWikiType = "QUST"; break;
+        case 2: newWikiType = "QUMT"; break;
+        case 3: newWikiType = "QUMP"; break;
+        case 4: newWikiType = "QUSP"; break;
+        case 5: newWikiType = "QUSD"; break;
+        case 6: newWikiType = "QUDG"; break;
+        case 12:newWikiType = "QUDP"; break;
+        default: break;
+      }
+
+      string newWikiTag = wikiMatch.Replace("QU:", $"{newWikiType}:");
+      GetLogger().LogInformation($"disambiguating entry type {questionPhys.EntryTypeId}: '{wikiMatch}' => '{newWikiTag}'");
+
+      source = source.Replace(wikiMatch, newWikiTag);
+    }
 
     return source;
   }

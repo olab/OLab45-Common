@@ -42,7 +42,6 @@ public abstract class WikiTagModule : IWikiTagModule
   public virtual void SetHtmlElementName(string elementName) 
   { 
     _htmlElementName = elementName;
-    wikiTagPatterns = WikiTagUtils.GetTagPatterns(GetWikiType()).ToList();
   }
 
   public string GetUnquotedWiki()

@@ -13,7 +13,7 @@ public class FilesFull : OLabMapper<SystemFiles, FilesFullDto>
   public FilesFull(
     IOLabLogger logger,
     OLabDBContext dbContext,
-    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    IOLabModuleProvider<IWikiTagModule> tagProvider,
     bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }

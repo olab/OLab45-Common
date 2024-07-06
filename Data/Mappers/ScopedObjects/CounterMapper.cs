@@ -26,7 +26,7 @@ public class CounterMapper : OLabMapper<SystemCounters, CountersDto>
   public CounterMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
-    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    IOLabModuleProvider<IWikiTagModule> tagProvider,
     bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }

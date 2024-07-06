@@ -18,7 +18,7 @@ public class MapNodesMapper : OLabMapper<Model.MapNodes, MapNodesDto>
   public MapNodesMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
-    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
+    IOLabModuleProvider<IWikiTagModule> tagProvider,
     bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }

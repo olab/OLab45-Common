@@ -21,6 +21,7 @@ public abstract class WikiTag1ArgumentModule : WikiTagModule
   public override void SetHtmlElementName(string elementName)
   {
     base.SetHtmlElementName(elementName);
+    wikiTagPatterns = WikiTagUtils.GetOneArgumentTagPatterns(GetWikiType()).ToList();
     wikiTagNamePatterns = WikiTagUtils.GetTagNamePatterns().ToList();
   }
 
@@ -106,6 +107,7 @@ public abstract class WikiTag1ArgumentModule : WikiTagModule
     xml.SetAttributeValue("class", string.Join(" ", classes));
     xml.SetAttributeValue("props", "{props}");
     xml.SetAttributeValue("name", $"{wikiTagIdPart}");
+    xml.SetAttributeValue("id", $"{_wikiType}:{wikiTagIdPart}");
 
     doc.Add(xml);
 

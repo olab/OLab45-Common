@@ -19,7 +19,14 @@ public class WikiTagUtils
     "[0-9]*" };
   }
 
-  public static IList<string> GetTagPatterns(string wikiTag)
+  public static IList<string> GetZeroArgumentTagPatterns(string wikiTag)
+  {
+    return new string[] {
+      $"\\[\\[{wikiTag}\\]\\]"
+    };
+  }
+
+  public static IList<string> GetOneArgumentTagPatterns(string wikiTag)
   {
     return new string[] {
       $"\\[\\[{wikiTag}:[0-9]*\\]\\]",
@@ -36,7 +43,7 @@ public class WikiTagUtils
   /// <returns>All matches</returns>
   public static IList<string> GetWikiTags(string wikiTag, string source)
   {
-    var wikiTagPatterns = GetTagPatterns(wikiTag);
+    var wikiTagPatterns = GetOneArgumentTagPatterns(wikiTag);
 
     var matches = new List<string>();
 

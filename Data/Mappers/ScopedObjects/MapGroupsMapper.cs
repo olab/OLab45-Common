@@ -16,8 +16,7 @@ public class MapGroupsMapper : OLabMapper<MapGroups, MapGroupsDto>
   public MapGroupsMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
-    IOLabModuleProvider<IWikiTagModule> tagProvider = null,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base(logger, dbContext)
   {
     this.dbContext = dbContext;
   }
