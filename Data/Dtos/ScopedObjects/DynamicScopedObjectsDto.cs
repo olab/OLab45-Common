@@ -42,6 +42,13 @@ public class NodeDynamicScopedObjects : DynamicScopedObject
   }
 }
 
+public class CounterDynamicScopedObjects : DynamicScopedObject
+{
+  public CounterDynamicScopedObjects()
+  {
+  }
+}
+
 public class DynamicScopedObjectsDto
 {
   [JsonProperty("newPlay")]
@@ -53,30 +60,35 @@ public class DynamicScopedObjectsDto
   [JsonProperty("checksum")]
   public string Checksum { get; set; }
 
-  [JsonProperty("server")]
-  public ServerDynamicScopedObjects Server { get; set; }
+  //[JsonProperty("server")]
+  //public ServerDynamicScopedObjects Server { get; set; }
 
-  [JsonProperty("map")]
-  public MapDynamicScopedObjects Map { get; set; }
+  //[JsonProperty("map")]
+  //public MapDynamicScopedObjects Map { get; set; }
 
-  [JsonProperty("node")]
-  public NodeDynamicScopedObjects Node { get; set; }
+  //[JsonProperty("node")]
+  //public NodeDynamicScopedObjects Node { get; set; }
 
+  [JsonProperty("counters")]
+  public CounterDynamicScopedObjects Counters{ get; set; }
+  
   [JsonProperty("nodesVisitedList")]
   public IList<uint> NodesVisited { get; set; }
 
   public DynamicScopedObjectsDto()
   {
     UpdatedAt = DateTime.Now;
-    Server = new ServerDynamicScopedObjects();
-    Map = new MapDynamicScopedObjects();
-    Node = new NodeDynamicScopedObjects();
+    //Server = new ServerDynamicScopedObjects();
+    //Map = new MapDynamicScopedObjects();
+    //Node = new NodeDynamicScopedObjects();
+    Counters = new CounterDynamicScopedObjects();
     NodesVisited = new List<uint>();  
   }
 
   public bool IsEmpty()
   {
-    return (Map == null) && (Node == null) && (Server == null);
+    return Counters.Counters.Count == 0;
+    //return (Map == null) && (Node == null) && (Server == null);
   }
 
   /// <summary>
@@ -137,13 +149,16 @@ public class DynamicScopedObjectsDto
   {
     var counterValues = UpdatedAt.ToString() + "/";
 
-    foreach (var counter in Server.Counters.OrderBy(x => x.Id))
-      counterValues += counter.Value + "/";
+    //foreach (var counter in Server.Counters.OrderBy(x => x.Id))
+    //  counterValues += counter.Value + "/";
 
-    foreach (var counter in Node.Counters.OrderBy(x => x.Id))
-      counterValues += counter.Value + "/";
+    //foreach (var counter in Node.Counters.OrderBy(x => x.Id))
+    //  counterValues += counter.Value + "/";
 
-    foreach (var counter in Map.Counters.OrderBy(x => x.Id))
+    //foreach (var counter in Map.Counters.OrderBy(x => x.Id))
+    //  counterValues += counter.Value + "/";
+
+    foreach (var counter in Counters.Counters.OrderBy(x => x.Id))
       counterValues += counter.Value + "/";
 
     return counterValues;
@@ -162,12 +177,13 @@ public class DynamicScopedObjectsDto
 
     if (string.IsNullOrEmpty(scopeType))
     {
-      dto = Server.Counters.FirstOrDefault(x => x.Id == id);
-      if (dto == null)
-        dto = Map.Counters.FirstOrDefault(x => x.Id == id);
-      if (dto == null)
-        dto = Node.Counters.FirstOrDefault(x => x.Id == id);
+      //dto = Server.Counters.FirstOrDefault(x => x.Id == id);
+      //if (dto == null)
+      //  dto = Map.Counters.FirstOrDefault(x => x.Id == id);
+      //if (dto == null)
+      //  dto = Node.Counters.FirstOrDefault(x => x.Id == id);
 
+      dto = Counters.Counters.FirstOrDefault(x => x.Id == id);
     }
 
     return dto;
@@ -193,14 +209,17 @@ public class DynamicScopedObjectsDto
     message += $"Text:   {plainText}{Environment.NewLine}";
     message += $"Bytes:  {GetPlainTextBytes(plainText)}{Environment.NewLine}";
 
-    foreach (var counter in Server.Counters)
-      message += $"Server: {counter}{Environment.NewLine}";
+    //foreach (var counter in Server.Counters)
+    //  message += $"Server: {counter}{Environment.NewLine}";
 
-    foreach (var counter in Node.Counters)
-      message += $"Node:   {counter}{Environment.NewLine}";
+    //foreach (var counter in Node.Counters)
+    //  message += $"Node:   {counter}{Environment.NewLine}";
 
-    foreach (var counter in Map.Counters)
-      message += $"Map:    {counter}{Environment.NewLine}";
+    //foreach (var counter in Map.Counters)
+    //  message += $"Map:    {counter}{Environment.NewLine}";
+
+    foreach (var counter in Counters.Counters)
+      message += $"Counter:    {counter}{Environment.NewLine}";
 
     message += $"Update  {UpdatedAt.ToString()}{Environment.NewLine}";
     message += $"ChkSum  {Checksum}{Environment.NewLine}";
@@ -224,12 +243,14 @@ public class DynamicScopedObjectsDto
       return;
     }
 
-    if (counterDto.ImageableType == Utils.Constants.ScopeLevelMap)
-      responseCounterDto = Map.Counters.FirstOrDefault(x => x.Id == counterDto.Id);
-    else if (counterDto.ImageableType == Utils.Constants.ScopeLevelNode)
-      responseCounterDto = Node.Counters.FirstOrDefault(x => x.Id == counterDto.Id);
-    else if (counterDto.ImageableType == Utils.Constants.ScopeLevelServer)
-      responseCounterDto = Server.Counters.FirstOrDefault(x => x.Id == counterDto.Id);
+    //if (counterDto.ImageableType == Utils.Constants.ScopeLevelMap)
+    //  responseCounterDto = Map.Counters.FirstOrDefault(x => x.Id == counterDto.Id);
+    //else if (counterDto.ImageableType == Utils.Constants.ScopeLevelNode)
+    //  responseCounterDto = Node.Counters.FirstOrDefault(x => x.Id == counterDto.Id);
+    //else if (counterDto.ImageableType == Utils.Constants.ScopeLevelServer)
+    //  responseCounterDto = Server.Counters.FirstOrDefault(x => x.Id == counterDto.Id);
+
+    responseCounterDto = Counters.Counters.FirstOrDefault(x => x.Id == counterDto.Id);
 
     if (responseCounterDto == null)
       logger.LogError($"unable to update counter {counterDto.Name}({counterDto.Id}) value. not found in response");
