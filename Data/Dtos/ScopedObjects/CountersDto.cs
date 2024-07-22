@@ -28,6 +28,12 @@ public class CountersDto : ScopedObjectDto
     Value = value;
     UpdatedAt = DateTime.Now;
   }
+
+  public CountersDto()
+  {
+    ObjectType = "counter";
+  }
+
   public override string ToString()
   {
     return $" '{Name}({Id})' = {Value}";

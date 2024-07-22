@@ -6,4 +6,9 @@ public class QuestionsDto : ScopedObjectDto
 {
   [JsonProperty("questionType")]
   public uint EntryTypeId { get; set; }
+
+  public QuestionsDto()
+  {
+    ObjectType = "question";
+  }
 }

@@ -6,6 +6,9 @@ namespace OLab.Api.Dto;
 
 public class ScopedObjectDto
 {
+  [JsonProperty("type")]
+  public string ObjectType;
+
   [JsonProperty("id")]
   public uint? Id { get; set; }
   [JsonProperty("name")]
