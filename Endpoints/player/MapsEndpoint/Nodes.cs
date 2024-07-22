@@ -167,8 +167,10 @@ public partial class MapsEndpoint : OLabEndpoint
     else
     {
       // apply any node open counter actions
-      await ProcessNodeOpenCountersAsync(nodeId, body.Map.Counters);
-      dto.DynamicObjects.Map = body.Map;
+      await ProcessNodeOpenCountersAsync(
+        nodeId, 
+        body.Counters.Counters.Where( x => x.ImageableType == Utils.Constants.ScopeLevelMap).ToList());
+      dto.DynamicObjects.Counters = body.Counters;
     }
 
     var session = OLabSession.CreateInstance(

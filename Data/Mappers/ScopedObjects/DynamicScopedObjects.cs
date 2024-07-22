@@ -43,21 +43,21 @@ public class DynamicScopedObjects : ObjectMapper<OLab.Data.BusinessObjects.Dynam
       GetLogger(), 
       GetDbContext(), 
       GetWikiProvider()).PhysicalToDto(phys.ServerCounters);
-    dto.Server.Counters.AddRange(dtoCountersList);
+    //dto.Server.Counters.AddRange(dtoCountersList);
     dto.Counters.Counters.AddRange(dtoCountersList);
 
     dtoCountersList = new CounterMapper(
       GetLogger(), 
       GetDbContext(), 
       GetWikiProvider()).PhysicalToDto(phys.MapCounters);
-    dto.Map.Counters.AddRange(dtoCountersList);
+    //dto.Map.Counters.AddRange(dtoCountersList);
     dto.Counters.Counters.AddRange(dtoCountersList);
 
     dtoCountersList = new CounterMapper(
       GetLogger(), 
       GetDbContext(), 
       GetWikiProvider()).PhysicalToDto(phys.NodeCounters);
-    dto.Node.Counters.AddRange(dtoCountersList);
+    //dto.Node.Counters.AddRange(dtoCountersList);
     dto.Counters.Counters.AddRange(dtoCountersList);
 
     // var dtoConstantsList = new ConstantsObjectMapper(Logger, GetWikiProvider()).PhysicalToDto( server.ConstantsPhys );
