@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data;
@@ -167,9 +168,23 @@ public partial class MapsEndpoint : OLabEndpoint
     else
     {
       // apply any node open counter actions
-      await ProcessNodeOpenCountersAsync(
+      var newCounters = await ProcessNodeOpenCountersAsync(
         nodeId, 
         body.Counters.Counters.Where( x => x.ImageableType == Utils.Constants.ScopeLevelMap).ToList());
+
+      // update body counter with any that might have just changed
+      foreach ( var newCounter in newCounters )
+      {
+        var targetCounter = 
+          body.Counters.Counters.FirstOrDefault( x => x.Id == newCounter.Id);
+
+        if (targetCounter != null)
+        {
+          targetCounter.SetValue(newCounter.Value);
+          targetCounter.UpdatedAt = DateTime.UtcNow;
+        }
+      }
+
       dto.DynamicObjects.Counters = body.Counters;
     }
 
