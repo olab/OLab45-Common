@@ -48,8 +48,22 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
 
   public OLabMapper(
     IOLabLogger logger,
+    OLabDBContext dbContext)
+  {
+    Guard.Argument(logger).NotNull(nameof(logger));
+    Guard.Argument(dbContext).NotNull(nameof(dbContext));
+
+    _logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
+    _dbContext = dbContext;
+
+    _mapper = new Mapper(GetConfiguration());
+  }
+
+
+  public OLabMapper(
+    IOLabLogger logger,
     OLabDBContext dbContext,
-    IOLabModuleProvider<IWikiTagModule> wikiTagModules = null)
+    IOLabModuleProvider<IWikiTagModule> wikiTagModules)
   {
     Guard.Argument(logger).NotNull(nameof(logger));
     Guard.Argument(dbContext).NotNull(nameof(dbContext));
