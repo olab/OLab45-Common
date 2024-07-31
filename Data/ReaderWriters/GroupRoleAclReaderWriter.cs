@@ -45,20 +45,25 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   /// <param name="groupId">Group id</param>
   public async Task CreateForGroupAsync(uint groupId)
   {
-    var groupRoleAclPhys = new GrouproleAcls
-    {
-      ImageableId = 0,
-      ImageableType = Api.Utils.Constants.ScopeLevelMap,
-      GroupId = groupId,
-      RoleId = null,
-      Acl2 = 5
-    };
-
-    await CreateAsync(groupRoleAclPhys);
 
     var rolePhys = await _roleReaderWriter.GetAsync("author");
     if (rolePhys == null)
       throw new OLabObjectNotFoundException("Roles", "author");
+
+    var groupRoleAclPhys = new GrouproleAcls
+    {
+      ImageableId = 0,
+      ImageableType = Api.Utils.Constants.ScopeLevelNode,
+      GroupId = groupId,
+      RoleId = rolePhys.Id,
+      Acl2 = 7
+    };
+
+    await CreateAsync(groupRoleAclPhys);
+
+    rolePhys = await _roleReaderWriter.GetAsync("learner");
+    if (rolePhys == null)
+      throw new OLabObjectNotFoundException("Roles", "learner");
 
     groupRoleAclPhys = new GrouproleAcls
     {
@@ -66,10 +71,22 @@ public class GroupRoleAclReaderWriter : ReaderWriter
       ImageableType = Api.Utils.Constants.ScopeLevelMap,
       GroupId = groupId,
       RoleId = rolePhys.Id,
-      Acl2 = 7
+      Acl2 = 5
     };
 
     await CreateAsync(groupRoleAclPhys);
+
+    groupRoleAclPhys = new GrouproleAcls
+    {
+      ImageableId = 0,
+      ImageableType = Api.Utils.Constants.ScopeLevelNode,
+      GroupId = groupId,
+      RoleId = rolePhys.Id,
+      Acl2 = 5
+    };
+
+    await CreateAsync(groupRoleAclPhys, true);
+
 
     rolePhys = await _roleReaderWriter.GetAsync("superuser");
     if (rolePhys == null)
@@ -78,18 +95,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     groupRoleAclPhys = new GrouproleAcls
     {
       ImageableId = 0,
-      ImageableType = Api.Utils.Constants.ScopeLevelMap,
-      GroupId = groupId,
-      RoleId = rolePhys.Id,
-      Acl2 = 7
-    };
-
-    await CreateAsync(groupRoleAclPhys);
-
-    groupRoleAclPhys = new GrouproleAcls
-    {
-      ImageableId = 0,
-      ImageableType = "Import",
+      ImageableType = "*",
       GroupId = groupId,
       RoleId = rolePhys.Id,
       Acl2 = 7
@@ -126,32 +132,6 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     };
 
     await CreateAsync(groupRoleAclPhys);
-
-    rolePhys = await _roleReaderWriter.GetAsync("learner");
-    if (rolePhys == null)
-      throw new OLabObjectNotFoundException("Roles", "learner");
-
-    groupRoleAclPhys = new GrouproleAcls
-    {
-      ImageableId = 0,
-      ImageableType = Api.Utils.Constants.ScopeLevelMap,
-      GroupId = groupId,
-      RoleId = rolePhys.Id,
-      Acl2 = 5
-    };
-
-    await CreateAsync(groupRoleAclPhys);
-
-    groupRoleAclPhys = new GrouproleAcls
-    {
-      ImageableId = 0,
-      ImageableType = Api.Utils.Constants.ScopeLevelNode,
-      GroupId = groupId,
-      RoleId = rolePhys.Id,
-      Acl2 = 1
-    };
-
-    await CreateAsync(groupRoleAclPhys, true);
 
   }
 

@@ -42,6 +42,8 @@ public class GroupReaderWriter : ReaderWriter
 
       // add default ACL's for new group
       await GroupRoleAclReaderWriter.Instance(GetLogger(), GetDbContext()).CreateForGroupAsync(newPhys.Id);
+      GetDbContext().SaveChanges();
+
     }
     else
       newPhys = existingPhys;
