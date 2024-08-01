@@ -1,6 +1,7 @@
 ﻿using OLab.Api.Data.Exceptions;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -140,6 +141,24 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   /// </summary>
   /// <param name="groupRoles">List of user group/roles</param>
   /// <returns>List of group role acl records</returns>
+  public IList<GrouproleAcls> Get( uint? groupId, uint? roleId, string objectType, uint? objectId )
+  {
+    var groupRoleAcls = new List<GrouproleAcls>();
+    var groupAcls = GetDbContext()
+      .GrouproleAcls.Where(x => 
+        x.GroupId == groupId && 
+        x.RoleId == roleId && 
+        x.ImageableType == objectType && 
+        x.ImageableId == objectId).ToList();
+
+    return groupRoleAcls;
+  }
+
+  /// <summary>
+  /// Get list of group role acls for a set of user group roles
+  /// </summary>
+  /// <param name="groupRoles">List of user group/roles</param>
+  /// <returns>List of group role acl records</returns>
   public IList<GrouproleAcls> GetForUser(IList<UserGrouproles> groupRoles)
   {
     var groupRoleAcls = new List<GrouproleAcls>();
@@ -148,5 +167,20 @@ public class GroupRoleAclReaderWriter : ReaderWriter
       groupRoleAcls.AddRange(GetDbContext().GrouproleAcls.Where(x => x.GroupId == groupRole.GroupId && x.RoleId == groupRole.RoleId).ToList());
 
     return groupRoleAcls;
+  }
+
+  /// <summary>
+  /// GEt list of group role acls for a specific group
+  /// </summary>
+  /// <param name="groupId">Group id to load</param>
+  /// <returns>List of group role acl records</returns>
+  public IList<GrouproleAcls> GetForGroup(uint? groupId)
+  {
+    var groupAcls = GetDbContext()
+      .GrouproleAcls
+      .Where(x => (x.GroupId == groupId) || ( !x.GroupId.HasValue ));
+
+    return groupAcls.ToList();
+
   }
 }

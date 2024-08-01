@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
@@ -12,21 +13,21 @@ namespace OLab.Api.Model;
 [MySqlCollation("utf8mb3_general_ci")]
 public partial class MapGroups
 {
-  [Key]
-  [Column("id", TypeName = "int(10) unsigned")]
-  public uint Id { get; set; }
+    [Key]
+    [Column("id", TypeName = "int(10) unsigned")]
+    public uint Id { get; set; }
 
-  [Column("map_id", TypeName = "int(10) unsigned")]
-  public uint MapId { get; set; }
+    [Column("map_id", TypeName = "int(10) unsigned")]
+    public uint MapId { get; set; }
 
-  [Column("group_id", TypeName = "int(10) unsigned")]
-  public uint GroupId { get; set; }
+    [Column("group_id", TypeName = "int(10) unsigned")]
+    public uint GroupId { get; set; }
 
-  [ForeignKey("GroupId")]
-  [InverseProperty("MapGroups")]
-  public virtual Groups Group { get; set; }
+    [ForeignKey("GroupId")]
+    [InverseProperty("MapGroups")]
+    public virtual Groups Group { get; set; }
 
-  [ForeignKey("MapId")]
-  [InverseProperty("MapGroups")]
-  public virtual Maps Map { get; set; }
+    [ForeignKey("MapId")]
+    [InverseProperty("MapGroups")]
+    public virtual Maps Map { get; set; }
 }

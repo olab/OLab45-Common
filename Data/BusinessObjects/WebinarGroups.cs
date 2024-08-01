@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
@@ -9,13 +11,13 @@ namespace OLab.Api.Model;
 [MySqlCollation("utf8mb3_general_ci")]
 public partial class WebinarGroups
 {
-  [Key]
-  [Column("id", TypeName = "int(10) unsigned")]
-  public uint Id { get; set; }
+    [Key]
+    [Column("id", TypeName = "int(10) unsigned")]
+    public uint Id { get; set; }
 
-  [Column("webinar_id", TypeName = "int(10) unsigned")]
-  public uint WebinarId { get; set; }
+    [Column("webinar_id", TypeName = "int(10) unsigned")]
+    public uint WebinarId { get; set; }
 
-  [Column("group_id", TypeName = "int(10) unsigned")]
-  public uint GroupId { get; set; }
+    [Column("group_id", TypeName = "int(10) unsigned")]
+    public uint GroupId { get; set; }
 }

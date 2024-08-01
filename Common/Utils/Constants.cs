@@ -16,4 +16,6 @@ public static class Constants
 
   public const string AuthTokenIssuer = "OLab4";
 
+  public const string OperationImport = "Import";
+
 }

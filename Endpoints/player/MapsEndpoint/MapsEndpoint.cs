@@ -136,8 +136,11 @@ public partial class MapsEndpoint : OLabEndpoint
 
     foreach (var tempDtoItem in tempDtoList)
     {
-      if (await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, tempDtoItem.Id))
-        dtoList.Add(tempDtoItem);
+      if (await auth.HasAccessAsync(
+        IOLabAuthorization.AclBitMaskRead, 
+        Utils.Constants.ScopeLevelMap, 
+        tempDtoItem.Id))
+          dtoList.Add(tempDtoItem);
     }
 
     GetLogger().LogInformation(string.Format("have access to {0} maps", dtoList.Count));
@@ -160,6 +163,8 @@ public partial class MapsEndpoint : OLabEndpoint
     var mapPhys = await GetDbContext().Maps
       .Include(map => map.MapNodes)
       .Include(map => map.MapNodeLinks)
+      .Include(map => map.MapGroups).ThenInclude( y => y.Group)
+
       .AsNoTracking()
       .FirstOrDefaultAsync(
         x => x.Id == mapId,
@@ -196,7 +201,8 @@ public partial class MapsEndpoint : OLabEndpoint
       NodeLinkCount = mapDto.MapNodeLinks.Count,
       Author = author,
       CreatedAt = createdAt,
-      Abstract = mapDto.Map.Abstract
+      Abstract = mapDto.Map.Abstract,
+      Groups = mapDto.Map.MapGroups.Select( x => x.GroupName).ToList()
     };
 
     return dto;

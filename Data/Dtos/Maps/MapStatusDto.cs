@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace OLab.Api.Dto;
 
@@ -34,6 +35,7 @@ public class MapStatusDto
   public int NodeLinkCount { get; set; }
   public string Author { get; set; }
   public string Abstract { get; set; }
+  public IList<string> Groups { get; set; }
   public DateTime CreatedAt { get; set; }
   public ScopeObjectCount? Total { get; set; }
   public ScopeObjectCount? Server { get; set; }

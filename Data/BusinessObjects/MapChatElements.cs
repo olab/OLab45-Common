@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
@@ -11,27 +12,27 @@ namespace OLab.Api.Model;
 [MySqlCollation("utf8mb3_general_ci")]
 public partial class MapChatElements
 {
-  [Key]
-  [Column("id", TypeName = "int(10) unsigned")]
-  public uint Id { get; set; }
+    [Key]
+    [Column("id", TypeName = "int(10) unsigned")]
+    public uint Id { get; set; }
 
-  [Column("chat_id", TypeName = "int(10) unsigned")]
-  public uint ChatId { get; set; }
+    [Column("chat_id", TypeName = "int(10) unsigned")]
+    public uint ChatId { get; set; }
 
-  [Required]
-  [Column("question", TypeName = "text")]
-  public string Question { get; set; }
+    [Required]
+    [Column("question", TypeName = "text")]
+    public string Question { get; set; }
 
-  [Required]
-  [Column("response", TypeName = "text")]
-  public string Response { get; set; }
+    [Required]
+    [Column("response", TypeName = "text")]
+    public string Response { get; set; }
 
-  [Required]
-  [Column("function")]
-  [StringLength(10)]
-  public string Function { get; set; }
+    [Required]
+    [Column("function")]
+    [StringLength(10)]
+    public string Function { get; set; }
 
-  [ForeignKey("ChatId")]
-  [InverseProperty("MapChatElements")]
-  public virtual MapChats Chat { get; set; }
+    [ForeignKey("ChatId")]
+    [InverseProperty("MapChatElements")]
+    public virtual MapChats Chat { get; set; }
 }
