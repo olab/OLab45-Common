@@ -125,9 +125,9 @@ public partial class MapsEndpoint : OLabEndpoint
 
     var dto = await GetRawNodeAsync(mapId, nodeId, true);
 
-    // now that we had a real node id, test if user has explicit no access to node.
-    if (await auth.HasAccessAsync(
-      IOLabAuthorization.AclBitMaskNoAccess,
+    // now that we had a real node id, test if user has access to node.
+    if (!await auth.HasAccessAsync(
+      IOLabAuthorization.AclBitMaskRead,
       Utils.Constants.ScopeLevelNode,
       dto.Id.Value))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, dto.Id.Value);
@@ -139,8 +139,8 @@ public partial class MapsEndpoint : OLabEndpoint
     var filteredLinks = new List<MapNodeLinksDto>();
     foreach (var mapNodeLink in dto.MapNodeLinks)
     {
-      if (await auth.HasAccessAsync(
-        IOLabAuthorization.AclBitMaskNoAccess,
+      if (!await auth.HasAccessAsync(
+        IOLabAuthorization.AclBitMaskRead,
         Utils.Constants.ScopeLevelNode,
         mapNodeLink.DestinationId))
         continue;
