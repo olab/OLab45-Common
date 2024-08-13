@@ -1,4 +1,6 @@
 using OLab.Api.Model;
+using OLab.Data.Contracts;
+using OLab.Data.Dtos;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,6 +14,9 @@ public interface IUserService
   Task<List<AddUserResponse>> AddUsersAsync(List<AddUserRequest> items);
   Task<List<AddUserResponse>> DeleteUsersAsync(List<AddUserRequest> items);
   Task<AddUserResponse> AddUserAsync(AddUserRequest item);
+  Task<AddUserResponse> GetUsersAsync(AddUserRequest item);
+  IList<UsersDto> GetUsers(string userName);
+
 
   IEnumerable<Users> GetAll();
   Users GetById(int id);
