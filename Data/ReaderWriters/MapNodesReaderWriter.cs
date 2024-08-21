@@ -50,7 +50,10 @@ public partial class MapNodesReaderWriter : ReaderWriter
   /// <returns>List of map nodes</returns>
   public async Task<IList<MapNodes>> GetByMapAsync( uint mapId )
   {
-    var mapNodesPhys = await GetDbContext().MapNodes.Where(x => x.MapId == mapId).ToListAsync();
+    var mapNodesPhys = await GetDbContext()
+      .MapNodes
+      .Include("Map")
+      .Where(x => x.MapId == mapId).ToListAsync();
     GetLogger().LogInformation(string.Format("found {0} mapNodes for {1}", mapNodesPhys.Count, mapId));
     return mapNodesPhys;
   }

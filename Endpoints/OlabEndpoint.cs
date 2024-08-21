@@ -91,17 +91,6 @@ public class OLabEndpoint
     _userContext = userContext;
   }
 
-  //protected async ValueTask<Maps> GetMapAsync(uint id)
-  //{
-  //  var phys = await GetDbContext().Maps
-  //    .Include("MapGroups")
-  //    .FirstOrDefaultAsync(x => x.Id == id);
-  //  if (phys != null)
-  //    GetDbContext().Entry(phys).Collection(b => b.MapNodes).Load();
-
-  //  return phys;
-  //}
-
   /// <summary>
   /// Attach parent information to scoped object
   /// </summary>

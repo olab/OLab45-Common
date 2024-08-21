@@ -629,7 +629,7 @@ public partial class MapsEndpoint : OLabEndpoint
 
     var dtoList = new List<MapNodesMapReferenceDto>();
     foreach ( var item in items)
-      dtoList.Add( new MapNodesMapReferenceDto { Id = item.Id, Title = item.Title, MapId = mapId });
+      dtoList.Add( new MapNodesMapReferenceDto { Id = item.Id, Title = item.Title, MapId = mapId, MapName = item.Map.Name });
 
     GetLogger().LogInformation(string.Format("have access to {0} maps", dtoList.Count));
     
