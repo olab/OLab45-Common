@@ -19,6 +19,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using OLab.Api.WikiTag;
+using DocumentFormat.OpenXml.Vml;
 
 namespace OLab.Api.Endpoints.Player;
 
@@ -592,5 +593,46 @@ public partial class MapsEndpoint : OLabEndpoint
   public void Options()
   {
 
+  }
+
+  /// <summary>
+  /// Get pages list of nodes for a map
+  /// </summary>
+  /// <param name="mapId">map id</param>
+  /// <param name="take">paged take parameter</param>
+  /// <param name="skip">pages skip parameter</param>
+  /// <returns>OLabAPIPagedResponse of MapNodesDto</returns>
+  /// <exception cref="NotImplementedException"></exception>
+  public async Task<OLabAPIPagedResponse<MapNodesMapReferenceDto>> GetNodesAsync(
+    IOLabAuthorization auth, 
+    uint mapId,
+    int? take, 
+    int? skip)
+  {
+    var total = 0;
+    var remaining = 0;
+
+    if (!skip.HasValue)
+      skip = 0;
+
+    var items = await _nodesReaderWriter.GetByMapAsync(mapId);
+    total = items.Count;
+
+    if (take.HasValue && skip.HasValue)
+    {
+      items = items
+        .Skip(skip.Value)
+        .Take(take.Value)
+        .OrderBy(x => x.Title).ToList();
+      remaining = total - take.Value - skip.Value;
+    }
+
+    var dtoList = new List<MapNodesMapReferenceDto>();
+    foreach ( var item in items)
+      dtoList.Add( new MapNodesMapReferenceDto { Id = item.Id, Title = item.Title, MapId = mapId });
+
+    GetLogger().LogInformation(string.Format("have access to {0} maps", dtoList.Count));
+    
+    return new OLabAPIPagedResponse<MapNodesMapReferenceDto> { Data = dtoList, Remaining = remaining, Count = total };
   }
 }
