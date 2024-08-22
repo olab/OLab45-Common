@@ -1,4 +1,5 @@
-﻿using OLab.Api.Data.Exceptions;
+﻿using Microsoft.EntityFrameworkCore;
+using OLab.Api.Data.Exceptions;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using System;
@@ -141,17 +142,48 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   /// </summary>
   /// <param name="groupRoles">List of user group/roles</param>
   /// <returns>List of group role acl records</returns>
-  public IList<GrouproleAcls> Get( uint? groupId, uint? roleId, string objectType, uint? objectId )
+  public async Task<IList<GrouproleAcls>> GetAsync(uint? groupId, uint? roleId, string objectType, uint? objectId)
   {
-    var groupRoleAcls = new List<GrouproleAcls>();
-    var groupAcls = GetDbContext()
-      .GrouproleAcls.Where(x => 
-        x.GroupId == groupId && 
-        x.RoleId == roleId && 
-        x.ImageableType == objectType && 
-        x.ImageableId == objectId).ToList();
+    IList<GrouproleAcls> groupAcls = new List<GrouproleAcls>();
 
-    return groupRoleAcls;
+    // handle special case of system default acls
+    if ((groupId == null) && (roleId == null) && 
+      (string.IsNullOrEmpty(objectType) && !objectId.HasValue))
+      groupAcls = await GetDbContext()
+        .GrouproleAcls
+        .Include("Group")
+        .Include("Role")
+        .Where(x =>
+          x.GroupId == groupId &&
+          x.RoleId == roleId).ToListAsync();
+
+    else if ((groupId == null) && (roleId == null))
+      groupAcls = await GetDbContext()
+        .GrouproleAcls
+        .Include("Group")
+        .Include("Role")
+        .Where(x =>
+          x.ImageableType == objectType &&
+          x.ImageableId == objectId).ToListAsync();
+
+    else if ((groupId != null) && (roleId == null))
+      groupAcls = await GetDbContext()
+        .GrouproleAcls
+        .Include("Group")
+        .Include("Role")
+        .Where(x =>
+          x.GroupId == groupId.Value).ToListAsync();
+
+    else if ((groupId != null) && (roleId != null))
+      groupAcls = await GetDbContext()
+        .GrouproleAcls
+        .Include("Group")
+        .Include("Role")
+        .Where(x =>
+          x.GroupId == groupId.Value &&
+          x.RoleId == roleId.Value).ToListAsync();
+
+    return groupAcls;
   }
 
   /// <summary>
@@ -178,7 +210,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   {
     var groupAcls = GetDbContext()
       .GrouproleAcls
-      .Where(x => (x.GroupId == groupId) || ( !x.GroupId.HasValue ));
+      .Where(x => (x.GroupId == groupId) || (!x.GroupId.HasValue));
 
     return groupAcls.ToList();
 

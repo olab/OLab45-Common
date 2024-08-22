@@ -9,6 +9,10 @@ namespace OLab.Api.Model;
 
 public partial class GrouproleAcls
 {
+  public const int ReadMask = 4;
+  public const int WriteMask = 2;
+  public const int ExecuteMask = 1;
+
   public static GrouproleAcls CreateDefault(
     IUserContext userContext,
     Groups groupPhys,
@@ -25,7 +29,7 @@ public partial class GrouproleAcls
     acl.ImageableType = imageableType;
     acl.ImageableId = imagableId;
 
-    acl.Acl2 = 7;
+    acl.Acl2 = ReadMask | WriteMask | ExecuteMask;
 
     return acl;
   }
