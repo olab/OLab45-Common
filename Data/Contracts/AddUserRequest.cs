@@ -16,10 +16,10 @@ namespace OLab.Api.Model;
 
 public class AddUserRequest
 {
-  private readonly IOLabLogger logger;
-  private readonly OLabDBContext dbContext;
+  private IOLabLogger logger;
+  private OLabDBContext dbContext;
 
-  //private readonly string userRequestText;
+  public uint? Id { get; set; }
 
   [Required]
   public string Username { get; set; }
@@ -29,19 +29,16 @@ public class AddUserRequest
   public string NickName { get; set; }
   public string Password { get; set; }
   public string ModeUi { get; set; }
+  public string GroupRoles { get; set; }
 
-  public IList<UserGrouproles> GroupRoles { get; set; }
+  public IList<UserGrouproles> GroupRoleObjects { get; set; }
 
-  //[Required]
-  //public string Group { get; set; }
-  //[Required]
-  //public string Role { get; set; }
 
   public AddUserRequest()
   {
     NickName = "";
     ModeUi = "easy";
-    GroupRoles = new List<UserGrouproles>();
+    GroupRoleObjects = new List<UserGrouproles>();
   }
 
   /// <summary>
@@ -59,7 +56,34 @@ public class AddUserRequest
     this.dbContext = dbContext;
   }
 
-  public async Task ProcessAddUserText(string userRequestText)
+  public void SetInfrastructure(
+    IOLabLogger logger,
+    OLabDBContext dbContext)
+  {
+    this.logger = logger;
+    this.dbContext = dbContext;
+  }
+
+  public void BuildGroupRoleObjects(string groupRoleString = null)
+  {
+    // if not passed in, then look for it in the GroupRoles string
+    // which is what the EditUser method may pass in
+    if (groupRoleString == null)
+      groupRoleString = GroupRoles;
+
+    var groupRoleParts = groupRoleString.Split(",");
+    foreach (var groupRolePart in groupRoleParts)
+    {
+      var obj = UserGrouproles.StringToObject(dbContext, groupRolePart);
+      if (Id.HasValue)
+        obj.UserId = Id.Value;
+
+      if (obj != null)
+        GroupRoleObjects.Add(obj);
+    }
+  }
+
+  public void ProcessAddUserText(string userRequestText)
   {
     var userRequestParts = userRequestText.Split("\t");
     if (userRequestParts.Length < 5)
@@ -72,27 +96,9 @@ public class AddUserRequest
     EMail = userRequestParts[2];
     NickName = userRequestParts[3];
 
-    // process group.role strings
+    // process [ group:role,... ] strings
     for (var i = 4; i < userRequestParts.Length; i++)
-    {
-      // split group/role string into parts
-      var groupRolePart = userRequestParts[i];
-      var groupRoleParts = groupRolePart.Split(UserGrouproles.PartSeparator);
-
-      var groupPhys =
-        await GroupReaderWriter.Instance(logger, dbContext).GetAsync(groupRoleParts[0]);
-      var rolesPhys =
-        await RoleReaderWriter.Instance(logger, dbContext).GetAsync(groupRoleParts[1]);
-
-      if ((groupPhys != null) && (rolesPhys != null))
-        GroupRoles.Add(new UserGrouproles
-        {
-          GroupId = groupPhys.Id,
-          RoleId = rolesPhys.Id,
-          Group = groupPhys,
-          Role = rolesPhys
-        });
-    }
+      BuildGroupRoleObjects(userRequestParts[i]);
 
     Username = Username.ToLower();
 

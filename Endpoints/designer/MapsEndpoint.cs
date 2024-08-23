@@ -489,7 +489,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if (null != existing)
       throw new OLabBadRequestException("Username and/or email already taken.");
 
-    var phys = Users.CreateDefault(new AddUserRequest
+    var phys = Users.UpsertFromRequest(null, new AddUserRequest
     {
       Username = body.Username,
       NickName = body.Username,

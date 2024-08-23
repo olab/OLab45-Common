@@ -17,29 +17,23 @@ public partial class Users
         .Select(s => s[random.Next(s.Length)]).ToArray());
   }
 
-  public static Users CreateDefault(AddUserRequest model)
+  public static Users UpsertFromRequest(Users sourceUser, AddUserRequest model)
   {
-    var newUser = CreateDefault();
+    if ( sourceUser == null )
+      sourceUser = CreateDefault();
+
+    if (model.Id.HasValue)
+      sourceUser.Id = model.Id.Value;
 
     if (!string.IsNullOrEmpty(model.Password))
-      newUser.Password = model.Password;
+      sourceUser.Password = model.Password;
 
-    newUser.Username = model.Username;
-    newUser.Nickname = model.NickName;
-    newUser.Email = model.EMail;
+    sourceUser.Username = model.Username;
+    sourceUser.Nickname = model.NickName;
+    sourceUser.Email = model.EMail;
+    sourceUser.UserGrouproles.Clear();
 
-    foreach (var groupRole in model.GroupRoles)
-    {
-      newUser.UserGrouproles.Add(
-        new UserGrouproles
-        {
-          GroupId = groupRole.GroupId,
-          RoleId = groupRole.RoleId
-        }
-      );
-    }
-
-    return newUser;
+    return sourceUser;
   }
 
   public static Users CreateDefault()
