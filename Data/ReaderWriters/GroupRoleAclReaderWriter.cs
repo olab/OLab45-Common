@@ -138,9 +138,27 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   }
 
   /// <summary>
+  /// Get all ACL records
+  /// </summary>
+  /// <returns>List of group role acl records</returns>
+  public async Task<IList<GrouproleAcls>> GetAsync()
+  {
+    var groupAcls = await GetDbContext()
+      .GrouproleAcls
+      .Include("Group")
+      .Include("Role").ToListAsync();
+
+    return groupAcls;
+  }
+
+
+  /// <summary>
   /// Get list of group role acls for a set of user group roles
   /// </summary>
-  /// <param name="groupRoles">List of user group/roles</param>
+  /// <param name="groupId">group id or null if 'all'</param>
+  /// <param name="roleId">role id or null if 'all'</param>
+  /// <param name="objectType">Scoped object type</param>
+  /// <param name="objectId">Scoped object id</param>
   /// <returns>List of group role acl records</returns>
   public async Task<IList<GrouproleAcls>> GetAsync(uint? groupId, uint? roleId, string objectType, uint? objectId)
   {

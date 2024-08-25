@@ -28,11 +28,11 @@ public class GroupRoleAclMapper : OLabMapper<GrouproleAcls, GroupRoleAclDto>
   public override GroupRoleAclDto PhysicalToDto(GrouproleAcls phys, GroupRoleAclDto source)
   {
     source.GroupId = phys.GroupId;
-    source.GroupName = phys.Group == null ? "All" : phys.Group.Name;
+    source.GroupName = phys.Group == null ? null : phys.Group.Name;
     source.RoleId = phys.RoleId;
-    source.RoleName = phys.Role == null ? "All" : phys.Role.Name;
-    source.ObjectIndex = phys.ImageableId;
-    source.ObjectType = string.IsNullOrEmpty( phys.ImageableType ) ? "All" : phys.ImageableType;
+    source.RoleName = phys.Role == null ? null : phys.Role.Name;
+    source.ObjectIndex = phys.ImageableId == null ? null : phys.ImageableId;
+    source.ObjectType = string.IsNullOrEmpty( phys.ImageableType ) ? null : phys.ImageableType;
     source.Read = ( phys.Acl2 & GrouproleAcls.ReadMask) == GrouproleAcls.ReadMask;
     source.Write = ( phys.Acl2 & GrouproleAcls.WriteMask) == GrouproleAcls.WriteMask;
     source.Execute = ( phys.Acl2 & GrouproleAcls.ExecuteMask) == GrouproleAcls.ExecuteMask;

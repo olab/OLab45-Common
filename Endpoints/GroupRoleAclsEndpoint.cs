@@ -49,7 +49,9 @@ public partial class GroupRoleAclsEndpoint : OLabEndpoint
   {
     IList<GrouproleAcls> groupRoleAclsPhys = new List<GrouproleAcls>();
 
-    if ((model.MapIds.Count == 0) && (model.NodeIds.Count == 0))
+    if ((model.GroupId == -1) && (model.RoleId == -1))
+      groupRoleAclsPhys = await _readerWriter.GetAsync();
+    else if ((model.MapIds.Count == 0) && (model.NodeIds.Count == 0))
       groupRoleAclsPhys = await _readerWriter.GetAsync(null, null, null, null);
     else
     {
