@@ -2,6 +2,8 @@
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using OLab.Data.Contracts;
+using OLab.Data.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -220,7 +222,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   }
 
   /// <summary>
-  /// GEt list of group role acls for a specific group
+  /// Get list of group role acls for a specific group
   /// </summary>
   /// <param name="groupId">Group id to load</param>
   /// <returns>List of group role acl records</returns>
@@ -232,5 +234,46 @@ public class GroupRoleAclReaderWriter : ReaderWriter
 
     return groupAcls.ToList();
 
+  }
+
+  public async Task<List<DeleteGroupRoleAclResponse>> DeleteGroupRoleAclsAsync(List<uint> aclIds)
+  {
+    try
+    {
+      var responses = new List<DeleteGroupRoleAclResponse>();
+
+      GetLogger().LogDebug($"DeleteGroupRoleAclsAsync(items count '{aclIds.Count}')");
+
+      foreach (var aclId in aclIds)
+      {
+        var response = await DeleteGroupRoleAclAsync(aclId, true);
+        responses.Add(response);
+      }
+
+      return responses;
+    }
+    catch (Exception ex)
+    {
+      GetLogger().LogError($"DeleteGroupRoleAclsAsync exception {ex.Message}");
+      throw;
+    }
+  }
+
+  public async Task<DeleteGroupRoleAclResponse> DeleteGroupRoleAclAsync(uint id, bool commit = false)
+  {
+    var physAcl =
+      await GetDbContext().GrouproleAcls.FirstOrDefaultAsync(x => x.Id == id);
+
+    GetDbContext().GrouproleAcls.Remove(physAcl);
+    if ( commit )
+      await GetDbContext().SaveChangesAsync();
+
+    var response = new DeleteGroupRoleAclResponse
+    {
+      Id = id,
+      Message = "Deleted"
+    };
+
+    return response;
   }
 }
