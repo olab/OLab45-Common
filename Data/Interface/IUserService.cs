@@ -12,7 +12,7 @@ public interface IUserService
   void ChangePassword(Users user, ChangePasswordRequest model);
 
   Task<List<AddUserResponse>> AddUsersAsync(List<AddUserRequest> items);  
-  Task<List<AddUserResponse>> DeleteUsersAsync(List<AddUserRequest> items);
+  Task<List<AddUserResponse>> DeleteUsersAsync(List<DeleteUsersRequest> items);
   Task<AddUserResponse> AddUserAsync(AddUserRequest item);
   Task<AddUserResponse> EditUserAsync(AddUserRequest item);
   Task<AddUserResponse> GetUsersAsync(AddUserRequest item);
