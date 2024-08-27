@@ -49,22 +49,48 @@ public partial class GroupRoleAclsEndpoint : OLabEndpoint
   {
     IList<GrouproleAcls> groupRoleAclsPhys = new List<GrouproleAcls>();
 
-    if ((model.GroupId == -1) && (model.RoleId == -1))
+    uint? groupId = null;
+    uint? roleId = null;
+
+    // no group, role, maps, node specified, so query all
+    if (!model.GroupId.HasValue &&
+      !model.RoleId.HasValue &&
+      (model.MapIds.Count == 0) &&
+      (model.NodeIds.Count == 0))
       groupRoleAclsPhys = await _readerWriter.GetAsync();
+
+    // no selected maps or nodes, query by group/role
     else if ((model.MapIds.Count == 0) && (model.NodeIds.Count == 0))
-      groupRoleAclsPhys = await _readerWriter.GetAsync(null, null, null, null);
+      groupRoleAclsPhys = await _readerWriter.GetAsync(
+        model.GroupId,
+        model.RoleId,
+        null,
+        null);
     else
     {
-      if (model.MapIds.Count > 0)
-      {
-        foreach (var mapId in model.MapIds)
-          groupRoleAclsPhys.AddRange(await _readerWriter.GetAsync(null, null, Constants.ScopeLevelMap, mapId));
-      }
-      else if (model.MapIds.Count > 0)
+      // if any nodes selected, query by node
+      if (model.NodeIds.Count > 0)
       {
         foreach (var nodeId in model.NodeIds)
-          groupRoleAclsPhys.AddRange(await _readerWriter.GetAsync(null, null, Constants.ScopeLevelNode, nodeId));
+          groupRoleAclsPhys.AddRange(await _readerWriter.GetAsync(
+            model.GroupId,
+            model.RoleId,
+            Constants.ScopeLevelNode,
+            nodeId));
       }
+
+      // no nodes selected, query by map
+
+      else if (model.MapIds.Count > 0)
+      {
+        foreach (var mapId in model.MapIds)
+          groupRoleAclsPhys.AddRange(await _readerWriter.GetAsync(
+            model.GroupId,
+            model.RoleId,
+            Constants.ScopeLevelMap,
+            mapId));
+      }
+
     }
 
     var itemsDto = _mapper.PhysicalToDto(groupRoleAclsPhys);

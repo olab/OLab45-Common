@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DocumentFormat.OpenXml.InkML;
+using Microsoft.EntityFrameworkCore;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
@@ -162,46 +163,33 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   /// <param name="objectType">Scoped object type</param>
   /// <param name="objectId">Scoped object id</param>
   /// <returns>List of group role acl records</returns>
-  public async Task<IList<GrouproleAcls>> GetAsync(uint? groupId, uint? roleId, string objectType, uint? objectId)
+  public async Task<IList<GrouproleAcls>> GetAsync(
+    uint? groupId, 
+    uint? roleId, 
+    string objectType, 
+    uint? objectId)
   {
     IList<GrouproleAcls> groupAcls = new List<GrouproleAcls>();
 
-    // handle special case of system default acls
-    if ((groupId == null) && (roleId == null) && 
-      (string.IsNullOrEmpty(objectType) && !objectId.HasValue))
-      groupAcls = await GetDbContext()
-        .GrouproleAcls
-        .Include("Group")
-        .Include("Role")
-        .Where(x =>
-          x.GroupId == groupId &&
-          x.RoleId == roleId).ToListAsync();
+    // if no object type, change this to null
+    objectType = string.IsNullOrEmpty(objectType) ? null : objectType;
+    objectId = (objectId != null && objectId.HasValue && objectId.Value >= 0) ? objectId.Value : null;
 
-    else if ((groupId == null) && (roleId == null))
-      groupAcls = await GetDbContext()
-        .GrouproleAcls
-        .Include("Group")
-        .Include("Role")
-        .Where(x =>
-          x.ImageableType == objectType &&
-          x.ImageableId == objectId).ToListAsync();
+    IQueryable<GrouproleAcls> query = GetDbContext().Set<GrouproleAcls>();
 
-    else if ((groupId != null) && (roleId == null))
-      groupAcls = await GetDbContext()
-        .GrouproleAcls
-        .Include("Group")
-        .Include("Role")
-        .Where(x =>
-          x.GroupId == groupId.Value).ToListAsync();
+    if (groupId.HasValue)
+      query = query.Where(x => x.GroupId == (groupId == 0 ? null : groupId.Value));
 
-    else if ((groupId != null) && (roleId != null))
-      groupAcls = await GetDbContext()
-        .GrouproleAcls
-        .Include("Group")
-        .Include("Role")
-        .Where(x =>
-          x.GroupId == groupId.Value &&
-          x.RoleId == roleId.Value).ToListAsync();
+    if (roleId.HasValue)
+      query = query.Where(x => x.RoleId == (roleId == 0 ? null : roleId.Value));
+
+    if (objectType != null)
+      query = query.Where(x => x.ImageableType == objectType);
+
+    if (objectId != null)
+      query = query.Where(x => x.ImageableId == (objectId == 0 ? null : objectId.Value));
+
+    groupAcls = await query.ToListAsync();
 
     return groupAcls;
   }
@@ -265,7 +253,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
       await GetDbContext().GrouproleAcls.FirstOrDefaultAsync(x => x.Id == id);
 
     GetDbContext().GrouproleAcls.Remove(physAcl);
-    if ( commit )
+    if (commit)
       await GetDbContext().SaveChangesAsync();
 
     var response = new DeleteGroupRoleAclResponse
