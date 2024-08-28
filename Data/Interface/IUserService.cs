@@ -11,10 +11,10 @@ public interface IUserService
   //Users Authenticate(LoginRequest model);
   void ChangePassword(Users user, ChangePasswordRequest model);
 
-  Task<List<AddUserResponse>> AddUsersAsync(List<AddUserRequest> items);  
+  Task<List<Users>> AddUsersAsync(List<AddUserRequest> items);  
   Task<List<AddUserResponse>> DeleteUsersAsync(List<DeleteUsersRequest> items);
-  Task<AddUserResponse> AddUserAsync(AddUserRequest item);
-  Task<AddUserResponse> EditUserAsync(AddUserRequest item);
+  Task<Users> AddUserAsync(AddUserRequest item);
+  Task<Users> EditUserAsync(AddUserRequest item);
   Task<AddUserResponse> GetUsersAsync(AddUserRequest item);
   IList<UsersDto> GetUsers(string userName);
 

@@ -11,4 +11,11 @@ public class AddUserResponse
   {
     Error = "OK";
   }
+
+  public AddUserResponse( Users source )
+  {
+    Id = source.Id;
+    Username = source.Username;
+    Password = source.Password;
+  }
 }

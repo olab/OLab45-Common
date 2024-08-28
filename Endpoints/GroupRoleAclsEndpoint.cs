@@ -49,9 +49,6 @@ public partial class GroupRoleAclsEndpoint : OLabEndpoint
   {
     IList<GrouproleAcls> groupRoleAclsPhys = new List<GrouproleAcls>();
 
-    uint? groupId = null;
-    uint? roleId = null;
-
     // no group, role, maps, node specified, so query all
     if (!model.GroupId.HasValue &&
       !model.RoleId.HasValue &&
