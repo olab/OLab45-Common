@@ -10,6 +10,6 @@ namespace OLab.Api.Model;
 
 public class DeleteUsersRequest
 {
-  [Required]
   public uint Id { get; set; }
+  public string UserName { get; set; }
 }

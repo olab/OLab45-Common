@@ -30,6 +30,7 @@ public class AddUserRequest
   public string Password { get; set; }
   public string ModeUi { get; set; }
   public string GroupRoles { get; set; }
+  public string Operation {  get; set; }
 
   public IList<UserGrouproles> GroupRoleObjects { get; set; }
 

@@ -17,7 +17,7 @@ public partial class Users
         .Select(s => s[random.Next(s.Length)]).ToArray());
   }
 
-  public static Users UpsertFromRequest(Users sourceUser, AddUserRequest model)
+  public static Users CreatePhysFromRequest(Users sourceUser, AddUserRequest model)
   {
     if ( sourceUser == null )
       sourceUser = CreateDefault();
