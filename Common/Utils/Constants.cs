@@ -4,6 +4,7 @@ public static class Constants
 {
   public const string ScopeLevelNode = "Nodes";
   public const string ScopeLevelMap = "Maps";
+  public const string ScopeLevelApp = "Apps";
   public const string ScopeLevelServer = "Servers";
   public const string DefaultConnectionStringName = "DefaultDatabase";
   public const string WebsitePublicFilesDirectoryName = "WebsitePublicFilesDirectory";
