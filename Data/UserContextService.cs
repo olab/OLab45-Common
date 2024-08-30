@@ -109,7 +109,7 @@ public abstract class UserContextService : IUserContext
   {
     _claims = claims;
 
-    GetLogger().LogInformation($"Claims:");
+    //GetLogger().LogInformation($"Claims:");
     foreach (var item in _claims)
       GetLogger().LogInformation($" '{item.Key}'");
   }
@@ -118,7 +118,7 @@ public abstract class UserContextService : IUserContext
   {
     _headers = headers;
 
-    GetLogger().LogInformation($"Headers:");
+    //GetLogger().LogInformation($"Headers:");
     foreach (var item in _headers)
       GetLogger().LogInformation($" '{item.Key}'");
   }
