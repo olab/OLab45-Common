@@ -70,6 +70,7 @@ public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
     dto.LinkStyleId = phys.LinkStyleId;
     dto.LinkText = phys.Text;
     dto.IsHidden = phys.Hidden.HasValue ? phys.Hidden.Value : false;
+    dto.FollowOnce = phys.FollowOnce.HasValue ? phys.FollowOnce.Value == 1 : false;
   }
 
   public override MapNodeLinksDto PhysicalToDto(MapNodeLinks phys, Object source = null)
@@ -88,6 +89,7 @@ public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
     phys.LinkStyleId = phys.LinkStyleId;
     phys.Text = dto.LinkText;
     phys.Hidden = dto.IsHidden;
+    phys.FollowOnce = dto.FollowOnce ? 1 : 0;
   }
 
   public override MapNodeLinks DtoToPhysical(MapNodeLinksDto dto, Object source = null)
