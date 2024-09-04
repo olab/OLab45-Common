@@ -109,18 +109,18 @@ public abstract class UserContextService : IUserContext
   {
     _claims = claims;
 
-    //GetLogger().LogInformation($"Claims:");
-    foreach (var item in _claims)
-      GetLogger().LogInformation($" '{item.Key}'");
+    //GetLogger().LogDebug($"Claims:");
+    //foreach (var item in _claims)
+    //  GetLogger().LogDebug($" '{item.Key}'");
   }
 
   protected void SetHeaders(IDictionary<string, string> headers)
   {
     _headers = headers;
 
-    //GetLogger().LogInformation($"Headers:");
-    foreach (var item in _headers)
-      GetLogger().LogInformation($" '{item.Key}'");
+    //GetLogger().LogDebug($"Headers:");
+    //foreach (var item in _headers)
+    //  GetLogger().LogDebug($" '{item.Key}'");
   }
 
   protected string GetClaimValue(string key, bool isRequired = true)
