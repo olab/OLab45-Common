@@ -24,6 +24,4 @@ public class MapNodeLinksFullDto : MapNodeLinksDto
   public int? Thickness { get; set; }
   [JsonProperty("line_type")]
   public int? LineType { get; set; }
-  [JsonProperty("follow_once")]
-  public int? FollowOnce { get; set; }
 }
