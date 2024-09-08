@@ -5,6 +5,7 @@ using System.Linq;
 using OLab.Api.WikiTag;
 using OLab.Api.Model;
 using OLab.Data.ReaderWriters;
+using NuGet.Packaging;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -41,10 +42,15 @@ public class MapsNodesFullRelationsMapper : OLabMapper<Model.MapNodes, MapsNodes
       dto.Text = phys.Text;
 
     dto.Width = phys.Width.HasValue ? phys.Width : MapNodesMapper.DefaultWidth;
-    dto.MapNodeLinks = new MapNodeLinksMapper(
+    dto.MapNodeLinks.AddRange( new MapNodeLinksMapper(
       _logger,
       GetDbContext(),
-      GetWikiProvider()).PhysicalToDto(phys.MapNodeLinksNodeId1Navigation.ToList());
+      GetWikiProvider()).PhysicalToDto(phys.MapNodeLinksNodeId1Navigation.ToList()));
+
+    dto.MapNodeGroupRoles.AddRange(new MapNodeGroupRolesMapper(
+      _logger,
+      GetDbContext(),
+      GetWikiProvider()).PhysicalToDto(phys.MapNodeGrouproles.ToList()));
 
     return dto;
   }

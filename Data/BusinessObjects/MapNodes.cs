@@ -117,6 +117,9 @@ public partial class MapNodes
     public virtual ICollection<MapNodeCounters> MapNodeCounters { get; } = new List<MapNodeCounters>();
 
     [InverseProperty("Node")]
+    public virtual ICollection<MapNodeGrouproles> MapNodeGrouproles { get; } = new List<MapNodeGrouproles>();
+
+    [InverseProperty("Node")]
     public virtual ICollection<MapNodeJumps> MapNodeJumps { get; } = new List<MapNodeJumps>();
 
     [InverseProperty("NodeId1Navigation")]
