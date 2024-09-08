@@ -1,4 +1,4 @@
-﻿namespace OLab.Data.Dtos.Session;
+namespace OLab.Data.Dtos.Session;
 
 public class StatementsDto
 {

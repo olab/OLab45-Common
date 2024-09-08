@@ -1,4 +1,4 @@
-﻿using Humanizer;
+using Humanizer;
 using NuGet.Packaging;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;

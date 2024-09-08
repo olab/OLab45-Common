@@ -1,4 +1,4 @@
-﻿using OLab.Api.Model;
+using OLab.Api.Model;
 using OLab.Common.Interfaces;
 
 namespace OLab.Data.ReaderWriters;

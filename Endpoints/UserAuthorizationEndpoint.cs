@@ -1,4 +1,4 @@
-﻿using Humanizer;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
 using OLab.Api.Common.Exceptions;

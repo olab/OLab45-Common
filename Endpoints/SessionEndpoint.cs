@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Model;

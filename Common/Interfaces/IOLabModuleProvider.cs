@@ -1,4 +1,4 @@
-﻿namespace OLab.Common.Interfaces;
+namespace OLab.Common.Interfaces;
 
 public interface IOLabModuleProvider<T> where T : class
 {

@@ -1,4 +1,4 @@
-﻿namespace OLab.Data.Model;
+namespace OLab.Data.Model;
 
 public class DeleteGroupRoleAclResponse
 {

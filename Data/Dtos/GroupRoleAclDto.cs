@@ -1,4 +1,4 @@
-﻿using OLab.Api.Model;
+using OLab.Api.Model;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 

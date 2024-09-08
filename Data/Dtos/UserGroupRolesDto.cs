@@ -1,4 +1,4 @@
-﻿namespace OLab.Api.Model;
+namespace OLab.Api.Model;
 
 public partial class UserGroupRolesDto
 {

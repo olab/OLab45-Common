@@ -1,4 +1,4 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.CodeAnalysis.Differencing;
 using System;
 using System.Collections.Generic;
