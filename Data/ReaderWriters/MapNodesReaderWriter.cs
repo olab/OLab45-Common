@@ -1,9 +1,12 @@
+using AutoMapper.Internal.Mappers;
 using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.Spreadsheet;
+using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
 using OLab.Api.Common;
+using OLab.Api.Data.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
@@ -120,6 +123,8 @@ public partial class MapNodesReaderWriter : ReaderWriter
           .Where(x => x.MapId == mapId && x.TypeId == 1)
           .FirstOrDefaultAsync(x => x.Id == nodeId);
 
+    // if no explicit map root node, get first node 
+    // in database
     if (node == null)
       node = await GetDbContext().MapNodes
         .Include("MapNodeGrouproles")
@@ -194,6 +199,128 @@ public partial class MapNodesReaderWriter : ReaderWriter
     }
 
     return dto;
+  }
+
+  /// <summary>
+  /// Edits a node
+  /// </summary>
+  /// <param name="dto">Map node dto</param>
+  /// <param name="wikiProvider">wikitag provider</param>
+  /// <param name="save">commit on every write</param>
+  /// <returns>id of edited node</returns>
+  public async Task<uint> PutNodeAsync(
+    MapNodesFullDto dto,
+    WikiTagModuleProvider wikiProvider,
+    bool save = true
+  )
+  {
+    using var transaction = GetDbContext().Database.BeginTransaction();
+
+    try
+    {
+      var builder = new MapNodesFullMapper(
+        GetLogger(),
+      GetDbContext(),
+        wikiProvider);
+      var mapNodePhys = builder.DtoToPhysical(dto);
+
+      // patch up node size, just in case it's not set properly
+      if (mapNodePhys.Height == 0)
+        mapNodePhys.Height = 440;
+      if (mapNodePhys.Width == 0)
+        mapNodePhys.Width = 300;
+
+      IList<MapNodeGrouproles> nodeGroupRolesPhys = new List<MapNodeGrouproles>();
+      nodeGroupRolesPhys.AddRange(mapNodePhys.MapNodeGrouproles);
+
+      // load the entity, then detach it so it can be editted
+      var tempMapNodePhys = GetDbContext().MapNodes.FirstOrDefault(x => x.Id == mapNodePhys.Id);
+      if (tempMapNodePhys != null)
+        GetDbContext().Entry(tempMapNodePhys).State = EntityState.Detached;
+
+      mapNodePhys.MapNodeGrouproles.Clear();
+      mapNodePhys.MapNodeGrouproles.AddRange(tempMapNodePhys.MapNodeGrouproles);
+
+      GetDbContext().MapNodes.Update(mapNodePhys);
+      if (save)
+        await GetDbContext().SaveChangesAsync();
+
+      await transaction.CommitAsync();
+
+      await UpdateGroupRolesAsync(
+        mapNodePhys.Id, 
+        nodeGroupRolesPhys.ToList(), 
+        save);
+
+    }
+    catch (Exception)
+    {
+      await transaction.RollbackAsync();
+      throw;
+    }
+
+    return dto.Id.Value;
+
+  }
+
+  private async Task<IList<MapNodeGrouproles>> UpdateGroupRolesAsync(
+    uint mapNodeId, 
+    List<MapNodeGrouproles> mapNodeGroupRolesPhys, 
+    bool save)
+  {
+    foreach (var mapNodeGroupRolePhys in mapNodeGroupRolesPhys)
+    {
+      mapNodeGroupRolePhys.NodeId = mapNodeId;
+      GetDbContext().MapNodeGrouproles.Add(mapNodeGroupRolePhys);
+
+    }
+
+    if (save)
+      await GetDbContext().SaveChangesAsync();
+
+    return mapNodeGroupRolesPhys.ToList();
+  }
+
+  /// <summary>
+  /// Delete a node
+  /// </summary>
+  /// <param name="nodeId">Node id</param>
+  /// <returns>node id deleted</returns>
+  public async Task<uint> DeleteNodeAsync(
+    uint nodeId
+  )
+  {
+    using var transaction = GetDbContext().Database.BeginTransaction();
+
+    try
+    {
+      var links = GetDbContext().MapNodeLinks.
+        Where(x => (x.NodeId1 == nodeId) || (x.NodeId2 == nodeId)).ToArray();
+
+      GetLogger().LogInformation($"deleting {links.Count()} links");
+      GetDbContext().MapNodeLinks.RemoveRange(links);
+
+      var node = await GetDbContext().MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
+
+      if (node == null)
+        throw new OLabObjectNotFoundException("MapNodes", nodeId);
+
+      GetDbContext().MapNodes.Remove(node);
+      GetLogger().LogInformation($"deleting node id: {node.Id}");
+
+      await GetDbContext().SaveChangesAsync();
+
+      await transaction.CommitAsync();
+
+    }
+    catch (Exception)
+    {
+      await transaction.RollbackAsync();
+      throw;
+    }
+
+    return nodeId;
+
   }
 
 

@@ -70,8 +70,8 @@ public partial class MapsEndpoint : OLabEndpoint
 
     // now that we had a real node id, test if user has explicit no access to node.
     if (await auth.HasAccessAsync(
-      IOLabAuthorization.AclBitMaskNoAccess, 
-      Utils.Constants.ScopeLevelNode, 
+      IOLabAuthorization.AclBitMaskNoAccess,
+      Utils.Constants.ScopeLevelNode,
       nodeId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, nodeId);
 
@@ -81,8 +81,8 @@ public partial class MapsEndpoint : OLabEndpoint
     foreach (var mapNodeLink in dto.MapNodeLinks)
     {
       if (await auth.HasAccessAsync(
-        IOLabAuthorization.AclBitMaskNoAccess, 
-        Utils.Constants.ScopeLevelNode, 
+        IOLabAuthorization.AclBitMaskNoAccess,
+        Utils.Constants.ScopeLevelNode,
         mapNodeLink.DestinationId))
         continue;
 
@@ -177,14 +177,14 @@ public partial class MapsEndpoint : OLabEndpoint
     {
       // apply any node open counter actions
       var newCounters = await ProcessNodeOpenCountersAsync(
-        nodeId, 
-        body.Counters.Counters.Where( x => x.ImageableType == Utils.Constants.ScopeLevelMap).ToList());
+        nodeId,
+        body.Counters.Counters.Where(x => x.ImageableType == Utils.Constants.ScopeLevelMap).ToList());
 
       // update body counter with any that might have just changed
-      foreach ( var newCounter in newCounters )
+      foreach (var newCounter in newCounters)
       {
-        var targetCounter = 
-          body.Counters.Counters.FirstOrDefault( x => x.Id == newCounter.Id);
+        var targetCounter =
+          body.Counters.Counters.FirstOrDefault(x => x.Id == newCounter.Id);
 
         if (targetCounter != null)
         {
@@ -247,41 +247,14 @@ public partial class MapsEndpoint : OLabEndpoint
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-    using var transaction = GetDbContext().Database.BeginTransaction();
+    nodeId = await _mapNodesReader.DeleteNodeAsync(nodeId);
 
-    try
+    var responseDto = new MapNodesPostResponseDto
     {
-      var links = GetDbContext().MapNodeLinks.
-        Where(x => (x.NodeId1 == nodeId) || (x.NodeId2 == nodeId)).ToArray();
+      Id = nodeId
+    };
 
-      GetLogger().LogInformation($"deleting {links.Count()} links");
-      GetDbContext().MapNodeLinks.RemoveRange(links);
-
-      var node = await GetDbContext().MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
-
-      if (node == null)
-        throw new OLabObjectNotFoundException("MapNodes", nodeId);
-
-      GetDbContext().MapNodes.Remove(node);
-      GetLogger().LogInformation($"deleting node id: {node.Id}");
-
-      await GetDbContext().SaveChangesAsync();
-
-      await transaction.CommitAsync();
-
-      var responseDto = new MapNodesPostResponseDto
-      {
-        Id = nodeId
-      };
-
-      return responseDto;
-
-    }
-    catch (Exception)
-    {
-      await transaction.RollbackAsync();
-      throw;
-    }
+    return responseDto;
   }
 
   /// <summary>
@@ -304,39 +277,14 @@ public partial class MapsEndpoint : OLabEndpoint
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-    using var transaction = GetDbContext().Database.BeginTransaction();
+    var newId = await _mapNodesReader.PutNodeAsync(dto, GetWikiProvider());
 
-    try
+    var responseDto = new MapNodesPostResponseDto
     {
-      var builder = new ObjectMapper.MapNodesFullMapper(
-        GetLogger(),
-        GetDbContext(),
-        GetWikiProvider());
-      var phys = builder.DtoToPhysical(dto);
+      Id = newId
+    };
 
-      // patch up node size, just in case it's not set properly
-      if (phys.Height == 0)
-        phys.Height = 440;
-      if (phys.Width == 0)
-        phys.Width = 300;
-
-      GetDbContext().MapNodes.Update(phys);
-      await GetDbContext().SaveChangesAsync();
-      await transaction.CommitAsync();
-
-      var responseDto = new MapNodesPostResponseDto
-      {
-        Id = nodeId
-      };
-
-      return responseDto;
-
-    }
-    catch (Exception)
-    {
-      await transaction.RollbackAsync();
-      throw;
-    }
+    return responseDto;
 
   }
 
@@ -347,23 +295,16 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <returns>MapsNodesFullRelationsDto</returns>
   private async Task<MapsNodesFullRelationsDto> GetRootNodeAsync(uint mapId, bool hideHidden)
   {
-    var phys = await GetDbContext().MapNodes
-      .FirstOrDefaultAsync(x => x.MapId == mapId && x.TypeId.Value == (int)Model.MapNodes.NodeType.RootNode);
+    GetLogger().LogInformation($"MapsEndpoint.GetRootNodeAsync");
 
-    if (phys == null)
-    {
-      // if no map node by this point, then the map doesn't have a root node
-      // defined so take the first one (by id)        
-      phys = await GetDbContext().MapNodes
-        .Where(x => x.MapId == mapId)
-        .OrderBy(x => x.Id)
-        .FirstOrDefaultAsync();
+    var phys = await _mapNodesReader.GetMapRootNode(mapId, 0);
+    var mapper = new ObjectMapper.MapsNodesFullRelationsMapper(
+      GetLogger(),
+      GetDbContext(),
+      GetWikiProvider());
+    var dto = mapper.PhysicalToDto(phys);
 
-      if (phys == null)
-        throw new OLabObjectNotFoundException("MapNodes", mapId);
-    }
-
-    return await GetNodeAsync(mapId, phys.Id, hideHidden, true);
+    return dto;
   }
 
   /// <summary>

@@ -25,25 +25,7 @@ namespace OLab.Api.Endpoints.Player;
 
 public partial class MapsEndpoint : OLabEndpoint
 {
-  public MapsEndpoint(
-    IOLabLogger logger,
-    OLabDBContext dbContext) : base(
-    logger,
-    dbContext)
-  {
-  }
-
-  public MapsEndpoint(
-    IOLabLogger logger,
-    IOLabConfiguration configuration,
-    OLabDBContext dbContext,
-    IOLabSession session)
-    : base(
-        logger,
-        configuration,
-        dbContext)
-  {
-  }
+  private MapNodesReaderWriter _mapNodesReader;
 
   public MapsEndpoint(
     IOLabLogger logger,
@@ -58,6 +40,7 @@ public partial class MapsEndpoint : OLabEndpoint
         wikiTagProvider,
         fileStorageProvider)
   {
+    _mapNodesReader = new MapNodesReaderWriter(GetLogger(), GetDbContext(), null);
   }
 
   /// <summary>
@@ -453,7 +436,7 @@ public partial class MapsEndpoint : OLabEndpoint
   }
 
   /// <summary>
-  /// 
+  /// Updates a map
   /// </summary>
   /// <param name="id"></param>
   /// <param name="mapdto"></param>
@@ -476,21 +459,6 @@ public partial class MapsEndpoint : OLabEndpoint
 
     var mapReadWriter = MapsReaderWriter.Instance(GetLogger(), GetDbContext());
     await mapReadWriter.UpsertAsync(newMapPhys);
-
-    //await mapReadWriter.UpdateGroupsAsync(
-    //  newMapPhys.Id, 
-    //  newMapPhys.MapGroups.Select(x => x.GroupId).ToArray());
-
-    //try
-    //{
-    //  await GetDbContext().SaveChangesAsync();
-    //}
-    //catch (DbUpdateConcurrencyException)
-    //{
-    //  var existingMap = GetSimple(GetDbContext(), id);
-    //  if (existingMap == null)
-    //    throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
-    //}
 
   }
 

@@ -128,35 +128,35 @@ public partial class MapsReaderWriter : ReaderWriter
     return items;
   }
 
-  public async Task<uint> UpsertAsync(Maps mapPhys, bool save = true)
+  public async Task<uint> UpsertAsync(Maps newMapPhys, bool save = true)
   {
-    if (mapPhys.Id == 0)
+    if (newMapPhys.Id == 0)
     {
-      await GetDbContext().Maps.AddAsync(mapPhys);
+      await GetDbContext().Maps.AddAsync(newMapPhys);
       if (save)
         await GetDbContext().SaveChangesAsync();
     }
     else
     {
-      IList<MapGroups> mapGroupsPhys = new List<MapGroups>();
-      mapGroupsPhys.AddRange( mapPhys.MapGroups );
+      IList<MapGroups> newMapGroupsPhys = new List<MapGroups>();
+      newMapGroupsPhys.AddRange( newMapPhys.MapGroups );
 
       // load the entity, then detach it so it can be editted
-      var tempMapPhys = GetDbContext().Maps.FirstOrDefault(x => x.Id == mapPhys.Id);
+      var tempMapPhys = GetDbContext().Maps.FirstOrDefault(x => x.Id == newMapPhys.Id);
       if (tempMapPhys != null)
         GetDbContext().Entry(tempMapPhys).State = EntityState.Detached;
 
-      mapPhys.MapGroups.Clear();
-      mapPhys.MapGroups.AddRange(tempMapPhys.MapGroups);
+      newMapPhys.MapGroups.Clear();
+      newMapPhys.MapGroups.AddRange(tempMapPhys.MapGroups);
 
-      GetDbContext().Maps.Update(mapPhys);
+      GetDbContext().Maps.Update(newMapPhys);
       if (save)
         await GetDbContext().SaveChangesAsync();
 
-      await UpdateGroupsAsync(mapPhys.Id, mapGroupsPhys.ToList(), save);
+      await UpdateGroupsAsync(newMapPhys.Id, newMapGroupsPhys.ToList(), save);
     }
 
-    return mapPhys.Id;
+    return newMapPhys.Id;
   }
 
   /// <summary>
