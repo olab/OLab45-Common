@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -115,6 +115,9 @@ public partial class MapNodes
 
     [InverseProperty("Node")]
     public virtual ICollection<MapNodeCounters> MapNodeCounters { get; } = new List<MapNodeCounters>();
+
+    [InverseProperty("Node")]
+    public virtual ICollection<MapNodeGrouproles> MapNodeGrouproles { get; } = new List<MapNodeGrouproles>();
 
     [InverseProperty("Node")]
     public virtual ICollection<MapNodeJumps> MapNodeJumps { get; } = new List<MapNodeJumps>();

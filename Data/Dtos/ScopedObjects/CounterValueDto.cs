@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using OLab.Api.Dto;
 
 namespace OLab.Data.Dtos.ScopedObjects;

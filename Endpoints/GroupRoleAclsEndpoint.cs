@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;

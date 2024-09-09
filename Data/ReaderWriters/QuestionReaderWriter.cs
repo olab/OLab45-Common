@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using OLab.Common.Utils;

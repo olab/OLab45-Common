@@ -1,4 +1,4 @@
-﻿using OLab.Common.Interfaces;
+using OLab.Common.Interfaces;
 using System.Collections.Generic;
 using System.IO;
 

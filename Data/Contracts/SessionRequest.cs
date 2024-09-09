@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace OLab.Data.Contracts;
 public class SessionRequest

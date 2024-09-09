@@ -1,4 +1,4 @@
-﻿// #define USING_ASP_NET                //  Uncomment this line, if you're using the old ASP.NET
+// #define USING_ASP_NET                //  Uncomment this line, if you're using the old ASP.NET
 #define USING_ASP_NET_CORE              //  Uncomment this line, if you're using ASP.NET Core 2 or later
 // #define DATA_CONTAINS_FORMULAE
 

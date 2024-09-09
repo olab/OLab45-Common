@@ -5,6 +5,9 @@ namespace OLab.Api.Dto;
 
 public class MapsNodesFullRelationsDto : MapNodesFullDto
 {
+  [JsonProperty("groupRoles")]
+  public IList<MapNodeGroupRolesDto> MapNodeGroupRoles { get; set; }
+
   [JsonProperty("links")]
   public IList<MapNodeLinksDto> MapNodeLinks { get; set; }
 
@@ -17,6 +20,7 @@ public class MapsNodesFullRelationsDto : MapNodesFullDto
   {
     MapNodeLinks = new List<MapNodeLinksDto>();
     DynamicObjects = new DynamicScopedObjectsDto();
+    MapNodeGroupRoles = new List<MapNodeGroupRolesDto>();
   }
 
 }

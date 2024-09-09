@@ -1,4 +1,4 @@
-﻿namespace OLab.Api.Dto;
+namespace OLab.Api.Dto;
 
 public class GroupsDto
 {

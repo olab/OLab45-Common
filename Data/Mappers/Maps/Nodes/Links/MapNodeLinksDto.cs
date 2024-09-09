@@ -30,10 +30,6 @@ public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
 
     foreach (var phys in physList.OrderBy(x => x.Order))
     {
-      // do isHidden check
-      //if (phys.Hidden.HasValue && phys.Hidden.Value)
-      //  continue;
-
       // do a probability of showing check
       if (phys.Probability.HasValue && (phys.Probability.Value > 0))
       {

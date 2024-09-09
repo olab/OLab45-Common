@@ -1,4 +1,4 @@
-﻿using Dawn;
+using Dawn;
 using System.Collections.Generic;
 using System.Linq;
 

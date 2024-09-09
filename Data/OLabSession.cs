@@ -127,12 +127,6 @@ public class OLabSession : IOLabSession
     // abbreviate counter dto's into shorter version dto
 
     var countersDto = new List<CounterValueDto>();
-    //foreach (var counterDto in dto.DynamicObjects.Server.Counters)
-    //  countersDto.Add(new CounterValueDto(counterDto));
-    //foreach (var counterDto in dto.DynamicObjects.Map.Counters)
-    //  countersDto.Add(new CounterValueDto(counterDto));
-    //foreach (var counterDto in dto.DynamicObjects.Node.Counters)
-    //  countersDto.Add(new CounterValueDto(counterDto));
 
     foreach (var counterDto in dto.DynamicObjects.Counters.Counters)
       countersDto.Add(new CounterValueDto(counterDto));

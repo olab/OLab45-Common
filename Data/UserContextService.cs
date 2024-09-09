@@ -1,4 +1,4 @@
-﻿using Dawn;
+using Dawn;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Http;
 using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;

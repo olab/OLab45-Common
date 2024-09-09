@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using OLab.Api.Utils;
 
 namespace OLab.Common.Interfaces;

@@ -48,7 +48,7 @@ public partial class MapNodesReaderWriter : ReaderWriter
   /// </summary>
   /// <param name="mapId">Map Id</param>
   /// <returns>List of map nodes</returns>
-  public async Task<IList<MapNodes>> GetByMapAsync( uint mapId )
+  public async Task<IList<MapNodes>> GetByMapAsync(uint mapId)
   {
     var mapNodesPhys = await GetDbContext()
       .MapNodes
@@ -75,7 +75,9 @@ public partial class MapNodesReaderWriter : ReaderWriter
   /// <returns>MapNodes</returns>
   public async Task<MapNodes> GetNodeAsync(uint id)
   {
-    var node = await GetDbContext().MapNodes.FirstOrDefaultAsync(x => x.Id == id);
+    var node = await GetDbContext().MapNodes
+      .Include("MapNodeGrouproles")
+      .FirstOrDefaultAsync(x => x.Id == id);
     return node;
   }
 
@@ -88,6 +90,7 @@ public partial class MapNodesReaderWriter : ReaderWriter
   public async Task<MapNodes> GetNodeAsync(uint mapId, uint nodeId)
   {
     var node = await GetDbContext().MapNodes
+     .Include("MapNodeGrouproles")
      .FirstOrDefaultAsync(x => x.MapId == mapId && x.Id == nodeId);
     return node;
   }
@@ -102,18 +105,21 @@ public partial class MapNodesReaderWriter : ReaderWriter
   {
     if (nodeId != 0)
       return await GetDbContext().MapNodes
+        .Include("MapNodeGrouproles")
         .Where(x => x.MapId == mapId && x.Id == nodeId)
         .FirstOrDefaultAsync(x => x.Id == nodeId);
 
     var item = await GetDbContext().MapNodes
+        .Include("MapNodeGrouproles")
         .Where(x => x.MapId == mapId && x.TypeId == 1)
         .FirstOrDefaultAsync(x => x.Id == nodeId);
 
     if (item == null)
       item = await GetDbContext().MapNodes
-                .Where(x => x.MapId == mapId)
-                .OrderBy(x => x.Id)
-                .FirstAsync();
+        .Include("MapNodeGrouproles")
+        .Where(x => x.MapId == mapId)
+        .OrderBy(x => x.Id)
+        .FirstAsync();
 
     return item;
   }
@@ -133,6 +139,7 @@ public partial class MapNodesReaderWriter : ReaderWriter
     bool enableWikiTranslation)
   {
     var phys = await GetDbContext().MapNodes
+      .Include("MapNodeGrouproles")
       .FirstOrDefaultAsync(x => x.MapId == mapId && x.Id == nodeId);
 
     if (phys == null)
@@ -155,7 +162,9 @@ public partial class MapNodesReaderWriter : ReaderWriter
       phys.MapNodeLinksNodeId1Navigation.Select(x => x.NodeId2).Distinct().ToList();
 
     var linkedNodes =
-      GetDbContext().MapNodes.Where(x => linkedIds.Contains(x.Id)).ToList();
+      GetDbContext().MapNodes
+        .Include("MapNodeGrouproles")
+        .Where(x => linkedIds.Contains(x.Id)).ToList();
 
     // add destination node title to link information
     foreach (var item in dto.MapNodeLinks)

@@ -1,4 +1,4 @@
-﻿using OLab.Api.Model;
+using OLab.Api.Model;
 using System.Collections.Generic;
 
 namespace OLab.Data.Dtos;

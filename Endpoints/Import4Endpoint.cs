@@ -1,4 +1,4 @@
-﻿using OLab.Api.Data.Interface;
+using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Endpoints;
 using OLab.Api.Model;

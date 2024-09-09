@@ -1,4 +1,4 @@
-﻿using SharpCompress.Archives.Zip;
+using SharpCompress.Archives.Zip;
 using SharpCompress.Common;
 using SharpCompress.Readers;
 using System.Collections.Generic;

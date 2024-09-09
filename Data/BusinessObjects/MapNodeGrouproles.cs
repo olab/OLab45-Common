@@ -6,38 +6,36 @@ using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
-[Table("grouprole_acls")]
-[Index("GroupId", Name = "ifk_gra_group_idx")]
-[Index("RoleId", Name = "ifk_gra_role_idx")]
+[Table("map_node_grouproles")]
+[Index("GroupId", Name = "ifk_mngr_group_idx")]
+[Index("NodeId", Name = "ifk_mngr_node_idx")]
+[Index("RoleId", Name = "ifk_mngr_role_idx")]
 [MySqlCharSet("utf8mb3")]
 [MySqlCollation("utf8mb3_general_ci")]
-public partial class GrouproleAcls
+public partial class MapNodeGrouproles
 {
     [Key]
     [Column("id", TypeName = "int(10) unsigned")]
     public uint Id { get; set; }
 
-    [Column("imageable_id", TypeName = "int(10) unsigned")]
-    public uint? ImageableId { get; set; }
-
-    [Column("imageable_type")]
-    [StringLength(45)]
-    public string ImageableType { get; set; }
+    [Column("node_id", TypeName = "int(10) unsigned")]
+    public uint NodeId { get; set; }
 
     [Column("group_id", TypeName = "int(10) unsigned")]
-    public uint? GroupId { get; set; }
+    public uint GroupId { get; set; }
 
     [Column("role_id", TypeName = "int(10) unsigned")]
-    public uint? RoleId { get; set; }
-
-    [Column("acl2", TypeName = "bit(3)")]
-    public ulong Acl2 { get; set; }
+    public uint RoleId { get; set; }
 
     [ForeignKey("GroupId")]
-    [InverseProperty("GrouproleAcls")]
+    [InverseProperty("MapNodeGrouproles")]
     public virtual Groups Group { get; set; }
 
+    [ForeignKey("NodeId")]
+    [InverseProperty("MapNodeGrouproles")]
+    public virtual MapNodes Node { get; set; }
+
     [ForeignKey("RoleId")]
-    [InverseProperty("GrouproleAcls")]
+    [InverseProperty("MapNodeGrouproles")]
     public virtual Roles Role { get; set; }
 }

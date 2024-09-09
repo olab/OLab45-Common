@@ -204,12 +204,12 @@ public class OLabEndpoint
     // explicitly load the related objects.
     GetDbContext().Entry(phys).Collection(b => b.MapNodeLinksNodeId1Navigation).Load();
 
-    var builder = new ObjectMapper.MapsNodesFullRelationsMapper(
+    var mapper = new ObjectMapper.MapsNodesFullRelationsMapper(
       GetLogger(),
       GetDbContext(),
       GetWikiProvider(),
       enableWikiTranslation);
-    var dto = builder.PhysicalToDto(phys);
+    var dto = mapper.PhysicalToDto(phys);
 
     var linkedIds =
       phys.MapNodeLinksNodeId1Navigation.Select(x => x.NodeId2).Distinct().ToList();
