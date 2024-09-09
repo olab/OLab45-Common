@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace OLab.Data.ReaderWriters;
 
@@ -78,6 +79,8 @@ public partial class MapNodesReaderWriter : ReaderWriter
     var node = await GetDbContext().MapNodes
       .Include("MapNodeGrouproles")
       .FirstOrDefaultAsync(x => x.Id == id);
+    if (node.MapNodeGrouproles.Count == 0)
+      node.MapNodeGrouproles.Add(new MapNodeGrouproles { Id = 0, GroupId = null, RoleId = null });
     return node;
   }
 
@@ -92,6 +95,7 @@ public partial class MapNodesReaderWriter : ReaderWriter
     var node = await GetDbContext().MapNodes
      .Include("MapNodeGrouproles")
      .FirstOrDefaultAsync(x => x.MapId == mapId && x.Id == nodeId);
+    node.MapNodeGrouproles.Add(new MapNodeGrouproles { Id = 0, GroupId = null, RoleId = null });
     return node;
   }
 
@@ -103,25 +107,31 @@ public partial class MapNodesReaderWriter : ReaderWriter
   /// <returns>MapNodes</returns>
   public async Task<MapNodes> GetMapRootNode(uint mapId, uint nodeId)
   {
+    MapNodes node = null;
+
     if (nodeId != 0)
-      return await GetDbContext().MapNodes
+      node = await GetDbContext().MapNodes
         .Include("MapNodeGrouproles")
         .Where(x => x.MapId == mapId && x.Id == nodeId)
         .FirstOrDefaultAsync(x => x.Id == nodeId);
+    else
+      node = await GetDbContext().MapNodes
+          .Include("MapNodeGrouproles")
+          .Where(x => x.MapId == mapId && x.TypeId == 1)
+          .FirstOrDefaultAsync(x => x.Id == nodeId);
 
-    var item = await GetDbContext().MapNodes
-        .Include("MapNodeGrouproles")
-        .Where(x => x.MapId == mapId && x.TypeId == 1)
-        .FirstOrDefaultAsync(x => x.Id == nodeId);
-
-    if (item == null)
-      item = await GetDbContext().MapNodes
+    if (node == null)
+      node = await GetDbContext().MapNodes
         .Include("MapNodeGrouproles")
         .Where(x => x.MapId == mapId)
         .OrderBy(x => x.Id)
-        .FirstAsync();
+      .FirstAsync();
 
-    return item;
+    // catch case of an uninitialized node with no group roles
+    node.MapNodeGrouproles.Add(
+      new MapNodeGrouproles { Id = 0, GroupId = null, RoleId = null });
+
+    return node;
   }
 
   /// <summary>
@@ -138,9 +148,7 @@ public partial class MapNodesReaderWriter : ReaderWriter
     bool hideHidden,
     bool enableWikiTranslation)
   {
-    var phys = await GetDbContext().MapNodes
-      .Include("MapNodeGrouproles")
-      .FirstOrDefaultAsync(x => x.MapId == mapId && x.Id == nodeId);
+    var phys = await GetMapRootNode(mapId, nodeId);
 
     if (phys == null)
     {

@@ -6,10 +6,11 @@ using OLab.Api.WikiTag;
 using OLab.Api.Model;
 using OLab.Data.ReaderWriters;
 using NuGet.Packaging;
+using AutoMapper;
 
 namespace OLab.Api.ObjectMapper;
 
-public class MapsNodesFullRelationsMapper : OLabMapper<Model.MapNodes, MapsNodesFullRelationsDto>
+public class MapsNodesFullRelationsMapper : OLabMapper<MapNodes, MapsNodesFullRelationsDto>
 {
   protected readonly bool enableWikiTranslation = false;
   private readonly QuestionReaderWriter _reader;
@@ -28,7 +29,23 @@ public class MapsNodesFullRelationsMapper : OLabMapper<Model.MapNodes, MapsNodes
       tagProvider);
   }
 
-  public override MapsNodesFullRelationsDto PhysicalToDto(Model.MapNodes phys, MapsNodesFullRelationsDto dto)
+  /// <summary>
+  /// Default (overridable) AutoMapper cfg
+  /// </summary>
+  /// <returns>MapperConfiguration</returns>
+  protected override MapperConfiguration GetConfiguration()
+  {
+    return new MapperConfiguration(cfg =>
+    {
+      cfg.CreateMap<MapNodes, MapsNodesFullRelationsDto>().ReverseMap();
+      cfg.CreateMap<MapNodeLinks, MapNodeLinksFullDto>().ReverseMap();
+      cfg.CreateMap<MapNodeGrouproles, MapNodeGroupRolesDto>().ReverseMap();
+    });
+  }
+
+  public override MapsNodesFullRelationsDto PhysicalToDto(
+    MapNodes phys,
+    MapsNodesFullRelationsDto dto)
   {
     dto.Height = phys.Height.HasValue ? phys.Height : MapNodesMapper.DefaultHeight;
     dto.Text = phys.Text;
@@ -42,15 +59,10 @@ public class MapsNodesFullRelationsMapper : OLabMapper<Model.MapNodes, MapsNodes
       dto.Text = phys.Text;
 
     dto.Width = phys.Width.HasValue ? phys.Width : MapNodesMapper.DefaultWidth;
-    dto.MapNodeLinks.AddRange( new MapNodeLinksMapper(
+    dto.MapNodeLinks.AddRange(new MapNodeLinksMapper(
       _logger,
       GetDbContext(),
       GetWikiProvider()).PhysicalToDto(phys.MapNodeLinksNodeId1Navigation.ToList()));
-
-    dto.MapNodeGroupRoles.AddRange(new MapNodeGroupRolesMapper(
-      _logger,
-      GetDbContext(),
-      GetWikiProvider()).PhysicalToDto(phys.MapNodeGrouproles.ToList()));
 
     return dto;
   }

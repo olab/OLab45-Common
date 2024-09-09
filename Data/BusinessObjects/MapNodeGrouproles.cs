@@ -22,10 +22,10 @@ public partial class MapNodeGrouproles
     public uint NodeId { get; set; }
 
     [Column("group_id", TypeName = "int(10) unsigned")]
-    public uint GroupId { get; set; }
+    public uint? GroupId { get; set; }
 
     [Column("role_id", TypeName = "int(10) unsigned")]
-    public uint RoleId { get; set; }
+    public uint? RoleId { get; set; }
 
     [ForeignKey("GroupId")]
     [InverseProperty("MapNodeGrouproles")]

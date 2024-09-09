@@ -35,7 +35,4 @@ public class MapNodesFullDto : MapNodesDto
   public uint? MapId { get; set; }
   public string Color { get; set; }
   public ScopedObjectsDto ScopedObjects { get; set; }
-
-  [JsonProperty("data")]
-  public MapNodesFullDto Data { get; set; }
 }
