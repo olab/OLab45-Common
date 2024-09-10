@@ -14,6 +14,7 @@ public class MapsNodesFullRelationsMapper : OLabMapper<MapNodes, MapsNodesFullRe
 {
   protected readonly bool enableWikiTranslation = false;
   private readonly QuestionReaderWriter _reader;
+  private readonly MapNodeGroupRolesMapper _groupRoleMapper;
 
   public MapsNodesFullRelationsMapper(
     IOLabLogger logger,
@@ -27,6 +28,9 @@ public class MapsNodesFullRelationsMapper : OLabMapper<MapNodes, MapsNodesFullRe
       GetLogger(),
       GetDbContext(),
       tagProvider);
+
+    _groupRoleMapper = new MapNodeGroupRolesMapper(GetLogger(), GetDbContext(), tagProvider);
+
   }
 
   /// <summary>
@@ -63,6 +67,10 @@ public class MapsNodesFullRelationsMapper : OLabMapper<MapNodes, MapsNodesFullRe
       _logger,
       GetDbContext(),
       GetWikiProvider()).PhysicalToDto(phys.MapNodeLinksNodeId1Navigation.ToList()));
+
+    dto.MapNodeGrouproles.Clear();
+    foreach (var groupRolePhys in phys.MapNodeGrouproles)
+      dto.MapNodeGrouproles.Add(_groupRoleMapper.PhysicalToDto(groupRolePhys));
 
     return dto;
   }

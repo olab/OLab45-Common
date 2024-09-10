@@ -6,6 +6,8 @@ public partial class Groups
 
   public override string ToString()
   {
-    return $"{Name}({Id})";
+    if ( Id != 0 )
+      return $"{Name}({Id})";
+    return null;
   }
 }

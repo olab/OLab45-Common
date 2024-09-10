@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 
 namespace OLab.Api.Dto;
 
@@ -35,4 +36,6 @@ public class MapNodesFullDto : MapNodesDto
   public uint? MapId { get; set; }
   public string Color { get; set; }
   public ScopedObjectsDto ScopedObjects { get; set; }
+  [JsonProperty("groupRoles")]
+  public IList<MapNodeGroupRolesDto> MapNodeGrouproles { get; } = new List<MapNodeGroupRolesDto>();
 }

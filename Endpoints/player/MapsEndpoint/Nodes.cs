@@ -34,6 +34,8 @@ public partial class MapsEndpoint : OLabEndpoint
     bool hideHidden,
     bool enableWikiTranslation = true)
   {
+    GetLogger().LogInformation($"MapsEndpoint.GetRawNodeAsync");
+
     MapsNodesFullRelationsDto dto;
     if (nodeId > 0)
     {
@@ -64,8 +66,6 @@ public partial class MapsEndpoint : OLabEndpoint
     uint nodeId,
     bool hideHidden = true)
   {
-    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
-
     var dto = await GetRawNodeAsync(mapId, nodeId, hideHidden);
 
     // now that we had a real node id, test if user has explicit no access to node.
@@ -74,6 +74,8 @@ public partial class MapsEndpoint : OLabEndpoint
       Utils.Constants.ScopeLevelNode,
       nodeId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, nodeId);
+
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
 
     // filter out any destination links the user
     // does not have access to 
@@ -108,11 +110,11 @@ public partial class MapsEndpoint : OLabEndpoint
     uint nodeId,
     DynamicScopedObjectsDto body)
   {
-    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync. new play? {body.NewPlay}");
-
     // test if user has access to map.
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync. new play? {body.NewPlay}");
 
     // dump out original dynamic objects for logging
     body.Dump(GetLogger(), "Original");
@@ -241,11 +243,11 @@ public partial class MapsEndpoint : OLabEndpoint
     uint nodeId
   )
   {
-    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.DeleteNodeAsync");
-
     // test if user has access to map.
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.DeleteNodeAsync");
 
     nodeId = await _mapNodesReader.DeleteNodeAsync(nodeId);
 
@@ -271,11 +273,11 @@ public partial class MapsEndpoint : OLabEndpoint
     [FromBody] MapNodesFullDto dto
   )
   {
-    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutNodeAsync");
-
     // test if user has access to map.
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutNodeAsync");
 
     var newId = await _mapNodesReader.PutNodeAsync(dto, GetWikiProvider());
 
@@ -295,7 +297,7 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <returns>MapsNodesFullRelationsDto</returns>
   private async Task<MapsNodesFullRelationsDto> GetRootNodeAsync(uint mapId, bool hideHidden)
   {
-    GetLogger().LogInformation($"MapsEndpoint.GetRootNodeAsync");
+    GetLogger().LogInformation($"MapsEndpoint.GetRootNodeAsync. mapId {mapId}");
 
     var phys = await _mapNodesReader.GetMapRootNode(mapId, 0);
     var mapper = new ObjectMapper.MapsNodesFullRelationsMapper(

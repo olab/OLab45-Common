@@ -1,6 +1,7 @@
 using AutoMapper.Internal.Mappers;
 using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Vml.Office;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -82,8 +84,10 @@ public partial class MapNodesReaderWriter : ReaderWriter
     var node = await GetDbContext().MapNodes
       .Include("MapNodeGrouproles")
       .FirstOrDefaultAsync(x => x.Id == id);
-    if (node.MapNodeGrouproles.Count == 0)
-      node.MapNodeGrouproles.Add(new MapNodeGrouproles { Id = 0, GroupId = null, RoleId = null });
+
+    // catch case of an uninitialized node with no group roles
+    await InitializeGroupRolesAsync(node);
+
     return node;
   }
 
@@ -96,9 +100,13 @@ public partial class MapNodesReaderWriter : ReaderWriter
   public async Task<MapNodes> GetNodeAsync(uint mapId, uint nodeId)
   {
     var node = await GetDbContext().MapNodes
-     .Include("MapNodeGrouproles")
+     .Include(c => c.MapNodeGrouproles).ThenInclude( d => d.Group )
+     .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Role)
      .FirstOrDefaultAsync(x => x.MapId == mapId && x.Id == nodeId);
-    node.MapNodeGrouproles.Add(new MapNodeGrouproles { Id = 0, GroupId = null, RoleId = null });
+
+    // catch case of an uninitialized node with no group roles
+    await InitializeGroupRolesAsync(node);
+
     return node;
   }
 
@@ -133,8 +141,7 @@ public partial class MapNodesReaderWriter : ReaderWriter
       .FirstAsync();
 
     // catch case of an uninitialized node with no group roles
-    node.MapNodeGrouproles.Add(
-      new MapNodeGrouproles { Id = 0, GroupId = null, RoleId = null });
+    await InitializeGroupRolesAsync(node);
 
     return node;
   }
@@ -202,6 +209,24 @@ public partial class MapNodesReaderWriter : ReaderWriter
   }
 
   /// <summary>
+  /// If a legacy map with no group roles, initialize
+  /// node with all-access record
+  /// </summary>
+  /// <param name="node">Node to evaluate</param>
+  private async Task InitializeGroupRolesAsync(MapNodes node)
+  {
+    if (node.MapNodeGrouproles.Count > 0)
+      return;
+
+    GetLogger().LogInformation($"initializing group/role for node {node.Title}({node.Id})");
+
+    node.MapNodeGrouproles.Add(new MapNodeGrouproles { Id = 0, GroupId = null, RoleId = null });
+
+    GetDbContext().MapNodes.Update(node);
+    await GetDbContext().SaveChangesAsync();
+  }
+
+  /// <summary>
   /// Edits a node
   /// </summary>
   /// <param name="dto">Map node dto</param>
@@ -222,35 +247,29 @@ public partial class MapNodesReaderWriter : ReaderWriter
         GetLogger(),
       GetDbContext(),
         wikiProvider);
-      var mapNodePhys = builder.DtoToPhysical(dto);
+      var newMapNodePhys = builder.DtoToPhysical(dto);
 
-      // patch up node size, just in case it's not set properly
-      if (mapNodePhys.Height == 0)
-        mapNodePhys.Height = 440;
-      if (mapNodePhys.Width == 0)
-        mapNodePhys.Width = 300;
+      // entity as it currently exists in the db
+      var dbMapNodePhys = GetDbContext().MapNodes.Include(c => c.MapNodeGrouproles)
+          .FirstOrDefault(g => g.Id == newMapNodePhys.Id);
+      // update properties on the parent
+      GetDbContext().Entry(dbMapNodePhys).CurrentValues.SetValues(newMapNodePhys);
 
-      IList<MapNodeGrouproles> nodeGroupRolesPhys = new List<MapNodeGrouproles>();
-      nodeGroupRolesPhys.AddRange(mapNodePhys.MapNodeGrouproles);
+      dbMapNodePhys.MapNodeGrouproles.Clear();
+      foreach (var groupRolePhys in newMapNodePhys.MapNodeGrouproles)
+        dbMapNodePhys.MapNodeGrouproles.Add(
+          new MapNodeGrouproles
+          {
+            GroupId = groupRolePhys.GroupId,
+            NodeId = groupRolePhys.NodeId,
+            RoleId = groupRolePhys.RoleId
+          }
+        );
 
-      // load the entity, then detach it so it can be editted
-      var tempMapNodePhys = GetDbContext().MapNodes.FirstOrDefault(x => x.Id == mapNodePhys.Id);
-      if (tempMapNodePhys != null)
-        GetDbContext().Entry(tempMapNodePhys).State = EntityState.Detached;
-
-      mapNodePhys.MapNodeGrouproles.Clear();
-      mapNodePhys.MapNodeGrouproles.AddRange(tempMapNodePhys.MapNodeGrouproles);
-
-      GetDbContext().MapNodes.Update(mapNodePhys);
       if (save)
         await GetDbContext().SaveChangesAsync();
 
       await transaction.CommitAsync();
-
-      await UpdateGroupRolesAsync(
-        mapNodePhys.Id, 
-        nodeGroupRolesPhys.ToList(), 
-        save);
 
     }
     catch (Exception)
@@ -261,24 +280,6 @@ public partial class MapNodesReaderWriter : ReaderWriter
 
     return dto.Id.Value;
 
-  }
-
-  private async Task<IList<MapNodeGrouproles>> UpdateGroupRolesAsync(
-    uint mapNodeId, 
-    List<MapNodeGrouproles> mapNodeGroupRolesPhys, 
-    bool save)
-  {
-    foreach (var mapNodeGroupRolePhys in mapNodeGroupRolesPhys)
-    {
-      mapNodeGroupRolePhys.NodeId = mapNodeId;
-      GetDbContext().MapNodeGrouproles.Add(mapNodeGroupRolePhys);
-
-    }
-
-    if (save)
-      await GetDbContext().SaveChangesAsync();
-
-    return mapNodeGroupRolesPhys.ToList();
   }
 
   /// <summary>

@@ -14,16 +14,38 @@ public class MapNodeGroupRolesMapper : OLabMapper<MapNodeGrouproles, MapNodeGrou
   {
   }
 
-  public override MapNodeGroupRolesDto PhysicalToDto(MapNodeGrouproles phys)
+  public override MapNodeGroupRolesDto PhysicalToDto(
+    MapNodeGrouproles phys,
+    MapNodeGroupRolesDto dto)
   {
-    var dto = base.PhysicalToDto(phys);
+    dto.Id = phys.Id;
+    dto.NodeId = phys.NodeId;
 
     if (phys.Group != null)
       dto.GroupName = phys.Group.Name;
 
-    if (phys.Group != null)
+    if (phys.Role != null)
       dto.RoleName = phys.Role.Name;
 
     return dto;
   }
+
+  public override MapNodeGrouproles DtoToPhysical(
+    MapNodeGroupRolesDto dto,
+    MapNodeGrouproles phys)
+  {
+    phys.NodeId = dto.NodeId;
+
+    if (dto.Id.HasValue)
+      phys.Id = dto.Id.Value;
+
+    if (dto.GroupId == null)
+      phys.Group = null;
+
+    if (dto.RoleId == null)
+      phys.Role = null;
+
+    return phys;
+  }
+
 }
