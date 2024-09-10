@@ -101,8 +101,6 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<MapGrouproles> MapGrouproles { get; set; }
 
-    public virtual DbSet<MapGroups> MapGroups { get; set; }
-
     public virtual DbSet<MapKeys> MapKeys { get; set; }
 
     public virtual DbSet<MapNodeCounters> MapNodeCounters { get; set; }
@@ -598,17 +596,6 @@ public partial class OLabDBContext : DbContext
             entity.HasOne(d => d.Map).WithMany(p => p.MapGrouproles).HasConstraintName("mgr_ibfk_node");
 
             entity.HasOne(d => d.Role).WithMany(p => p.MapGrouproles).HasConstraintName("mgr_ibfk_role");
-        });
-
-        modelBuilder.Entity<MapGroups>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.HasOne(d => d.Group).WithMany(p => p.MapGroups)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("mp_ibfk_group");
-
-            entity.HasOne(d => d.Map).WithMany(p => p.MapGroups).HasConstraintName("mp_ibfk_map");
         });
 
         modelBuilder.Entity<MapKeys>(entity =>

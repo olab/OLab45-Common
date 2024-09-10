@@ -31,9 +31,6 @@ public partial class Groups
     public virtual ICollection<MapGrouproles> MapGrouproles { get; } = new List<MapGrouproles>();
 
     [InverseProperty("Group")]
-    public virtual ICollection<MapGroups> MapGroups { get; } = new List<MapGroups>();
-
-    [InverseProperty("Group")]
     public virtual ICollection<MapNodeGrouproles> MapNodeGrouproles { get; } = new List<MapNodeGrouproles>();
 
     [InverseProperty("Group")]

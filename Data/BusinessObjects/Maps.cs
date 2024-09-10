@@ -177,9 +177,6 @@ public partial class Maps
     public virtual ICollection<MapGrouproles> MapGrouproles { get; } = new List<MapGrouproles>();
 
     [InverseProperty("Map")]
-    public virtual ICollection<MapGroups> MapGroups { get; } = new List<MapGroups>();
-
-    [InverseProperty("Map")]
     public virtual ICollection<MapKeys> MapKeys { get; } = new List<MapKeys>();
 
     [InverseProperty("Map")]
