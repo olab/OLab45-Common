@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -172,6 +172,9 @@ public partial class Maps
 
     [InverseProperty("Map")]
     public virtual ICollection<MapFeedbackRules> MapFeedbackRules { get; } = new List<MapFeedbackRules>();
+
+    [InverseProperty("Map")]
+    public virtual ICollection<MapGrouproles> MapGrouproles { get; } = new List<MapGrouproles>();
 
     [InverseProperty("Map")]
     public virtual ICollection<MapGroups> MapGroups { get; } = new List<MapGroups>();

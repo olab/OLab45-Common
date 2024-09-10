@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -26,6 +26,9 @@ public partial class Groups
 
     [InverseProperty("Group")]
     public virtual ICollection<GrouproleAcls> GrouproleAcls { get; } = new List<GrouproleAcls>();
+
+    [InverseProperty("Group")]
+    public virtual ICollection<MapGrouproles> MapGrouproles { get; } = new List<MapGrouproles>();
 
     [InverseProperty("Group")]
     public virtual ICollection<MapGroups> MapGroups { get; } = new List<MapGroups>();

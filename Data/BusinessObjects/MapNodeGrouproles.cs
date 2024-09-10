@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,11 +7,9 @@ using Microsoft.EntityFrameworkCore;
 namespace OLab.Api.Model;
 
 [Table("map_node_grouproles")]
-[Index("GroupId", Name = "ifk_mngr_group_idx")]
-[Index("NodeId", Name = "ifk_mngr_node_idx")]
-[Index("RoleId", Name = "ifk_mngr_role_idx")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[Index("GroupId", Name = "group_id")]
+[Index("NodeId", Name = "mngr_ibfk_node_idx")]
+[Index("RoleId", Name = "role_id")]
 public partial class MapNodeGrouproles
 {
     [Key]

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
@@ -98,6 +98,8 @@ public partial class OLabDBContext : DbContext
     public virtual DbSet<MapFeedbackRules> MapFeedbackRules { get; set; }
 
     public virtual DbSet<MapFeedbackTypes> MapFeedbackTypes { get; set; }
+
+    public virtual DbSet<MapGrouproles> MapGrouproles { get; set; }
 
     public virtual DbSet<MapGroups> MapGroups { get; set; }
 
@@ -587,6 +589,17 @@ public partial class OLabDBContext : DbContext
             entity.HasKey(e => e.Id).HasName("PRIMARY");
         });
 
+        modelBuilder.Entity<MapGrouproles>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.HasOne(d => d.Group).WithMany(p => p.MapGrouproles).HasConstraintName("mgr_ibfk_group");
+
+            entity.HasOne(d => d.Map).WithMany(p => p.MapGrouproles).HasConstraintName("mgr_ibfk_node");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.MapGrouproles).HasConstraintName("mgr_ibfk_role");
+        });
+
         modelBuilder.Entity<MapGroups>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -618,11 +631,11 @@ public partial class OLabDBContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.HasOne(d => d.Group).WithMany(p => p.MapNodeGrouproles).HasConstraintName("ifk_mngr_group");
+            entity.HasOne(d => d.Group).WithMany(p => p.MapNodeGrouproles).HasConstraintName("mngr_ibfk_group");
 
-            entity.HasOne(d => d.Node).WithMany(p => p.MapNodeGrouproles).HasConstraintName("ifk_mngr_node");
+            entity.HasOne(d => d.Node).WithMany(p => p.MapNodeGrouproles).HasConstraintName("mngr_ibfk_node");
 
-            entity.HasOne(d => d.Role).WithMany(p => p.MapNodeGrouproles).HasConstraintName("ifk_mngr_role");
+            entity.HasOne(d => d.Role).WithMany(p => p.MapNodeGrouproles).HasConstraintName("mngr_ibfk_role");
         });
 
         modelBuilder.Entity<MapNodeJumps>(entity =>
