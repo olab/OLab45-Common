@@ -100,7 +100,7 @@ public partial class MapNodesReaderWriter : ReaderWriter
   public async Task<MapNodes> GetNodeAsync(uint mapId, uint nodeId)
   {
     var node = await GetDbContext().MapNodes
-     .Include(c => c.MapNodeGrouproles).ThenInclude( d => d.Group )
+     .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Group)
      .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Role)
      .FirstOrDefaultAsync(x => x.MapId == mapId && x.Id == nodeId);
 
@@ -122,12 +122,14 @@ public partial class MapNodesReaderWriter : ReaderWriter
 
     if (nodeId != 0)
       node = await GetDbContext().MapNodes
-        .Include("MapNodeGrouproles")
+        .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Group)
+        .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Role)
         .Where(x => x.MapId == mapId && x.Id == nodeId)
         .FirstOrDefaultAsync(x => x.Id == nodeId);
     else
       node = await GetDbContext().MapNodes
-          .Include("MapNodeGrouproles")
+          .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Group)
+          .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Role)
           .Where(x => x.MapId == mapId && x.TypeId == 1)
           .FirstOrDefaultAsync(x => x.Id == nodeId);
 
@@ -135,7 +137,8 @@ public partial class MapNodesReaderWriter : ReaderWriter
     // in database
     if (node == null)
       node = await GetDbContext().MapNodes
-        .Include("MapNodeGrouproles")
+        .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Group)
+        .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Role)
         .Where(x => x.MapId == mapId)
         .OrderBy(x => x.Id)
       .FirstAsync();
@@ -183,7 +186,8 @@ public partial class MapNodesReaderWriter : ReaderWriter
 
     var linkedNodes =
       GetDbContext().MapNodes
-        .Include("MapNodeGrouproles")
+        .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Group)
+        .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Role)
         .Where(x => linkedIds.Contains(x.Id)).ToList();
 
     // add destination node title to link information
@@ -323,6 +327,5 @@ public partial class MapNodesReaderWriter : ReaderWriter
     return nodeId;
 
   }
-
 
 }

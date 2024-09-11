@@ -127,7 +127,7 @@ public partial class MapsEndpoint : OLabEndpoint
           dtoList.Add(tempDtoItem);
     }
 
-    GetLogger().LogInformation(string.Format("have access to {0} maps", dtoList.Count));
+    GetLogger().LogInformation(string.Format($"have access to {dtoList.Count}/{total} maps"));
 
     return new OLabAPIPagedResponse<MapsDto> { Data = dtoList, Remaining = remaining, Count = total };
   }
