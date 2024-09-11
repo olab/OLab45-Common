@@ -162,7 +162,6 @@ public partial class MapsEndpoint : OLabEndpoint
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
     var mapDto = new MapsFullRelationsMapper(
-
         GetLogger(),
         GetDbContext(),
         GetWikiProvider(),
@@ -187,11 +186,16 @@ public partial class MapsEndpoint : OLabEndpoint
       Author = author,
       CreatedAt = createdAt,
       Abstract = mapDto.Map.Abstract,
-      Groups = mapDto.Map.MapGroups.Select( x => x.GroupName).ToList()
     };
 
-    return dto;
+    foreach (var mapGroupRole in mapDto.Map.MapGroupRoles)
+    {
+      var groupName = mapGroupRole.GroupId.HasValue ? mapGroupRole.GroupName : "*";
+      var roleName = mapGroupRole.RoleId.HasValue ? mapGroupRole.RoleName : "*";
+      dto.GroupsRoles.Add($"{groupName}{UserGrouproles.PartSeparator}{roleName}");
+    }
 
+    return dto;
   }
 
   /// <summary>

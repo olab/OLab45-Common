@@ -28,12 +28,18 @@ public partial class MapNodesReaderWriter : ReaderWriter
 {
   private WikiTagModuleProvider _tagProvider;
 
-  public static MapNodesReaderWriter Instance(IOLabLogger logger, OLabDBContext context, WikiTagModuleProvider tagProvider)
+  public static MapNodesReaderWriter Instance(
+    IOLabLogger logger,
+    OLabDBContext context,
+    WikiTagModuleProvider tagProvider)
   {
     return new MapNodesReaderWriter(logger, context, tagProvider);
   }
 
-  public MapNodesReaderWriter(IOLabLogger logger, OLabDBContext context, WikiTagModuleProvider tagProvider) : base(logger, context)
+  public MapNodesReaderWriter(
+    IOLabLogger logger,
+    OLabDBContext context,
+    WikiTagModuleProvider tagProvider) : base(logger, context)
   {
     _tagProvider = tagProvider;
   }
@@ -45,7 +51,8 @@ public partial class MapNodesReaderWriter : ReaderWriter
   /// <returns>List of nodes</returns>
   public async Task<IList<MapNodes>> GetNodesAsync(IList<uint> ids)
   {
-    var nodesPhys = await GetDbContext().MapNodes.Where(x => ids.Contains(x.Id)).ToListAsync();
+    var nodesPhys = await GetDbContext().MapNodes
+      .Where(x => ids.Contains(x.Id)).ToListAsync();
     return nodesPhys;
   }
 
@@ -186,8 +193,6 @@ public partial class MapNodesReaderWriter : ReaderWriter
 
     var linkedNodes =
       GetDbContext().MapNodes
-        .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Group)
-        .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Role)
         .Where(x => linkedIds.Contains(x.Id)).ToList();
 
     // add destination node title to link information

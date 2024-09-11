@@ -19,92 +19,13 @@ namespace OLab.Api.Endpoints.Player;
 public partial class MapsEndpoint : OLabEndpoint
 {
   /// <summary>
-  /// Gets a node, with no security
-  /// </summary>
-  /// <param name="mapId">Map Id</param>
-  /// <param name="nodeId">Node Id</param>
-  /// <param name="hideHidden">Flag to hide hidden links</param>
-  /// <param name="enableWikiTranslation">Flag to (dis)able wiki tag translation</param>
-  /// <returns>MapsNodesFullRelationsDto</returns>
-  /// <exception cref="OLabObjectNotFoundException"></exception>
-  /// <exception cref="OLabGeneralException"></exception>
-  public async Task<MapsNodesFullRelationsDto> GetRawNodeAsync(
-    uint mapId,
-    uint nodeId,
-    bool hideHidden,
-    bool enableWikiTranslation = true)
-  {
-    GetLogger().LogInformation($"MapsEndpoint.GetRawNodeAsync");
-
-    MapsNodesFullRelationsDto dto;
-    if (nodeId > 0)
-    {
-      dto = await GetNodeAsync(mapId, nodeId, hideHidden, enableWikiTranslation);
-      if (!dto.Id.HasValue)
-        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, nodeId);
-    }
-    else
-    {
-      dto = await GetRootNodeAsync(mapId, hideHidden);
-      if (!dto.Id.HasValue)
-        throw new OLabGeneralException($"map {mapId} has no root node");
-    }
-
-    return dto;
-  }
-
-  /// <summary>
-  /// ReadAsync map node with out scoped objects
-  /// </summary>
-  /// <param name="mapId">map id</param>
-  /// <param name="nodeId">node id</param>
-  /// <param name="hideHidden">Flag to suppress hidden links</param>
-  /// <returns>MapsNodesFullRelationsDto</returns>
-  public async Task<MapsNodesFullRelationsDto> GetMapNodeAsync(
-    IOLabAuthorization auth,
-    uint mapId,
-    uint nodeId,
-    bool hideHidden = true)
-  {
-    var dto = await GetRawNodeAsync(mapId, nodeId, hideHidden);
-
-    // now that we had a real node id, test if user has explicit no access to node.
-    if (await auth.HasAccessAsync(
-      IOLabAuthorization.AclBitMaskNoAccess,
-      Utils.Constants.ScopeLevelNode,
-      nodeId))
-      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, nodeId);
-
-    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync");
-
-    // filter out any destination links the user
-    // does not have access to 
-    var filteredLinks = new List<MapNodeLinksDto>();
-    foreach (var mapNodeLink in dto.MapNodeLinks)
-    {
-      if (await auth.HasAccessAsync(
-        IOLabAuthorization.AclBitMaskNoAccess,
-        Utils.Constants.ScopeLevelNode,
-        mapNodeLink.DestinationId))
-        continue;
-
-      filteredLinks.Add(mapNodeLink);
-    }
-
-    // replace original map node links with acl-filtered links
-    dto.MapNodeLinks = filteredLinks;
-
-    return dto;
-  }
-
-  /// <summary>
   /// Plays specific map node
   /// </summary>
   /// <param name="mapId">map id</param>
   /// <param name="nodeId">node id</param>
   /// <param name="sessionId">session id</param>
   /// <returns>IActionResult</returns>
-  public async Task<MapsNodesFullRelationsDto> PostMapNodeAsync(
+  public async Task<MapsNodesFullRelationsDto> PlayMapNodeAsync(
     IOLabAuthorization auth,
     uint mapId,
     uint nodeId,
@@ -114,7 +35,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
-    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetMapNodeAsync. new play? {body.NewPlay}");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PlayMapNodeAsync: map {mapId}, node {nodeId}, new play? {body.NewPlay}");
 
     // dump out original dynamic objects for logging
     body.Dump(GetLogger(), "Original");
@@ -129,13 +50,15 @@ public partial class MapsEndpoint : OLabEndpoint
 
     var dto = await GetRawNodeAsync(mapId, nodeId, true);
 
-    // now that we had a real node id, test if user has access to node.
+    // now that we had a real node id (because the call may be asking for node '0', which
+    // is the map root node), test if user has access to node.
     if (!await auth.HasAccessAsync(
       IOLabAuthorization.AclBitMaskRead,
       Utils.Constants.ScopeLevelNode,
       dto.Id.Value))
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelNode, dto.Id.Value);
 
+    // get all nodes for the map
     var mapNodesPhys = await _nodesReaderWriter.GetByMapAsync(mapId);
 
     // filter out any destination links the user
@@ -227,6 +150,41 @@ public partial class MapsEndpoint : OLabEndpoint
     dto.DynamicObjects.NodesVisited = body.NodesVisited;
     if (!body.NodesVisited.Contains(dto.Id.Value))
       dto.DynamicObjects.NodesVisited.Add(dto.Id.Value);
+
+    return dto;
+  }
+
+  /// <summary>
+  /// Gets a node, with no security
+  /// </summary>
+  /// <param name="mapId">Map Id</param>
+  /// <param name="nodeId">Node Id</param>
+  /// <param name="hideHidden">Flag to hide hidden links</param>
+  /// <param name="enableWikiTranslation">Flag to (dis)able wiki tag translation</param>
+  /// <returns>MapsNodesFullRelationsDto</returns>
+  /// <exception cref="OLabObjectNotFoundException"></exception>
+  /// <exception cref="OLabGeneralException"></exception>
+  public async Task<MapsNodesFullRelationsDto> GetRawNodeAsync(
+    uint mapId,
+    uint nodeId,
+    bool hideHidden,
+    bool enableWikiTranslation = true)
+  {
+    GetLogger().LogInformation($"MapsEndpoint.GetRawNodeAsync");
+
+    MapsNodesFullRelationsDto dto;
+    if (nodeId > 0)
+    {
+      dto = await GetNodeAsync(mapId, nodeId, hideHidden, enableWikiTranslation);
+      if (!dto.Id.HasValue)
+        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelNode, nodeId);
+    }
+    else
+    {
+      dto = await GetRootNodeAsync(mapId, hideHidden);
+      if (!dto.Id.HasValue)
+        throw new OLabGeneralException($"map {mapId} has no root node");
+    }
 
     return dto;
   }

@@ -67,14 +67,14 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     if (mapPhys == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, dto.MapId);
 
-    var mapGroupPhys = mapPhys.MapGrouproles.FirstOrDefault(x => x.GroupId == dto.GroupId);
+    var mapGroupPhys = mapPhys.MapGrouproles.FirstOrDefault(x => x.Id == dto.Id);
     if (mapGroupPhys != null)
     {
       mapPhys.MapGrouproles.Remove(mapGroupPhys);
       GetDbContext().SaveChanges();
     }
     else
-      throw new OLabObjectNotFoundException("MapGroup", dto.GroupId);
+      throw new OLabObjectNotFoundException("MapGroupRole", dto.Id);
 
     return mapper.PhysicalToDto(mapPhys.MapGrouproles.ToList());
 
@@ -110,14 +110,24 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     if (mapPhys == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, dto.MapId);
 
-    var reader = GroupReaderWriter.Instance(GetLogger(), GetDbContext());
+    if (dto.GroupId.HasValue)
+    {
+      var reader = GroupReaderWriter.Instance(GetLogger(), GetDbContext());
+      // ensure group exists
+      if (await reader.ExistsAsync(dto.GroupId.ToString()))
+        throw new OLabObjectNotFoundException("Group", dto.GroupId.Value);
+    }
 
-    // ensure group exists
-    if (await reader.ExistsAsync(dto.GroupId.ToString()))
-      throw new OLabObjectNotFoundException("Group", dto.GroupId);
+    if (dto.RoleId.HasValue)
+    {
+      var reader = RoleReaderWriter.Instance(GetLogger(), GetDbContext());
+      // ensure role exists
+      if (await reader.ExistsAsync(dto.RoleId.ToString()))
+        throw new OLabObjectNotFoundException("Role", dto.RoleId.Value);
+    }
 
     // test if doesn't already exist
-    if (!mapPhys.MapGrouproles.Any(x => x.GroupId == dto.GroupId))
+    if (!mapPhys.MapGrouproles.Any(x => x.GroupId == dto.GroupId && x.RoleId == dto.RoleId ))
     {
       var mapGroupPhys = mapper.DtoToPhysical(dto);
       mapPhys.MapGrouproles.Add(mapGroupPhys);

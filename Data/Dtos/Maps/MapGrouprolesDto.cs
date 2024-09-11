@@ -9,11 +9,11 @@ public partial class MapGrouprolesDto
   [JsonProperty("mapId")]
   public uint MapId { get; set; }
   [JsonProperty("groupId")]
-  public uint GroupId { get; set; }
+  public uint? GroupId { get; set; }
   [JsonProperty("groupName")]
   public string GroupName { get; set; }
   [JsonProperty("roleId")]
-  public uint RoleId { get; set; }
+  public uint? RoleId { get; set; }
   [JsonProperty("roleName")]
   public string RoleName { get; set; }
 

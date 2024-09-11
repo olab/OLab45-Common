@@ -36,7 +36,7 @@ public class MapGrouprolesMapper : OLabMapper<MapGrouproles, MapGrouprolesDto>
     if (phys.Group != null)
       dto.GroupName = phys.Group.Name;
 
-    if (phys.Role!= null)
+    if (phys.Role != null)
       dto.RoleName = phys.Role.Name;
 
     return dto;
@@ -68,13 +68,19 @@ public class MapGrouprolesMapper : OLabMapper<MapGrouproles, MapGrouprolesDto>
   {
     var phys = base.DtoToPhysical(dto);
 
-    phys.Group = dbContext.Groups.FirstOrDefault(x => x.Id == dto.GroupId);
-    if (phys.Group == null)
-      throw new OLabObjectNotFoundException("Groups", dto.GroupId);
+    if (dto.GroupId.HasValue)
+    {
+      phys.Group = dbContext.Groups.FirstOrDefault(x => x.Id == dto.GroupId.Value);
+      if (phys.Group == null)
+        throw new OLabObjectNotFoundException("Groups", dto.GroupId.Value);
+    }
 
-    phys.Role = dbContext.Roles.FirstOrDefault(x => x.Id == dto.RoleId);
-    if (phys.Role == null)
-      throw new OLabObjectNotFoundException("Roles", dto.RoleId);
+    if (dto.RoleId.HasValue)
+    {
+      phys.Role = dbContext.Roles.FirstOrDefault(x => x.Id == dto.RoleId.Value);
+      if (phys.Role == null)
+        throw new OLabObjectNotFoundException("Roles", dto.RoleId.Value);
+    }
 
     return phys;
   }

@@ -47,6 +47,34 @@ public class MapsNodesFullRelationsMapper : OLabMapper<MapNodes, MapsNodesFullRe
     });
   }
 
+  public override MapsNodesFullRelationsDto PhysicalToDto(MapNodes phys)
+  {
+    // explicitly load the related objects.
+    GetDbContext().Entry(phys).Collection(b => b.MapNodeLinksNodeId1Navigation).Load();
+
+    var dto = base.PhysicalToDto(phys);
+
+    var linkedIds =
+      phys.MapNodeLinksNodeId1Navigation.Select(x => x.NodeId2).Distinct().ToList();
+
+    var nodesReaderWriter = new MapNodesReaderWriter(GetLogger(), GetDbContext(), GetWikiProvider());
+    var linkedNodes = nodesReaderWriter.GetNodesAsync(linkedIds).GetAwaiter().GetResult();
+
+    // add destination node title to link information
+    foreach (var item in dto.MapNodeLinks)
+    {
+      var link = linkedNodes.Where(x => x.Id == item.DestinationId).FirstOrDefault();
+      item.DestinationTitle = linkedNodes
+        .Where(x => x.Id == item.DestinationId)
+        .Select(x => x.Title).FirstOrDefault();
+
+      if (string.IsNullOrEmpty(item.LinkText))
+        item.LinkText = item.DestinationTitle;
+    }
+
+    return dto;
+  }
+
   public override MapsNodesFullRelationsDto PhysicalToDto(
     MapNodes phys,
     MapsNodesFullRelationsDto dto)

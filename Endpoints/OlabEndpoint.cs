@@ -211,23 +211,6 @@ public class OLabEndpoint
       enableWikiTranslation);
     var dto = mapper.PhysicalToDto(phys);
 
-    var linkedIds =
-      phys.MapNodeLinksNodeId1Navigation.Select(x => x.NodeId2).Distinct().ToList();
-
-    var linkedNodes = await _nodesReaderWriter.GetNodesAsync(linkedIds);
-
-    // add destination node title to link information
-    foreach (var item in dto.MapNodeLinks)
-    {
-      var link = linkedNodes.Where(x => x.Id == item.DestinationId).FirstOrDefault();
-      item.DestinationTitle = linkedNodes
-        .Where(x => x.Id == item.DestinationId)
-        .Select(x => x.Title).FirstOrDefault();
-
-      if (string.IsNullOrEmpty(item.LinkText))
-        item.LinkText = item.DestinationTitle;
-    }
-
     // if asked for, remove any hidden links
     if (hideHidden)
     {
