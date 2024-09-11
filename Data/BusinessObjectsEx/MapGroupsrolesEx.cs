@@ -5,15 +5,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
-public partial class MapGroups
+public partial class MapGrouproles
 {
-  public MapGroups()
+  public MapGrouproles()
   {
 
   }
-  public MapGroups(uint mapId, uint groupId)
+  public MapGrouproles(uint mapId, uint? groupId, uint? roleId)
   {
     MapId = mapId;
     GroupId = groupId;
+    RoleId = roleId;
   }
 }

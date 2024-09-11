@@ -30,7 +30,7 @@ public class MapsFullMapper : OLabMapper<Model.Maps, MapsFullDto>
       cfg.CreateMap<Maps, MapsFullDto>()
         .ForMember(dest => dest.Description, act => act.MapFrom(src => src.Abstract))
         .ReverseMap();
-      cfg.CreateMap<MapGroups, MapGroupsDto>().ReverseMap();
+      cfg.CreateMap<MapGrouproles, MapGrouprolesDto>().ReverseMap();
     });
 
   }

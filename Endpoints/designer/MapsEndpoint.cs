@@ -654,7 +654,7 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <param name="groupIds">List of group ids</param>
   /// <returns>New list of map groups</returns>
   ///   
-  public async Task<IList<MapGroupsDto>> GetMapGroupsAsync(IOLabAuthorization auth, uint mapId)
+  public async Task<IList<MapGrouprolesDto>> GetMapGroupsAsync(IOLabAuthorization auth, uint mapId)
   {
     // test if user has access to map.
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId))
@@ -662,12 +662,12 @@ public partial class MapsEndpoint : OLabEndpoint
 
     var readWriter = MapsReaderWriter.Instance(GetLogger(), GetDbContext());
 
-    var mapPhys = await readWriter.GetSingleWithGroupsAsync(mapId);
+    var mapPhys = await readWriter.GetSingleWithGroupRolesAsync(mapId);
     if (mapPhys == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
-    var mapper = new MapGroupsMapper(GetLogger(), GetDbContext());
-    var mapGroupDto = mapper.PhysicalToDto(mapPhys.MapGroups.ToList());
+    var mapper = new MapGrouprolesMapper(GetLogger(), GetDbContext());
+    var mapGroupDto = mapper.PhysicalToDto(mapPhys.MapGrouproles.ToList());
 
     return mapGroupDto;
   }
@@ -679,7 +679,7 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <param name="groupIds">List of group ids</param>
   /// <returns>New list of map groups</returns>
   ///   
-  public async Task<IList<MapGroupsDto>> PutMapGroupsAsync(IOLabAuthorization auth, uint mapId, uint[] groupIds)
+  public async Task<IList<MapGrouprolesDto>> PutMapGroupsAsync(IOLabAuthorization auth, uint mapId, IList<MapGrouprolesDto> groupRolesDto)
   {
     // test if user has access to map.
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId))
@@ -687,13 +687,14 @@ public partial class MapsEndpoint : OLabEndpoint
 
     var readWriter = MapsReaderWriter.Instance(GetLogger(), GetDbContext());
 
-    var mapPhys = await readWriter.GetSingleWithGroupsAsync(mapId);
+    var mapPhys = await readWriter.GetSingleWithGroupRolesAsync(mapId);
     if (mapPhys == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
-    var mapGroupsPhys = await readWriter.UpdateGroupsAsync(mapId, groupIds);
+    var mapper = new MapGrouprolesMapper(GetLogger(), GetDbContext());
+    var mapGroupRolesPhys = mapper.DtoToPhysical(groupRolesDto);
 
-    var mapper = new MapGroupsMapper(GetLogger(), GetDbContext());
+    var mapGroupsPhys = await readWriter.UpdateGroupRolesAsync(mapId, mapGroupRolesPhys);
     var mapGroupDto = mapper.PhysicalToDto(mapGroupsPhys);
 
     return mapGroupDto;

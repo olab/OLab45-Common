@@ -147,7 +147,8 @@ public partial class MapsEndpoint : OLabEndpoint
     var mapPhys = await GetDbContext().Maps
       .Include(map => map.MapNodes)
       .Include(map => map.MapNodeLinks)
-      .Include(map => map.MapGroups).ThenInclude( y => y.Group)
+      .Include(map => map.MapGrouproles).ThenInclude( y => y.Group)
+      .Include(map => map.MapGrouproles).ThenInclude( y => y.Role)
 
       .AsNoTracking()
       .FirstOrDefaultAsync(
@@ -305,7 +306,7 @@ public partial class MapsEndpoint : OLabEndpoint
     GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.ReadAsync");
 
     var readerWriter = MapsReaderWriter.Instance(GetLogger(), GetDbContext());
-    var map = await readerWriter.GetSingleWithGroupsAsync(id);
+    var map = await readerWriter.GetSingleWithGroupRolesAsync(id);
     if (map == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
 

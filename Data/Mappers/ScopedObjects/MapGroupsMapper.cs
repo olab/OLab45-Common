@@ -9,11 +9,11 @@ using OLab.Api.WikiTag;
 
 namespace OLab.Api.ObjectMapper;
 
-public class MapGroupsMapper : OLabMapper<MapGroups, MapGroupsDto>
+public class MapGrouprolesMapper : OLabMapper<MapGrouproles, MapGrouprolesDto>
 {
   private readonly OLabDBContext dbContext;
 
-  public MapGroupsMapper(
+  public MapGrouprolesMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
     bool enableWikiTranslation = true) : base(logger, dbContext)
@@ -21,7 +21,7 @@ public class MapGroupsMapper : OLabMapper<MapGroups, MapGroupsDto>
     this.dbContext = dbContext;
   }
 
-  public MapGroupsMapper(
+  public MapGrouprolesMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,
@@ -29,43 +29,52 @@ public class MapGroupsMapper : OLabMapper<MapGroups, MapGroupsDto>
   {
   }
 
-  public override MapGroupsDto PhysicalToDto(MapGroups phys)
+  public override MapGrouprolesDto PhysicalToDto(MapGrouproles phys)
   {
     var dto = base.PhysicalToDto(phys);
 
     if (phys.Group != null)
       dto.GroupName = phys.Group.Name;
 
+    if (phys.Role!= null)
+      dto.RoleName = phys.Role.Name;
+
     return dto;
   }
 
-  public MapGroups DtoToPhysical(uint mapId, GroupsDto dto)
+  public MapGrouproles DtoToPhysical(uint mapId, MapGrouprolesDto dto)
   {
-    var mapGroupPhys = new MapGroups
+    var mapGroupPhys = new MapGrouproles
     {
+      Id = dto.Id,
       MapId = mapId,
-      GroupId = dto.Id
+      GroupId = dto.Id,
+      RoleId = dto.RoleId
     };
 
     return mapGroupPhys;
   }
 
-  public IList<MapGroups> DtoToPhysical(uint mapId, IList<GroupsDto> dtos)
+  public IList<MapGrouproles> DtoToPhysical(uint mapId, IList<MapGrouprolesDto> dtos)
   {
-    var mapGroupsPhys = new List<MapGroups>();
+    var MapGrouprolesPhys = new List<MapGrouproles>();
     foreach (var dto in dtos)
-      mapGroupsPhys.Add(DtoToPhysical(mapId, dto));
+      MapGrouprolesPhys.Add(DtoToPhysical(mapId, dto));
 
-    return mapGroupsPhys;
+    return MapGrouprolesPhys;
   }
 
-  public override MapGroups DtoToPhysical(MapGroupsDto dto)
+  public override MapGrouproles DtoToPhysical(MapGrouprolesDto dto)
   {
     var phys = base.DtoToPhysical(dto);
 
     phys.Group = dbContext.Groups.FirstOrDefault(x => x.Id == dto.GroupId);
     if (phys.Group == null)
       throw new OLabObjectNotFoundException("Groups", dto.GroupId);
+
+    phys.Role = dbContext.Roles.FirstOrDefault(x => x.Id == dto.RoleId);
+    if (phys.Role == null)
+      throw new OLabObjectNotFoundException("Roles", dto.RoleId);
 
     return phys;
   }

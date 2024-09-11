@@ -128,7 +128,7 @@ public partial class GroupsEndpoint : OLabEndpoint
       throw new OLabUnauthorizedException();
 
     // test if in use somewhere
-    var inUse = await GetDbContext().MapGroups.AnyAsync(x => x.GroupId == phys.Id) ||
+    var inUse = await GetDbContext().MapGrouproles.AnyAsync(x => x.GroupId == phys.Id) ||
                 await GetDbContext().UserGrouproles.AnyAsync(x => x.GroupId == phys.Id);
     if (inUse)
       throw new OLabGeneralException($"Group '{source}' in use.");

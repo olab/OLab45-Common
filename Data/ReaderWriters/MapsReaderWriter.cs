@@ -101,11 +101,11 @@ public partial class MapsReaderWriter : ReaderWriter
     return phys;
   }
 
-  public async Task<Maps> GetSingleWithGroupsAsync(uint id)
+  public async Task<Maps> GetSingleWithGroupRolesAsync(uint id)
   {
     var phys = await GetDbContext().Maps
-      .Include("MapGroups")
-      .Include("MapGroups.Group")
+      .Include(c => c.MapGrouproles).ThenInclude(d => d.Group)
+      .Include(c => c.MapGrouproles).ThenInclude(d => d.Role)
       .FirstOrDefaultAsync(x => x.Id == id);
 
     if (phys.Id == 0)
@@ -138,22 +138,22 @@ public partial class MapsReaderWriter : ReaderWriter
     }
     else
     {
-      IList<MapGroups> newMapGroupsPhys = new List<MapGroups>();
-      newMapGroupsPhys.AddRange( newMapPhys.MapGroups );
+      var newMapGroupsPhys = new List<MapGrouproles>();
+      newMapGroupsPhys.AddRange(newMapPhys.MapGrouproles);
 
       // load the entity, then detach it so it can be editted
       var tempMapPhys = GetDbContext().Maps.FirstOrDefault(x => x.Id == newMapPhys.Id);
       if (tempMapPhys != null)
         GetDbContext().Entry(tempMapPhys).State = EntityState.Detached;
 
-      newMapPhys.MapGroups.Clear();
-      newMapPhys.MapGroups.AddRange(tempMapPhys.MapGroups);
+      newMapPhys.MapGrouproles.Clear();
+      newMapPhys.MapGrouproles.AddRange(tempMapPhys.MapGrouproles);
 
       GetDbContext().Maps.Update(newMapPhys);
       if (save)
         await GetDbContext().SaveChangesAsync();
 
-      await UpdateGroupsAsync(newMapPhys.Id, newMapGroupsPhys.ToList(), save);
+      await UpdateGroupRolesAsync(newMapPhys.Id, newMapGroupsPhys.ToList(), save);
     }
 
     return newMapPhys.Id;
@@ -285,38 +285,24 @@ public partial class MapsReaderWriter : ReaderWriter
   /// <param name="groupIds">List of map groups</param>
   /// <param name="save">(optional) include commit to database</param>
   /// <returns>New list of map groups</returns>
-  public async Task<IList<MapGroups>> UpdateGroupsAsync(
+  public async Task<IList<MapGrouproles>> UpdateGroupRolesAsync(
     uint mapId,
-    IList<MapGroups> groupsPhys,
+    IList<MapGrouproles> groupRolesPhys,
     bool save = true)
   {
-    return await UpdateGroupsAsync(
-      mapId,
-      groupsPhys.Select(x => x.GroupId).ToArray(),
-      save);
-  }
+    var mapPhys = await GetSingleWithGroupRolesAsync(mapId);
+    mapPhys.MapGrouproles.Clear();
 
-  /// <summary>
-  /// Update map groups for a map
-  /// </summary>
-  /// <param name="mapId">Map id</param>
-  /// <param name="groupIds">List of group ids</param>
-  /// <param name="save">(optional) include commit to database</param>
-  /// <returns>New list of map groups</returns>
-  public async Task<IList<MapGroups>> UpdateGroupsAsync(
-    uint mapId,
-    uint[] groupIds,
-    bool save = true)
-  {
-    var mapPhys = await GetSingleWithGroupsAsync(mapId);
-    mapPhys.MapGroups.Clear();
-
-    foreach (var groupId in groupIds)
-      mapPhys.MapGroups.Add(new MapGroups(mapId, groupId));
+    foreach (var groupRolePhys in groupRolesPhys)
+      mapPhys.MapGrouproles.Add(
+        new MapGrouproles(
+          groupRolePhys.MapId,
+          groupRolePhys.GroupId,
+          groupRolePhys.RoleId));
 
     if (save)
       await GetDbContext().SaveChangesAsync();
 
-    return mapPhys.MapGroups.ToList();
+    return mapPhys.MapGrouproles.ToList();
   }
 }

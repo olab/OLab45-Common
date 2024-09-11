@@ -19,7 +19,7 @@ namespace OLab.Api.Endpoints;
 
 public partial class MapAuthorizationEndpoint : OLabEndpoint
 {
-  private readonly MapGroupsMapper mapper;
+  private readonly MapGrouprolesMapper mapper;
   private readonly MapsReaderWriter mapReader;
 
   public MapAuthorizationEndpoint(
@@ -34,7 +34,7 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
       wikiTagProvider,
       fileStorageProvider)
   {
-    mapper = new MapGroupsMapper(GetLogger(), GetDbContext());
+    mapper = new MapGrouprolesMapper(GetLogger(), GetDbContext());
     mapReader = new MapsReaderWriter(GetLogger(), GetDbContext());
   }
 
@@ -47,9 +47,9 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
   /// <returns>All groups for map</returns>
   /// <exception cref="OLabUnauthorizedException"></exception>
   /// <exception cref="OLabObjectNotFoundException"></exception>
-  public async Task<IList<MapGroupsDto>> DeleteAsync(
+  public async Task<IList<MapGrouprolesDto>> DeleteAsync(
     IOLabAuthorization auth,
-    MapGroupsDto dto,
+    MapGrouprolesDto dto,
     CancellationToken token)
   {
     GetLogger().LogInformation($"MapAuthorizationEndpoint.DeleteAsync()");
@@ -63,20 +63,20 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     if (!accessResult)
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, dto.MapId);
 
-    var mapPhys = await mapReader.GetSingleWithGroupsAsync(dto.MapId);
+    var mapPhys = await mapReader.GetSingleWithGroupRolesAsync(dto.MapId);
     if (mapPhys == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, dto.MapId);
 
-    var mapGroupPhys = mapPhys.MapGroups.FirstOrDefault(x => x.GroupId == dto.GroupId);
+    var mapGroupPhys = mapPhys.MapGrouproles.FirstOrDefault(x => x.GroupId == dto.GroupId);
     if (mapGroupPhys != null)
     {
-      mapPhys.MapGroups.Remove(mapGroupPhys);
+      mapPhys.MapGrouproles.Remove(mapGroupPhys);
       GetDbContext().SaveChanges();
     }
     else
       throw new OLabObjectNotFoundException("MapGroup", dto.GroupId);
 
-    return mapper.PhysicalToDto(mapPhys.MapGroups.ToList());
+    return mapper.PhysicalToDto(mapPhys.MapGrouproles.ToList());
 
   }
 
@@ -84,14 +84,14 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
   /// Add MapGroup to a map
   /// </summary>
   /// <param name="auth">IOLabAuthorization context</param>
-  /// <param name="dto">MapGroupsDto</param>
+  /// <param name="dto">MapGrouprolesDto</param>
   /// <param name="token">Cancellation token</param>
   /// <returns>All groups for map</returns>
   /// <exception cref="OLabUnauthorizedException"></exception>
   /// <exception cref="OLabObjectNotFoundException"></exception>
-  public async Task<IList<MapGroupsDto>> AddAsync(
+  public async Task<IList<MapGrouprolesDto>> AddAsync(
     IOLabAuthorization auth,
-    MapGroupsDto dto,
+    MapGrouprolesDto dto,
     CancellationToken token)
 
   {
@@ -106,7 +106,7 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     if (!accessResult)
       throw new OLabUnauthorizedException("Map", dto.MapId);
 
-    var mapPhys = await mapReader.GetSingleWithGroupsAsync(dto.MapId);
+    var mapPhys = await mapReader.GetSingleWithGroupRolesAsync(dto.MapId);
     if (mapPhys == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, dto.MapId);
 
@@ -117,15 +117,15 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
       throw new OLabObjectNotFoundException("Group", dto.GroupId);
 
     // test if doesn't already exist
-    if (!mapPhys.MapGroups.Any(x => x.GroupId == dto.GroupId))
+    if (!mapPhys.MapGrouproles.Any(x => x.GroupId == dto.GroupId))
     {
       var mapGroupPhys = mapper.DtoToPhysical(dto);
-      mapPhys.MapGroups.Add(mapGroupPhys);
+      mapPhys.MapGrouproles.Add(mapGroupPhys);
 
       GetDbContext().SaveChanges();
     }
 
-    return mapper.PhysicalToDto(mapPhys.MapGroups.ToList());
+    return mapper.PhysicalToDto(mapPhys.MapGrouproles.ToList());
 
   }
 
@@ -137,10 +137,10 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
   /// <param name="dtos">List of group dtos</param>
   /// <param name="token">CancellationToken</param>
   /// <returns>New list of map groups</returns>
-  public async Task<IList<MapGroupsDto>> ReplaceAsync(
+  public async Task<IList<MapGrouprolesDto>> ReplaceAsync(
     IOLabAuthorization auth,
     uint mapId,
-    IList<GroupsDto> dtos,
+    IList<MapGrouprolesDto> dtos,
     CancellationToken token)
   {
     GetLogger().LogInformation($"MapAuthorizationEndpoint.ReplaceAsync()");
@@ -155,23 +155,23 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
       throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
 
     var readerWriter = MapsReaderWriter.Instance(GetLogger(), GetDbContext());
-    var mapPhys = await readerWriter.GetSingleWithGroupsAsync(mapId);
+    var mapPhys = await readerWriter.GetSingleWithGroupRolesAsync(mapId);
 
     // ensure map exists
     if (mapPhys == null)
       throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
 
-    mapPhys.MapGroups.Clear();
+    mapPhys.MapGrouproles.Clear();
 
-    var mapper = new MapGroupsMapper(GetLogger(), GetDbContext());
-    var mapGroupsPhys = mapper.DtoToPhysical(mapId, dtos);
+    var mapper = new MapGrouprolesMapper(GetLogger(), GetDbContext());
+    var MapGrouprolesPhys = mapper.DtoToPhysical(mapId, dtos);
 
-    mapPhys.MapGroups.AddRange(mapGroupsPhys);
+    mapPhys.MapGrouproles.AddRange(MapGrouprolesPhys);
 
     GetDbContext().SaveChanges();
 
-    var mapGroupsDto = mapper.PhysicalToDto(mapPhys.MapGroups.ToList());
+    var MapGrouprolesDto = mapper.PhysicalToDto(mapPhys.MapGrouproles.ToList());
 
-    return mapGroupsDto;
+    return MapGrouprolesDto;
   }
 }
