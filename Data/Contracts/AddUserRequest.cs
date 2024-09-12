@@ -32,14 +32,13 @@ public class AddUserRequest
   public string GroupRoles { get; set; }
   public string Operation {  get; set; }
 
-  public IList<UserGrouproles> GroupRoleObjects { get; set; }
+  public IList<UserGrouproles> GroupRoleObjects { get; } = new List<UserGrouproles>();
 
 
   public AddUserRequest()
   {
     NickName = "";
     ModeUi = "easy";
-    GroupRoleObjects = new List<UserGrouproles>();
   }
 
   /// <summary>
@@ -75,7 +74,13 @@ public class AddUserRequest
     var groupRoleParts = groupRoleString.Split(",");
     foreach (var groupRolePart in groupRoleParts)
     {
+      if (string.IsNullOrEmpty(groupRolePart))
+        continue;
+
       var obj = UserGrouproles.StringToObject(dbContext, groupRolePart);
+      if (obj == null)
+        continue;
+
       if (Id.HasValue)
         obj.UserId = Id.Value;
 

@@ -56,6 +56,10 @@ public partial class UserGrouproles
   public static UserGrouproles StringToObject(OLabDBContext dbContext, string source)
   {
     var parts = source.Split(PartSeparator);
+
+    if (parts.Length != 2)
+      return null;
+
     var groupPhys = dbContext.Groups.FirstOrDefault(x => x.Name == parts[0]);
     var rolePhys = dbContext.Roles.FirstOrDefault(x => x.Name == parts[1]);
 

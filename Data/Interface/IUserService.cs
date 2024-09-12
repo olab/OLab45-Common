@@ -19,5 +19,5 @@ public interface IUserService
 
   Users GetById(uint? id);
   Users GetByUserName(string userName);
-  Task<List<UsersDto>> ImportUsersAsync(Stream fileStream);
+  Task<List<UsersImportDto>> ImportUsersAsync(Stream fileStream);
 }
