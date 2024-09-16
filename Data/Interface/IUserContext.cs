@@ -40,7 +40,17 @@ public interface IUserContext
     set;
   }
 
-  string ReferringCourse { get; }
+  string AppName
+  {
+    get;
+    set;
+  }
+
+  string ReferringCourse
+  {
+    get;
+    set;
+  }
 
   //public IList<string> UserRoles { get; }
 

@@ -35,7 +35,7 @@ public abstract class UserContextService : IUserContext
   private string _issuer;
   private string _courseName;
   private string _sessionId;
-  //private string _referringCourse;
+  private string _appName;
 
   public string SessionId
   {
@@ -59,6 +59,11 @@ public abstract class UserContextService : IUserContext
   {
     get => _userId;
     set => _userId = value;
+  }
+  public string AppName
+  {
+    get => _appName;
+    set => _appName = value;
   }
 
   public string UserName
@@ -168,6 +173,7 @@ public abstract class UserContextService : IUserContext
     ReferringCourse = GetClaimValue(ClaimTypes.UserData, false);
     Issuer = GetClaimValue("iss");
     UserId = (uint)Convert.ToInt32(GetClaimValue("id"));
+    AppName = GetClaimValue("app");
 
     // add special case to detect 2 possible forms of the 'role' claim
     // "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role" or "role"
