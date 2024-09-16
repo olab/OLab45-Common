@@ -93,9 +93,9 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     await CreateAsync(groupRoleAclPhys, true);
 
 
-    rolePhys = await _roleReaderWriter.GetAsync("superuser");
+    rolePhys = await _roleReaderWriter.GetAsync(Roles.SuperUserRole);
     if (rolePhys == null)
-      throw new OLabObjectNotFoundException("Roles", "superuser");
+      throw new OLabObjectNotFoundException("Roles", Roles.SuperUserRole);
 
     groupRoleAclPhys = new GrouproleAcls
     {
@@ -108,9 +108,9 @@ public class GroupRoleAclReaderWriter : ReaderWriter
 
     await CreateAsync(groupRoleAclPhys);
 
-    rolePhys = await _roleReaderWriter.GetAsync("director");
+    rolePhys = await _roleReaderWriter.GetAsync(Roles.DirectorRole);
     if (rolePhys == null)
-      throw new OLabObjectNotFoundException("Roles", "director");
+      throw new OLabObjectNotFoundException("Roles", Roles.DirectorRole);
 
     groupRoleAclPhys = new GrouproleAcls
     {

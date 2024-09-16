@@ -389,7 +389,7 @@ public partial class MapsEndpoint : OLabEndpoint
   /// </summary>
   /// <param name="body">Create map request body</param>
   /// <returns>IActionResult</returns>
-  public async Task<MapsFullRelationsDto> PostCreateMapAsync(
+  public async Task<MapsFullRelationsDto> CreateMapAsync(
     IOLabAuthorization auth,
     CreateMapRequest body)
   {
