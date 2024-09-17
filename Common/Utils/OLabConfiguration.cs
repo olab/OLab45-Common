@@ -1,12 +1,8 @@
 using Dawn;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
-using System;
-using System.Configuration;
-using System.Reflection;
 
 namespace OLab.Common.Utils;
 

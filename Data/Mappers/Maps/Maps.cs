@@ -1,7 +1,6 @@
 using AutoMapper;
 using OLab.Api.Model;
 using OLab.Api.Utils;
-using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using OLab.Common.Utils;
 using System;

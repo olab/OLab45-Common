@@ -1,8 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace OLab.Api.Model;
 
 public partial class MapGrouproles

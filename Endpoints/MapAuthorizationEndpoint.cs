@@ -1,4 +1,3 @@
-using Humanizer;
 using NuGet.Packaging;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
@@ -9,7 +8,6 @@ using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using OLab.Data.ReaderWriters;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -127,7 +125,7 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     }
 
     // test if doesn't already exist
-    if (!mapPhys.MapGrouproles.Any(x => x.GroupId == dto.GroupId && x.RoleId == dto.RoleId ))
+    if (!mapPhys.MapGrouproles.Any(x => x.GroupId == dto.GroupId && x.RoleId == dto.RoleId))
     {
       var mapGroupPhys = mapper.DtoToPhysical(dto);
       mapPhys.MapGrouproles.Add(mapGroupPhys);

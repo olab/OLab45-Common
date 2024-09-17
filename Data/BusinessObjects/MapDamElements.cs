@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
@@ -13,29 +12,29 @@ namespace OLab.Api.Model;
 [MySqlCollation("utf8mb3_general_ci")]
 public partial class MapDamElements
 {
-    [Key]
-    [Column("id", TypeName = "int(10) unsigned")]
-    public uint Id { get; set; }
+  [Key]
+  [Column("id", TypeName = "int(10) unsigned")]
+  public uint Id { get; set; }
 
-    [Column("dam_id", TypeName = "int(10) unsigned")]
-    public uint DamId { get; set; }
+  [Column("dam_id", TypeName = "int(10) unsigned")]
+  public uint DamId { get; set; }
 
-    [Column("element_type")]
-    [StringLength(20)]
-    public string ElementType { get; set; }
+  [Column("element_type")]
+  [StringLength(20)]
+  public string ElementType { get; set; }
 
-    [Column("order", TypeName = "int(10)")]
-    public int? Order { get; set; }
+  [Column("order", TypeName = "int(10)")]
+  public int? Order { get; set; }
 
-    [Required]
-    [Column("display")]
-    [StringLength(20)]
-    public string Display { get; set; }
+  [Required]
+  [Column("display")]
+  [StringLength(20)]
+  public string Display { get; set; }
 
-    [Column("element_id", TypeName = "int(10) unsigned")]
-    public uint ElementId { get; set; }
+  [Column("element_id", TypeName = "int(10) unsigned")]
+  public uint ElementId { get; set; }
 
-    [ForeignKey("DamId")]
-    [InverseProperty("MapDamElements")]
-    public virtual MapDams Dam { get; set; }
+  [ForeignKey("DamId")]
+  [InverseProperty("MapDamElements")]
+  public virtual MapDams Dam { get; set; }
 }

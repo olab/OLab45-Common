@@ -1,12 +1,12 @@
 using Dawn;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OLab.Api.Common;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using OLab.Data.ReaderWriters;
@@ -14,10 +14,8 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Constants = OLab.Api.Utils.Constants;
-using OLab.Api.WikiTag;
 
 namespace OLab.Api.Endpoints;
 
@@ -26,7 +24,7 @@ public class OLabEndpoint
   private readonly OLabDBContext _dbContext;
   public OLabDBContext GetDbContext() { return _dbContext; }
 
-  private IOLabLogger _logger;
+  private readonly IOLabLogger _logger;
   public IOLabLogger GetLogger() { return _logger; }
 
   protected IOLabModuleProvider<IWikiTagModule> _wikiTagModules = null;

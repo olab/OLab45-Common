@@ -407,8 +407,8 @@ public partial class MapsEndpoint : OLabEndpoint
     });
 
     var builder = new ObjectMapper.Designer.ScopedObjectMapper(
-      GetLogger(), 
-      GetDbContext(), 
+      GetLogger(),
+      GetDbContext(),
       GetWikiProvider(), enableWikiTranslation);
 
     var dto = builder.PhysicalToDto(phys);

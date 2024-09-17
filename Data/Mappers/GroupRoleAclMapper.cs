@@ -2,8 +2,6 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
-using OLab.Data.Dtos;
-using System.Linq;
 
 namespace OLab.Data.Mappers;
 
@@ -32,10 +30,10 @@ public class GroupRoleAclMapper : OLabMapper<GrouproleAcls, GroupRoleAclDto>
     source.RoleId = phys.RoleId;
     source.RoleName = phys.Role == null ? null : phys.Role.Name;
     source.ObjectIndex = phys.ImageableId == null ? null : phys.ImageableId;
-    source.ObjectType = string.IsNullOrEmpty( phys.ImageableType ) ? null : phys.ImageableType;
-    source.Read = ( phys.Acl2 & GrouproleAcls.ReadMask) == GrouproleAcls.ReadMask;
-    source.Write = ( phys.Acl2 & GrouproleAcls.WriteMask) == GrouproleAcls.WriteMask;
-    source.Execute = ( phys.Acl2 & GrouproleAcls.ExecuteMask) == GrouproleAcls.ExecuteMask;
+    source.ObjectType = string.IsNullOrEmpty(phys.ImageableType) ? null : phys.ImageableType;
+    source.Read = (phys.Acl2 & GrouproleAcls.ReadMask) == GrouproleAcls.ReadMask;
+    source.Write = (phys.Acl2 & GrouproleAcls.WriteMask) == GrouproleAcls.WriteMask;
+    source.Execute = (phys.Acl2 & GrouproleAcls.ExecuteMask) == GrouproleAcls.ExecuteMask;
 
     return source;
   }

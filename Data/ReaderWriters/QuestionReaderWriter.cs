@@ -10,7 +10,7 @@ namespace OLab.Data.ReaderWriters;
 
 public class QuestionReaderWriter : ReaderWriter
 {
-  private IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
+  private readonly IOLabModuleProvider<IWikiTagModule> _wikiTagProvider;
 
   public static QuestionReaderWriter Instance(
     IOLabLogger logger,
@@ -83,20 +83,35 @@ public class QuestionReaderWriter : ReaderWriter
         continue;
       }
 
-      string newWikiType = "QU";
-      switch ( questionPhys.EntryTypeId )
+      var newWikiType = "QU";
+      switch (questionPhys.EntryTypeId)
       {
-        case 1: newWikiType = "QUST"; break;
-        case 2: newWikiType = "QUMT"; break;
-        case 3: newWikiType = "QUMP"; break;
-        case 4: newWikiType = "QUSP"; break;
-        case 5: newWikiType = "QUSD"; break;
-        case 6: newWikiType = "QUDG"; break;
-        case 12:newWikiType = "QUDP"; break;
-        default: break;
+        case 1:
+          newWikiType = "QUST";
+          break;
+        case 2:
+          newWikiType = "QUMT";
+          break;
+        case 3:
+          newWikiType = "QUMP";
+          break;
+        case 4:
+          newWikiType = "QUSP";
+          break;
+        case 5:
+          newWikiType = "QUSD";
+          break;
+        case 6:
+          newWikiType = "QUDG";
+          break;
+        case 12:
+          newWikiType = "QUDP";
+          break;
+        default:
+          break;
       }
 
-      string newWikiTag = wikiMatch.Replace("QU:", $"{newWikiType}:");
+      var newWikiTag = wikiMatch.Replace("QU:", $"{newWikiType}:");
       GetLogger().LogInformation($"disambiguating entry type {questionPhys.EntryTypeId}: '{wikiMatch}' => '{newWikiTag}'");
 
       source = source.Replace(wikiMatch, newWikiTag);

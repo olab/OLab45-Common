@@ -1,11 +1,8 @@
-using DocumentFormat.OpenXml.Bibliography;
-using Elfie.Serialization;
-using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using System.Text;
-using OLab.Api.WikiTag;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -32,7 +29,7 @@ public class ScriptsFull : OLabMapper<SystemScripts, ScriptsFullDto>
     ScriptsFullDto dto)
   {
     var phys = base.DtoToPhysical(dto);
-    phys.Source= Encoding.ASCII.GetBytes(dto.Source);
+    phys.Source = Encoding.ASCII.GetBytes(dto.Source);
     return phys;
   }
 

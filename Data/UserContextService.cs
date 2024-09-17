@@ -1,14 +1,9 @@
 using Dawn;
-using DocumentFormat.OpenXml.Spreadsheet;
-using Microsoft.AspNetCore.Http;
-using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
-using Newtonsoft.Json.Linq;
 using OLab.Api.Data.Interface;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 
 namespace OLab.Api.Data;
@@ -144,7 +139,7 @@ public abstract class UserContextService : IUserContext
     if (_headers.TryGetValue(key, out var value))
       return value;
 
-    if ( isRequired )
+    if (isRequired)
       throw new Exception($"header value '{key}' does not exist");
 
     return string.Empty;
@@ -166,7 +161,7 @@ public abstract class UserContextService : IUserContext
     // add special case to detect 2 possible forms of the 'name' claim
     // "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name" or "name"
     UserName = GetClaimValue(ClaimTypes.Name, false);
-    if ( string.IsNullOrEmpty(UserName) )
+    if (string.IsNullOrEmpty(UserName))
       UserName = GetClaimValue("name");
 
     ReferringCourse = "olabinternal";

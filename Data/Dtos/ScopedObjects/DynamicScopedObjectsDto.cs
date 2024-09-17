@@ -61,8 +61,8 @@ public class DynamicScopedObjectsDto
   public string Checksum { get; set; }
 
   [JsonProperty("counters")]
-  public CounterDynamicScopedObjects Counters{ get; set; }
-  
+  public CounterDynamicScopedObjects Counters { get; set; }
+
   [JsonProperty("nodesVisitedList")]
   public IList<uint> NodesVisited { get; set; }
 
@@ -70,7 +70,7 @@ public class DynamicScopedObjectsDto
   {
     UpdatedAt = DateTime.Now;
     Counters = new CounterDynamicScopedObjects();
-    NodesVisited = new List<uint>();  
+    NodesVisited = new List<uint>();
   }
 
   public bool IsEmpty()

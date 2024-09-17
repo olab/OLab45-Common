@@ -1,5 +1,4 @@
 using AutoMapper;
-using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
@@ -7,7 +6,6 @@ using OLab.Common.Interfaces;
 using OLab.Common.Utils;
 using System.Collections.Generic;
 using System.Linq;
-using OLab.Api.WikiTag;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -73,8 +71,8 @@ public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
     links.AddRange(mapPhys.MapNodeLinks);
 
     dto.MapNodeLinks = new MapNodeLinksMapper(
-      _logger, 
-      GetDbContext(), 
+      _logger,
+      GetDbContext(),
       GetWikiProvider(),
       _enableWikiTranslation).PhysicalToDto(links);
 

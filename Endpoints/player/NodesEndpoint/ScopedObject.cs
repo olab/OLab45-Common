@@ -71,9 +71,9 @@ public partial class NodesEndpoint : OLabEndpoint
     });
 
     var builder = new ObjectMapper.ScopedObjectsMapper(
-      GetLogger(), 
+      GetLogger(),
       GetDbContext(),
-      GetWikiProvider(), 
+      GetWikiProvider(),
       enableWikiTranslation);
 
     var dto = builder.PhysicalToDto(phys);

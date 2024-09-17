@@ -19,7 +19,7 @@ public partial class Users
 
   public static Users CreatePhysFromRequest(Users sourceUser, AddUserRequest model)
   {
-    if ( sourceUser == null )
+    if (sourceUser == null)
       sourceUser = CreateDefault();
 
     if (model.Id.HasValue)

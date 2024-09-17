@@ -1,7 +1,6 @@
 using AutoMapper;
 using OLab.Api.Dto;
 using OLab.Api.Model;
-using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using OLab.Data.ReaderWriters;
 
@@ -56,7 +55,7 @@ public class MapNodesFullMapper : OLabMapper<MapNodes, MapNodesFullDto>
     phys.MapNodeGrouproles.Clear();
 
     foreach (var groupRoleDto in dto.MapNodeGrouproles)
-      phys.MapNodeGrouproles.Add( _groupRoleMapper.DtoToPhysical(groupRoleDto) );
+      phys.MapNodeGrouproles.Add(_groupRoleMapper.DtoToPhysical(groupRoleDto));
 
     return phys;
   }
@@ -73,7 +72,7 @@ public class MapNodesFullMapper : OLabMapper<MapNodes, MapNodesFullDto>
     }
     else
 
-    dto.Width = phys.Width.HasValue ? phys.Width : MapNodesMapper.DefaultWidth;
+      dto.Width = phys.Width.HasValue ? phys.Width : MapNodesMapper.DefaultWidth;
     dto.Color = phys.Rgb;
 
     if (string.IsNullOrEmpty(dto.Color))

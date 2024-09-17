@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
@@ -13,21 +12,21 @@ namespace OLab.Api.Model;
 [MySqlCollation("utf8mb3_general_ci")]
 public partial class ScenarioMaps
 {
-    [Key]
-    [Column("id", TypeName = "int(10) unsigned")]
-    public uint Id { get; set; }
+  [Key]
+  [Column("id", TypeName = "int(10) unsigned")]
+  public uint Id { get; set; }
 
-    [Column("map_id", TypeName = "int(10) unsigned")]
-    public uint MapId { get; set; }
+  [Column("map_id", TypeName = "int(10) unsigned")]
+  public uint MapId { get; set; }
 
-    [Column("scenario_id", TypeName = "int(10) unsigned")]
-    public uint ScenarioId { get; set; }
+  [Column("scenario_id", TypeName = "int(10) unsigned")]
+  public uint ScenarioId { get; set; }
 
-    [ForeignKey("MapId")]
-    [InverseProperty("ScenarioMaps")]
-    public virtual Maps Map { get; set; }
+  [ForeignKey("MapId")]
+  [InverseProperty("ScenarioMaps")]
+  public virtual Maps Map { get; set; }
 
-    [ForeignKey("ScenarioId")]
-    [InverseProperty("ScenarioMaps")]
-    public virtual Scenarios Scenario { get; set; }
+  [ForeignKey("ScenarioId")]
+  [InverseProperty("ScenarioMaps")]
+  public virtual Scenarios Scenario { get; set; }
 }

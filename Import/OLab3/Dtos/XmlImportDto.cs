@@ -59,7 +59,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
     _importer = importer;
     _fileName = fileName;
 
-    _tagProvider = GetImporter().GetWikiProvider() as WikiTagModuleProvider;
+    _tagProvider = GetImporter().GetWikiProvider();
     _dbContext = GetImporter().GetDbContext();
   }
 

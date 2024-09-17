@@ -1,9 +1,7 @@
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
-using OLab.Common.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace OLab.Api.Common;
@@ -39,8 +37,8 @@ public abstract class WikiTagModule : IWikiTagModule
   public abstract string Translate(string source);
   protected abstract string BuildWikiTagHTMLElement();
 
-  public virtual void SetHtmlElementName(string elementName) 
-  { 
+  public virtual void SetHtmlElementName(string elementName)
+  {
     _htmlElementName = elementName;
   }
 

@@ -1,5 +1,4 @@
 using AutoMapper;
-using OLab.Api.Common;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Api.WikiTag;

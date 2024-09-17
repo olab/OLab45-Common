@@ -68,8 +68,8 @@ public partial class ConstantsEndpoint : OLabEndpoint
     GetLogger().LogInformation(string.Format("found {0} ConstantsPhys", constantsPhys.Count));
 
     var dtoList = new ObjectMapper.Constants(
-      GetLogger(), 
-      GetDbContext(), 
+      GetLogger(),
+      GetDbContext(),
       GetWikiProvider()).PhysicalToDto(constantsPhys);
 
     var maps = GetDbContext().Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();

@@ -1,12 +1,11 @@
-using OLab.Api.Common;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OLab.Api.WikiTag;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -21,9 +20,9 @@ public class Files : OLabMapper<SystemFiles, FilesDto>
   }
 
   public Files(
-    IOLabLogger logger, 
-    OLabDBContext dbContext, 
-    WikiTagModuleProvider tagProvider, 
+    IOLabLogger logger,
+    OLabDBContext dbContext,
+    WikiTagModuleProvider tagProvider,
     bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
   {
   }

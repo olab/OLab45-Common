@@ -1,9 +1,7 @@
 using Newtonsoft.Json;
 using OLab.Common.Interfaces;
-using OLab.Data.ReaderWriters;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using RequiredAttribute = System.ComponentModel.DataAnnotations.RequiredAttribute;
 
 namespace OLab.Api.Model;
@@ -30,7 +28,7 @@ public class AddUserRequest
   public string Password { get; set; }
   public string ModeUi { get; set; }
   public string GroupRoles { get; set; }
-  public string Operation {  get; set; }
+  public string Operation { get; set; }
 
   public IList<UserGrouproles> GroupRoleObjects { get; } = new List<UserGrouproles>();
 

@@ -1,9 +1,7 @@
-using DocumentFormat.OpenXml.InkML;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
-using OLab.Data.Contracts;
 using OLab.Data.Model;
 using System;
 using System.Collections.Generic;
@@ -164,9 +162,9 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   /// <param name="objectId">Scoped object id</param>
   /// <returns>List of group role acl records</returns>
   public async Task<IList<GrouproleAcls>> GetAsync(
-    uint? groupId, 
-    uint? roleId, 
-    string objectType, 
+    uint? groupId,
+    uint? roleId,
+    string objectType,
     uint? objectId)
   {
     IList<GrouproleAcls> groupAcls = new List<GrouproleAcls>();

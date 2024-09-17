@@ -1,12 +1,4 @@
-using AutoMapper.Internal.Mappers;
-using DocumentFormat.OpenXml.EMMA;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Vml.Office;
-using Humanizer;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Packaging;
-using OLab.Api.Common;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -16,17 +8,14 @@ using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace OLab.Data.ReaderWriters;
 
 public partial class MapNodesReaderWriter : ReaderWriter
 {
-  private WikiTagModuleProvider _tagProvider;
+  private readonly WikiTagModuleProvider _tagProvider;
 
   public static MapNodesReaderWriter Instance(
     IOLabLogger logger,

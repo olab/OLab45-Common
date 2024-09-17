@@ -3,7 +3,6 @@ using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Api.WikiTag;
-using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using System.IO;
 using System.Threading;

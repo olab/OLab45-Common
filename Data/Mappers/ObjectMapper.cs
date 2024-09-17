@@ -1,5 +1,4 @@
 using Dawn;
-using Microsoft.Extensions.Logging;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Api.WikiTag;

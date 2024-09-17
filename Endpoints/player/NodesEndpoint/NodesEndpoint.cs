@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Data.Interface;
@@ -12,7 +11,6 @@ using OLab.Data.Interface;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using OLab.Api.WikiTag;
 
 namespace OLab.Api.Endpoints.Player;
 

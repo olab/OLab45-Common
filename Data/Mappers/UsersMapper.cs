@@ -1,4 +1,3 @@
-using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Interfaces;
@@ -29,8 +28,8 @@ public class UsersMapper : OLabMapper<Users, UsersDto>
   {
     var dto = base.PhysicalToDto(phys, source);
 
-    dto.Roles = 
-      new UserGroupRolesMapper( GetLogger(), GetDbContext() ).PhysicalToDto( phys.UserGrouproles.ToList() );
+    dto.Roles =
+      new UserGroupRolesMapper(GetLogger(), GetDbContext()).PhysicalToDto(phys.UserGrouproles.ToList());
 
     return dto;
   }

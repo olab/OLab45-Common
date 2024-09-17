@@ -1,5 +1,4 @@
 using Dawn;
-using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
@@ -18,14 +17,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using OLab.Api.WikiTag;
-using DocumentFormat.OpenXml.Vml;
 
 namespace OLab.Api.Endpoints.Player;
 
 public partial class MapsEndpoint : OLabEndpoint
 {
-  private MapNodesReaderWriter _mapNodesReader;
+  private readonly MapNodesReaderWriter _mapNodesReader;
 
   public MapsEndpoint(
     IOLabLogger logger,
@@ -121,10 +118,10 @@ public partial class MapsEndpoint : OLabEndpoint
     foreach (var tempDtoItem in tempDtoList)
     {
       if (await auth.HasAccessAsync(
-        IOLabAuthorization.AclBitMaskRead, 
-        Utils.Constants.ScopeLevelMap, 
+        IOLabAuthorization.AclBitMaskRead,
+        Utils.Constants.ScopeLevelMap,
         tempDtoItem.Id))
-          dtoList.Add(tempDtoItem);
+        dtoList.Add(tempDtoItem);
     }
 
     GetLogger().LogInformation(string.Format($"have access to {dtoList.Count}/{total} maps"));
@@ -147,8 +144,8 @@ public partial class MapsEndpoint : OLabEndpoint
     var mapPhys = await GetDbContext().Maps
       .Include(map => map.MapNodes)
       .Include(map => map.MapNodeLinks)
-      .Include(map => map.MapGrouproles).ThenInclude( y => y.Group)
-      .Include(map => map.MapGrouproles).ThenInclude( y => y.Role)
+      .Include(map => map.MapGrouproles).ThenInclude(y => y.Group)
+      .Include(map => map.MapGrouproles).ThenInclude(y => y.Role)
 
       .AsNoTracking()
       .FirstOrDefaultAsync(
@@ -577,9 +574,9 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <returns>OLabAPIPagedResponse of MapNodesDto</returns>
   /// <exception cref="NotImplementedException"></exception>
   public async Task<OLabAPIPagedResponse<MapNodesMapReferenceDto>> GetNodesAsync(
-    IOLabAuthorization auth, 
+    IOLabAuthorization auth,
     uint mapId,
-    int? take, 
+    int? take,
     int? skip)
   {
     var total = 0;
@@ -601,11 +598,11 @@ public partial class MapsEndpoint : OLabEndpoint
     }
 
     var dtoList = new List<MapNodesMapReferenceDto>();
-    foreach ( var item in items)
-      dtoList.Add( new MapNodesMapReferenceDto { Id = item.Id, Title = item.Title, MapId = mapId, MapName = item.Map.Name });
+    foreach (var item in items)
+      dtoList.Add(new MapNodesMapReferenceDto { Id = item.Id, Title = item.Title, MapId = mapId, MapName = item.Map.Name });
 
     GetLogger().LogInformation(string.Format("have access to {0} maps", dtoList.Count));
-    
+
     return new OLabAPIPagedResponse<MapNodesMapReferenceDto> { Data = dtoList, Remaining = remaining, Count = total };
   }
 }

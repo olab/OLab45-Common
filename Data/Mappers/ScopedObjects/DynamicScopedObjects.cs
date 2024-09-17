@@ -1,8 +1,6 @@
-using OLab.Api.Common;
 using OLab.Api.Dto;
-using OLab.Common.Interfaces;
-using OLab.Api.WikiTag;
 using OLab.Api.Model;
+using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper;
 
@@ -40,22 +38,22 @@ public class DynamicScopedObjects : ObjectMapper<OLab.Data.BusinessObjects.Dynam
     DynamicScopedObjectsDto dto)
   {
     var dtoCountersList = new CounterMapper(
-      GetLogger(), 
-      GetDbContext(), 
+      GetLogger(),
+      GetDbContext(),
       GetWikiProvider()).PhysicalToDto(phys.ServerCounters);
     //dto.Server.Counters.AddRange(dtoCountersList);
     dto.Counters.Counters.AddRange(dtoCountersList);
 
     dtoCountersList = new CounterMapper(
-      GetLogger(), 
-      GetDbContext(), 
+      GetLogger(),
+      GetDbContext(),
       GetWikiProvider()).PhysicalToDto(phys.MapCounters);
     //dto.Map.Counters.AddRange(dtoCountersList);
     dto.Counters.Counters.AddRange(dtoCountersList);
 
     dtoCountersList = new CounterMapper(
-      GetLogger(), 
-      GetDbContext(), 
+      GetLogger(),
+      GetDbContext(),
       GetWikiProvider()).PhysicalToDto(phys.NodeCounters);
     //dto.Node.Counters.AddRange(dtoCountersList);
     dto.Counters.Counters.AddRange(dtoCountersList);

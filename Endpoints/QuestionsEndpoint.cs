@@ -74,8 +74,8 @@ public partial class QuestionsEndpoint : OLabEndpoint
     GetLogger().LogInformation(string.Format("found {0} questions", physList.Count));
 
     var dtoList = new Questions(
-      GetLogger(), 
-      GetDbContext(), 
+      GetLogger(),
+      GetDbContext(),
       GetWikiProvider()).PhysicalToDto(physList);
 
     var maps = GetDbContext().Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
@@ -218,8 +218,8 @@ public partial class QuestionsEndpoint : OLabEndpoint
     {
       var phys = await GetQuestionAsync(id);
       var dto = new Questions(
-        GetLogger(), 
-        GetDbContext(), 
+        GetLogger(),
+        GetDbContext(),
         GetWikiProvider()).PhysicalToDto(phys);
 
       // test if user has access to object
