@@ -393,7 +393,7 @@ public partial class MapsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     CreateMapRequest body)
   {
-    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PostCreateMapAsync");
+    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.CreateMapAsync");
 
     // test if user has access to map.
     if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, 0))
