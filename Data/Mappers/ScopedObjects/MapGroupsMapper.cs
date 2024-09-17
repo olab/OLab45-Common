@@ -46,7 +46,7 @@ public class MapGrouprolesMapper : OLabMapper<MapGrouproles, MapGrouprolesDto>
   {
     var mapGroupPhys = new MapGrouproles
     {
-      Id = dto.Id,
+      Id = dto.Id.Value,
       MapId = mapId,
       GroupId = dto.Id,
       RoleId = dto.RoleId

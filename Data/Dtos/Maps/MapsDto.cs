@@ -12,6 +12,4 @@ public class MapsDto
   public string Description { get; set; }
   [JsonProperty("url")]
   public string Url { get; set; }
-  //[JsonProperty("userstate")]
-  //public UserState UserState { get; set; }
 }

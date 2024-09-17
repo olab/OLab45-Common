@@ -74,7 +74,7 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
       GetDbContext().SaveChanges();
     }
     else
-      throw new OLabObjectNotFoundException("MapGroupRole", dto.Id);
+      throw new OLabObjectNotFoundException("MapGroupRole", dto.Id.Value);
 
     return mapper.PhysicalToDto(mapPhys.MapGrouproles.ToList());
 

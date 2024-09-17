@@ -5,7 +5,7 @@ namespace OLab.Api.Dto;
 public partial class MapGrouprolesDto
 {
   [JsonProperty("id")]
-  public uint Id { get; set; }
+  public uint? Id { get; set; }
   [JsonProperty("mapId")]
   public uint MapId { get; set; }
   [JsonProperty("groupId")]

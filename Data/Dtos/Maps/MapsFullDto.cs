@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
@@ -39,5 +40,6 @@ public class MapsFullDto : MapsDto
   public uint TypeId { get; set; }
   public uint? LanguageId { get; set; }
   public uint? ReportNodeId { get; set; }
+  [JsonProperty("groupRoles")]
   public IList<MapGrouprolesDto> MapGroupRoles { get; set; }
 }

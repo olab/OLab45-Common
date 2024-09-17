@@ -422,11 +422,11 @@ public partial class MapsEndpoint : OLabEndpoint
         .CreateMapWithTemplateAsync(map, template);
     }
 
-    // set up default ACL for map author against map
-    var acl = UserAcls.CreateDefault(auth.UserContext, map);
-    GetDbContext().UserAcls.Add(acl);
+    // set up default group for map author against map
+    var groupRole = await auth.GetMapCreationGroupRoleAsync(map);
+    GetDbContext().MapGrouproles.Add(groupRole);
 
-    map.AuthorId = acl.UserId;
+    map.AuthorId = auth.UserContext.UserId;
     GetDbContext().Entry(map).State = EntityState.Modified;
 
     await GetDbContext().SaveChangesAsync();
