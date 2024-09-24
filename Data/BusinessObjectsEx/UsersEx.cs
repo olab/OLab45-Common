@@ -25,8 +25,16 @@ public partial class Users
     if (model.Id.HasValue)
       sourceUser.Id = model.Id.Value;
 
-    if (!string.IsNullOrEmpty(model.Password))
-      sourceUser.Password = model.Password;
+    if (!string.IsNullOrEmpty(model.Salt))
+    {
+      sourceUser.Salt = model.Salt;
+      sourceUser.Password = model.Hash;
+    }
+    else
+    {
+      if (!string.IsNullOrEmpty(model.Password))
+        sourceUser.Password = model.Password;
+    }
 
     sourceUser.Username = model.Username;
     sourceUser.Nickname = model.NickName;

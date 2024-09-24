@@ -29,7 +29,10 @@ public class AddUserRequest
   public string ModeUi { get; set; }
   public string GroupRoles { get; set; }
   public string Operation { get; set; }
-
+  [JsonProperty("hash")]
+  public string Hash{ get; set; }
+  [JsonProperty("salt")]
+  public string Salt { get; set; }
   public IList<UserGrouproles> GroupRoleObjects { get; } = new List<UserGrouproles>();
 
 

@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using OLab.Api.Model;
 using System.Collections.Generic;
 
@@ -9,6 +10,9 @@ public class UsersDto
   public string NickName { get; set; }
   public string UserName { get; set; }
   public string Email { get; set; }
+  [JsonProperty("hash")]
+  public string Password { get; set; }
+  public string Salt { get; set; }
 
   public IList<UserGroupRolesDto> Roles { get; set; }
 
