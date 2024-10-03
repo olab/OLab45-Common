@@ -40,25 +40,19 @@ public partial class GroupRoleAclsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     GroupRoleAclRequest model)
   {
-    IList<GrouproleAcls> groupRoleAclsPhys = new List<GrouproleAcls>();
+    var groupRoleAclsPhys = new List<GrouproleAcls>();
 
     // no group, role, maps, node specified, so query all
     if (!model.GroupId.HasValue &&
       !model.RoleId.HasValue &&
       (model.MapIds.Count == 0) &&
+      (model.AppIds.Count == 0) &&
       (model.NodeIds.Count == 0))
-      groupRoleAclsPhys = await _readerWriter.GetAsync();
+      groupRoleAclsPhys.AddRange(await _readerWriter.GetAsync());
 
-    // no selected maps or nodes, query by group/role
-    else if ((model.MapIds.Count == 0) && (model.NodeIds.Count == 0))
-      groupRoleAclsPhys = await _readerWriter.GetAsync(
-        model.GroupId,
-        model.RoleId,
-        null,
-        null);
     else
     {
-      // if any nodes selected, query by node
+      // query by node
       if (model.NodeIds.Count > 0)
       {
         foreach (var nodeId in model.NodeIds)
@@ -69,9 +63,8 @@ public partial class GroupRoleAclsEndpoint : OLabEndpoint
             nodeId));
       }
 
-      // no nodes selected, query by map
-
-      else if (model.MapIds.Count > 0)
+      // query by map
+      if (model.MapIds.Count > 0)
       {
         foreach (var mapId in model.MapIds)
           groupRoleAclsPhys.AddRange(await _readerWriter.GetAsync(
@@ -81,6 +74,16 @@ public partial class GroupRoleAclsEndpoint : OLabEndpoint
             mapId));
       }
 
+      // query by application
+      if (model.AppIds.Count > 0)
+      {
+        foreach (var appId in model.AppIds)
+          groupRoleAclsPhys.AddRange(await _readerWriter.GetAsync(
+            model.GroupId,
+            model.RoleId,
+            Constants.ScopeLevelApp,
+            appId));
+      }
     }
 
     var itemsDto = _mapper.PhysicalToDto(groupRoleAclsPhys);
