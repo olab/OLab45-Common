@@ -45,8 +45,17 @@ public class MapNodesMapper : OLabMapper<Model.MapNodes, MapNodesDto>
     phys.Title = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "title"));
     phys.TypeId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "type_id").Value);
     phys.Undo = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "undo").Value) == 1 ? true : false;
-    phys.X = Convert.ToDouble(elements.FirstOrDefault(x => x.Name == "x").Value);
-    phys.Y = Convert.ToDouble(elements.FirstOrDefault(x => x.Name == "y").Value);
+
+    if (elements.FirstOrDefault(x => x.Name == "x").Value == string.Empty)
+      phys.X = 10;
+    else
+      phys.X = Convert.ToDouble(elements.FirstOrDefault(x => x.Name == "x").Value);
+
+    if (elements.FirstOrDefault(x => x.Name == "x").Value == string.Empty)
+      phys.Y = 10;
+    else
+      phys.Y = Convert.ToDouble(elements.FirstOrDefault(x => x.Name == "y").Value);
+
     phys.CreatedAt = DateTime.Now;
 
     // Logger.LogInformation($"loaded MapNodes {phys.Id}");
