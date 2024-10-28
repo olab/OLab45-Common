@@ -29,11 +29,14 @@ public class XmlManifestDto : XmlImportDto<XmlManifest>
   /// <summary>
   /// Loads the specific import file into a model object
   /// </summary>
-  /// <param name="importDirectory">Directory where import file exists</param>
+  /// <param name="physicalFileFolder">Physical folder for import files</param>
+  /// <param name="displayProgressMessage">Display progress messages</param>
   /// <returns></returns>
-  public override async Task<bool> LoadAsync(string extractPath, bool displayProgressMessage = true)
+  public override async Task<bool> LoadAsync(
+    string physicalFileFolder, 
+    bool displayProgressMessage = true)
   {
-    var result = await base.LoadAsync(extractPath);
+    var result = await base.LoadAsync(physicalFileFolder);
 
     if (result)
     {

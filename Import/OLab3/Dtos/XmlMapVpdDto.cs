@@ -29,30 +29,33 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
   /// <summary>
   /// Loads the specific import file into a model object
   /// </summary>
-  /// <param name="importDirectory">Directory where import file exists</param>
+  /// <param name="physicalFileFolder">Physical folder for import files</param>
+  /// <param name="displayProgressMessage">Display progress messages</param>
   /// <returns></returns>
-  public override async Task<bool> LoadAsync(string importFileDirectory, bool displayProgressMessage = true)
+  public override async Task<bool> LoadAsync(
+    string physicalFileFolder, 
+    bool displayProgressMessage = true)
   {
     var rc = true;
 
     try
     {
-      GetLogger().LogInformation($"Loading '{GetFileName()}'");
-
-      var physicalFilePath = GetFileModule().BuildPath(
-        OLabFileStorageModule.ImportRoot,
-        importFileDirectory,
+      var physicalModuleFile = GetFileModule().BuildPath(
+        physicalFileFolder,
         GetFileName());
 
-      if (GetFileModule().FileExists(physicalFilePath))
-      {
-        using var moduleFileStream = new MemoryStream();
-        await GetFileModule().ReadFileAsync(
-          moduleFileStream,
-          physicalFilePath,
-          new System.Threading.CancellationToken());
+      GetLogger().LogInformation($"Loading {physicalModuleFile}");
 
+      using var moduleFileStream = new MemoryStream();
+      if (await GetFileModule().ReadFileAsync(
+        moduleFileStream,
+        physicalModuleFile,
+        new System.Threading.CancellationToken()))
         _phys = DynamicXml.Load(moduleFileStream);
+      else
+      {
+        GetLogger().LogInformation($"File {physicalFileFolder}{GetFileModule().GetFolderSeparator()}{GetFileName()} does not exist");
+        return false;
       }
 
       dynamic outerElements = GetElements(GetXmlPhys());
@@ -85,12 +88,12 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
           GetLogger().LogError(ex, $"error loading '{GetFileName()}' record #{record}: {ex.Message}");
         }
 
+        GetLogger().LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+
       }
 
-      GetLogger().LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
-
       // delete data file
-      await GetFileModule().DeleteFileAsync(physicalFilePath);
+      await GetFileModule().DeleteFileAsync(physicalModuleFile);
     }
     catch (Exception ex)
     {

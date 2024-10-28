@@ -30,11 +30,14 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
   /// <summary>
   /// Loads the specific import file into a model object
   /// </summary>
-  /// <param name="importDirectory">Directory where import file exists</param>
-  /// <returns></returns>
-  public override async Task<bool> LoadAsync(string extractPath, bool displayProgressMessage = true)
+  /// <param name="physicalFileFolder">Physical folder for import files</param>
+  /// <param name="displayProgressMessage">Display progress messages</param>
+  /// <returns>Success/Failure</returns>
+  public override async Task<bool> LoadAsync(
+    string physicalFileFolder, 
+    bool displayProgressMessage = true)
   {
-    var result = await base.LoadAsync(extractPath, false);
+    var result = await base.LoadAsync(physicalFileFolder, false);
     var record = 0;
 
     if (result)
@@ -88,13 +91,14 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
           }
 
         }
+
+        GetLogger().LogInformation($"loaded {GetModel().MediaElementsAvatars.Count()} {GetFileName()} MediaElementsAvatars objects");
+
       }
       catch (RuntimeBinderException)
       {
         GetLogger().LogWarning($"No media_elements_avatars records in {GetFileName()}");
       }
-
-      GetLogger().LogInformation($"loaded {GetModel().MediaElementsAvatars.Count()} {GetFileName()} MediaElementsAvatars objects");
 
     }
 
