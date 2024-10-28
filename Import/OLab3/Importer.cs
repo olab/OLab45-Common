@@ -155,36 +155,36 @@ public class Importer : IImporter
   {
     try
     {
-      Logger.LogInformation($"Module archive file: {FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, archiveFileName)}");
-
-      var archiveFilePath = FileStorageModule.BuildPath(OLabFileStorageModule.ImportRoot, archiveFileName);
+      var relativeArchiveFile = FileStorageModule.BuildPath(
+          OLabFileStorageModule.ImportRoot,
+          archiveFileName);
+      Logger.LogInformation($"Module archive file: {relativeArchiveFile}");
 
       // write the archive file to storage
-      archiveFilePath = await FileStorageModule.WriteFileAsync(
+      await FileStorageModule.WriteFileAsync(
         archiveFileStream,
-        archiveFilePath,
+        relativeArchiveFile,
         token);
 
       // build extract direct based on archive file name without extension
-      var extractDirectory =
+      var relativeExtractDirectory =
         FileStorageModule.BuildPath(
           OLabFileStorageModule.ImportRoot,
-          Path.GetFileNameWithoutExtension(archiveFileName));
-      Logger.LogInformation($"Folder extract directory: {extractDirectory}");
+          Path.GetFileNameWithoutExtension(relativeArchiveFile));
+      Logger.LogInformation($"Folder extract directory: {relativeExtractDirectory}");
 
       // extract archive file to extract directory
-      await FileStorageModule.ExtractFileToStorageAsync(
-        archiveFilePath,
-        extractDirectory,
+      var physicalExtractDirectory = await FileStorageModule.ExtractFileToStorageAsync(
+        relativeArchiveFile,
+        relativeExtractDirectory,
         token);
 
       // load all the import files in extract directory
       foreach (var dto in _dtos.Values)
-        await dto.LoadAsync(Path.GetFileNameWithoutExtension(archiveFileName));
+        await dto.LoadAsync(physicalExtractDirectory);
 
       // delete source archive file
-      await GetFileStorageModule().DeleteFileAsync(
-        archiveFilePath);
+      await GetFileStorageModule().DeleteFileAsync(relativeArchiveFile);
     }
     catch (Exception ex)
     {
@@ -208,9 +208,13 @@ public class Importer : IImporter
     {
       try
       {
+        var relativeExtractDirectory = FileStorageModule.BuildPath(
+          OLabFileStorageModule.ImportRoot,
+          Path.GetFileNameWithoutExtension(archiveFileName));
+
         // save all import data sets to database
         foreach (var dto in _dtos.Values)
-          dto.SaveToDatabase(Path.GetFileNameWithoutExtension(archiveFileName));
+          dto.SaveToDatabase(relativeExtractDirectory);
 
         transaction.Commit();
 

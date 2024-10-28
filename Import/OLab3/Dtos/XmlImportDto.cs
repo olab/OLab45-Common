@@ -120,35 +120,33 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// <summary>
   /// Load import files
   /// </summary>
-  /// <param name="importFilesFolder">Folder name of extracted import files</param>
+  /// <param name="physicalFileFolder">Physical folder for import files</param>
+  /// <param name="displayProgressMessage">Display progress messages</param>
   /// <returns>Success/Failure</returns>
-  public override async Task<bool> LoadAsync(string importFileDirectory, bool displayProgressMessage = true)
+  public override async Task<bool> LoadAsync(
+    string physicalFileFolder,
+    bool displayProgressMessage = true)
   {
     var rc = true;
 
     try
     {
 
-      var moduleFileName = $"{importFileDirectory}{GetFileModule().GetFolderSeparator()}{GetFileName()}";
-      GetLogger().LogInformation($"Loading {moduleFileName}");
-
-      var physicalFilePath = GetFileModule().BuildPath(
-        OLabFileStorageModule.ImportRoot,
-        importFileDirectory,
+      var physicalModuleFile = GetFileModule().BuildPath(
+        physicalFileFolder,
         GetFileName());
 
-      if (GetFileModule().FileExists(physicalFilePath))
-      {
-        using var moduleFileStream = new MemoryStream();
-        await GetFileModule().ReadFileAsync(
-          moduleFileStream,
-          physicalFilePath,
-          new System.Threading.CancellationToken());
+      GetLogger().LogInformation($"Loading {physicalModuleFile}");
+
+      using var moduleFileStream = new MemoryStream();
+      if (await GetFileModule().ReadFileAsync(
+        moduleFileStream,
+        physicalModuleFile,
+        new System.Threading.CancellationToken()))
         _phys = DynamicXml.Load(moduleFileStream);
-      }
       else
       {
-        GetLogger().LogInformation($"File {importFileDirectory}{GetFileModule().GetFolderSeparator()}{GetFileName()} does not exist");
+        GetLogger().LogInformation($"File {physicalFileFolder}{GetFileModule().GetFolderSeparator()}{GetFileName()} does not exist");
         return false;
       }
 
@@ -178,11 +176,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
       }
 
       // delete data file
-      await GetFileModule().DeleteFileAsync(
-        GetFileModule().BuildPath(
-          OLabFileStorageModule.ImportRoot,
-          importFileDirectory,
-          GetFileName()));
+      await GetFileModule().DeleteFileAsync(physicalModuleFile);
 
     }
     catch (Exception ex)

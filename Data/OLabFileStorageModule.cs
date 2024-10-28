@@ -138,7 +138,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   public abstract Task DeleteFolderAsync(
     string folderName);
 
-  public abstract Task<bool> ExtractFileToStorageAsync(
+  public abstract Task<string> ExtractFileToStorageAsync(
     string archiveFileName,
     string extractDirectory,
     CancellationToken token);
@@ -157,7 +157,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
     string destinationFolder,
     CancellationToken token = default);
 
-  public abstract Task ReadFileAsync(
+  public abstract Task<bool> ReadFileAsync(
     Stream stream,
     string fileName,
     CancellationToken token);
@@ -190,6 +190,6 @@ public abstract class OLabFileStorageModule : IFileStorageModule
 
   public string GetImportMediaFilesDirectory(string importFolderName)
   {
-    return BuildPath(ImportRoot, importFolderName, MediaDirectory);
+    return BuildPath(importFolderName, MediaDirectory);
   }
 }

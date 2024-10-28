@@ -118,7 +118,7 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
   /// <param name="elements">XML doc as an array of elements</param>
   /// <returns>Success/failure</returns>
   public override bool SaveToDatabase(
-    string importFolderName,
+    string relativeImportFolder,
     int recordIndex,
     IEnumerable<dynamic> elements)
   {
@@ -126,7 +126,7 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
 
     try
     {
-      var sourceDirectory = GetFileModule().GetImportMediaFilesDirectory(importFolderName);
+      var relativeMediaSourceDirectory = GetFileModule().GetImportMediaFilesDirectory(relativeImportFolder);
 
       var mapDto = GetImporter().GetDto(DtoTypes.XmlMapDto) as XmlMapDto;
       var map = mapDto.GetModel().Data.FirstOrDefault();
@@ -140,14 +140,11 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
         {
           dynamic fileName = Conversions.Base64Decode(element, true);
 
-          var sourceFilePath = GetFileModule().BuildPath(sourceDirectory, fileName);
+          var relativeSourceFile = GetFileModule().BuildPath(relativeMediaSourceDirectory, fileName);
 
           GetFileModule().MoveFileAsync(
-            sourceFilePath,
+            relativeSourceFile,
             targetDirectory).Wait();
-
-          GetLogger().LogInformation($"Moved {sourceFilePath}' -> '{targetDirectory}'");
-
         }
         catch (Exception ex)
         {

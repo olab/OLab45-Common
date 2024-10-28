@@ -27,7 +27,7 @@ public interface IFileStorageModule
   bool FileExists(
     string filePath);
 
-  Task ReadFileAsync(
+  Task<bool> ReadFileAsync(
     Stream stream,
     string filePath,
     CancellationToken token);
@@ -43,7 +43,7 @@ public interface IFileStorageModule
   Task DeleteFolderAsync(
     string folderName);
 
-  Task<bool> ExtractFileToStorageAsync(
+  Task<string> ExtractFileToStorageAsync(
     string archiveFileName,
     string extractDirectory,
     CancellationToken token);
