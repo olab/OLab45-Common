@@ -21,6 +21,12 @@ public class QuestionReaderWriter : ReaderWriter
   }
 
   public QuestionReaderWriter(
+  IOLabLogger logger,
+  OLabDBContext context) : base(logger, context)
+  {
+  }
+
+  public QuestionReaderWriter(
     IOLabLogger logger,
     OLabDBContext context,
     IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, context)

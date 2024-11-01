@@ -25,8 +25,7 @@ public class MapsNodesFullRelationsMapper : OLabMapper<MapNodes, MapsNodesFullRe
 
     _reader = new QuestionReaderWriter(
       GetLogger(),
-      GetDbContext(),
-      tagProvider);
+      GetDbContext());
 
     _groupRoleMapper = new MapNodeGroupRolesMapper(GetLogger(), GetDbContext(), tagProvider);
 
