@@ -40,6 +40,13 @@ public partial class MapsEndpoint : OLabEndpoint
     _mapNodesReader = new MapNodesReaderWriter(GetLogger(), GetDbContext(), null);
   }
 
+  public MapsEndpoint(
+    IOLabLogger logger, 
+    IOLabConfiguration configuration, 
+    OLabDBContext dbContext) : base(logger, configuration, dbContext)
+  {
+  }
+
   /// <summary>
   /// 
   /// </summary>
