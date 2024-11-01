@@ -81,9 +81,6 @@ public partial class MapNodesReaderWriter : ReaderWriter
       .Include("MapNodeGrouproles")
       .FirstOrDefaultAsync(x => x.Id == id);
 
-    // catch case of an uninitialized node with no group roles
-    await InitializeGroupRolesAsync(node);
-
     return node;
   }
 
@@ -99,9 +96,6 @@ public partial class MapNodesReaderWriter : ReaderWriter
      .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Group)
      .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Role)
      .FirstOrDefaultAsync(x => x.MapId == mapId && x.Id == nodeId);
-
-    // catch case of an uninitialized node with no group roles
-    await InitializeGroupRolesAsync(node);
 
     return node;
   }
@@ -138,9 +132,6 @@ public partial class MapNodesReaderWriter : ReaderWriter
         .Where(x => x.MapId == mapId)
         .OrderBy(x => x.Id)
       .FirstAsync();
-
-    // catch case of an uninitialized node with no group roles
-    await InitializeGroupRolesAsync(node);
 
     return node;
   }
@@ -204,24 +195,6 @@ public partial class MapNodesReaderWriter : ReaderWriter
     }
 
     return dto;
-  }
-
-  /// <summary>
-  /// If a legacy map with no group roles, initialize
-  /// node with all-access record
-  /// </summary>
-  /// <param name="node">Node to evaluate</param>
-  private async Task InitializeGroupRolesAsync(MapNodes node)
-  {
-    if (node.MapNodeGrouproles.Count > 0)
-      return;
-
-    GetLogger().LogInformation($"initializing group/role for node {node.Title}({node.Id})");
-
-    node.MapNodeGrouproles.Add(new MapNodeGrouproles { Id = 0, GroupId = null, RoleId = null });
-
-    GetDbContext().MapNodes.Update(node);
-    await GetDbContext().SaveChangesAsync();
   }
 
   /// <summary>
