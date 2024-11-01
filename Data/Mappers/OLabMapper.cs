@@ -66,7 +66,6 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   {
     Guard.Argument(logger).NotNull(nameof(logger));
     Guard.Argument(dbContext).NotNull(nameof(dbContext));
-    Guard.Argument(wikiTagModules).NotNull(nameof(wikiTagModules));
 
     _logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
     _dbContext = dbContext;
