@@ -4,7 +4,7 @@ namespace OLab.Api.Common;
 
 public class OLabObjectListResult<D>
 {
-  public static OLabAPIResponse<IList<D>> Result(IList<D> value)
+  public static OLabApiResult<IList<D>> Result(IList<D> value)
   {
     var result = new OLabAPIPagedResponse<D>
     {

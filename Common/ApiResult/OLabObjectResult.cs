@@ -1,10 +1,17 @@
+using Microsoft.AspNetCore.Mvc;
+using System.Net;
+
 namespace OLab.Api.Common;
 
-public class OLabObjectResult<D>
+public class OLabObjectResult<D> : ObjectResult
 {
-  public static OLabAPIResponse<D> Result(D value)
+  public OLabObjectResult(object value, HttpStatusCode status = HttpStatusCode.OK) : base( value )
   {
-    var result = new OLabAPIResponse<D>
+  }
+
+  public static OLabApiResult<D> Result(D value)
+  {
+    var result = new OLabApiResult<D>
     {
       Data = value,
       ErrorCode = System.Net.HttpStatusCode.OK

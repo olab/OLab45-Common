@@ -19,11 +19,11 @@ public class Diagnostics
   public string Line { get; set; }
 }
 
-public class OLabAPIResponse<D> : ActionResult
+public class OLabApiResult<D> : ActionResult
 {
   public const string MessageSuccess = "success";
 
-  public OLabAPIResponse()
+  public OLabApiResult()
   {
     Diagnostics = new List<Diagnostics>();
     Message = MessageSuccess;

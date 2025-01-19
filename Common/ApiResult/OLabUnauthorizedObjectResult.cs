@@ -4,9 +4,9 @@ namespace OLab.Api.Common;
 
 public class OLabUnauthorizedObjectResult
 {
-  public static OLabAPIResponse<string> Result(string value)
+  public static OLabApiResult<string> Result(string value)
   {
-    var apiResponse = new OLabAPIResponse<string>()
+    var apiResponse = new OLabApiResult<string>()
     {
       Data = value,
       ErrorCode = HttpStatusCode.Unauthorized,

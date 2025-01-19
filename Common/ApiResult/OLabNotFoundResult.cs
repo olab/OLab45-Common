@@ -4,18 +4,18 @@ namespace OLab.Api.Common;
 
 public class OLabNotFoundResult<D>
 {
-  public static OLabAPIResponse<D> Result(D value)
+  public static OLabApiResult<D> Result(D value)
   {
-    return new OLabAPIResponse<D>()
+    return new OLabApiResult<D>()
     {
       Data = value,
       ErrorCode = HttpStatusCode.NotFound
     };
   }
 
-  public static OLabAPIResponse<uint> Result(string objectType, uint value)
+  public static OLabApiResult<uint> Result(string objectType, uint value)
   {
-    return new OLabAPIResponse<uint>()
+    return new OLabApiResult<uint>()
     {
       Message = $"{objectType}",
       Data = value,
