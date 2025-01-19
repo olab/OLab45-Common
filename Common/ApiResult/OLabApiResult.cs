@@ -16,7 +16,7 @@ public class Diagnostics
   [JsonProperty("file")]
   public string File { get; set; }
   [JsonProperty("line")]
-  public string Line { get; set; }
+  public int Line { get; set; }
 }
 
 public class OLabApiResult<D> : ActionResult
@@ -25,7 +25,6 @@ public class OLabApiResult<D> : ActionResult
 
   public OLabApiResult()
   {
-    Diagnostics = new List<Diagnostics>();
     Message = MessageSuccess;
     ErrorCode = HttpStatusCode.OK;
     Status = (int)HttpStatusCode.OK;
@@ -37,8 +36,8 @@ public class OLabApiResult<D> : ActionResult
   public string Message { get; set; }
   [JsonProperty("error_code")]
   public HttpStatusCode ErrorCode { get; set; }
-  [JsonProperty("diagnostics")]
-  public IList<Diagnostics> Diagnostics { get; set; }
+  [JsonProperty( "diagnostics" )]
+  public IList<Diagnostics> Diagnostics { get; set; } = new List<Diagnostics>();
   [JsonProperty("data")]
   public D Data { get; set; }
 }
