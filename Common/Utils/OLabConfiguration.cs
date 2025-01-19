@@ -1,6 +1,7 @@
 using Dawn;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 
@@ -17,16 +18,31 @@ public class OLabConfiguration : IOLabConfiguration
     ILoggerFactory loggerFactory,
     IConfiguration configuration)
   {
-    Guard.Argument(loggerFactory).NotNull(nameof(loggerFactory));
-    Guard.Argument(configuration).NotNull(nameof(configuration));
+    Guard.Argument( loggerFactory ).NotNull( nameof( loggerFactory ) );
+    Guard.Argument( configuration ).NotNull( nameof( configuration ) );
 
     _configuration = configuration;
-    _appSettings = _configuration.GetSection("AppSettings").Get<AppSettings>();
+    var logger = OLabLogger.CreateNew<OLabConfiguration>( loggerFactory );
 
-    var logger = OLabLogger.CreateNew<OLabConfiguration>(loggerFactory);
+    logger.LogInformation( $"Configuration:" );
 
-    foreach (var item in configuration.AsEnumerable())
-      logger.LogDebug($"{item.Key} -> {item.Value}");
+    foreach ( var item in _configuration.AsEnumerable() )
+      logger.LogInformation( $"  {item.Key} -> {item.Value}" );
+
+    _appSettings = new AppSettings
+    {
+      Audience = _configuration.GetValue<string>( "Audience" ),
+      Issuer = _configuration.GetValue<string>( "Issuer" ),
+      Secret = _configuration.GetValue<string>( "Secret" ),
+      TokenExpiryMinutes = _configuration.GetValue<int>( "TokenExpiryMinutes" ),
+      FileStorageRoot = _configuration.GetValue<string>( "FileStorageRoot" ),
+      FileStorageUrl = _configuration.GetValue<string>( "FileStorageUrl" ),
+      FileStorageType = _configuration.GetValue<string>( "FileStorageType" ),
+      FileStorageConnectionString = _configuration.GetValue<string>( "FileStorageConnectionString" )
+    };
+
+    var json = JsonConvert.SerializeObject( _appSettings );
+    logger.LogInformation( json );
 
   }
 
