@@ -1,4 +1,3 @@
-using NuGet.Packaging;
 using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -28,12 +27,12 @@ public partial class GroupRoleAclsEndpoint : OLabEndpoint
       configuration,
       dbContext,
       wikiTagProvider,
-      fileStorageProvider)
+      fileStorageProvider )
   {
-    _readerWriter = GroupRoleAclReaderWriter.Instance(logger, dbContext);
+    _readerWriter = GroupRoleAclReaderWriter.Instance( logger, dbContext );
     _mapper = new GroupRoleAclMapper(
       GetLogger(),
-      GetDbContext());
+      GetDbContext() );
   }
 
   public async Task<IList<GroupRoleAclDto>> GetAsync(
@@ -43,50 +42,50 @@ public partial class GroupRoleAclsEndpoint : OLabEndpoint
     var groupRoleAclsPhys = new List<GrouproleAcls>();
 
     // no group, role, maps, node specified, so query all
-    if (!model.GroupId.HasValue &&
+    if ( !model.GroupId.HasValue &&
       !model.RoleId.HasValue &&
       (model.MapIds.Count == 0) &&
       (model.AppIds.Count == 0) &&
-      (model.NodeIds.Count == 0))
-      groupRoleAclsPhys.AddRange(await _readerWriter.GetAsync());
+      (model.NodeIds.Count == 0) )
+      groupRoleAclsPhys.AddRange( await _readerWriter.GetAsync() );
 
     else
     {
       // query by node
-      if (model.NodeIds.Count > 0)
+      if ( model.NodeIds.Count > 0 )
       {
-        foreach (var nodeId in model.NodeIds)
-          groupRoleAclsPhys.AddRange(await _readerWriter.GetAsync(
+        foreach ( var nodeId in model.NodeIds )
+          groupRoleAclsPhys.AddRange( await _readerWriter.GetAsync(
             model.GroupId,
             model.RoleId,
             Constants.ScopeLevelNode,
-            nodeId));
+            nodeId ) );
       }
 
       // query by map
-      if (model.MapIds.Count > 0)
+      if ( model.MapIds.Count > 0 )
       {
-        foreach (var mapId in model.MapIds)
-          groupRoleAclsPhys.AddRange(await _readerWriter.GetAsync(
+        foreach ( var mapId in model.MapIds )
+          groupRoleAclsPhys.AddRange( await _readerWriter.GetAsync(
             model.GroupId,
             model.RoleId,
             Constants.ScopeLevelMap,
-            mapId));
+            mapId ) );
       }
 
       // query by application
-      if (model.AppIds.Count > 0)
+      if ( model.AppIds.Count > 0 )
       {
-        foreach (var appId in model.AppIds)
-          groupRoleAclsPhys.AddRange(await _readerWriter.GetAsync(
+        foreach ( var appId in model.AppIds )
+          groupRoleAclsPhys.AddRange( await _readerWriter.GetAsync(
             model.GroupId,
             model.RoleId,
             Constants.ScopeLevelApp,
-            appId));
+            appId ) );
       }
     }
 
-    var itemsDto = _mapper.PhysicalToDto(groupRoleAclsPhys);
+    var itemsDto = _mapper.PhysicalToDto( groupRoleAclsPhys );
     return itemsDto;
   }
 }

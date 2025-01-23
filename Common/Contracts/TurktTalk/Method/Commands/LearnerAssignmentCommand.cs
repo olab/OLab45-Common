@@ -30,7 +30,7 @@ public class LearnerAssignmentCommand : CommandMethod
   public LearnerAssignmentCommand(
     Participant moderator,
     Learner learner,
-    IList<MapNodeListItem> jumpNodes) : base(moderator.CommandChannel, "learnerassignment")
+    IList<MapNodeListItem> jumpNodes) : base( moderator.CommandChannel, "learnerassignment" )
   {
     Data = new LearnerAssignmentPayload
     {
@@ -42,8 +42,8 @@ public class LearnerAssignmentCommand : CommandMethod
 
   public override string ToJson()
   {
-    var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
-    return JToken.Parse(rawJson).ToString(Formatting.Indented);
+    var rawJson = System.Text.Json.JsonSerializer.Serialize( this );
+    return JToken.Parse( rawJson ).ToString( Formatting.Indented );
   }
 
 }

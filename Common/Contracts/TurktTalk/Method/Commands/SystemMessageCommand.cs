@@ -11,15 +11,15 @@ public class SystemMessageCommand : Method
   /// <summary>
   /// Defines a Moderator removed command method
   /// </summary>
-  public SystemMessageCommand(MessagePayload payload) : base(payload.Envelope.To, "systemmessage")
+  public SystemMessageCommand(MessagePayload payload) : base( payload.Envelope.To, "systemmessage" )
   {
     Data = payload.Data;
   }
 
   public override string ToJson()
   {
-    var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
-    return JToken.Parse(rawJson).ToString(Formatting.Indented);
+    var rawJson = System.Text.Json.JsonSerializer.Serialize( this );
+    return JToken.Parse( rawJson ).ToString( Formatting.Indented );
   }
 
 }

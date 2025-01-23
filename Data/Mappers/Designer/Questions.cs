@@ -11,7 +11,7 @@ public class Questions : OLabMapper<SystemQuestions, ScopedObjectDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 
@@ -27,7 +27,7 @@ public class Questions : OLabMapper<SystemQuestions, ScopedObjectDto>
   /// <returns>Dto object</returns>
   public override ScopedObjectDto PhysicalToDto(SystemQuestions phys, ScopedObjectDto dto)
   {
-    if (string.IsNullOrEmpty(phys.Name))
+    if ( string.IsNullOrEmpty( phys.Name ) )
       dto.Wiki = $"[[QU:{phys.Id}]]";
     else
       dto.Wiki = $"[[QU:{phys.Name}]]";
@@ -40,10 +40,10 @@ public class Questions : OLabMapper<SystemQuestions, ScopedObjectDto>
   /// <returns>MapperConfiguration</returns>
   protected override MapperConfiguration GetConfiguration()
   {
-    return new MapperConfiguration(cfg =>
+    return new MapperConfiguration( cfg =>
      cfg.CreateMap<SystemQuestions, ScopedObjectDto>()
-      .ForMember(dest => dest.ScopeLevel, act => act.MapFrom(src => src.ImageableType))
-      .ForMember(dest => dest.ParentId, act => act.MapFrom(src => src.ImageableId))
+      .ForMember( dest => dest.ScopeLevel, act => act.MapFrom( src => src.ImageableType ) )
+      .ForMember( dest => dest.ParentId, act => act.MapFrom( src => src.ImageableId ) )
       .ReverseMap()
     );
   }

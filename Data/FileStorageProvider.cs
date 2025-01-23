@@ -8,8 +8,8 @@ public class FileStorageProvider : OLabModuleProvider<IFileStorageModule>
 {
   public FileStorageProvider(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration)
+    IOLabConfiguration configuration) : base( logger, configuration )
   {
-    Load("OLab.Files.*.dll");
+    Load( "OLab.Files.*.dll" );
   }
 }

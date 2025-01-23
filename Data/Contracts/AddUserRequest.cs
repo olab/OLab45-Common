@@ -29,9 +29,9 @@ public class AddUserRequest
   public string ModeUi { get; set; }
   public string GroupRoles { get; set; }
   public string Operation { get; set; }
-  [JsonProperty("hash")]
-  public string Hash{ get; set; }
-  [JsonProperty("salt")]
+  [JsonProperty( "hash" )]
+  public string Hash { get; set; }
+  [JsonProperty( "salt" )]
   public string Salt { get; set; }
   public IList<UserGrouproles> GroupRoleObjects { get; } = new List<UserGrouproles>();
 
@@ -69,43 +69,43 @@ public class AddUserRequest
   {
     // if not passed in, then look for it in the GroupRoles string
     // which is what the EditUser method may pass in
-    if (groupRoleString == null)
+    if ( groupRoleString == null )
       groupRoleString = GroupRoles;
 
-    var groupRoleParts = groupRoleString.Split(",");
-    foreach (var groupRolePart in groupRoleParts)
+    var groupRoleParts = groupRoleString.Split( "," );
+    foreach ( var groupRolePart in groupRoleParts )
     {
-      if (string.IsNullOrEmpty(groupRolePart))
+      if ( string.IsNullOrEmpty( groupRolePart ) )
         continue;
 
-      var obj = UserGrouproles.StringToObject(dbContext, groupRolePart);
-      if (obj == null)
+      var obj = UserGrouproles.StringToObject( dbContext, groupRolePart );
+      if ( obj == null )
         continue;
 
-      if (Id.HasValue)
+      if ( Id.HasValue )
         obj.UserId = Id.Value;
 
-      if (obj != null)
-        GroupRoleObjects.Add(obj);
+      if ( obj != null )
+        GroupRoleObjects.Add( obj );
     }
   }
 
   public void ProcessAddUserText(string userRequestText)
   {
-    var userRequestParts = userRequestText.Split("\t");
-    if (userRequestParts.Length < 5)
-      throw new Exception("Bad user request record");
+    var userRequestParts = userRequestText.Split( "\t" );
+    if ( userRequestParts.Length < 5 )
+      throw new Exception( "Bad user request record" );
 
-    Username = userRequestParts[0];
-    if (userRequestParts[1].Length > 0)
-      Password = userRequestParts[1];
+    Username = userRequestParts[ 0 ];
+    if ( userRequestParts[ 1 ].Length > 0 )
+      Password = userRequestParts[ 1 ];
 
-    EMail = userRequestParts[2];
-    NickName = userRequestParts[3];
+    EMail = userRequestParts[ 2 ];
+    NickName = userRequestParts[ 3 ];
 
     // process [ group:role,... ] strings
-    for (var i = 4; i < userRequestParts.Length; i++)
-      BuildGroupRoleObjects(userRequestParts[i]);
+    for ( var i = 4; i < userRequestParts.Length; i++ )
+      BuildGroupRoleObjects( userRequestParts[ i ] );
 
     Username = Username.ToLower();
 

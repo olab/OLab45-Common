@@ -4,8 +4,8 @@ public static class ConnectionIdUtils
 {
   public static string Shorten(string connectionId)
   {
-    if (string.IsNullOrEmpty(connectionId))
+    if ( string.IsNullOrEmpty( connectionId ) )
       return "<none>";
-    return connectionId[^3..];
+    return connectionId[ ^3.. ];
   }
 }

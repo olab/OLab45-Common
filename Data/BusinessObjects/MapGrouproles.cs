@@ -5,34 +5,34 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
-[Table("map_grouproles")]
-[Index("GroupId", Name = "group_id")]
-[Index("MapId", Name = "mgr_ibfk_node_idx")]
-[Index("RoleId", Name = "role_id")]
+[Table( "map_grouproles" )]
+[Index( "GroupId", Name = "group_id" )]
+[Index( "MapId", Name = "mgr_ibfk_node_idx" )]
+[Index( "RoleId", Name = "role_id" )]
 public partial class MapGrouproles
 {
   [Key]
-  [Column("id", TypeName = "int(10) unsigned")]
+  [Column( "id", TypeName = "int(10) unsigned" )]
   public uint Id { get; set; }
 
-  [Column("map_id", TypeName = "int(10) unsigned")]
+  [Column( "map_id", TypeName = "int(10) unsigned" )]
   public uint MapId { get; set; }
 
-  [Column("group_id", TypeName = "int(10) unsigned")]
+  [Column( "group_id", TypeName = "int(10) unsigned" )]
   public uint? GroupId { get; set; }
 
-  [Column("role_id", TypeName = "int(10) unsigned")]
+  [Column( "role_id", TypeName = "int(10) unsigned" )]
   public uint? RoleId { get; set; }
 
-  [ForeignKey("GroupId")]
-  [InverseProperty("MapGrouproles")]
+  [ForeignKey( "GroupId" )]
+  [InverseProperty( "MapGrouproles" )]
   public virtual Groups Group { get; set; }
 
-  [ForeignKey("MapId")]
-  [InverseProperty("MapGrouproles")]
+  [ForeignKey( "MapId" )]
+  [InverseProperty( "MapGrouproles" )]
   public virtual Maps Map { get; set; }
 
-  [ForeignKey("RoleId")]
-  [InverseProperty("MapGrouproles")]
+  [ForeignKey( "RoleId" )]
+  [InverseProperty( "MapGrouproles" )]
   public virtual Roles Role { get; set; }
 }

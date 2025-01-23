@@ -46,23 +46,23 @@ public partial class Importer : IImporter
       var mapFullDto = await ExtractImportMapDefinition(
         stream,
         fileName,
-        token);
+        token );
 
       _scopedObjectPhys = new ScopedObjects(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider());
+        GetWikiProvider() );
 
-      _newMapPhys = await WriteMapToDatabaseAsync(auth, mapFullDto, token);
+      _newMapPhys = await WriteMapToDatabaseAsync( auth, mapFullDto, token );
 
-      await ProcessMapNodesAsync(mapFullDto, token);
-      await ProcessAttachedImportFiles(token);
+      await ProcessMapNodesAsync( mapFullDto, token );
+      await ProcessAttachedImportFiles( token );
 
-      await _scopedObjectPhys.WriteAllToDatabaseAsync(_newMapPhys.Id, token);
+      await _scopedObjectPhys.WriteAllToDatabaseAsync( _newMapPhys.Id, token );
 
       await CleanupImportAsync();
 
-      if (GetLogger().HasErrorMessage())
+      if ( GetLogger().HasErrorMessage() )
         await _dbContext.Database.RollbackTransactionAsync();
       else
         await _dbContext.Database.CommitTransactionAsync();
@@ -70,9 +70,9 @@ public partial class Importer : IImporter
       return _newMapPhys;
 
     }
-    catch (Exception ex)
+    catch ( Exception ex )
     {
-      GetLogger().LogError($"Import error {ex.Message}");
+      GetLogger().LogError( $"Import error {ex.Message}" );
       await _dbContext.Database.RollbackTransactionAsync();
       throw;
     }
@@ -88,57 +88,57 @@ public partial class Importer : IImporter
     string importFileName,
     CancellationToken token = default)
   {
-    ExtractFolderName = Path.GetFileNameWithoutExtension(importFileName);
-    GetLogger().LogInformation($"Folder extract directory: {ExtractFolderName}");
+    ExtractFolderName = Path.GetFileNameWithoutExtension( importFileName );
+    GetLogger().LogInformation( $"Folder extract directory: {ExtractFolderName}" );
 
     // delete any existing import files left over
     // from previous run
     await _fileModule.DeleteFolderAsync(
       _fileModule.BuildPath(
         OLabFileStorageModule.ImportRoot,
-        ExtractFolderName));
+        ExtractFolderName ) );
 
     // save import file to storage
     await _fileModule.WriteFileAsync(
       importFileStream,
       _fileModule.BuildPath(
         OLabFileStorageModule.ImportRoot,
-        importFileName),
-      token);
+        importFileName ),
+      token );
 
     // extract import file to storage
     await _fileModule.ExtractFileToStorageAsync(
       _fileModule.BuildPath(
         OLabFileStorageModule.ImportRoot,
-        importFileName),
+        importFileName ),
       _fileModule.BuildPath(
        OLabFileStorageModule.ImportRoot,
-        ExtractFolderName),
-      token);
+        ExtractFolderName ),
+      token );
 
     string mapJson;
 
     // extract the map.json file from the extracted imported files
-    using (var mapStream = new MemoryStream())
+    using ( var mapStream = new MemoryStream() )
     {
       await _fileModule.ReadFileAsync(
         mapStream,
         _fileModule.BuildPath(
           OLabFileStorageModule.ImportRoot,
           ExtractFolderName,
-          MapFileName),
-        token);
-      mapJson = Encoding.UTF8.GetString(mapStream.ToArray());
+          MapFileName ),
+        token );
+      mapJson = Encoding.UTF8.GetString( mapStream.ToArray() );
     }
 
     // build the map object
-    var mapFullDto = JsonConvert.DeserializeObject<MapsFullRelationsDto>(mapJson);
+    var mapFullDto = JsonConvert.DeserializeObject<MapsFullRelationsDto>( mapJson );
 
     // delete source import file
     await GetFileStorageModule().DeleteFileAsync(
       _fileModule.BuildPath(
         OLabFileStorageModule.ImportRoot,
-        Path.GetFileName(importFileName)));
+        Path.GetFileName( importFileName ) ) );
 
     return mapFullDto;
 
@@ -150,22 +150,22 @@ public partial class Importer : IImporter
     CancellationToken token)
   {
     var mapDto = dto.Map;
-    var phys = new MapsFullMapper(GetLogger(),
+    var phys = new MapsFullMapper( GetLogger(),
         GetDbContext(),
-        GetWikiProvider()).DtoToPhysical(mapDto);
+        GetWikiProvider() ).DtoToPhysical( mapDto );
 
     phys.Id = 0;
     phys.Name = $"IMPORT: {phys.Name}";
     phys.AuthorId = auth.UserContext.UserId;
     phys.CreatedAt = DateTime.UtcNow;
 
-    await _dbContext.Maps.AddAsync(phys);
-    await _dbContext.SaveChangesAsync(token);
+    await _dbContext.Maps.AddAsync( phys );
+    await _dbContext.SaveChangesAsync( token );
 
-    GetLogger().LogInformation($"  imported map '{mapDto.Name}' {mapDto.Id.Value} -> {phys.Id}");
+    GetLogger().LogInformation( $"  imported map '{mapDto.Name}' {mapDto.Id.Value} -> {phys.Id}" );
 
-    _scopedObjectPhys.AddMapIdCrossReference(mapDto.Id.Value, phys.Id);
-    _scopedObjectPhys.AddScopeFromDto(dto.ScopedObjects);
+    _scopedObjectPhys.AddMapIdCrossReference( mapDto.Id.Value, phys.Id );
+    _scopedObjectPhys.AddScopeFromDto( dto.ScopedObjects );
 
     return phys;
   }
@@ -174,19 +174,19 @@ public partial class Importer : IImporter
   {
     // import the map nodes, save the new node ids for
     // when we import the map node links
-    foreach (var mapNodeDto in mapFullDto.MapNodes)
+    foreach ( var mapNodeDto in mapFullDto.MapNodes )
     {
-      var nodePhys = await WriteMapNodesDtoToDatabase(_newMapPhys.Id, mapNodeDto, token);
-      _scopedObjectPhys.AddMapNodeIdCrossReference(mapNodeDto.Id.Value, nodePhys.Id);
+      var nodePhys = await WriteMapNodesDtoToDatabase( _newMapPhys.Id, mapNodeDto, token );
+      _scopedObjectPhys.AddMapNodeIdCrossReference( mapNodeDto.Id.Value, nodePhys.Id );
 
-      _scopedObjectPhys.AddScopeFromDto(mapNodeDto.ScopedObjects);
+      _scopedObjectPhys.AddScopeFromDto( mapNodeDto.ScopedObjects );
     }
 
     // import the map node links
-    foreach (var mapNodeLinkDto in mapFullDto.MapNodeLinks)
+    foreach ( var mapNodeLinkDto in mapFullDto.MapNodeLinks )
     {
-      var nodeLinkId = await WriteMapNodeLinkToDatabaseAsync(_newMapPhys.Id, mapNodeLinkDto, token);
-      GetLogger().LogInformation($"  imported map node link {mapNodeLinkDto.Id.Value} -> {nodeLinkId}");
+      var nodeLinkId = await WriteMapNodeLinkToDatabaseAsync( _newMapPhys.Id, mapNodeLinkDto, token );
+      GetLogger().LogInformation( $"  imported map node link {mapNodeLinkDto.Id.Value} -> {nodeLinkId}" );
     }
   }
 
@@ -197,7 +197,7 @@ public partial class Importer : IImporter
     await _fileModule.DeleteFolderAsync(
       _fileModule.BuildPath(
         OLabFileStorageModule.ImportRoot,
-        ExtractFolderName));
+        ExtractFolderName ) );
   }
 
   private async Task ProcessAttachedImportFiles(
@@ -208,22 +208,22 @@ public partial class Importer : IImporter
     var importFilesFolder = _fileModule.BuildPath(
       OLabFileStorageModule.ImportRoot,
       ExtractFolderName,
-      Api.Utils.Constants.ScopeLevelMap);
+      Api.Utils.Constants.ScopeLevelMap );
 
-    var sourceFiles = _fileModule.GetFiles(importFilesFolder, token);
+    var sourceFiles = _fileModule.GetFiles( importFilesFolder, token );
 
     var mapFilesFolder = _fileModule.BuildPath(
       OLabFileStorageModule.FilesRoot,
       Api.Utils.Constants.ScopeLevelMap,
-      _newMapPhys.Id);
+      _newMapPhys.Id );
 
-    foreach (var sourceFile in sourceFiles)
+    foreach ( var sourceFile in sourceFiles )
       await _fileModule.MoveFileAsync(
       _fileModule.BuildPath(
         importFilesFolder,
-        Path.GetFileName(sourceFile)),
+        Path.GetFileName( sourceFile ) ),
       mapFilesFolder,
-      token);
+      token );
   }
 
   private async Task<MapNodes> WriteMapNodesDtoToDatabase(
@@ -234,15 +234,15 @@ public partial class Importer : IImporter
     var phys = new MapNodesFullMapper(
       GetLogger(),
         GetDbContext(),
-        GetWikiProvider()).DtoToPhysical(dto);
+        GetWikiProvider() ).DtoToPhysical( dto );
 
     phys.Id = 0;
     phys.MapId = mapId;
 
-    await _dbContext.MapNodes.AddAsync(phys);
-    await _dbContext.SaveChangesAsync(token);
+    await _dbContext.MapNodes.AddAsync( phys );
+    await _dbContext.SaveChangesAsync( token );
 
-    GetLogger().LogInformation($"  imported map node '{phys.Title}' {dto.Id.Value} -> {phys.Id}");
+    GetLogger().LogInformation( $"  imported map node '{phys.Title}' {dto.Id.Value} -> {phys.Id}" );
 
     return phys;
   }
@@ -255,16 +255,16 @@ public partial class Importer : IImporter
     var phys = new MapNodeLinksMapper(
       GetLogger(),
         GetDbContext(),
-        GetWikiProvider()).DtoToPhysical(dto);
+        GetWikiProvider() ).DtoToPhysical( dto );
 
     phys.Id = 0;
     phys.MapId = mapId;
 
-    phys.NodeId1 = _scopedObjectPhys.GetMapNodeIdCrossReference(dto.SourceId.Value);
-    phys.NodeId2 = _scopedObjectPhys.GetMapNodeIdCrossReference(dto.DestinationId.Value);
+    phys.NodeId1 = _scopedObjectPhys.GetMapNodeIdCrossReference( dto.SourceId.Value );
+    phys.NodeId2 = _scopedObjectPhys.GetMapNodeIdCrossReference( dto.DestinationId.Value );
 
-    await _dbContext.MapNodeLinks.AddAsync(phys);
-    await _dbContext.SaveChangesAsync(token);
+    await _dbContext.MapNodeLinks.AddAsync( phys );
+    await _dbContext.SaveChangesAsync( token );
 
     return phys.Id;
   }

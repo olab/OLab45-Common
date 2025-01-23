@@ -14,7 +14,7 @@ public class ConstantsFull : OLabMapper<SystemConstants, ConstantsDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 
@@ -22,7 +22,7 @@ public class ConstantsFull : OLabMapper<SystemConstants, ConstantsDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 
@@ -32,12 +32,12 @@ public class ConstantsFull : OLabMapper<SystemConstants, ConstantsDto>
   /// <returns>MapperConfiguration</returns>
   protected override MapperConfiguration GetConfiguration()
   {
-    return new MapperConfiguration(cfg =>
+    return new MapperConfiguration( cfg =>
     {
-      cfg.CreateMap<string, byte[]>().ConvertUsing(s => Encoding.UTF8.GetBytes(s));
-      cfg.CreateMap<byte[], string>().ConvertUsing(s => Encoding.UTF8.GetString(s));
+      cfg.CreateMap<string, byte[]>().ConvertUsing( s => Encoding.UTF8.GetBytes( s ) );
+      cfg.CreateMap<byte[], string>().ConvertUsing( s => Encoding.UTF8.GetString( s ) );
       cfg.CreateMap<SystemConstants, ConstantsDto>().ReverseMap();
-    });
+    } );
   }
 
 }

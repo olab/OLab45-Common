@@ -5,22 +5,22 @@ namespace OLab.Api.Dto;
 
 public class CountersDto : ScopedObjectDto
 {
-  [JsonProperty("value")]
+  [JsonProperty( "value" )]
   public string Value { get; set; }
 
-  [JsonProperty("isSystem")]
+  [JsonProperty( "isSystem" )]
   public int? IsSystem { get; set; }
 
   public int ValueAsNumber()
   {
-    if (int.TryParse(Value, out var value))
+    if ( int.TryParse( Value, out var value ) )
       return value;
     return 0;
   }
 
   public void SetValue(int value)
   {
-    SetValue(value.ToString());
+    SetValue( value.ToString() );
   }
 
   public void SetValue(string value)

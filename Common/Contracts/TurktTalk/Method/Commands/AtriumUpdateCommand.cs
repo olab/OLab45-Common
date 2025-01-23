@@ -15,15 +15,15 @@ public class AtriumUpdateCommand : CommandMethod
   public IList<Learner> Data { get; set; }
 
   // constructor for all moderators in a topic
-  public AtriumUpdateCommand(string moderatorChannel, IList<Learner> atriumLearners) : base(moderatorChannel, "atriumupdate")
+  public AtriumUpdateCommand(string moderatorChannel, IList<Learner> atriumLearners) : base( moderatorChannel, "atriumupdate" )
   {
-    Data = atriumLearners.OrderBy(x => x.NickName).ToList();
+    Data = atriumLearners.OrderBy( x => x.NickName ).ToList();
   }
 
   public override string ToJson()
   {
-    var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
-    return JToken.Parse(rawJson).ToString(Formatting.Indented);
+    var rawJson = System.Text.Json.JsonSerializer.Serialize( this );
+    return JToken.Parse( rawJson ).ToString( Formatting.Indented );
   }
 
 }

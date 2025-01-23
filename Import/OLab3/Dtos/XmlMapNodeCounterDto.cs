@@ -17,9 +17,9 @@ public class XmlMapNodeCounterDto : XmlImportDto<XmlMapNodeCounters>
       logger,
       importer,
       Importer.DtoTypes.XmlMapNodeCounterDto,
-      "map_node_counter.xml")
+      "map_node_counter.xml" )
   {
-    _mapper = new CounterActionsMapper(GetLogger(), GetDbContext(), GetWikiProvider());
+    _mapper = new CounterActionsMapper( GetLogger(), GetDbContext(), GetWikiProvider() );
   }
 
   /// <summary>
@@ -43,32 +43,32 @@ public class XmlMapNodeCounterDto : XmlImportDto<XmlMapNodeCounters>
     int recordIndex,
     IEnumerable<dynamic> elements)
   {
-    var item = _mapper.ElementsToPhys(elements);
+    var item = _mapper.ElementsToPhys( elements );
     var oldId = item.Id;
 
     // test for empty value/expression.  if so, igmore this save
-    if (string.IsNullOrEmpty(item.Expression))
+    if ( string.IsNullOrEmpty( item.Expression ) )
     {
-      GetLogger().LogInformation($"  empty {GetFileName()} id = {oldId} value.  Skipping");
+      GetLogger().LogInformation( $"  empty {GetFileName()} id = {oldId} value.  Skipping" );
       return true;
     }
 
     item.Id = 0;
 
-    var nodeDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapNodeDto) as XmlImportDto<XmlMapNodes>;
-    item.ImageableId = nodeDto.GetIdTranslation(GetFileName(), item.ImageableId).Value;
+    var nodeDto = GetImporter().GetDto( Importer.DtoTypes.XmlMapNodeDto ) as XmlImportDto<XmlMapNodes>;
+    item.ImageableId = nodeDto.GetIdTranslation( GetFileName(), item.ImageableId ).Value;
 
-    var counterDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapCounterDto) as XmlMapCounterDto;
-    item.CounterId = counterDto.GetIdTranslation(GetFileName(), item.CounterId).Value;
+    var counterDto = GetImporter().GetDto( Importer.DtoTypes.XmlMapCounterDto ) as XmlMapCounterDto;
+    item.CounterId = counterDto.GetIdTranslation( GetFileName(), item.CounterId ).Value;
 
-    var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto);
-    var node = nodeDto.GetModel().Data.Where(x => x.Id == item.ImageableId).FirstOrDefault();
+    var mapDto = GetImporter().GetDto( Importer.DtoTypes.XmlMapDto );
+    var node = nodeDto.GetModel().Data.Where( x => x.Id == item.ImageableId ).FirstOrDefault();
     item.MapId = node.MapId;
 
-    GetDbContext().SystemCounterActions.Add(item);
+    GetDbContext().SystemCounterActions.Add( item );
     GetDbContext().SaveChanges();
 
-    CreateIdTranslation(oldId, item.Id);
+    CreateIdTranslation( oldId, item.Id );
 
     return true;
   }

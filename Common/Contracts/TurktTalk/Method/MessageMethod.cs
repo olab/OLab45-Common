@@ -15,7 +15,7 @@ public class MessageMethod : Method
   public string From { get; set; }
 
   // message for specific group
-  public MessageMethod(MessagePayload payload) : base(payload.Envelope.To, "message")
+  public MessageMethod(MessagePayload payload) : base( payload.Envelope.To, "message" )
   {
     Data = payload.Data;
     SessionId = payload.Session.ContextId;
@@ -23,8 +23,8 @@ public class MessageMethod : Method
   }
   public override string ToJson()
   {
-    var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
-    return JToken.Parse(rawJson).ToString(Formatting.Indented);
+    var rawJson = System.Text.Json.JsonSerializer.Serialize( this );
+    return JToken.Parse( rawJson ).ToString( Formatting.Indented );
   }
 
 }

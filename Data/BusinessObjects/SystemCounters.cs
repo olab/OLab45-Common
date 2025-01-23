@@ -6,65 +6,65 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
-[Table("system_counters")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[Table( "system_counters" )]
+[MySqlCharSet( "utf8mb3" )]
+[MySqlCollation( "utf8mb3_general_ci" )]
 public partial class SystemCounters
 {
   [Key]
-  [Column("id", TypeName = "int(10) unsigned")]
+  [Column( "id", TypeName = "int(10) unsigned" )]
   public uint Id { get; set; }
 
-  [Column("name")]
-  [StringLength(200)]
+  [Column( "name" )]
+  [StringLength( 200 )]
   public string Name { get; set; }
 
-  [Column("description", TypeName = "text")]
+  [Column( "description", TypeName = "text" )]
   public string Description { get; set; }
 
-  [Column("start_value", TypeName = "blob")]
+  [Column( "start_value", TypeName = "blob" )]
   public byte[] StartValue { get; set; }
 
-  [Column("value", TypeName = "blob")]
+  [Column( "value", TypeName = "blob" )]
   public byte[] Value { get; set; }
 
-  [Column("icon_id", TypeName = "int(10)")]
+  [Column( "icon_id", TypeName = "int(10)" )]
   public int? IconId { get; set; }
 
-  [Column("prefix")]
-  [StringLength(20)]
+  [Column( "prefix" )]
+  [StringLength( 20 )]
   public string Prefix { get; set; }
 
-  [Column("suffix")]
-  [StringLength(20)]
+  [Column( "suffix" )]
+  [StringLength( 20 )]
   public string Suffix { get; set; }
 
-  [Column("visible")]
+  [Column( "visible" )]
   public bool? Visible { get; set; }
 
-  [Column("out_of", TypeName = "int(10)")]
+  [Column( "out_of", TypeName = "int(10)" )]
   public int? OutOf { get; set; }
 
-  [Column("status", TypeName = "int(1)")]
+  [Column( "status", TypeName = "int(1)" )]
   public int Status { get; set; }
 
-  [Column("imageable_id", TypeName = "int(10) unsigned")]
+  [Column( "imageable_id", TypeName = "int(10) unsigned" )]
   public uint ImageableId { get; set; }
 
   [Required]
-  [Column("imageable_type")]
-  [StringLength(45)]
+  [Column( "imageable_type" )]
+  [StringLength( 45 )]
   public string ImageableType { get; set; }
 
-  [Column("is_system", TypeName = "int(10)")]
+  [Column( "is_system", TypeName = "int(10)" )]
   public int? IsSystem { get; set; }
 
-  [Column("created_at", TypeName = "datetime")]
+  [Column( "created_at", TypeName = "datetime" )]
   public DateTime? CreatedAt { get; set; }
 
-  [Column("updated_At", TypeName = "datetime")]
+  [Column( "updated_At", TypeName = "datetime" )]
   public DateTime? UpdatedAt { get; set; }
 
-  [InverseProperty("Counter")]
+  [InverseProperty( "Counter" )]
   public virtual ICollection<SystemCounterActions> SystemCounterActions { get; } = new List<SystemCounterActions>();
 }

@@ -10,7 +10,7 @@ public class Scripts : OLabMapper<SystemScripts, ScriptsDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 }

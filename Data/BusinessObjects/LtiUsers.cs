@@ -5,35 +5,35 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
-[Table("lti_users")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[Table( "lti_users" )]
+[MySqlCharSet( "utf8mb3" )]
+[MySqlCollation( "utf8mb3_general_ci" )]
 public partial class LtiUsers
 {
   [Key]
-  [Column("consumer_key")]
+  [Column( "consumer_key" )]
   public string ConsumerKey { get; set; }
 
   [Required]
-  [Column("context_id")]
-  [StringLength(255)]
+  [Column( "context_id" )]
+  [StringLength( 255 )]
   public string ContextId { get; set; }
 
-  [Column("user_id")]
-  [StringLength(255)]
+  [Column( "user_id" )]
+  [StringLength( 255 )]
   public string UserId { get; set; }
 
-  [Column("lti_result_sourcedid")]
-  [StringLength(255)]
+  [Column( "lti_result_sourcedid" )]
+  [StringLength( 255 )]
   public string LtiResultSourcedid { get; set; }
 
-  [Column("created", TypeName = "datetime")]
+  [Column( "created", TypeName = "datetime" )]
   public DateTime Created { get; set; }
 
-  [Column("updated", TypeName = "datetime")]
+  [Column( "updated", TypeName = "datetime" )]
   public DateTime Updated { get; set; }
 
-  [ForeignKey("ConsumerKey")]
-  [InverseProperty("LtiUsers")]
+  [ForeignKey( "ConsumerKey" )]
+  [InverseProperty( "LtiUsers" )]
   public virtual LtiContexts ConsumerKeyNavigation { get; set; }
 }

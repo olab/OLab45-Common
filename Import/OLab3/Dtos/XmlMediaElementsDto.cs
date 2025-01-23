@@ -19,7 +19,7 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
       logger,
       importer,
       DtoTypes.XmlMediaElementsDto,
-      "media_elements.xml")
+      "media_elements.xml" )
   { }
 
   public override string GetLoggerString(IEnumerable<dynamic> elements)
@@ -34,40 +34,40 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
   /// <param name="displayProgressMessage">Display progress messages</param>
   /// <returns>Success/Failure</returns>
   public override async Task<bool> LoadAsync(
-    string physicalFileFolder, 
+    string physicalFileFolder,
     bool displayProgressMessage = true)
   {
-    var result = await base.LoadAsync(physicalFileFolder, false);
+    var result = await base.LoadAsync( physicalFileFolder, false );
     var record = 0;
 
-    if (result)
+    if ( result )
     {
       try
       {
         var outerElements = (IEnumerable<dynamic>)GetXmlPhys().media_elements.media_elements_files.Elements();
 
-        foreach (var element in outerElements)
+        foreach ( var element in outerElements )
         {
           try
           {
             ++record;
             dynamic file = element.Value;
-            file = Conversions.Base64Decode(element, true);
-            GetModel().MediaElementsFiles.Add(file);
-            GetLogger().LogInformation($"  loaded '{file}'");
+            file = Conversions.Base64Decode( element, true );
+            GetModel().MediaElementsFiles.Add( file );
+            GetLogger().LogInformation( $"  loaded '{file}'" );
           }
-          catch (Exception ex)
+          catch ( Exception ex )
           {
-            GetLogger().LogError(ex, $"Error loading '{GetFileName()}' media_elements_files record #{record}: {ex.Message}");
+            GetLogger().LogError( ex, $"Error loading '{GetFileName()}' media_elements_files record #{record}: {ex.Message}" );
           }
         }
       }
-      catch (RuntimeBinderException)
+      catch ( RuntimeBinderException )
       {
-        GetLogger().LogWarning($"No media_elements_files records in {GetFileName()}");
+        GetLogger().LogWarning( $"No media_elements_files records in {GetFileName()}" );
       }
 
-      GetLogger().LogInformation($"loaded {GetModel().MediaElementsFiles.Count()} {GetFileName()} MediaElementsFiles objects");
+      GetLogger().LogInformation( $"loaded {GetModel().MediaElementsFiles.Count()} {GetFileName()} MediaElementsFiles objects" );
 
       record = 0;
 
@@ -75,29 +75,29 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
       {
         var outerElements = (IEnumerable<dynamic>)GetXmlPhys().media_elements.media_elements_avatars.Elements();
 
-        foreach (var element in outerElements)
+        foreach ( var element in outerElements )
         {
           try
           {
             record++;
             dynamic file = element.Value;
-            file = Conversions.Base64Decode(file);
-            GetModel().MediaElementsAvatars.Add(file);
-            GetLogger().LogInformation($"  loaded '{file}'");
+            file = Conversions.Base64Decode( file );
+            GetModel().MediaElementsAvatars.Add( file );
+            GetLogger().LogInformation( $"  loaded '{file}'" );
           }
-          catch (Exception ex)
+          catch ( Exception ex )
           {
-            GetLogger().LogError(ex, $"Error loading '{GetFileName()}' media_elements_avatars record #{++record}: {ex.Message}");
+            GetLogger().LogError( ex, $"Error loading '{GetFileName()}' media_elements_avatars record #{++record}: {ex.Message}" );
           }
 
         }
 
-        GetLogger().LogInformation($"loaded {GetModel().MediaElementsAvatars.Count()} {GetFileName()} MediaElementsAvatars objects");
+        GetLogger().LogInformation( $"loaded {GetModel().MediaElementsAvatars.Count()} {GetFileName()} MediaElementsAvatars objects" );
 
       }
-      catch (RuntimeBinderException)
+      catch ( RuntimeBinderException )
       {
-        GetLogger().LogWarning($"No media_elements_avatars records in {GetFileName()}");
+        GetLogger().LogWarning( $"No media_elements_avatars records in {GetFileName()}" );
       }
 
     }
@@ -130,38 +130,38 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
 
     try
     {
-      var relativeMediaSourceDirectory = GetFileModule().GetImportMediaFilesDirectory(relativeImportFolder);
+      var relativeMediaSourceDirectory = GetFileModule().GetImportMediaFilesDirectory( relativeImportFolder );
 
-      var mapDto = GetImporter().GetDto(DtoTypes.XmlMapDto) as XmlMapDto;
+      var mapDto = GetImporter().GetDto( DtoTypes.XmlMapDto ) as XmlMapDto;
       var map = mapDto.GetModel().Data.FirstOrDefault();
 
       var targetDirectory =
-        GetFileModule().GetPublicFileDirectory("Maps", map.Id);
+        GetFileModule().GetPublicFileDirectory( "Maps", map.Id );
 
-      foreach (var element in elements)
+      foreach ( var element in elements )
       {
         try
         {
-          dynamic fileName = Conversions.Base64Decode(element, true);
+          dynamic fileName = Conversions.Base64Decode( element, true );
 
-          var relativeSourceFile = GetFileModule().BuildPath(relativeMediaSourceDirectory, fileName);
+          var relativeSourceFile = GetFileModule().BuildPath( relativeMediaSourceDirectory, fileName );
 
           GetFileModule().MoveFileAsync(
             relativeSourceFile,
-            targetDirectory).Wait();
+            targetDirectory ).Wait();
         }
-        catch (Exception ex)
+        catch ( Exception ex )
         {
-          GetLogger().LogError($"Error importing {GetFileName()} '{element.Name}' = '{element.Value}': reason : {ex.Message}");
+          GetLogger().LogError( $"Error importing {GetFileName()} '{element.Name}' = '{element.Value}': reason : {ex.Message}" );
           rc = false;
         }
 
       }
 
     }
-    catch (Exception ex)
+    catch ( Exception ex )
     {
-      GetLogger().LogError($"Error importing {GetFileName()}: reason : {ex.Message}");
+      GetLogger().LogError( $"Error importing {GetFileName()}: reason : {ex.Message}" );
       rc = false;
     }
 

@@ -14,15 +14,15 @@ public class RoomAssignmentCommand : CommandMethod
   public RoomAssignmentPayload Data { get; set; }
 
   public RoomAssignmentCommand(Learner local, Moderator remote = null) :
-        base(local == null ? remote.CommandChannel : local.CommandChannel, "roomassignment")
+        base( local == null ? remote.CommandChannel : local.CommandChannel, "roomassignment" )
   {
     Data = new RoomAssignmentPayload { Local = local, Remote = remote, SlotIndex = local.SlotIndex };
   }
 
   public override string ToJson()
   {
-    var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
-    return JToken.Parse(rawJson).ToString(Formatting.Indented);
+    var rawJson = System.Text.Json.JsonSerializer.Serialize( this );
+    return JToken.Parse( rawJson ).ToString( Formatting.Indented );
   }
 
 }

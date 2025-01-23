@@ -4,10 +4,10 @@ namespace OLab.Api.Dto;
 
 public class MapNodesPostDataDto
 {
-  [JsonProperty("sourceId")]
+  [JsonProperty( "sourceId" )]
   public uint SourceId { get; set; }
-  [JsonProperty("x")]
+  [JsonProperty( "x" )]
   public double X { get; set; }
-  [JsonProperty("y")]
+  [JsonProperty( "y" )]
   public double Y { get; set; }
 }

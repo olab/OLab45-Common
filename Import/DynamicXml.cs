@@ -23,20 +23,20 @@ public class DynamicXml : DynamicObject
 
   public static DynamicXml Parse(string xmlString)
   {
-    return new DynamicXml(XDocument.Parse(xmlString).Root);
+    return new DynamicXml( XDocument.Parse( xmlString ).Root );
   }
 
   public static DynamicXml Load(string filename)
   {
-    if (File.Exists(filename))
-      return new DynamicXml(XDocument.Load(filename).Root);
+    if ( File.Exists( filename ) )
+      return new DynamicXml( XDocument.Load( filename ).Root );
 
-    throw new FileNotFoundException("File not found", filename);
+    throw new FileNotFoundException( "File not found", filename );
   }
 
   public static DynamicXml Load(Stream stream)
   {
-    return new DynamicXml(XDocument.Load(stream).Root);
+    return new DynamicXml( XDocument.Load( stream ).Root );
   }
 
   public IEnumerable<XElement> Elements() { return _root.Elements(); }
@@ -45,24 +45,24 @@ public class DynamicXml : DynamicObject
   {
     result = null;
 
-    var att = _root.Attribute(binder.Name);
-    if (att != null)
+    var att = _root.Attribute( binder.Name );
+    if ( att != null )
     {
       result = att.Value;
       return true;
     }
 
-    var nodes = _root.Elements(binder.Name);
-    if (nodes.Count() > 1)
+    var nodes = _root.Elements( binder.Name );
+    if ( nodes.Count() > 1 )
     {
-      result = nodes.Select(n => n.HasElements ? (object)new DynamicXml(n) : n.Value).ToList();
+      result = nodes.Select( n => n.HasElements ? (object)new DynamicXml( n ) : n.Value ).ToList();
       return true;
     }
 
-    var node = _root.Element(binder.Name);
-    if (node != null)
+    var node = _root.Element( binder.Name );
+    if ( node != null )
     {
-      result = node.HasElements || node.HasAttributes ? new DynamicXml(node) : node.Value;
+      result = node.HasElements || node.HasAttributes ? new DynamicXml( node ) : node.Value;
       return true;
     }
 

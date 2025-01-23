@@ -5,34 +5,34 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
-[Table("map_node_grouproles")]
-[Index("GroupId", Name = "group_id")]
-[Index("NodeId", Name = "mngr_ibfk_node_idx")]
-[Index("RoleId", Name = "role_id")]
+[Table( "map_node_grouproles" )]
+[Index( "GroupId", Name = "group_id" )]
+[Index( "NodeId", Name = "mngr_ibfk_node_idx" )]
+[Index( "RoleId", Name = "role_id" )]
 public partial class MapNodeGrouproles
 {
   [Key]
-  [Column("id", TypeName = "int(10) unsigned")]
+  [Column( "id", TypeName = "int(10) unsigned" )]
   public uint Id { get; set; }
 
-  [Column("node_id", TypeName = "int(10) unsigned")]
+  [Column( "node_id", TypeName = "int(10) unsigned" )]
   public uint NodeId { get; set; }
 
-  [Column("group_id", TypeName = "int(10) unsigned")]
+  [Column( "group_id", TypeName = "int(10) unsigned" )]
   public uint? GroupId { get; set; }
 
-  [Column("role_id", TypeName = "int(10) unsigned")]
+  [Column( "role_id", TypeName = "int(10) unsigned" )]
   public uint? RoleId { get; set; }
 
-  [ForeignKey("GroupId")]
-  [InverseProperty("MapNodeGrouproles")]
+  [ForeignKey( "GroupId" )]
+  [InverseProperty( "MapNodeGrouproles" )]
   public virtual Groups Group { get; set; }
 
-  [ForeignKey("NodeId")]
-  [InverseProperty("MapNodeGrouproles")]
+  [ForeignKey( "NodeId" )]
+  [InverseProperty( "MapNodeGrouproles" )]
   public virtual MapNodes Node { get; set; }
 
-  [ForeignKey("RoleId")]
-  [InverseProperty("MapNodeGrouproles")]
+  [ForeignKey( "RoleId" )]
+  [InverseProperty( "MapNodeGrouproles" )]
   public virtual Roles Role { get; set; }
 }

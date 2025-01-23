@@ -5,25 +5,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
-[Table("phinxlog")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[Table( "phinxlog" )]
+[MySqlCharSet( "utf8mb3" )]
+[MySqlCollation( "utf8mb3_general_ci" )]
 public partial class Phinxlog
 {
   [Key]
-  [Column("version", TypeName = "bigint(20)")]
+  [Column( "version", TypeName = "bigint(20)" )]
   public long Version { get; set; }
 
-  [Column("migration_name")]
-  [StringLength(100)]
+  [Column( "migration_name" )]
+  [StringLength( 100 )]
   public string MigrationName { get; set; }
 
-  [Column("start_time", TypeName = "timestamp")]
+  [Column( "start_time", TypeName = "timestamp" )]
   public DateTime StartTime { get; set; }
 
-  [Column("end_time", TypeName = "timestamp")]
+  [Column( "end_time", TypeName = "timestamp" )]
   public DateTime EndTime { get; set; }
 
-  [Column("breakpoint")]
+  [Column( "breakpoint" )]
   public bool Breakpoint { get; set; }
 }

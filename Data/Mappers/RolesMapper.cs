@@ -11,7 +11,7 @@ public class RolesMapper : OLabMapper<Roles, RolesDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 

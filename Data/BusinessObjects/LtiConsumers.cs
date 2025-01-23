@@ -5,74 +5,74 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
-[Table("lti_consumers")]
-[Index("ConsumerKey", Name = "consumer_key")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[Table( "lti_consumers" )]
+[Index( "ConsumerKey", Name = "consumer_key" )]
+[MySqlCharSet( "utf8mb3" )]
+[MySqlCollation( "utf8mb3_general_ci" )]
 public partial class LtiConsumers
 {
   [Key]
-  [Column("id", TypeName = "int(10) unsigned")]
+  [Column( "id", TypeName = "int(10) unsigned" )]
   public uint Id { get; set; }
 
   [Required]
-  [Column("consumer_key")]
+  [Column( "consumer_key" )]
   public string ConsumerKey { get; set; }
 
   [Required]
-  [Column("name")]
-  [StringLength(45)]
+  [Column( "name" )]
+  [StringLength( 45 )]
   public string Name { get; set; }
 
   [Required]
-  [Column("secret")]
-  [StringLength(32)]
+  [Column( "secret" )]
+  [StringLength( 32 )]
   public string Secret { get; set; }
 
-  [Column("lti_version")]
-  [StringLength(12)]
+  [Column( "lti_version" )]
+  [StringLength( 12 )]
   public string LtiVersion { get; set; }
 
-  [Column("consumer_name")]
-  [StringLength(255)]
+  [Column( "consumer_name" )]
+  [StringLength( 255 )]
   public string ConsumerName { get; set; }
 
-  [Column("consumer_version")]
-  [StringLength(255)]
+  [Column( "consumer_version" )]
+  [StringLength( 255 )]
   public string ConsumerVersion { get; set; }
 
-  [Column("consumer_guid")]
-  [StringLength(255)]
+  [Column( "consumer_guid" )]
+  [StringLength( 255 )]
   public string ConsumerGuid { get; set; }
 
-  [Column("css_path")]
-  [StringLength(255)]
+  [Column( "css_path" )]
+  [StringLength( 255 )]
   public string CssPath { get; set; }
 
-  [Column("protected")]
+  [Column( "protected" )]
   public bool Protected { get; set; }
 
-  [Column("enabled")]
+  [Column( "enabled" )]
   public bool Enabled { get; set; }
 
-  [Column("enable_from", TypeName = "datetime")]
+  [Column( "enable_from", TypeName = "datetime" )]
   public DateTime? EnableFrom { get; set; }
 
-  [Column("enable_until", TypeName = "datetime")]
+  [Column( "enable_until", TypeName = "datetime" )]
   public DateTime? EnableUntil { get; set; }
 
-  [Column("without_end_date")]
+  [Column( "without_end_date" )]
   public bool? WithoutEndDate { get; set; }
 
-  [Column("last_access")]
+  [Column( "last_access" )]
   public DateOnly? LastAccess { get; set; }
 
-  [Column("created", TypeName = "datetime")]
+  [Column( "created", TypeName = "datetime" )]
   public DateTime Created { get; set; }
 
-  [Column("updated", TypeName = "datetime")]
+  [Column( "updated", TypeName = "datetime" )]
   public DateTime Updated { get; set; }
 
-  [Column("role")]
+  [Column( "role" )]
   public bool? Role { get; set; }
 }

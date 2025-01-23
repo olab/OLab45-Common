@@ -18,14 +18,14 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     IOLabLogger logger,
     OLabDBContext dbContext)
   {
-    return new GroupRoleAclReaderWriter(logger, dbContext);
+    return new GroupRoleAclReaderWriter( logger, dbContext );
   }
 
   public GroupRoleAclReaderWriter(
     IOLabLogger logger,
-  OLabDBContext dbContext) : base(logger, dbContext)
+  OLabDBContext dbContext) : base( logger, dbContext )
   {
-    _roleReaderWriter = RoleReaderWriter.Instance(GetLogger(), GetDbContext());
+    _roleReaderWriter = RoleReaderWriter.Instance( GetLogger(), GetDbContext() );
   }
 
   /// <summary>
@@ -36,8 +36,8 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   /// <returns>Saved GrouproleAcls</returns>
   public async Task<GrouproleAcls> CreateAsync(GrouproleAcls newPhys, bool commit = false)
   {
-    await GetDbContext().GrouproleAcls.AddAsync(newPhys);
-    if (commit)
+    await GetDbContext().GrouproleAcls.AddAsync( newPhys );
+    if ( commit )
       await GetDbContext().SaveChangesAsync();
     return newPhys;
   }
@@ -49,9 +49,9 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   public async Task CreateForGroupAsync(uint groupId)
   {
 
-    var rolePhys = await _roleReaderWriter.GetAsync("author");
-    if (rolePhys == null)
-      throw new OLabObjectNotFoundException("Roles", "author");
+    var rolePhys = await _roleReaderWriter.GetAsync( "author" );
+    if ( rolePhys == null )
+      throw new OLabObjectNotFoundException( "Roles", "author" );
 
     var groupRoleAclPhys = new GrouproleAcls
     {
@@ -62,11 +62,11 @@ public class GroupRoleAclReaderWriter : ReaderWriter
       Acl2 = 7
     };
 
-    await CreateAsync(groupRoleAclPhys);
+    await CreateAsync( groupRoleAclPhys );
 
-    rolePhys = await _roleReaderWriter.GetAsync("learner");
-    if (rolePhys == null)
-      throw new OLabObjectNotFoundException("Roles", "learner");
+    rolePhys = await _roleReaderWriter.GetAsync( "learner" );
+    if ( rolePhys == null )
+      throw new OLabObjectNotFoundException( "Roles", "learner" );
 
     groupRoleAclPhys = new GrouproleAcls
     {
@@ -77,7 +77,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
       Acl2 = 5
     };
 
-    await CreateAsync(groupRoleAclPhys);
+    await CreateAsync( groupRoleAclPhys );
 
     groupRoleAclPhys = new GrouproleAcls
     {
@@ -88,12 +88,12 @@ public class GroupRoleAclReaderWriter : ReaderWriter
       Acl2 = 5
     };
 
-    await CreateAsync(groupRoleAclPhys, true);
+    await CreateAsync( groupRoleAclPhys, true );
 
 
-    rolePhys = await _roleReaderWriter.GetAsync(Roles.SuperUserRole);
-    if (rolePhys == null)
-      throw new OLabObjectNotFoundException("Roles", Roles.SuperUserRole);
+    rolePhys = await _roleReaderWriter.GetAsync( Roles.SuperUserRole );
+    if ( rolePhys == null )
+      throw new OLabObjectNotFoundException( "Roles", Roles.SuperUserRole );
 
     groupRoleAclPhys = new GrouproleAcls
     {
@@ -104,26 +104,11 @@ public class GroupRoleAclReaderWriter : ReaderWriter
       Acl2 = 7
     };
 
-    await CreateAsync(groupRoleAclPhys);
+    await CreateAsync( groupRoleAclPhys );
 
-    rolePhys = await _roleReaderWriter.GetAsync(Roles.DirectorRole);
-    if (rolePhys == null)
-      throw new OLabObjectNotFoundException("Roles", Roles.DirectorRole);
-
-    groupRoleAclPhys = new GrouproleAcls
-    {
-      ImageableId = 0,
-      ImageableType = Api.Utils.Constants.ScopeLevelMap,
-      GroupId = groupId,
-      RoleId = rolePhys.Id,
-      Acl2 = 7
-    };
-
-    await CreateAsync(groupRoleAclPhys);
-
-    rolePhys = await _roleReaderWriter.GetAsync("administrator");
-    if (rolePhys == null)
-      throw new OLabObjectNotFoundException("Roles", "administrator");
+    rolePhys = await _roleReaderWriter.GetAsync( Roles.DirectorRole );
+    if ( rolePhys == null )
+      throw new OLabObjectNotFoundException( "Roles", Roles.DirectorRole );
 
     groupRoleAclPhys = new GrouproleAcls
     {
@@ -134,7 +119,22 @@ public class GroupRoleAclReaderWriter : ReaderWriter
       Acl2 = 7
     };
 
-    await CreateAsync(groupRoleAclPhys);
+    await CreateAsync( groupRoleAclPhys );
+
+    rolePhys = await _roleReaderWriter.GetAsync( "administrator" );
+    if ( rolePhys == null )
+      throw new OLabObjectNotFoundException( "Roles", "administrator" );
+
+    groupRoleAclPhys = new GrouproleAcls
+    {
+      ImageableId = 0,
+      ImageableType = Api.Utils.Constants.ScopeLevelMap,
+      GroupId = groupId,
+      RoleId = rolePhys.Id,
+      Acl2 = 7
+    };
+
+    await CreateAsync( groupRoleAclPhys );
 
   }
 
@@ -146,8 +146,8 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   {
     var groupAcls = await GetDbContext()
       .GrouproleAcls
-      .Include("Group")
-      .Include("Role").ToListAsync();
+      .Include( "Group" )
+      .Include( "Role" ).ToListAsync();
 
     return groupAcls;
   }
@@ -170,22 +170,22 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     IList<GrouproleAcls> groupAcls = new List<GrouproleAcls>();
 
     // if no object type, change this to null
-    objectType = string.IsNullOrEmpty(objectType) ? null : objectType;
+    objectType = string.IsNullOrEmpty( objectType ) ? null : objectType;
     objectId = (objectId != null && objectId.HasValue && objectId.Value >= 0) ? objectId.Value : null;
 
     IQueryable<GrouproleAcls> query = GetDbContext().Set<GrouproleAcls>();
 
-    if (groupId.HasValue)
-      query = query.Where(x => x.GroupId == (groupId == 0 ? null : groupId.Value));
+    if ( groupId.HasValue )
+      query = query.Where( x => x.GroupId == (groupId == 0 ? null : groupId.Value) );
 
-    if (roleId.HasValue)
-      query = query.Where(x => x.RoleId == (roleId == 0 ? null : roleId.Value));
+    if ( roleId.HasValue )
+      query = query.Where( x => x.RoleId == (roleId == 0 ? null : roleId.Value) );
 
-    if (objectType != null)
-      query = query.Where(x => x.ImageableType == objectType);
+    if ( objectType != null )
+      query = query.Where( x => x.ImageableType == objectType );
 
-    if (objectId != null)
-      query = query.Where(x => x.ImageableId == (objectId == 0 ? null : objectId.Value));
+    if ( objectId != null )
+      query = query.Where( x => x.ImageableId == (objectId == 0 ? null : objectId.Value) );
 
     groupAcls = await query.ToListAsync();
 
@@ -201,8 +201,8 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   {
     var groupRoleAcls = new List<GrouproleAcls>();
 
-    foreach (var groupRole in groupRoles)
-      groupRoleAcls.AddRange(GetDbContext().GrouproleAcls.Where(x => x.GroupId == groupRole.GroupId && x.RoleId == groupRole.RoleId).ToList());
+    foreach ( var groupRole in groupRoles )
+      groupRoleAcls.AddRange( GetDbContext().GrouproleAcls.Where( x => x.GroupId == groupRole.GroupId && x.RoleId == groupRole.RoleId ).ToList() );
 
     return groupRoleAcls;
   }
@@ -216,7 +216,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   {
     var groupAcls = GetDbContext()
       .GrouproleAcls
-      .Where(x => (x.GroupId == groupId) || (!x.GroupId.HasValue));
+      .Where( x => (x.GroupId == groupId) || (!x.GroupId.HasValue) );
 
     return groupAcls.ToList();
 
@@ -228,19 +228,19 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     {
       var responses = new List<DeleteGroupRoleAclResponse>();
 
-      GetLogger().LogDebug($"DeleteGroupRoleAclsAsync(items count '{aclIds.Count}')");
+      GetLogger().LogDebug( $"DeleteGroupRoleAclsAsync(items count '{aclIds.Count}')" );
 
-      foreach (var aclId in aclIds)
+      foreach ( var aclId in aclIds )
       {
-        var response = await DeleteGroupRoleAclAsync(aclId, true);
-        responses.Add(response);
+        var response = await DeleteGroupRoleAclAsync( aclId, true );
+        responses.Add( response );
       }
 
       return responses;
     }
-    catch (Exception ex)
+    catch ( Exception ex )
     {
-      GetLogger().LogError($"DeleteGroupRoleAclsAsync exception {ex.Message}");
+      GetLogger().LogError( $"DeleteGroupRoleAclsAsync exception {ex.Message}" );
       throw;
     }
   }
@@ -248,10 +248,10 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   public async Task<DeleteGroupRoleAclResponse> DeleteGroupRoleAclAsync(uint id, bool commit = false)
   {
     var physAcl =
-      await GetDbContext().GrouproleAcls.FirstOrDefaultAsync(x => x.Id == id);
+      await GetDbContext().GrouproleAcls.FirstOrDefaultAsync( x => x.Id == id );
 
-    GetDbContext().GrouproleAcls.Remove(physAcl);
-    if (commit)
+    GetDbContext().GrouproleAcls.Remove( physAcl );
+    if ( commit )
       await GetDbContext().SaveChangesAsync();
 
     var response = new DeleteGroupRoleAclResponse

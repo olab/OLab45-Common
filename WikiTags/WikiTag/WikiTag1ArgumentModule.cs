@@ -14,21 +14,21 @@ public abstract class WikiTag1ArgumentModule : WikiTagModule
 
   public WikiTag1ArgumentModule(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration)
+    IOLabConfiguration configuration) : base( logger, configuration )
   {
   }
 
   public override void SetHtmlElementName(string elementName)
   {
-    base.SetHtmlElementName(elementName);
-    wikiTagPatterns = WikiTagUtils.GetOneArgumentTagPatterns(GetWikiType()).ToList();
+    base.SetHtmlElementName( elementName );
+    wikiTagPatterns = WikiTagUtils.GetOneArgumentTagPatterns( GetWikiType() ).ToList();
     wikiTagNamePatterns = WikiTagUtils.GetTagNamePatterns().ToList();
   }
 
   public string Set(string wikiType, string wikiId)
   {
-    SetWikiType(wikiType);
-    SetWikiId(wikiId);
+    SetWikiType( wikiType );
+    SetWikiId( wikiId );
     return _wiki;
   }
 
@@ -47,14 +47,14 @@ public abstract class WikiTag1ArgumentModule : WikiTagModule
 
   public string GetWikiArgument1(string wikiTag)
   {
-    var source = wikiTag[(wikiTag.IndexOf(':') + 1)..].Replace("]]", "");
-    foreach (var pattern in wikiTagNamePatterns)
+    var source = wikiTag[ (wikiTag.IndexOf( ':' ) + 1).. ].Replace( "]]", "" );
+    foreach ( var pattern in wikiTagNamePatterns )
     {
-      var regex = new Regex(pattern);
-      var match = regex.Match(source);
-      if (match.Success)
+      var regex = new Regex( pattern );
+      var match = regex.Match( source );
+      if ( match.Success )
       {
-        wikiTagIdPart = match.Value.Replace("\"", "");
+        wikiTagIdPart = match.Value.Replace( "\"", "" );
         return wikiTagIdPart;
       }
     }
@@ -64,14 +64,14 @@ public abstract class WikiTag1ArgumentModule : WikiTagModule
 
   public string GetWikiArgument1()
   {
-    var source = GetWiki()[(GetWiki().IndexOf(':') + 1)..].Replace("]]", "");
-    foreach (var pattern in wikiTagNamePatterns)
+    var source = GetWiki()[ (GetWiki().IndexOf( ':' ) + 1).. ].Replace( "]]", "" );
+    foreach ( var pattern in wikiTagNamePatterns )
     {
-      var regex = new Regex(pattern);
-      var match = regex.Match(source);
-      if (match.Success)
+      var regex = new Regex( pattern );
+      var match = regex.Match( source );
+      if ( match.Success )
       {
-        wikiTagIdPart = match.Value.Replace("\"", "");
+        wikiTagIdPart = match.Value.Replace( "\"", "" );
         return wikiTagIdPart;
       }
     }
@@ -81,7 +81,7 @@ public abstract class WikiTag1ArgumentModule : WikiTagModule
 
   public override bool HaveWikiTag(string source)
   {
-    if (!base.HaveWikiTag(source))
+    if ( !base.HaveWikiTag( source ) )
       return false;
 
     // extract/set argument1
@@ -103,41 +103,41 @@ public abstract class WikiTag1ArgumentModule : WikiTagModule
       string.Empty
     );
 
-    var classes = new List<string> { GetHtmlElementName().ToLower(), wikiTagIdPart.ToLower().Replace(" ", "-") };
-    xml.SetAttributeValue("class", string.Join(" ", classes));
-    xml.SetAttributeValue("props", "{props}");
-    xml.SetAttributeValue("name", $"{wikiTagIdPart}");
-    xml.SetAttributeValue("id", $"{_wikiType}:{wikiTagIdPart}");
+    var classes = new List<string> { GetHtmlElementName().ToLower(), wikiTagIdPart.ToLower().Replace( " ", "-" ) };
+    xml.SetAttributeValue( "class", string.Join( " ", classes ) );
+    xml.SetAttributeValue( "props", "{props}" );
+    xml.SetAttributeValue( "name", $"{wikiTagIdPart}" );
+    xml.SetAttributeValue( "id", $"{_wikiType}:{wikiTagIdPart}" );
 
-    doc.Add(xml);
+    doc.Add( xml );
 
     // de-quote any attributes which are bindings
     var element = doc.ToString();
-    element = element.Replace("\"{", "{");
-    element = element.Replace("}\"", "}");
+    element = element.Replace( "\"{", "{" );
+    element = element.Replace( "}\"", "}" );
 
     return element;
   }
 
   public override string Translate(string source)
   {
-    if (!HaveWikiTag(source))
+    if ( !HaveWikiTag( source ) )
       return source;
 
-    while (HaveWikiTag(source))
+    while ( HaveWikiTag( source ) )
     {
       var name = GetWikiArgument1();
-      if (string.IsNullOrEmpty(name))
+      if ( string.IsNullOrEmpty( name ) )
       {
         var str = $"**Invalid wiki tag {GetWiki()}**";
-        Logger.LogDebug($"replacing {GetWiki()} <= {str}");
-        source = ReplaceWikiTag(source, str);
+        Logger.LogDebug( $"replacing {GetWiki()} <= {str}" );
+        source = ReplaceWikiTag( source, str );
       }
       else
       {
         var element = BuildWikiTagHTMLElement();
-        Logger.LogDebug($"replacing {GetWiki()} <= {element}");
-        source = ReplaceWikiTag(source, element);
+        Logger.LogDebug( $"replacing {GetWiki()} <= {element}" );
+        source = ReplaceWikiTag( source, element );
       }
     }
 

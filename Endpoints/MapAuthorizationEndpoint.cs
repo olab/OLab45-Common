@@ -30,10 +30,10 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
       configuration,
       dbContext,
       wikiTagProvider,
-      fileStorageProvider)
+      fileStorageProvider )
   {
-    mapper = new MapGrouprolesMapper(GetLogger(), GetDbContext());
-    mapReader = new MapsReaderWriter(GetLogger(), GetDbContext());
+    mapper = new MapGrouprolesMapper( GetLogger(), GetDbContext() );
+    mapReader = new MapsReaderWriter( GetLogger(), GetDbContext() );
   }
 
   /// <summary>
@@ -50,31 +50,31 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     MapGrouprolesDto dto,
     CancellationToken token)
   {
-    GetLogger().LogInformation($"MapAuthorizationEndpoint.DeleteAsync()");
+    GetLogger().LogInformation( $"MapAuthorizationEndpoint.DeleteAsync()" );
 
     // test if user has access to parent object
     var accessResult = await auth.HasAccessAsync(
       IOLabAuthorization.AclBitMaskWrite,
       Utils.Constants.ScopeLevelMap,
-      dto.MapId);
+      dto.MapId );
 
-    if (!accessResult)
-      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, dto.MapId);
+    if ( !accessResult )
+      throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, dto.MapId );
 
-    var mapPhys = await mapReader.GetSingleWithGroupRolesAsync(dto.MapId);
-    if (mapPhys == null)
-      throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, dto.MapId);
+    var mapPhys = await mapReader.GetSingleWithGroupRolesAsync( dto.MapId );
+    if ( mapPhys == null )
+      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, dto.MapId );
 
-    var mapGroupPhys = mapPhys.MapGrouproles.FirstOrDefault(x => x.Id == dto.Id);
-    if (mapGroupPhys != null)
+    var mapGroupPhys = mapPhys.MapGrouproles.FirstOrDefault( x => x.Id == dto.Id );
+    if ( mapGroupPhys != null )
     {
-      mapPhys.MapGrouproles.Remove(mapGroupPhys);
+      mapPhys.MapGrouproles.Remove( mapGroupPhys );
       GetDbContext().SaveChanges();
     }
     else
-      throw new OLabObjectNotFoundException("MapGroupRole", dto.Id.Value);
+      throw new OLabObjectNotFoundException( "MapGroupRole", dto.Id.Value );
 
-    return mapper.PhysicalToDto(mapPhys.MapGrouproles.ToList());
+    return mapper.PhysicalToDto( mapPhys.MapGrouproles.ToList() );
 
   }
 
@@ -93,47 +93,47 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     CancellationToken token)
 
   {
-    GetLogger().LogInformation($"MapAuthorizationEndpoint.AddAsync()");
+    GetLogger().LogInformation( $"MapAuthorizationEndpoint.AddAsync()" );
 
     // test if user has access to parent object
     var accessResult = await auth.HasAccessAsync(
       IOLabAuthorization.AclBitMaskWrite,
       Utils.Constants.ScopeLevelMap,
-      dto.MapId);
+      dto.MapId );
 
-    if (!accessResult)
-      throw new OLabUnauthorizedException("Map", dto.MapId);
+    if ( !accessResult )
+      throw new OLabUnauthorizedException( "Map", dto.MapId );
 
-    var mapPhys = await mapReader.GetSingleWithGroupRolesAsync(dto.MapId);
-    if (mapPhys == null)
-      throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, dto.MapId);
+    var mapPhys = await mapReader.GetSingleWithGroupRolesAsync( dto.MapId );
+    if ( mapPhys == null )
+      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, dto.MapId );
 
-    if (dto.GroupId.HasValue)
+    if ( dto.GroupId.HasValue )
     {
-      var reader = GroupReaderWriter.Instance(GetLogger(), GetDbContext());
+      var reader = GroupReaderWriter.Instance( GetLogger(), GetDbContext() );
       // ensure group exists
-      if (await reader.ExistsAsync(dto.GroupId.ToString()))
-        throw new OLabObjectNotFoundException("Group", dto.GroupId.Value);
+      if ( await reader.ExistsAsync( dto.GroupId.ToString() ) )
+        throw new OLabObjectNotFoundException( "Group", dto.GroupId.Value );
     }
 
-    if (dto.RoleId.HasValue)
+    if ( dto.RoleId.HasValue )
     {
-      var reader = RoleReaderWriter.Instance(GetLogger(), GetDbContext());
+      var reader = RoleReaderWriter.Instance( GetLogger(), GetDbContext() );
       // ensure role exists
-      if (await reader.ExistsAsync(dto.RoleId.ToString()))
-        throw new OLabObjectNotFoundException("Role", dto.RoleId.Value);
+      if ( await reader.ExistsAsync( dto.RoleId.ToString() ) )
+        throw new OLabObjectNotFoundException( "Role", dto.RoleId.Value );
     }
 
     // test if doesn't already exist
-    if (!mapPhys.MapGrouproles.Any(x => x.GroupId == dto.GroupId && x.RoleId == dto.RoleId))
+    if ( !mapPhys.MapGrouproles.Any( x => x.GroupId == dto.GroupId && x.RoleId == dto.RoleId ) )
     {
-      var mapGroupPhys = mapper.DtoToPhysical(dto);
-      mapPhys.MapGrouproles.Add(mapGroupPhys);
+      var mapGroupPhys = mapper.DtoToPhysical( dto );
+      mapPhys.MapGrouproles.Add( mapGroupPhys );
 
       GetDbContext().SaveChanges();
     }
 
-    return mapper.PhysicalToDto(mapPhys.MapGrouproles.ToList());
+    return mapper.PhysicalToDto( mapPhys.MapGrouproles.ToList() );
 
   }
 
@@ -151,34 +151,34 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     IList<MapGrouprolesDto> dtos,
     CancellationToken token)
   {
-    GetLogger().LogInformation($"MapAuthorizationEndpoint.ReplaceAsync()");
+    GetLogger().LogInformation( $"MapAuthorizationEndpoint.ReplaceAsync()" );
 
     // test if user has access to parent object
     var accessResult = await auth.HasAccessAsync(
       IOLabAuthorization.AclBitMaskWrite,
       Utils.Constants.ScopeLevelMap,
-      mapId);
+      mapId );
 
-    if (!accessResult)
-      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+    if ( !accessResult )
+      throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
 
-    var readerWriter = MapsReaderWriter.Instance(GetLogger(), GetDbContext());
-    var mapPhys = await readerWriter.GetSingleWithGroupRolesAsync(mapId);
+    var readerWriter = MapsReaderWriter.Instance( GetLogger(), GetDbContext() );
+    var mapPhys = await readerWriter.GetSingleWithGroupRolesAsync( mapId );
 
     // ensure map exists
-    if (mapPhys == null)
-      throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
+    if ( mapPhys == null )
+      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, mapId );
 
     mapPhys.MapGrouproles.Clear();
 
-    var mapper = new MapGrouprolesMapper(GetLogger(), GetDbContext());
-    var MapGrouprolesPhys = mapper.DtoToPhysical(mapId, dtos);
+    var mapper = new MapGrouprolesMapper( GetLogger(), GetDbContext() );
+    var MapGrouprolesPhys = mapper.DtoToPhysical( mapId, dtos );
 
-    mapPhys.MapGrouproles.AddRange(MapGrouprolesPhys);
+    mapPhys.MapGrouproles.AddRange( MapGrouprolesPhys );
 
     GetDbContext().SaveChanges();
 
-    var MapGrouprolesDto = mapper.PhysicalToDto(mapPhys.MapGrouproles.ToList());
+    var MapGrouprolesDto = mapper.PhysicalToDto( mapPhys.MapGrouproles.ToList() );
 
     return MapGrouprolesDto;
   }

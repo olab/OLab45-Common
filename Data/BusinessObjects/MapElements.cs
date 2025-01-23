@@ -5,68 +5,68 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
-[Table("map_elements")]
-[Index("MapId", Name = "map_id")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[Table( "map_elements" )]
+[Index( "MapId", Name = "map_id" )]
+[MySqlCharSet( "utf8mb3" )]
+[MySqlCollation( "utf8mb3_general_ci" )]
 public partial class MapElements
 {
   [Key]
-  [Column("id", TypeName = "int(10) unsigned")]
+  [Column( "id", TypeName = "int(10) unsigned" )]
   public uint Id { get; set; }
 
-  [Column("map_id", TypeName = "int(10) unsigned")]
+  [Column( "map_id", TypeName = "int(10) unsigned" )]
   public uint MapId { get; set; }
 
-  [Column("mime")]
-  [StringLength(500)]
+  [Column( "mime" )]
+  [StringLength( 500 )]
   public string Mime { get; set; }
 
   [Required]
-  [Column("name")]
-  [StringLength(200)]
+  [Column( "name" )]
+  [StringLength( 200 )]
   public string Name { get; set; }
 
   [Required]
-  [Column("path")]
-  [StringLength(300)]
+  [Column( "path" )]
+  [StringLength( 300 )]
   public string Path { get; set; }
 
-  [Column("args")]
-  [StringLength(100)]
+  [Column( "args" )]
+  [StringLength( 100 )]
   public string Args { get; set; }
 
-  [Column("width", TypeName = "int(10)")]
+  [Column( "width", TypeName = "int(10)" )]
   public int? Width { get; set; }
 
   [Required]
-  [Column("width_type")]
-  [StringLength(2)]
+  [Column( "width_type" )]
+  [StringLength( 2 )]
   public string WidthType { get; set; }
 
-  [Column("height", TypeName = "int(10)")]
+  [Column( "height", TypeName = "int(10)" )]
   public int? Height { get; set; }
 
   [Required]
-  [Column("height_type")]
-  [StringLength(2)]
+  [Column( "height_type" )]
+  [StringLength( 2 )]
   public string HeightType { get; set; }
 
-  [Column("h_align")]
-  [StringLength(20)]
+  [Column( "h_align" )]
+  [StringLength( 20 )]
   public string HAlign { get; set; }
 
-  [Column("v_align")]
-  [StringLength(20)]
+  [Column( "v_align" )]
+  [StringLength( 20 )]
   public string VAlign { get; set; }
 
-  [Column("is_shared", TypeName = "tinyint(4)")]
+  [Column( "is_shared", TypeName = "tinyint(4)" )]
   public sbyte IsShared { get; set; }
 
-  [Column("is_private", TypeName = "tinyint(4)")]
+  [Column( "is_private", TypeName = "tinyint(4)" )]
   public sbyte IsPrivate { get; set; }
 
-  [ForeignKey("MapId")]
-  [InverseProperty("MapElements")]
+  [ForeignKey( "MapId" )]
+  [InverseProperty( "MapElements" )]
   public virtual Maps Map { get; set; }
 }

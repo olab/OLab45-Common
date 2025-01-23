@@ -14,12 +14,12 @@ public class RoleReaderWriter : ReaderWriter
     IOLabLogger logger,
     OLabDBContext context)
   {
-    return new RoleReaderWriter(logger, context);
+    return new RoleReaderWriter( logger, context );
   }
 
   public RoleReaderWriter(
     IOLabLogger logger,
-    OLabDBContext context) : base(logger, context)
+    OLabDBContext context) : base( logger, context )
   {
   }
 
@@ -31,13 +31,13 @@ public class RoleReaderWriter : ReaderWriter
   public async Task<Roles> CreateAsync(string name)
   {
     var newPhys = new Roles { Name = name };
-    var existingPhys = await GetAsync(name);
+    var existingPhys = await GetAsync( name );
 
-    if (existingPhys == null)
+    if ( existingPhys == null )
     {
-      GetLogger().LogInformation($"creating grpup '{newPhys.Name}'");
+      GetLogger().LogInformation( $"creating grpup '{newPhys.Name}'" );
 
-      GetDbContext().Roles.Add(newPhys);
+      GetDbContext().Roles.Add( newPhys );
       GetDbContext().SaveChanges();
     }
     else
@@ -55,10 +55,10 @@ public class RoleReaderWriter : ReaderWriter
   {
     Roles phys;
 
-    if (uint.TryParse(source, out var id))
-      phys = await GetDbContext().Roles.FirstOrDefaultAsync(x => x.Id == id);
+    if ( uint.TryParse( source, out var id ) )
+      phys = await GetDbContext().Roles.FirstOrDefaultAsync( x => x.Id == id );
     else
-      phys = await GetDbContext().Roles.FirstOrDefaultAsync(x => x.Name == source);
+      phys = await GetDbContext().Roles.FirstOrDefaultAsync( x => x.Name == source );
 
     return phys;
   }
@@ -73,22 +73,22 @@ public class RoleReaderWriter : ReaderWriter
   {
     var response = new OLabAPIPagedResponse<Roles>();
 
-    if (!take.HasValue && !skip.HasValue)
+    if ( !take.HasValue && !skip.HasValue )
     {
       response.Data = await GetDbContext().Roles.ToListAsync();
       response.Count = response.Data.Count;
       response.Remaining = 0;
     }
 
-    else if (take.HasValue && skip.HasValue)
+    else if ( take.HasValue && skip.HasValue )
     {
-      response.Data = await GetDbContext().Roles.Skip(skip.Value).Take(take.Value).ToListAsync();
+      response.Data = await GetDbContext().Roles.Skip( skip.Value ).Take( take.Value ).ToListAsync();
       response.Count += response.Data.Count;
       response.Remaining = GetDbContext().Roles.Count() - skip.Value - response.Count;
     }
 
     else
-      GetLogger().LogWarning($"invalid/partial take/skip parameters");
+      GetLogger().LogWarning( $"invalid/partial take/skip parameters" );
 
     return response;
   }
@@ -100,18 +100,18 @@ public class RoleReaderWriter : ReaderWriter
   /// <returns>true/false</returns>
   public async Task<bool> ExistsAsync(string source)
   {
-    if (uint.TryParse(source, out var id))
-      return await GetDbContext().Roles.AnyAsync(x => x.Id == id);
+    if ( uint.TryParse( source, out var id ) )
+      return await GetDbContext().Roles.AnyAsync( x => x.Id == id );
     else
-      return await GetDbContext().Roles.AnyAsync(x => x.Name == source);
+      return await GetDbContext().Roles.AnyAsync( x => x.Name == source );
   }
 
   public async Task DeleteAsync(string source)
   {
-    var phys = await GetAsync(source);
-    if (phys != null)
+    var phys = await GetAsync( source );
+    if ( phys != null )
     {
-      GetDbContext().Roles.Remove(phys);
+      GetDbContext().Roles.Remove( phys );
       await GetDbContext().SaveChangesAsync();
     }
   }

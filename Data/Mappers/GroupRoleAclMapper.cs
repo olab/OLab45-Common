@@ -9,7 +9,7 @@ public class GroupRoleAclMapper : OLabMapper<GrouproleAcls, GroupRoleAclDto>
 {
   public GroupRoleAclMapper(
     IOLabLogger logger,
-    OLabDBContext dbContext) : base(logger, dbContext)
+    OLabDBContext dbContext) : base( logger, dbContext )
   {
   }
 
@@ -30,7 +30,7 @@ public class GroupRoleAclMapper : OLabMapper<GrouproleAcls, GroupRoleAclDto>
     source.RoleId = phys.RoleId;
     source.RoleName = phys.Role == null ? null : phys.Role.Name;
     source.ObjectIndex = phys.ImageableId == null ? null : phys.ImageableId;
-    source.ObjectType = string.IsNullOrEmpty(phys.ImageableType) ? null : phys.ImageableType;
+    source.ObjectType = string.IsNullOrEmpty( phys.ImageableType ) ? null : phys.ImageableType;
     source.Read = (phys.Acl2 & GrouproleAcls.ReadMask) == GrouproleAcls.ReadMask;
     source.Write = (phys.Acl2 & GrouproleAcls.WriteMask) == GrouproleAcls.WriteMask;
     source.Execute = (phys.Acl2 & GrouproleAcls.ExecuteMask) == GrouproleAcls.ExecuteMask;

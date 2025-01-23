@@ -22,7 +22,7 @@ public partial class CountersEndpoint : OLabEndpoint
   public CountersEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
-    OLabDBContext context) : base(logger, configuration, context)
+    OLabDBContext context) : base( logger, configuration, context )
   {
   }
 
@@ -33,7 +33,7 @@ public partial class CountersEndpoint : OLabEndpoint
   /// <returns></returns>
   private bool Exists(uint id)
   {
-    return GetDbContext().SystemCounters.Any(e => e.Id == id);
+    return GetDbContext().SystemCounters.Any( e => e.Id == id );
   }
 
   /// <summary>
@@ -47,38 +47,38 @@ public partial class CountersEndpoint : OLabEndpoint
     int? take,
     int? skip)
   {
-    GetLogger().LogInformation($"ReadAsync take={take} skip={skip}");
+    GetLogger().LogInformation( $"ReadAsync take={take} skip={skip}" );
 
     var countersPhys = new List<SystemCounters>();
     var total = 0;
     var remaining = 0;
 
-    if (!skip.HasValue)
+    if ( !skip.HasValue )
       skip = 0;
 
-    countersPhys = await GetDbContext().SystemCounters.OrderBy(x => x.Name).ToListAsync();
-    if (countersPhys.Count == 0)
+    countersPhys = await GetDbContext().SystemCounters.OrderBy( x => x.Name ).ToListAsync();
+    if ( countersPhys.Count == 0 )
       return new OLabAPIPagedResponse<CountersDto> { Data = new List<CountersDto>(), Remaining = 0, Count = 0 };
 
     total = countersPhys.Count;
 
-    if (take.HasValue && skip.HasValue)
+    if ( take.HasValue && skip.HasValue )
     {
-      countersPhys = countersPhys.Skip(skip.Value).Take(take.Value).ToList();
+      countersPhys = countersPhys.Skip( skip.Value ).Take( take.Value ).ToList();
       remaining = total - take.Value - skip.Value;
     }
 
     var dtoList = new CounterMapper(
       GetLogger(),
       GetDbContext(),
-      GetWikiProvider()).PhysicalToDto(countersPhys);
+      GetWikiProvider() ).PhysicalToDto( countersPhys );
 
-    var maps = GetDbContext().Maps.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
-    var nodes = GetDbContext().MapNodes.Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
-    var servers = GetDbContext().Servers.Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
+    var maps = GetDbContext().Maps.Select( x => new IdName() { Id = x.Id, Name = x.Name } ).ToList();
+    var nodes = GetDbContext().MapNodes.Select( x => new IdName() { Id = x.Id, Name = x.Title } ).ToList();
+    var servers = GetDbContext().Servers.Select( x => new IdName() { Id = x.Id, Name = x.Name } ).ToList();
 
-    foreach (var dto in dtoList)
-      dto.ParentInfo = FindParentInfo(dto.ImageableType, dto.ImageableId, maps, nodes, servers);
+    foreach ( var dto in dtoList )
+      dto.ParentInfo = FindParentInfo( dto.ImageableType, dto.ImageableId, maps, nodes, servers );
 
     return new OLabAPIPagedResponse<CountersDto> { Data = dtoList, Remaining = remaining, Count = total };
   }
@@ -90,23 +90,23 @@ public partial class CountersEndpoint : OLabEndpoint
   /// <returns></returns>
   public async Task<CountersDto> GetAsync(IOLabAuthorization auth, uint id)
   {
-    GetLogger().LogInformation($"ReadAsync id {id}");
+    GetLogger().LogInformation( $"ReadAsync id {id}" );
 
-    var phys = await GetCounterAsync(id);
-    if (phys == null)
-      throw new OLabObjectNotFoundException("SystemCounters", id);
+    var phys = await GetCounterAsync( id );
+    if ( phys == null )
+      throw new OLabObjectNotFoundException( "SystemCounters", id );
 
     var dto = new CountersFull(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider()).PhysicalToDto(phys);
+        GetWikiProvider() ).PhysicalToDto( phys );
 
     // test if user has access to object
-    var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, dto);
-    if (accessResult is UnauthorizedResult)
-      throw new OLabUnauthorizedException("CounterMapper", id);
+    var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, dto );
+    if ( accessResult is UnauthorizedResult )
+      throw new OLabUnauthorizedException( "CounterMapper", id );
 
-    AttachParentObject(dto);
+    AttachParentObject( dto );
     return dto;
   }
 
@@ -120,33 +120,33 @@ public partial class CountersEndpoint : OLabEndpoint
     uint id,
     CountersFullDto dto)
   {
-    GetLogger().LogInformation($"PutAsync id {id}");
+    GetLogger().LogInformation( $"PutAsync id {id}" );
 
     dto.ImageableId = dto.ParentInfo.Id;
 
     // test if user has access to object
-    var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dto);
-    if (accessResult is UnauthorizedResult)
-      throw new OLabUnauthorizedException("CounterMapper", id);
+    var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
+    if ( accessResult is UnauthorizedResult )
+      throw new OLabUnauthorizedException( "CounterMapper", id );
 
     try
     {
       var builder = new CountersFull(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider());
-      var phys = builder.DtoToPhysical(dto);
+        GetWikiProvider() );
+      var phys = builder.DtoToPhysical( dto );
 
       phys.UpdatedAt = DateTime.Now;
 
-      GetDbContext().Entry(phys).State = EntityState.Modified;
+      GetDbContext().Entry( phys ).State = EntityState.Modified;
       await GetDbContext().SaveChangesAsync();
     }
-    catch (DbUpdateConcurrencyException)
+    catch ( DbUpdateConcurrencyException )
     {
-      var existingObject = await GetCounterAsync(id);
-      if (existingObject == null)
-        throw new OLabObjectNotFoundException("CounterMapper", id);
+      var existingObject = await GetCounterAsync( id );
+      if ( existingObject == null )
+        throw new OLabObjectNotFoundException( "CounterMapper", id );
     }
 
   }
@@ -160,30 +160,30 @@ public partial class CountersEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     CountersFullDto dto)
   {
-    GetLogger().LogInformation($"PostAsync name = {dto.Name}");
+    GetLogger().LogInformation( $"PostAsync name = {dto.Name}" );
 
     dto.ImageableId = dto.ParentInfo.Id;
     dto.Value = dto.StartValue;
 
     // test if user has access to object
-    var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dto);
-    if (accessResult is UnauthorizedResult)
-      throw new OLabUnauthorizedException("CounterMapper", 0);
+    var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
+    if ( accessResult is UnauthorizedResult )
+      throw new OLabUnauthorizedException( "CounterMapper", 0 );
 
     var builder = new CountersFull(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider());
-    var phys = builder.DtoToPhysical(dto);
+        GetWikiProvider() );
+    var phys = builder.DtoToPhysical( dto );
 
     phys.CreatedAt = DateTime.Now;
 
-    GetDbContext().SystemCounters.Add(phys);
+    GetDbContext().SystemCounters.Add( phys );
     await GetDbContext().SaveChangesAsync();
 
-    dto = builder.PhysicalToDto(phys);
+    dto = builder.PhysicalToDto( phys );
 
-    AttachParentObject(dto);
+    AttachParentObject( dto );
     return dto;
   }
 
@@ -196,33 +196,33 @@ public partial class CountersEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     uint id)
   {
-    GetLogger().LogInformation($"DeleteAsync id {id}");
+    GetLogger().LogInformation( $"DeleteAsync id {id}" );
 
-    if (!Exists(id))
-      throw new OLabObjectNotFoundException("SystemCounters", id);
+    if ( !Exists( id ) )
+      throw new OLabObjectNotFoundException( "SystemCounters", id );
 
     try
     {
-      var phys = await GetCounterAsync(id);
+      var phys = await GetCounterAsync( id );
       var dto = new CountersFull(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider()).PhysicalToDto(phys);
+        GetWikiProvider() ).PhysicalToDto( phys );
 
       // test if user has access to object
-      var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dto);
-      if (accessResult is UnauthorizedResult)
-        throw new OLabUnauthorizedException("CounterMapper", id);
+      var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
+      if ( accessResult is UnauthorizedResult )
+        throw new OLabUnauthorizedException( "CounterMapper", id );
 
-      GetDbContext().SystemCounters.Remove(phys);
+      GetDbContext().SystemCounters.Remove( phys );
       await GetDbContext().SaveChangesAsync();
 
     }
-    catch (DbUpdateConcurrencyException)
+    catch ( DbUpdateConcurrencyException )
     {
-      var existingObject = await GetCounterAsync(id);
-      if (existingObject == null)
-        throw new OLabObjectNotFoundException("CounterMapper", id);
+      var existingObject = await GetCounterAsync( id );
+      if ( existingObject == null )
+        throw new OLabObjectNotFoundException( "CounterMapper", id );
     }
 
   }

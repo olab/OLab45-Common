@@ -84,9 +84,9 @@ public class CreateExcelFile
   public static bool CreateExcelDocument<T>(List<T> list, string xlsxFilePath)
   {
     var ds = new DataSet();
-    ds.Tables.Add(ListToDataTable(list));
+    ds.Tables.Add( ListToDataTable( list ) );
 
-    return CreateExcelDocument(ds, xlsxFilePath);
+    return CreateExcelDocument( ds, xlsxFilePath );
   }
   #region HELPER_FUNCTIONS
   //  This function is adapated from: http://www.codeguru.com/forum/showthread.php?t=450171
@@ -95,41 +95,41 @@ public class CreateExcelFile
   {
     var dt = new DataTable();
 
-    foreach (var info in typeof(T).GetProperties())
-      dt.Columns.Add(new DataColumn(info.Name, GetNullableType(info.PropertyType)));
-    foreach (var t in list)
+    foreach ( var info in typeof( T ).GetProperties() )
+      dt.Columns.Add( new DataColumn( info.Name, GetNullableType( info.PropertyType ) ) );
+    foreach ( var t in list )
     {
       var row = dt.NewRow();
-      foreach (var info in typeof(T).GetProperties())
-        if (!IsNullableType(info.PropertyType))
-          row[info.Name] = info.GetValue(t, null);
+      foreach ( var info in typeof( T ).GetProperties() )
+        if ( !IsNullableType( info.PropertyType ) )
+          row[ info.Name ] = info.GetValue( t, null );
         else
-          row[info.Name] = info.GetValue(t, null) ?? DBNull.Value;
-      dt.Rows.Add(row);
+          row[ info.Name ] = info.GetValue( t, null ) ?? DBNull.Value;
+      dt.Rows.Add( row );
     }
     return dt;
   }
   private static Type GetNullableType(Type t)
   {
     var returnType = t;
-    if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
-      returnType = Nullable.GetUnderlyingType(t);
+    if ( t.IsGenericType && t.GetGenericTypeDefinition().Equals( typeof( Nullable<> ) ) )
+      returnType = Nullable.GetUnderlyingType( t );
     return returnType;
   }
   private static bool IsNullableType(Type type)
   {
-    return type == typeof(string) ||
+    return type == typeof( string ) ||
             type.IsArray ||
             type.IsGenericType &&
-             type.GetGenericTypeDefinition().Equals(typeof(Nullable<>));
+             type.GetGenericTypeDefinition().Equals( typeof( Nullable<> ) );
   }
 
   public static bool CreateExcelDocument(DataTable dt, string xlsxFilePath)
   {
     var ds = new DataSet();
-    ds.Tables.Add(dt);
-    var result = CreateExcelDocument(ds, xlsxFilePath);
-    ds.Tables.Remove(dt);
+    ds.Tables.Add( dt );
+    var result = CreateExcelDocument( ds, xlsxFilePath );
+    ds.Tables.Remove( dt );
     return result;
   }
   #endregion
@@ -257,14 +257,14 @@ public class CreateExcelFile
   {
     try
     {
-      using (var spreadsheet = SpreadsheetDocument.Create(excelFilename, SpreadsheetDocumentType.Workbook))
-        WriteExcelFile(ds, spreadsheet);
-      Trace.WriteLine("Successfully created: " + excelFilename);
+      using ( var spreadsheet = SpreadsheetDocument.Create( excelFilename, SpreadsheetDocumentType.Workbook ) )
+        WriteExcelFile( ds, spreadsheet );
+      Trace.WriteLine( "Successfully created: " + excelFilename );
       return true;
     }
-    catch (Exception ex)
+    catch ( Exception ex )
     {
-      Trace.WriteLine("Failed, exception thrown: " + ex.Message);
+      Trace.WriteLine( "Failed, exception thrown: " + ex.Message );
       return false;
     }
   }
@@ -274,17 +274,17 @@ public class CreateExcelFile
   {
     //  If you're using ASP.NET Core 2.x+, then this is the function to call !
     //  It will create a temporary Excel file, stream its contents, then delete it.
-    var TempFilename = Path.Join(Path.GetTempPath(), filename);
-    CreateExcelDocument(list, TempFilename);
+    var TempFilename = Path.Join( Path.GetTempPath(), filename );
+    CreateExcelDocument( list, TempFilename );
 
-    var rawData = File.ReadAllBytes(TempFilename);
-    var ms = new MemoryStream(rawData);
+    var rawData = File.ReadAllBytes( TempFilename );
+    var ms = new MemoryStream( rawData );
 
     //var fr = new FileStreamResult(ms, "application/octet-stream");
-    var fr = new FileStreamResult(ms, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    var fr = new FileStreamResult( ms, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" );
     fr.FileDownloadName = filename;
 
-    File.Delete(TempFilename);      //  We don't need this anymore
+    File.Delete( TempFilename );      //  We don't need this anymore
 
     return fr;
   }
@@ -300,10 +300,10 @@ public class CreateExcelFile
     var definedNamesCol = new DefinedNames();
 
     //  My thanks to James Miera for the following line of code (which prevents crashes in Excel 2010)
-    spreadsheet.WorkbookPart.Workbook.Append(new BookViews(new WorkbookView()));
+    spreadsheet.WorkbookPart.Workbook.Append( new BookViews( new WorkbookView() ) );
 
     //  If we don't add a "WorkbookStylesPart", OLEDB will refuse to connect to this .xlsx file !
-    var workbookStylesPart = spreadsheet.WorkbookPart.AddNewPart<WorkbookStylesPart>("rIdStyles");
+    var workbookStylesPart = spreadsheet.WorkbookPart.AddNewPart<WorkbookStylesPart>( "rIdStyles" );
     workbookStylesPart.Stylesheet = GenerateStyleSheet();
     workbookStylesPart.Stylesheet.Save();
 
@@ -311,29 +311,29 @@ public class CreateExcelFile
 
     //  Loop through each of the DataTables in our DataSet, and create a new Excel Worksheet for each.
     uint worksheetNumber = 1;
-    var sheets = spreadsheet.WorkbookPart.Workbook.AppendChild(new Sheets());
+    var sheets = spreadsheet.WorkbookPart.Workbook.AppendChild( new Sheets() );
 
-    foreach (DataTable dt in ds.Tables)
+    foreach ( DataTable dt in ds.Tables )
     {
       //  For each worksheet you want to create
       var worksheetName = dt.TableName;
 
       //  Create worksheet part, and add it to the sheets collection in workbook
       var newWorksheetPart = spreadsheet.WorkbookPart.AddNewPart<WorksheetPart>();
-      var sheet = new Sheet() { Id = spreadsheet.WorkbookPart.GetIdOfPart(newWorksheetPart), SheetId = worksheetNumber, Name = worksheetName };
+      var sheet = new Sheet() { Id = spreadsheet.WorkbookPart.GetIdOfPart( newWorksheetPart ), SheetId = worksheetNumber, Name = worksheetName };
 
       // If you want to define the Column Widths for a Worksheet, you need to do this *before* appending the SheetData
       // http://social.msdn.microsoft.com/Forums/en-US/oxmlsdk/thread/1d93eca8-2949-4d12-8dd9-15cc24128b10/
 
 
-      sheets.Append(sheet);
+      sheets.Append( sheet );
 
       //  Append this worksheet's data to our Workbook, using OpenXmlWriter, to prevent memory problems
-      WriteDataTableToExcelWorksheet(dt, newWorksheetPart, definedNamesCol);
+      WriteDataTableToExcelWorksheet( dt, newWorksheetPart, definedNamesCol );
 
       worksheetNumber++;
     }
-    spreadsheet.WorkbookPart.Workbook.Append(definedNamesCol);
+    spreadsheet.WorkbookPart.Workbook.Append( definedNamesCol );
     spreadsheet.WorkbookPart.Workbook.Save();
   }
 
@@ -356,46 +356,46 @@ public class CreateExcelFile
             //  
             new NumberingFormat()                                                  // Custom number format # 164: especially for date-times
             {
-              NumberFormatId = UInt32Value.FromUInt32(iExcelIndex++),
-              FormatCode = StringValue.FromString("dd/MMM/yyyy hh:mm:ss")
+              NumberFormatId = UInt32Value.FromUInt32( iExcelIndex++ ),
+              FormatCode = StringValue.FromString( "dd/MMM/yyyy hh:mm:ss" )
             },
             new NumberingFormat()                                                   // Custom number format # 165: especially for date times (with a blank time)
             {
-              NumberFormatId = UInt32Value.FromUInt32(iExcelIndex++),
-              FormatCode = StringValue.FromString("dd/MMM/yyyy")
+              NumberFormatId = UInt32Value.FromUInt32( iExcelIndex++ ),
+              FormatCode = StringValue.FromString( "dd/MMM/yyyy" )
             }
        ),
         new Fonts(
             new Font(                                                               // Index 0 - The default font.
                 new FontSize() { Val = 10 },
                 new Color() { Rgb = new HexBinaryValue() { Value = "000000" } },
-                new FontName() { Val = "Arial" }),
+                new FontName() { Val = "Arial" } ),
             new Font(                                                               // Index 1 - A 12px bold font, in white.
                 new Bold(),
                 new FontSize() { Val = 12 },
                 new Color() { Rgb = new HexBinaryValue() { Value = "FFFFFF" } },
-                new FontName() { Val = "Arial" }),
+                new FontName() { Val = "Arial" } ),
             new Font(                                                               // Index 2 - An Italic font.
                 new Italic(),
                 new FontSize() { Val = 10 },
                 new Color() { Rgb = new HexBinaryValue() { Value = "000000" } },
-                new FontName() { Val = "Times New Roman" })
+                new FontName() { Val = "Times New Roman" } )
         ),
         new Fills(
             new Fill(                                                           // Index 0 - The default fill.
-                new PatternFill() { PatternType = PatternValues.None }),
+                new PatternFill() { PatternType = PatternValues.None } ),
             new Fill(                                                           // Index 1 - The default fill of gray 125 (required)
-                new PatternFill() { PatternType = PatternValues.Gray125 }),
+                new PatternFill() { PatternType = PatternValues.Gray125 } ),
             new Fill(                                                           // Index 2 - The yellow fill.
                 new PatternFill(
                     new ForegroundColor() { Rgb = new HexBinaryValue() { Value = "FFFFFF00" } }
                 )
-                { PatternType = PatternValues.Solid }),
+                { PatternType = PatternValues.Solid } ),
             new Fill(                                                           // Index 3 - Dark-gray fill.
                 new PatternFill(
                     new ForegroundColor() { Rgb = new HexBinaryValue() { Value = "FF404040" } }
                 )
-                { PatternType = PatternValues.Solid })
+                { PatternType = PatternValues.Solid } )
         ),
         new Borders(
             new Border(                                                         // Index 0 - The default border.
@@ -403,19 +403,19 @@ public class CreateExcelFile
                 new RightBorder(),
                 new TopBorder(),
                 new BottomBorder(),
-                new DiagonalBorder()),
+                new DiagonalBorder() ),
             new Border(                                                         // Index 1 - Applies a Left, Right, Top, Bottom border to a cell
-                new LeftBorder(new Color() { Auto = true }) { Style = BorderStyleValues.Thin },
-                new RightBorder(new Color() { Auto = true }) { Style = BorderStyleValues.Thin },
-                new TopBorder(new Color() { Auto = true }) { Style = BorderStyleValues.Thin },
-                new BottomBorder(new Color() { Auto = true }) { Style = BorderStyleValues.Thin },
-                new DiagonalBorder())
+                new LeftBorder( new Color() { Auto = true } ) { Style = BorderStyleValues.Thin },
+                new RightBorder( new Color() { Auto = true } ) { Style = BorderStyleValues.Thin },
+                new TopBorder( new Color() { Auto = true } ) { Style = BorderStyleValues.Thin },
+                new BottomBorder( new Color() { Auto = true } ) { Style = BorderStyleValues.Thin },
+                new DiagonalBorder() )
         ),
         new CellFormats(
             new CellFormat() { FontId = 0, FillId = 0, BorderId = 0 },                         // Style # 0 - The default cell style.  If a cell does not have a style index applied it will use this style combination instead
             new CellFormat() { NumberFormatId = 164 },                                         // Style # 1 - DateTimes
             new CellFormat() { NumberFormatId = 165 },                                         // Style # 2 - Dates (with a blank time)
-            new CellFormat(new Alignment() { Horizontal = HorizontalAlignmentValues.Center, Vertical = VerticalAlignmentValues.Center })
+            new CellFormat( new Alignment() { Horizontal = HorizontalAlignmentValues.Center, Vertical = VerticalAlignmentValues.Center } )
             { FontId = 1, FillId = 3, BorderId = 0, ApplyFont = true, ApplyAlignment = true },       // Style # 3 - Header row 
             new CellFormat() { NumberFormatId = 3 },                                           // Style # 4 - Number format: #,##0
             new CellFormat() { NumberFormatId = 4 },                                           // Style # 5 - Number format: #,##0.00
@@ -434,21 +434,21 @@ public class CreateExcelFile
 
   private static void WriteDataTableToExcelWorksheet(DataTable dt, WorksheetPart worksheetPart, DefinedNames definedNamesCol)
   {
-    var writer = OpenXmlWriter.Create(worksheetPart, Encoding.ASCII);
-    writer.WriteStartElement(new Worksheet());
+    var writer = OpenXmlWriter.Create( worksheetPart, Encoding.ASCII );
+    writer.WriteStartElement( new Worksheet() );
 
     //  To demonstrate how to set column-widths in Excel, here's how to set the width of all columns to our default of "25":
     uint inx = 1;
-    writer.WriteStartElement(new Columns());
-    foreach (DataColumn dc in dt.Columns)
+    writer.WriteStartElement( new Columns() );
+    foreach ( DataColumn dc in dt.Columns )
     {
-      writer.WriteElement(new Column { Min = inx, Max = inx, CustomWidth = true, Width = DEFAULT_COLUMN_WIDTH });
+      writer.WriteElement( new Column { Min = inx, Max = inx, CustomWidth = true, Width = DEFAULT_COLUMN_WIDTH } );
       inx++;
     }
     writer.WriteEndElement();
 
 
-    writer.WriteStartElement(new SheetData());
+    writer.WriteStartElement( new SheetData() );
 
     var cellValue = "";
     var cellReference = "";
@@ -458,13 +458,13 @@ public class CreateExcelFile
     //  We'll also create an array, showing which type each column of data is (Text or Numeric), so when we come to write the actual
     //  cells of data, we'll know if to write Text values or Numeric cell values.
     var numberOfColumns = dt.Columns.Count;
-    var IsIntegerColumn = new bool[numberOfColumns];
-    var IsFloatColumn = new bool[numberOfColumns];
-    var IsDateColumn = new bool[numberOfColumns];
+    var IsIntegerColumn = new bool[ numberOfColumns ];
+    var IsFloatColumn = new bool[ numberOfColumns ];
+    var IsDateColumn = new bool[ numberOfColumns ];
 
-    var excelColumnNames = new string[numberOfColumns];
-    for (var n = 0; n < numberOfColumns; n++)
-      excelColumnNames[n] = GetExcelColumnName(n);
+    var excelColumnNames = new string[ numberOfColumns ];
+    for ( var n = 0; n < numberOfColumns; n++ )
+      excelColumnNames[ n ] = GetExcelColumnName( n );
 
     //
     //  Create the Header row in our Excel Worksheet
@@ -472,14 +472,14 @@ public class CreateExcelFile
     //
     uint rowIndex = 1;
 
-    writer.WriteStartElement(new Row { RowIndex = rowIndex, Height = 20, CustomHeight = true });
-    for (var colInx = 0; colInx < numberOfColumns; colInx++)
+    writer.WriteStartElement( new Row { RowIndex = rowIndex, Height = 20, CustomHeight = true } );
+    for ( var colInx = 0; colInx < numberOfColumns; colInx++ )
     {
-      var col = dt.Columns[colInx];
-      AppendHeaderTextCell(excelColumnNames[colInx] + "1", col.ColumnName, writer);
-      IsIntegerColumn[colInx] = col.DataType.FullName.StartsWith("System.Int");
-      IsFloatColumn[colInx] = col.DataType.FullName == "System.Decimal" || col.DataType.FullName == "System.Double" || col.DataType.FullName == "System.Single";
-      IsDateColumn[colInx] = col.DataType.FullName == "System.DateTime";
+      var col = dt.Columns[ colInx ];
+      AppendHeaderTextCell( excelColumnNames[ colInx ] + "1", col.ColumnName, writer );
+      IsIntegerColumn[ colInx ] = col.DataType.FullName.StartsWith( "System.Int" );
+      IsFloatColumn[ colInx ] = col.DataType.FullName == "System.Decimal" || col.DataType.FullName == "System.Double" || col.DataType.FullName == "System.Single";
+      IsDateColumn[ colInx ] = col.DataType.FullName == "System.DateTime";
 
       //  Uncomment the following lines, for an example of how to create some Named Ranges in your Excel file
 #if FALSE
@@ -501,47 +501,47 @@ public class CreateExcelFile
     //  Now, step through each row of data in our DataTable...
     //
     double cellFloatValue = 0;
-    var ci = new CultureInfo("en-US");
-    foreach (DataRow dr in dt.Rows)
+    var ci = new CultureInfo( "en-US" );
+    foreach ( DataRow dr in dt.Rows )
     {
       // ...create a new row, and append a set of this row's data to it.
       ++rowIndex;
 
-      writer.WriteStartElement(new Row { RowIndex = rowIndex });
+      writer.WriteStartElement( new Row { RowIndex = rowIndex } );
 
-      for (var colInx = 0; colInx < numberOfColumns; colInx++)
+      for ( var colInx = 0; colInx < numberOfColumns; colInx++ )
       {
-        cellValue = dr.ItemArray[colInx].ToString();
-        cellValue = ReplaceHexadecimalSymbols(cellValue);
-        cellReference = excelColumnNames[colInx] + rowIndex.ToString();
+        cellValue = dr.ItemArray[ colInx ].ToString();
+        cellValue = ReplaceHexadecimalSymbols( cellValue );
+        cellReference = excelColumnNames[ colInx ] + rowIndex.ToString();
 
         // Create cell with data
-        if (IsIntegerColumn[colInx] || IsFloatColumn[colInx])
+        if ( IsIntegerColumn[ colInx ] || IsFloatColumn[ colInx ] )
         {
           //  For numeric cells without any decimal places.
           //  If this numeric value is NULL, then don't write anything to the Excel file.
           cellFloatValue = 0;
-          var bIncludeDecimalPlaces = IsFloatColumn[colInx];
-          if (double.TryParse(cellValue, out cellFloatValue))
+          var bIncludeDecimalPlaces = IsFloatColumn[ colInx ];
+          if ( double.TryParse( cellValue, out cellFloatValue ) )
           {
-            cellValue = cellFloatValue.ToString(ci);
-            AppendNumericCell(cellReference, cellValue, bIncludeDecimalPlaces, writer);
+            cellValue = cellFloatValue.ToString( ci );
+            AppendNumericCell( cellReference, cellValue, bIncludeDecimalPlaces, writer );
           }
         }
-        else if (IsDateColumn[colInx])
+        else if ( IsDateColumn[ colInx ] )
         {
           //  For date values, we save the value to Excel as a number, but need to set the cell's style to format
           //  it as either a date or a date-time.
           DateTime dateValue;
-          if (DateTime.TryParse(cellValue, out dateValue))
-            AppendDateCell(cellReference, dateValue, writer);
+          if ( DateTime.TryParse( cellValue, out dateValue ) )
+            AppendDateCell( cellReference, dateValue, writer );
           else
             //  This should only happen if we have a DataColumn of type "DateTime", but this particular value is null/blank.
-            AppendTextCell(cellReference, cellValue, writer);
+            AppendTextCell( cellReference, cellValue, writer );
         }
         else
           //  For text cells, just write the input data straight out to the Excel file.
-          AppendTextCell(cellReference, cellValue, writer);
+          AppendTextCell( cellReference, cellValue, writer );
       }
       writer.WriteEndElement(); //  End of Row
     }
@@ -555,13 +555,13 @@ public class CreateExcelFile
   {
     //  Add a new "text" Cell to the first row in our Excel worksheet
     //  We set these cells to use "Style # 3", so they have a gray background color & white text.
-    writer.WriteElement(new Cell
+    writer.WriteElement( new Cell
     {
-      CellValue = new CellValue(cellStringValue),
+      CellValue = new CellValue( cellStringValue ),
       CellReference = cellReference,
       DataType = CellValues.String,
       StyleIndex = 3
-    });
+    } );
   }
 
   private static void AppendTextCell(string cellReference, string cellStringValue, OpenXmlWriter writer)
@@ -578,12 +578,12 @@ public class CreateExcelFile
 #endif
 
     //  Add a new Excel Cell to our Row 
-    writer.WriteElement(new Cell
+    writer.WriteElement( new Cell
     {
-      CellValue = new CellValue(cellStringValue),
+      CellValue = new CellValue( cellStringValue ),
       CellReference = cellReference,
       DataType = CellValues.String
-    });
+    } );
   }
 
   private static void AppendDateCell(string cellReference, DateTime dateTimeValue, OpenXmlWriter writer)
@@ -599,40 +599,40 @@ public class CreateExcelFile
     //  
     //  So, if our time element is blank, we'll assign style 2, but if there IS a time part, we'll apply style 1.
     //
-    var cellStringValue = dateTimeValue.ToOADate().ToString(CultureInfo.InvariantCulture);
+    var cellStringValue = dateTimeValue.ToOADate().ToString( CultureInfo.InvariantCulture );
     var bHasBlankTime = dateTimeValue.Date == dateTimeValue;
 
-    writer.WriteElement(new Cell
+    writer.WriteElement( new Cell
     {
-      CellValue = new CellValue(cellStringValue),
+      CellValue = new CellValue( cellStringValue ),
       CellReference = cellReference,
-      StyleIndex = UInt32Value.FromUInt32(bHasBlankTime ? 2 : (uint)1),
+      StyleIndex = UInt32Value.FromUInt32( bHasBlankTime ? 2 : (uint)1 ),
       DataType = CellValues.Number        //  Use this, rather than CellValues.Date
-    });
+    } );
   }
 
   private static void AppendFormulaCell(string cellReference, string cellStringValue, OpenXmlWriter writer)
   {
     //  Add a new "formula" Excel Cell to our Row 
-    writer.WriteElement(new Cell
+    writer.WriteElement( new Cell
     {
-      CellFormula = new CellFormula(cellStringValue),
+      CellFormula = new CellFormula( cellStringValue ),
       CellReference = cellReference,
       DataType = CellValues.Number
-    });
+    } );
   }
 
   private static void AppendNumericCell(string cellReference, string cellStringValue, bool bIncludeDecimalPlaces, OpenXmlWriter writer)
   {
     //  Add a new numeric Excel Cell to our Row.
     var cellStyle = (uint)(bIncludeDecimalPlaces ? 5 : 4);
-    writer.WriteElement(new Cell
+    writer.WriteElement( new Cell
     {
-      CellValue = new CellValue(cellStringValue),
+      CellValue = new CellValue( cellStringValue ),
       CellReference = cellReference,
       StyleIndex = cellStyle,                                 //  Style #4 formats with 0 decimal places, style #5 formats with 2 decimal places
       DataType = CellValues.Number
-    });
+    } );
   }
 
   private static string ReplaceHexadecimalSymbols(string txt)
@@ -640,7 +640,7 @@ public class CreateExcelFile
     //  I've often seen cases when a non-ASCII character will slip into the data you're trying to export, and this will cause an invalid Excel to be created.
     //  This function removes such characters.
     var r = "[\x00-\x08\x0B\x0C\x0E-\x1F]";
-    return Regex.Replace(txt, r, "", RegexOptions.Compiled);
+    return Regex.Replace( txt, r, "", RegexOptions.Compiled );
   }
 
   //  Convert a zero-based column index into an Excel column reference  (A, B, C.. Y, Z, AA, AB, AC... AY, AZ, BA, BB..)
@@ -659,7 +659,7 @@ public class CreateExcelFile
 
     var firstInt = columnIndex / 676;
     var secondInt = columnIndex % 676 / 26;
-    if (secondInt == 0)
+    if ( secondInt == 0 )
     {
       secondInt = 26;
       firstInt = firstInt - 1;
@@ -670,12 +670,12 @@ public class CreateExcelFile
     var secondChar = (char)('A' + secondInt - 1);
     var thirdChar = (char)('A' + thirdInt);
 
-    if (columnIndex < 26)
+    if ( columnIndex < 26 )
       return thirdChar.ToString();
 
-    if (columnIndex < 702)
-      return string.Format("{0}{1}", secondChar, thirdChar);
+    if ( columnIndex < 702 )
+      return string.Format( "{0}{1}", secondChar, thirdChar );
 
-    return string.Format("{0}{1}{2}", firstChar, secondChar, thirdChar);
+    return string.Format( "{0}{1}{2}", firstChar, secondChar, thirdChar );
   }
 }

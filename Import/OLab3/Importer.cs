@@ -51,7 +51,7 @@ public class Importer : IImporter
 
   public WikiTagModuleProvider GetWikiProvider() { return _wikiTagProvider; }
   public IFileStorageModule GetFileStorageModule() { return FileStorageModule; }
-  public XmlDto GetDto(DtoTypes type) { return _dtos[type]; }
+  public XmlDto GetDto(DtoTypes type) { return _dtos[ type ]; }
   public OLabDBContext GetDbContext() { return _dbContext; }
   public IOLabConfiguration GetConfiguration() { return _configuration; }
   public AppSettings Settings() { return _appSettings; }
@@ -72,50 +72,50 @@ public class Importer : IImporter
     _wikiTagProvider = wikiTagProvider as WikiTagModuleProvider;
     FileStorageModule = fileStorageModule;
 
-    XmlDto dto = new XmlMapDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    XmlDto dto = new XmlMapDto( Logger, this );
+    _dtos.Add( dto.DtoType, dto );
 
-    dto = new XmlMapElementDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    dto = new XmlMapElementDto( Logger, this );
+    _dtos.Add( dto.DtoType, dto );
 
-    dto = new XmlMediaElementsDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    dto = new XmlMediaElementsDto( Logger, this );
+    _dtos.Add( dto.DtoType, dto );
 
-    dto = new XmlMapAvatarDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    dto = new XmlMapAvatarDto( Logger, this );
+    _dtos.Add( dto.DtoType, dto );
 
-    dto = new XmlMapVpdDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    dto = new XmlMapVpdDto( Logger, this );
+    _dtos.Add( dto.DtoType, dto );
 
-    dto = new XmlMapVpdElementDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    dto = new XmlMapVpdElementDto( Logger, this );
+    _dtos.Add( dto.DtoType, dto );
 
-    dto = new XmlMapCounterDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    dto = new XmlMapCounterDto( Logger, this );
+    _dtos.Add( dto.DtoType, dto );
 
-    dto = new XmlMapQuestionDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    dto = new XmlMapQuestionDto( Logger, this );
+    _dtos.Add( dto.DtoType, dto );
 
-    dto = new XmlMapQuestionResponseDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    dto = new XmlMapQuestionResponseDto( Logger, this );
+    _dtos.Add( dto.DtoType, dto );
 
-    dto = new XmlMapNodeDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    dto = new XmlMapNodeDto( Logger, this );
+    _dtos.Add( dto.DtoType, dto );
 
-    dto = new XmlMapNodeCounterDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    dto = new XmlMapNodeCounterDto( Logger, this );
+    _dtos.Add( dto.DtoType, dto );
 
-    dto = new XmlMapNodeLinkDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    dto = new XmlMapNodeLinkDto( Logger, this );
+    _dtos.Add( dto.DtoType, dto );
 
     //dto = new XmlMapCounterRuleDto(Logger, this);
     //_dtos.Add(dto.DtoType, dto);
 
-    dto = new XmlMapNodeSectionDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    dto = new XmlMapNodeSectionDto( Logger, this );
+    _dtos.Add( dto.DtoType, dto );
 
-    dto = new XmlMapNodeSectionNodeDto(Logger, this);
-    _dtos.Add(dto.DtoType, dto);
+    dto = new XmlMapNodeSectionNodeDto( Logger, this );
+    _dtos.Add( dto.DtoType, dto );
 
     //dto = new XmlMetadataDto(Logger, this);
     //_dtos.Add(dto.DtoType, dto);
@@ -135,10 +135,10 @@ public class Importer : IImporter
     await LoadImportFromArchiveFile(
       archiveFileStream,
       archiveFileName,
-      token);
+      token );
 
     var mapPhys = WriteImportToDatabase(
-      archiveFileName);
+      archiveFileName );
     return mapPhys;
   }
 
@@ -157,38 +157,38 @@ public class Importer : IImporter
     {
       var relativeArchiveFile = FileStorageModule.BuildPath(
           OLabFileStorageModule.ImportRoot,
-          archiveFileName);
-      Logger.LogInformation($"Module archive file: {relativeArchiveFile}");
+          archiveFileName );
+      Logger.LogInformation( $"Module archive file: {relativeArchiveFile}" );
 
       // write the archive file to storage
       await FileStorageModule.WriteFileAsync(
         archiveFileStream,
         relativeArchiveFile,
-        token);
+        token );
 
       // build extract direct based on archive file name without extension
       var relativeExtractDirectory =
         FileStorageModule.BuildPath(
           OLabFileStorageModule.ImportRoot,
-          Path.GetFileNameWithoutExtension(relativeArchiveFile));
-      Logger.LogInformation($"Folder extract directory: {relativeExtractDirectory}");
+          Path.GetFileNameWithoutExtension( relativeArchiveFile ) );
+      Logger.LogInformation( $"Folder extract directory: {relativeExtractDirectory}" );
 
       // extract archive file to extract directory
       var physicalExtractDirectory = await FileStorageModule.ExtractFileToStorageAsync(
         relativeArchiveFile,
         relativeExtractDirectory,
-        token);
+        token );
 
       // load all the import files in extract directory
-      foreach (var dto in _dtos.Values)
-        await dto.LoadAsync(physicalExtractDirectory);
+      foreach ( var dto in _dtos.Values )
+        await dto.LoadAsync( physicalExtractDirectory );
 
       // delete source archive file
-      await GetFileStorageModule().DeleteFileAsync(relativeArchiveFile);
+      await GetFileStorageModule().DeleteFileAsync( relativeArchiveFile );
     }
-    catch (Exception ex)
+    catch ( Exception ex )
     {
-      Logger.LogError(ex, $"Read error: {ex.Message}");
+      Logger.LogError( ex, $"Read error: {ex.Message}" );
       throw;
     }
 
@@ -204,34 +204,34 @@ public class Importer : IImporter
   {
 
     // if anything bad happens, rollback the entire import
-    using (var transaction = _dbContext.Database.BeginTransaction())
+    using ( var transaction = _dbContext.Database.BeginTransaction() )
     {
       try
       {
         var relativeExtractDirectory = FileStorageModule.BuildPath(
           OLabFileStorageModule.ImportRoot,
-          Path.GetFileNameWithoutExtension(archiveFileName));
+          Path.GetFileNameWithoutExtension( archiveFileName ) );
 
         // save all import data sets to database
-        foreach (var dto in _dtos.Values)
-          dto.SaveToDatabase(relativeExtractDirectory);
+        foreach ( var dto in _dtos.Values )
+          dto.SaveToDatabase( relativeExtractDirectory );
 
         transaction.Commit();
 
         // get the new id of thie imported map
-        var xmlMapDto = _dtos[DtoTypes.XmlMapDto] as XmlMapDto;
+        var xmlMapDto = _dtos[ DtoTypes.XmlMapDto ] as XmlMapDto;
         var xmlMap = (XmlMap)xmlMapDto.GetDbPhys();
-        Logger.LogInformation($"Loaded map '{xmlMap.Data[0].Name}'. id = {xmlMap.Data[0].Id}");
+        Logger.LogInformation( $"Loaded map '{xmlMap.Data[ 0 ].Name}'. id = {xmlMap.Data[ 0 ].Id}" );
 
-        var mapPhys = xmlMap.Data[0];
+        var mapPhys = xmlMap.Data[ 0 ];
         mapPhys.CreatedAt = DateTime.UtcNow;
 
         return mapPhys;
 
       }
-      catch (Exception ex)
+      catch ( Exception ex )
       {
-        Logger.LogError(ex, $"Error saving import. reason: {ex.Message} ");
+        Logger.LogError( ex, $"Error saving import. reason: {ex.Message} " );
         transaction.Rollback();
       }
 

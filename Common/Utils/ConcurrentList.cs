@@ -58,7 +58,7 @@ public class ConcurrentList<T>
     try
     {
       Lock();
-      Remove(index);
+      Remove( index );
     }
     finally
     {
@@ -72,7 +72,7 @@ public class ConcurrentList<T>
   /// <param name="index">Index to remove</param>
   public void Remove(int index)
   {
-    _items.RemoveAt(index);
+    _items.RemoveAt( index );
   }
 
   /// <summary>
@@ -85,7 +85,7 @@ public class ConcurrentList<T>
     try
     {
       Lock();
-      Remove(item);
+      Remove( item );
     }
     finally
     {
@@ -100,7 +100,7 @@ public class ConcurrentList<T>
   /// <param name="item">objectto remove</param>
   public void Remove(T item)
   {
-    _items.Remove(item);
+    _items.Remove( item );
   }
 
   /// <summary>
@@ -114,7 +114,7 @@ public class ConcurrentList<T>
     try
     {
       Lock();
-      return Add(item);
+      return Add( item );
     }
     finally
     {
@@ -131,7 +131,7 @@ public class ConcurrentList<T>
   /// <returns>Index of item just added</returns>
   public int Add(T item)
   {
-    _items.Add(item);
+    _items.Add( item );
 
     var count = _items.Count;
     return count - 1;
@@ -163,9 +163,9 @@ public class ConcurrentList<T>
     _items.Clear();
   }
 
-  public T this[int index]
+  public T this[ int index ]
   {
-    get { return SafeGetAt(index); }
+    get { return SafeGetAt( index ); }
   }
 
   /// <summary>
@@ -178,7 +178,7 @@ public class ConcurrentList<T>
     try
     {
       Lock();
-      return GetAt(index);
+      return GetAt( index );
     }
     finally
     {
@@ -193,7 +193,7 @@ public class ConcurrentList<T>
   public T GetAt(int index)
   {
     T item;
-    item = _items[index];
+    item = _items[ index ];
 
     return item;
   }

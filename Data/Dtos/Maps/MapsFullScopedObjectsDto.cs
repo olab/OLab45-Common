@@ -4,7 +4,7 @@ namespace OLab.Api.Dto;
 
 public class MapsScopedObjectsDto : MapsDto
 {
-  [JsonProperty("scopedObjects")]
+  [JsonProperty( "scopedObjects" )]
   public ScopedObjectsDto ScopedObjects { get; set; }
 
 }

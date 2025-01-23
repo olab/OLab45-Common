@@ -16,30 +16,30 @@ public class Learner : Participant
   {
   }
 
-  public Learner(RegisterAttendeePayload session, HubCallerContext context) : base(context)
+  public Learner(RegisterAttendeePayload session, HubCallerContext context) : base( context )
   {
     Session = session;
-    var roomNameParts = session.RoomName.Split("/");
+    var roomNameParts = session.RoomName.Split( "/" );
 
-    TopicName = roomNameParts[0];
+    TopicName = roomNameParts[ 0 ];
     RoomName = TopicName;
     CommandChannel = $"{TopicName}/{Prefix}/{UserId}";
     ReferringNodeName = session.ReferringNode;
 
 
     // test if topic and room provided
-    if (roomNameParts.Length == 2)
-      AssignToRoom(Convert.ToInt32(roomNameParts[1]));
+    if ( roomNameParts.Length == 2 )
+      AssignToRoom( Convert.ToInt32( roomNameParts[ 1 ] ) );
   }
 
   public Learner(Participant participant)
-    : base(participant.TopicName, participant.UserId, participant.NickName, participant.ConnectionId)
+    : base( participant.TopicName, participant.UserId, participant.NickName, participant.ConnectionId )
   {
     CommandChannel = participant.CommandChannel;
   }
 
   public Learner(string topicName, string userName = null, string nickName = null, string connectionId = null)
-    : base(topicName, userName, nickName, connectionId)
+    : base( topicName, userName, nickName, connectionId )
   {
   }
 
@@ -55,7 +55,7 @@ public class Learner : Participant
   }
   public string ToJson()
   {
-    var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
-    return JToken.Parse(rawJson).ToString(Formatting.Indented);
+    var rawJson = System.Text.Json.JsonSerializer.Serialize( this );
+    return JToken.Parse( rawJson ).ToString( Formatting.Indented );
   }
 }

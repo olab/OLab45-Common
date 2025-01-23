@@ -5,53 +5,53 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
-[Table("lti_contexts")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[Table( "lti_contexts" )]
+[MySqlCharSet( "utf8mb3" )]
+[MySqlCollation( "utf8mb3_general_ci" )]
 public partial class LtiContexts
 {
   [Key]
-  [Column("consumer_key")]
+  [Column( "consumer_key" )]
   public string ConsumerKey { get; set; }
 
   [Required]
-  [Column("context_id")]
-  [StringLength(255)]
+  [Column( "context_id" )]
+  [StringLength( 255 )]
   public string ContextId { get; set; }
 
-  [Column("lti_context_id")]
-  [StringLength(255)]
+  [Column( "lti_context_id" )]
+  [StringLength( 255 )]
   public string LtiContextId { get; set; }
 
-  [Column("lti_resource_id")]
-  [StringLength(255)]
+  [Column( "lti_resource_id" )]
+  [StringLength( 255 )]
   public string LtiResourceId { get; set; }
 
   [Required]
-  [Column("title")]
-  [StringLength(255)]
+  [Column( "title" )]
+  [StringLength( 255 )]
   public string Title { get; set; }
 
-  [Column("settings", TypeName = "text")]
+  [Column( "settings", TypeName = "text" )]
   public string Settings { get; set; }
 
-  [Column("primary_consumer_key")]
-  [StringLength(255)]
+  [Column( "primary_consumer_key" )]
+  [StringLength( 255 )]
   public string PrimaryConsumerKey { get; set; }
 
-  [Column("primary_context_id")]
-  [StringLength(255)]
+  [Column( "primary_context_id" )]
+  [StringLength( 255 )]
   public string PrimaryContextId { get; set; }
 
-  [Column("share_approved")]
+  [Column( "share_approved" )]
   public bool? ShareApproved { get; set; }
 
-  [Column("created", TypeName = "datetime")]
+  [Column( "created", TypeName = "datetime" )]
   public DateTime Created { get; set; }
 
-  [Column("updated", TypeName = "datetime")]
+  [Column( "updated", TypeName = "datetime" )]
   public DateTime Updated { get; set; }
 
-  [InverseProperty("ConsumerKeyNavigation")]
+  [InverseProperty( "ConsumerKeyNavigation" )]
   public virtual LtiUsers LtiUsers { get; set; }
 }

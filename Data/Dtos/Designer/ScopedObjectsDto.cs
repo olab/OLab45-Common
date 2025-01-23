@@ -14,15 +14,15 @@ public class ScopedObjectsDto
     Scripts = new List<ScopedObjectDto>();
   }
 
-  [JsonProperty("questions")]
+  [JsonProperty( "questions" )]
   public List<ScopedObjectDto> Questions { get; set; }
-  [JsonProperty("constants")]
+  [JsonProperty( "constants" )]
   public List<ScopedObjectDto> Constants { get; set; }
-  [JsonProperty("counters")]
+  [JsonProperty( "counters" )]
   public List<ScopedObjectDto> Counters { get; set; }
-  [JsonProperty("files")]
+  [JsonProperty( "files" )]
   public List<ScopedObjectDto> Files { get; set; }
-  [JsonProperty("scripts")]
+  [JsonProperty( "scripts" )]
   public List<ScopedObjectDto> Scripts { get; set; }
 
 }

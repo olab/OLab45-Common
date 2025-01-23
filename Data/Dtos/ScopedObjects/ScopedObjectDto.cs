@@ -6,25 +6,25 @@ namespace OLab.Api.Dto;
 
 public class ScopedObjectDto
 {
-  [JsonProperty("type")]
+  [JsonProperty( "type" )]
   public string ObjectType;
 
-  [JsonProperty("id")]
+  [JsonProperty( "id" )]
   public uint? Id { get; set; }
-  [JsonProperty("name")]
+  [JsonProperty( "name" )]
   public string Name { get; set; }
-  [JsonProperty("description")]
+  [JsonProperty( "description" )]
   public string Description { get; set; }
-  [JsonProperty("parentId")]
+  [JsonProperty( "parentId" )]
   public uint ImageableId { get; set; }
-  [JsonProperty("scopeLevel")]
+  [JsonProperty( "scopeLevel" )]
   public string ImageableType { get; set; }
-  [JsonProperty("createdat")]
+  [JsonProperty( "createdat" )]
   public DateTime? CreatedAt { get; set; }
-  [JsonProperty("updatedat")]
+  [JsonProperty( "updatedat" )]
   public DateTime? UpdatedAt { get; set; }
 
-  [JsonProperty("scopeLevelObj")]
+  [JsonProperty( "scopeLevelObj" )]
   public IdName ParentInfo { get; set; }
 
   public ScopedObjectDto()

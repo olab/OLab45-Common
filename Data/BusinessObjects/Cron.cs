@@ -5,23 +5,23 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
-[Table("cron")]
-[Index("RuleId", Name = "rule_id")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[Table( "cron" )]
+[Index( "RuleId", Name = "rule_id" )]
+[MySqlCharSet( "utf8mb3" )]
+[MySqlCollation( "utf8mb3_general_ci" )]
 public partial class Cron
 {
   [Key]
-  [Column("id", TypeName = "int(10) unsigned")]
+  [Column( "id", TypeName = "int(10) unsigned" )]
   public uint Id { get; set; }
 
-  [Column("rule_id", TypeName = "int(10) unsigned")]
+  [Column( "rule_id", TypeName = "int(10) unsigned" )]
   public uint RuleId { get; set; }
 
-  [Column("activate", TypeName = "int(10)")]
+  [Column( "activate", TypeName = "int(10)" )]
   public int? Activate { get; set; }
 
-  [ForeignKey("RuleId")]
-  [InverseProperty("Cron")]
+  [ForeignKey( "RuleId" )]
+  [InverseProperty( "Cron" )]
   public virtual MapCounterCommonRules Rule { get; set; }
 }

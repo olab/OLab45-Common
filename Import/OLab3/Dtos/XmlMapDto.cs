@@ -13,15 +13,15 @@ public class XmlMapDto : XmlImportDto<XmlMap>
 {
   private readonly MapsMapper _mapper;
 
-  public XmlMapDto(IOLabLogger logger, Importer importer) : base(logger, importer, Importer.DtoTypes.XmlMapDto, "map.xml")
+  public XmlMapDto(IOLabLogger logger, Importer importer) : base( logger, importer, Importer.DtoTypes.XmlMapDto, "map.xml" )
   {
-    _mapper = new MapsMapper(GetLogger(), GetDbContext(), GetWikiProvider());
+    _mapper = new MapsMapper( GetLogger(), GetDbContext(), GetWikiProvider() );
   }
 
   public override string GetLoggerString(IEnumerable<dynamic> elements)
   {
-    var id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
-    var name = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "name"));
+    var id = Convert.ToUInt32( elements.FirstOrDefault( x => x.Name == "id" ).Value );
+    var name = Conversions.Base64Decode( elements.FirstOrDefault( x => x.Name == "name" ) );
     return $"id: {id} '{name}'";
   }
 
@@ -60,18 +60,18 @@ public class XmlMapDto : XmlImportDto<XmlMap>
     int recordIndex,
     IEnumerable<dynamic> elements)
   {
-    var item = _mapper.ElementsToPhys(elements);
+    var item = _mapper.ElementsToPhys( elements );
     var oldId = item.Id;
     item.Id = 0;
 
     item.Name = $"IMPORT: {item.Name}";
     item.AuthorId = _importer.Authorization.UserContext.UserId;
 
-    GetDbContext().Maps.Add(item);
+    GetDbContext().Maps.Add( item );
     GetDbContext().SaveChanges();
 
-    CreateIdTranslation(oldId, item.Id);
-    GetModel().Data.Add(item);
+    CreateIdTranslation( oldId, item.Id );
+    GetModel().Data.Add( item );
 
     return true;
   }

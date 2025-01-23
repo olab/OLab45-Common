@@ -15,9 +15,9 @@ public class XmlMapQuestionResponseDto : XmlImportDto<XmlMapQuestionResponses>
       logger,
       importer,
       Importer.DtoTypes.XmlMapQuestionResponseDto,
-      "map_question_response.xml")
+      "map_question_response.xml" )
   {
-    _mapper = new Api.ObjectMapper.QuestionResponses(GetLogger(), GetDbContext(), GetWikiProvider());
+    _mapper = new Api.ObjectMapper.QuestionResponses( GetLogger(), GetDbContext(), GetWikiProvider() );
   }
 
   /// <summary>
@@ -41,25 +41,25 @@ public class XmlMapQuestionResponseDto : XmlImportDto<XmlMapQuestionResponses>
     int recordIndex,
     IEnumerable<dynamic> elements)
   {
-    var item = _mapper.ElementsToPhys(elements);
+    var item = _mapper.ElementsToPhys( elements );
     var oldId = item.Id;
     var oldQuestionId = item.QuestionId.Value;
 
     item.Id = 0;
 
-    var questionDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapQuestionDto) as XmlMapQuestionDto;
-    item.QuestionId = questionDto.GetIdTranslation(GetFileName(), item.QuestionId.Value);
+    var questionDto = GetImporter().GetDto( Importer.DtoTypes.XmlMapQuestionDto ) as XmlMapQuestionDto;
+    item.QuestionId = questionDto.GetIdTranslation( GetFileName(), item.QuestionId.Value );
     item.Description = $"Imported from {GetFileName()} id = {oldId}";
 
-    GetDbContext().SystemQuestionResponses.Add(item);
+    GetDbContext().SystemQuestionResponses.Add( item );
     GetDbContext().SaveChanges();
 
     // don't have a name, so save the id as the new name
     item.Name = item.Id.ToString();
     GetDbContext().SaveChanges();
 
-    if (CreateIdTranslation(oldId, item.Id))
-      GetLogger().LogInformation($"  added {_fileName} translation {oldId} -> {item.Id}, question {oldQuestionId} -> {item.QuestionId}");
+    if ( CreateIdTranslation( oldId, item.Id ) )
+      GetLogger().LogInformation( $"  added {_fileName} translation {oldId} -> {item.Id}, question {oldQuestionId} -> {item.QuestionId}" );
 
     return true;
   }
@@ -71,14 +71,14 @@ public class XmlMapQuestionResponseDto : XmlImportDto<XmlMapQuestionResponses>
   /// <param name="newId">Database id</param>
   protected override bool CreateIdTranslation(uint originalId, uint? newId = null)
   {
-    if (_idTranslation.ContainsKey(originalId))
+    if ( _idTranslation.ContainsKey( originalId ) )
     {
-      GetLogger().LogInformation($"  replaced {_fileName} translation {originalId} -> {newId.Value}");
-      _idTranslation[originalId] = newId;
+      GetLogger().LogInformation( $"  replaced {_fileName} translation {originalId} -> {newId.Value}" );
+      _idTranslation[ originalId ] = newId;
       return false;
     }
 
-    _idTranslation.Add(originalId, newId);
+    _idTranslation.Add( originalId, newId );
     return true;
   }
 }

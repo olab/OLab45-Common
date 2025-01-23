@@ -4,21 +4,21 @@ namespace OLab.Api.Dto;
 
 public class MapNodeLinksDto
 {
-  [JsonProperty("id")]
+  [JsonProperty( "id" )]
   public uint? Id { get; set; }
-  [JsonProperty("sourceId")]
+  [JsonProperty( "sourceId" )]
   public uint? SourceId { get; set; }
-  [JsonProperty("destinationId")]
+  [JsonProperty( "destinationId" )]
   public uint? DestinationId { get; set; }
-  [JsonProperty("color")]
+  [JsonProperty( "color" )]
   public string Color { get; set; }
-  [JsonProperty("reverseId")]
+  [JsonProperty( "reverseId" )]
   public uint? ReverseId { get; set; }
-  [JsonProperty("linkText")]
+  [JsonProperty( "linkText" )]
   public string LinkText { get; set; }
-  [JsonProperty("destinationTitle")]
+  [JsonProperty( "destinationTitle" )]
   public string DestinationTitle { get; set; }
-  [JsonProperty("linkStyleId")]
+  [JsonProperty( "linkStyleId" )]
   public uint? LinkStyleId { get; set; }
   public bool IsHidden { get; internal set; }
   public bool FollowOnce { get; internal set; }

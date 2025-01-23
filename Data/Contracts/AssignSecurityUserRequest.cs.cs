@@ -13,10 +13,10 @@ public class AssignSecurityUserRequest
 
   public void CheckAcl()
   {
-    foreach (var part in Acl)
+    foreach ( var part in Acl )
     {
-      if (!AllowedAcls.Any(val => part.ToString() == val))
-        throw new System.Exception("Bad ACL value");
+      if ( !AllowedAcls.Any( val => part.ToString() == val ) )
+        throw new System.Exception( "Bad ACL value" );
     }
   }
 }

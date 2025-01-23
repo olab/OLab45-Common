@@ -12,7 +12,7 @@ public class MapNodeLinkTemplate : OLabMapper<Model.MapNodeLinks, MapNodeLinkTem
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
     this.enableWikiTranslation = enableWikiTranslation;
   }

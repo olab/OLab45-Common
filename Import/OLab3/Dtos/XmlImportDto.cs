@@ -2,7 +2,6 @@ using OLab.Api.Importer;
 using OLab.Api.Model;
 using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
-using OLab.Common.Utils;
 using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
@@ -54,7 +53,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
     IOLabLogger logger,
     Importer importer,
     DtoTypes dtoType,
-    string fileName) : base(logger, dtoType)
+    string fileName) : base( logger, dtoType )
   {
     _importer = importer;
     _fileName = fileName;
@@ -65,7 +64,7 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
 
   public virtual string GetLoggerString(IEnumerable<dynamic> elements)
   {
-    return $"id: {Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value)}";
+    return $"id: {Convert.ToUInt32( elements.FirstOrDefault( x => x.Name == "id" ).Value )}";
   }
 
   /// <summary>
@@ -75,15 +74,15 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// <param name="newId">Database id</param>
   protected override bool CreateIdTranslation(uint originalId, uint? newId)
   {
-    if (_idTranslation.ContainsKey(originalId))
+    if ( _idTranslation.ContainsKey( originalId ) )
     {
-      GetLogger().LogInformation($"  replaced {_fileName} translation id {originalId} -> {newId.Value}");
-      _idTranslation[originalId] = newId;
+      GetLogger().LogInformation( $"  replaced {_fileName} translation id {originalId} -> {newId.Value}" );
+      _idTranslation[ originalId ] = newId;
       return false;
     }
 
-    _idTranslation.Add(originalId, newId);
-    GetLogger().LogInformation($"  added {_fileName} translation id {originalId} -> {newId.Value}");
+    _idTranslation.Add( originalId, newId );
+    GetLogger().LogInformation( $"  added {_fileName} translation id {originalId} -> {newId.Value}" );
 
     return true;
   }
@@ -95,13 +94,13 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// <returns></returns>
   public override uint? GetIdTranslation(string referencedFile, uint originalId)
   {
-    if (originalId == 0)
+    if ( originalId == 0 )
       return 0;
 
-    if (_idTranslation.TryGetValue(originalId, out var newId))
+    if ( _idTranslation.TryGetValue( originalId, out var newId ) )
       return newId;
 
-    throw new KeyNotFoundException($"references {GetFileName()} Id {originalId}: not found");
+    throw new KeyNotFoundException( $"references {GetFileName()} Id {originalId}: not found" );
   }
 
   /// <summary>
@@ -111,9 +110,9 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// <returns></returns>
   public override int? GetIdTranslation(string referencedFile, int? originalId)
   {
-    if (!originalId.HasValue)
+    if ( !originalId.HasValue )
       return originalId;
-    var value = GetIdTranslation(referencedFile, (uint)originalId.Value);
+    var value = GetIdTranslation( referencedFile, (uint)originalId.Value );
     return (int?)value;
   }
 
@@ -134,55 +133,55 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
 
       var physicalModuleFile = GetFileModule().BuildPath(
         physicalFileFolder,
-        GetFileName());
+        GetFileName() );
 
-      GetLogger().LogInformation($"Loading {physicalModuleFile}");
+      GetLogger().LogInformation( $"Loading {physicalModuleFile}" );
 
       using var moduleFileStream = new MemoryStream();
-      if (await GetFileModule().ReadFileAsync(
+      if ( await GetFileModule().ReadFileAsync(
         moduleFileStream,
         physicalModuleFile,
-        new System.Threading.CancellationToken()))
-        _phys = DynamicXml.Load(moduleFileStream);
+        new System.Threading.CancellationToken() ) )
+        _phys = DynamicXml.Load( moduleFileStream );
       else
       {
-        GetLogger().LogInformation($"File {physicalFileFolder}{GetFileModule().GetFolderSeparator()}{GetFileName()} does not exist");
+        GetLogger().LogInformation( $"File {physicalFileFolder}{GetFileModule().GetFolderSeparator()}{GetFileName()} does not exist" );
         return false;
       }
 
-      dynamic outerElements = GetElements(GetXmlPhys());
+      dynamic outerElements = GetElements( GetXmlPhys() );
 
-      if (outerElements != null)
+      if ( outerElements != null )
       {
         var record = 0;
 
-        foreach (var innerElements in outerElements)
+        foreach ( var innerElements in outerElements )
         {
           try
           {
             ++record;
             var elements = (IEnumerable<dynamic>)innerElements.Elements();
-            xmlImportElementSets.Add(elements);
-            if (displayProgressMessage)
-              GetLogger().LogInformation($"  loaded {GetLoggerString(elements)}");
+            xmlImportElementSets.Add( elements );
+            if ( displayProgressMessage )
+              GetLogger().LogInformation( $"  loaded {GetLoggerString( elements )}" );
           }
-          catch (Exception ex)
+          catch ( Exception ex )
           {
-            GetLogger().LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
+            GetLogger().LogError( ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}" );
           }
         }
 
-        GetLogger().LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+        GetLogger().LogInformation( $"imported {xmlImportElementSets.Count()} {GetFileName()} objects" );
       }
 
       // delete data file
-      await GetFileModule().DeleteFileAsync(physicalModuleFile);
+      await GetFileModule().DeleteFileAsync( physicalModuleFile );
 
     }
-    catch (Exception ex)
+    catch ( Exception ex )
     {
-      if (!ex.Message.Contains("File not found"))
-        GetLogger().LogError(ex, $"load error: {ex.Message}");
+      if ( !ex.Message.Contains( "File not found" ) )
+        GetLogger().LogError( ex, $"load error: {ex.Message}" );
       rc = false;
     }
 
@@ -196,18 +195,18 @@ public abstract class XmlImportDto<P> : XmlDto where P : new()
   /// <returns>Success/Failure</returns>
   public override bool SaveToDatabase(string importFolderName)
   {
-    GetLogger().LogInformation($"Saving {xmlImportElementSets.Count()} {GetFileName()} objects");
+    GetLogger().LogInformation( $"Saving {xmlImportElementSets.Count()} {GetFileName()} objects" );
 
     var recordIndex = 1;
-    foreach (var elements in xmlImportElementSets)
+    foreach ( var elements in xmlImportElementSets )
     {
       try
       {
-        SaveToDatabase(importFolderName, recordIndex, elements);
+        SaveToDatabase( importFolderName, recordIndex, elements );
       }
-      catch (Exception ex)
+      catch ( Exception ex )
       {
-        GetLogger().LogError($"Error {GetFileName()} record #{recordIndex}: {ex.Message}");
+        GetLogger().LogError( $"Error {GetFileName()} record #{recordIndex}: {ex.Message}" );
       }
 
       recordIndex++;

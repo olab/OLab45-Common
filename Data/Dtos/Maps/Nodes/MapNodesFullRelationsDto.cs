@@ -5,10 +5,10 @@ namespace OLab.Api.Dto;
 
 public class MapsNodesFullRelationsDto : MapNodesFullDto
 {
-  [JsonProperty("links")]
+  [JsonProperty( "links" )]
   public IList<MapNodeLinksDto> MapNodeLinks { get; set; }
 
-  [JsonProperty("dynamicObjects")]
+  [JsonProperty( "dynamicObjects" )]
   public DynamicScopedObjectsDto DynamicObjects { get; set; }
 
   public int LinkCount { get { return MapNodeLinks.Count; } }

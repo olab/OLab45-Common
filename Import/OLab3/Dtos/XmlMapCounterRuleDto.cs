@@ -17,12 +17,12 @@ public class XmlMapCounterRuleDto : XmlImportDto<XmlMapCounterRule>
       logger,
       importer,
       Importer.DtoTypes.XmlMapCounterRuleDto,
-      "map_counter_rule.xml")
+      "map_counter_rule.xml" )
   {
     _mapper = new Api.ObjectMapper.CounterActionsMapper(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider());
+        GetWikiProvider() );
   }
 
   /// <summary>
@@ -46,20 +46,20 @@ public class XmlMapCounterRuleDto : XmlImportDto<XmlMapCounterRule>
     int recordIndex,
     IEnumerable<dynamic> elements)
   {
-    var item = _mapper.ElementsToPhys(elements);
-    item.CounterId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "counter_id").Value);
+    var item = _mapper.ElementsToPhys( elements );
+    item.CounterId = Convert.ToUInt32( elements.FirstOrDefault( x => x.Name == "counter_id" ).Value );
 
     var oldId = item.Id;
 
     item.Id = 0;
 
-    var dto = GetImporter().GetDto(Importer.DtoTypes.XmlMapCounterDto);
-    item.CounterId = dto.GetIdTranslation(GetFileName(), item.CounterId).Value;
+    var dto = GetImporter().GetDto( Importer.DtoTypes.XmlMapCounterDto );
+    item.CounterId = dto.GetIdTranslation( GetFileName(), item.CounterId ).Value;
 
-    GetDbContext().SystemCounterActions.Add(item);
+    GetDbContext().SystemCounterActions.Add( item );
     GetDbContext().SaveChanges();
 
-    CreateIdTranslation(oldId, item.Id);
+    CreateIdTranslation( oldId, item.Id );
 
     return true;
   }

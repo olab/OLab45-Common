@@ -16,8 +16,8 @@ public class OLabFormFieldHelper : IOLabFormFieldHelper
 
   public string Field(string key)
   {
-    if (Fields.ContainsKey(key))
-      return Fields[key].ToString();
+    if ( Fields.ContainsKey( key ) )
+      return Fields[ key ].ToString();
 
     return string.Empty;
   }

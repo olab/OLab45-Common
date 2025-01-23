@@ -1,14 +1,14 @@
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 
-[OLabModule("QUDP")]
+[OLabModule( "QUDP" )]
 public class QuestionDropDownWikiTag : QuestionWikiTag
 {
   public QuestionDropDownWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration)
+    IOLabConfiguration configuration) : base( logger, configuration )
   {
-    SetHtmlElementName("OlabDropDownQuestion");
+    SetHtmlElementName( "OlabDropDownQuestion" );
   }
 
 }

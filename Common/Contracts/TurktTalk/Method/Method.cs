@@ -15,8 +15,8 @@ public class Method
 
   public Method(string recipientGroupName, string methodName)
   {
-    Guard.Argument(recipientGroupName).NotEmpty(recipientGroupName);
-    Guard.Argument(methodName).NotEmpty(methodName);
+    Guard.Argument( recipientGroupName ).NotEmpty( recipientGroupName );
+    Guard.Argument( methodName ).NotEmpty( methodName );
 
     MethodName = methodName;
     CommandChannel = recipientGroupName;

@@ -13,26 +13,26 @@ public partial class Users
   public static string RandomString(int length)
   {
     const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-    return new string(Enumerable.Repeat(chars, length)
-        .Select(s => s[random.Next(s.Length)]).ToArray());
+    return new string( Enumerable.Repeat( chars, length )
+        .Select( s => s[ random.Next( s.Length ) ] ).ToArray() );
   }
 
   public static Users CreatePhysFromRequest(Users sourceUser, AddUserRequest model)
   {
-    if (sourceUser == null)
+    if ( sourceUser == null )
       sourceUser = CreateDefault();
 
-    if (model.Id.HasValue)
+    if ( model.Id.HasValue )
       sourceUser.Id = model.Id.Value;
 
-    if (!string.IsNullOrEmpty(model.Salt))
+    if ( !string.IsNullOrEmpty( model.Salt ) )
     {
       sourceUser.Salt = model.Salt;
       sourceUser.Password = model.Hash;
     }
     else
     {
-      if (!string.IsNullOrEmpty(model.Password))
+      if ( !string.IsNullOrEmpty( model.Password ) )
         sourceUser.Password = model.Password;
     }
 
@@ -48,8 +48,8 @@ public partial class Users
   {
     var user = new Users
     {
-      Salt = RandomString(SaltLength),
-      Password = RandomString(PasswordLength),
+      Salt = RandomString( SaltLength ),
+      Password = RandomString( PasswordLength ),
       ModeUi = "easy"
     };
 

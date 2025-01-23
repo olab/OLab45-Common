@@ -11,7 +11,7 @@ public class Themes : OLabMapper<SystemThemes, ThemesDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 }

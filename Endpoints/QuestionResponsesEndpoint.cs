@@ -19,7 +19,7 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
   public QuestionResponsesEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
-    OLabDBContext context) : base(logger, configuration, context)
+    OLabDBContext context) : base( logger, configuration, context )
   {
   }
 
@@ -30,7 +30,7 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
   /// <returns></returns>
   private bool Exists(uint id)
   {
-    return GetDbContext().SystemQuestionResponses.Any(e => e.Id == id);
+    return GetDbContext().SystemQuestionResponses.Any( e => e.Id == id );
   }
 
   /// <summary>
@@ -43,36 +43,36 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
     uint id,
     QuestionResponsesDto dto)
   {
-    GetLogger().LogInformation($"PutAsync(uint id={id})");
+    GetLogger().LogInformation( $"PutAsync(uint id={id})" );
 
-    var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
+    var physQuestionTemp = await GetQuestionSimpleAsync( dto.QuestionId );
     var builder = new QuestionsFullMapper(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider());
-    var dtoQuestionTemp = builder.PhysicalToDto(physQuestionTemp);
+        GetWikiProvider() );
+    var dtoQuestionTemp = builder.PhysicalToDto( physQuestionTemp );
 
     // test if user has access to object
-    var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dtoQuestionTemp);
-    if (accessResult is UnauthorizedResult)
-      throw new OLabUnauthorizedException("QuestionResponses", id);
+    var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dtoQuestionTemp );
+    if ( accessResult is UnauthorizedResult )
+      throw new OLabUnauthorizedException( "QuestionResponses", id );
 
     try
     {
       var responsebuilder = new QuestionResponses(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider(), dtoQuestionTemp);
-      var physResponse = responsebuilder.DtoToPhysical(dto);
+        GetWikiProvider(), dtoQuestionTemp );
+      var physResponse = responsebuilder.DtoToPhysical( dto );
 
       physResponse.UpdatedAt = DateTime.Now;
 
-      GetDbContext().SystemQuestionResponses.Update(physResponse);
+      GetDbContext().SystemQuestionResponses.Update( physResponse );
       await GetDbContext().SaveChangesAsync();
     }
-    catch (DbUpdateConcurrencyException)
+    catch ( DbUpdateConcurrencyException )
     {
-      await GetConstantAsync(id);
+      await GetConstantAsync( id );
     }
 
   }
@@ -86,30 +86,30 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     QuestionResponsesDto dto)
   {
-    GetLogger().LogInformation($"QuestionResponsesController.PostAsync({dto.Response})");
+    GetLogger().LogInformation( $"QuestionResponsesController.PostAsync({dto.Response})" );
 
-    var physQuestionTemp = await GetQuestionSimpleAsync(dto.QuestionId);
+    var physQuestionTemp = await GetQuestionSimpleAsync( dto.QuestionId );
     var questionBuilder = new QuestionsFullMapper(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider());
-    var dtoQuestionTemp = questionBuilder.PhysicalToDto(physQuestionTemp);
+        GetWikiProvider() );
+    var dtoQuestionTemp = questionBuilder.PhysicalToDto( physQuestionTemp );
 
     // test if user has access to object
-    var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dtoQuestionTemp);
-    if (accessResult is UnauthorizedResult)
-      throw new OLabUnauthorizedException("QuestionResponses", 0);
+    var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dtoQuestionTemp );
+    if ( accessResult is UnauthorizedResult )
+      throw new OLabUnauthorizedException( "QuestionResponses", 0 );
 
     var responsebuilder = new QuestionResponses(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider(), dtoQuestionTemp);
-    var physResponse = responsebuilder.DtoToPhysical(dto);
+        GetWikiProvider(), dtoQuestionTemp );
+    var physResponse = responsebuilder.DtoToPhysical( dto );
 
-    GetDbContext().SystemQuestionResponses.Add(physResponse);
+    GetDbContext().SystemQuestionResponses.Add( physResponse );
     await GetDbContext().SaveChangesAsync();
 
-    dto = responsebuilder.PhysicalToDto(physResponse);
+    dto = responsebuilder.PhysicalToDto( physResponse );
     return dto;
 
   }
@@ -123,33 +123,33 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     uint id)
   {
-    GetLogger().LogInformation($"QuestionResponsesController.DeleteAsync(uint id={id})");
+    GetLogger().LogInformation( $"QuestionResponsesController.DeleteAsync(uint id={id})" );
 
-    if (!Exists(id))
-      return OLabNotFoundResult<uint>.Result(id);
+    if ( !Exists( id ) )
+      return OLabNotFoundResult<uint>.Result( id );
 
     try
     {
-      var physResponse = await GetQuestionResponseAsync(id);
-      var physQuestion = await GetQuestionAsync(physResponse.QuestionId.Value);
+      var physResponse = await GetQuestionResponseAsync( id );
+      var physQuestion = await GetQuestionAsync( physResponse.QuestionId.Value );
       var questionBuilder = new QuestionsFullMapper(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider());
-      var dtoQuestion = questionBuilder.PhysicalToDto(physQuestion);
+        GetWikiProvider() );
+      var dtoQuestion = questionBuilder.PhysicalToDto( physQuestion );
 
       // test if user has access to objectdtoQuestion
-      var accessResult = await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, dtoQuestion);
-      if (accessResult is UnauthorizedResult)
+      var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dtoQuestion );
+      if ( accessResult is UnauthorizedResult )
         return accessResult;
 
-      GetDbContext().SystemQuestionResponses.Remove(physResponse);
+      GetDbContext().SystemQuestionResponses.Remove( physResponse );
       await GetDbContext().SaveChangesAsync();
       return null;
     }
-    catch (Exception ex)
+    catch ( Exception ex )
     {
-      return OLabServerErrorResult.Result(ex.Message);
+      return OLabServerErrorResult.Result( ex.Message );
     }
 
   }

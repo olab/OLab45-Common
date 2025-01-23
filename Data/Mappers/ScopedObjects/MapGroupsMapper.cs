@@ -15,7 +15,7 @@ public class MapGrouprolesMapper : OLabMapper<MapGrouproles, MapGrouprolesDto>
   public MapGrouprolesMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
-    bool enableWikiTranslation = true) : base(logger, dbContext)
+    bool enableWikiTranslation = true) : base( logger, dbContext )
   {
     this.dbContext = dbContext;
   }
@@ -24,18 +24,18 @@ public class MapGrouprolesMapper : OLabMapper<MapGrouproles, MapGrouprolesDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 
   public override MapGrouprolesDto PhysicalToDto(MapGrouproles phys)
   {
-    var dto = base.PhysicalToDto(phys);
+    var dto = base.PhysicalToDto( phys );
 
-    if (phys.Group != null)
+    if ( phys.Group != null )
       dto.GroupName = phys.Group.Name;
 
-    if (phys.Role != null)
+    if ( phys.Role != null )
       dto.RoleName = phys.Role.Name;
 
     return dto;
@@ -57,28 +57,28 @@ public class MapGrouprolesMapper : OLabMapper<MapGrouproles, MapGrouprolesDto>
   public IList<MapGrouproles> DtoToPhysical(uint mapId, IList<MapGrouprolesDto> dtos)
   {
     var MapGrouprolesPhys = new List<MapGrouproles>();
-    foreach (var dto in dtos)
-      MapGrouprolesPhys.Add(DtoToPhysical(mapId, dto));
+    foreach ( var dto in dtos )
+      MapGrouprolesPhys.Add( DtoToPhysical( mapId, dto ) );
 
     return MapGrouprolesPhys;
   }
 
   public override MapGrouproles DtoToPhysical(MapGrouprolesDto dto)
   {
-    var phys = base.DtoToPhysical(dto);
+    var phys = base.DtoToPhysical( dto );
 
-    if (dto.GroupId.HasValue)
+    if ( dto.GroupId.HasValue )
     {
-      phys.Group = dbContext.Groups.FirstOrDefault(x => x.Id == dto.GroupId.Value);
-      if (phys.Group == null)
-        throw new OLabObjectNotFoundException("Groups", dto.GroupId.Value);
+      phys.Group = dbContext.Groups.FirstOrDefault( x => x.Id == dto.GroupId.Value );
+      if ( phys.Group == null )
+        throw new OLabObjectNotFoundException( "Groups", dto.GroupId.Value );
     }
 
-    if (dto.RoleId.HasValue)
+    if ( dto.RoleId.HasValue )
     {
-      phys.Role = dbContext.Roles.FirstOrDefault(x => x.Id == dto.RoleId.Value);
-      if (phys.Role == null)
-        throw new OLabObjectNotFoundException("Roles", dto.RoleId.Value);
+      phys.Role = dbContext.Roles.FirstOrDefault( x => x.Id == dto.RoleId.Value );
+      if ( phys.Role == null )
+        throw new OLabObjectNotFoundException( "Roles", dto.RoleId.Value );
     }
 
     return phys;

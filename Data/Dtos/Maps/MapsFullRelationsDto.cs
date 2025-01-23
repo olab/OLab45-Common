@@ -5,15 +5,15 @@ namespace OLab.Api.Dto;
 
 public class MapsFullRelationsDto
 {
-  [JsonProperty("mapDetails")]
+  [JsonProperty( "mapDetails" )]
   public MapsFullDto Map { get; set; }
-  [JsonProperty("nodes")]
+  [JsonProperty( "nodes" )]
   public IList<MapNodesFullDto> MapNodes { get; set; }
-  [JsonProperty("edges")]
+  [JsonProperty( "edges" )]
   public IList<MapNodeLinksDto> MapNodeLinks { get; set; }
-  [JsonProperty("scopedObjects")]
+  [JsonProperty( "scopedObjects" )]
   public ScopedObjectsDto ScopedObjects { get; set; }
-  [JsonProperty("counterActions")]
+  [JsonProperty( "counterActions" )]
   public IList<CounterActionsDto> CounterActions { get; set; }
 
   // calculated

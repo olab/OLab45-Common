@@ -17,6 +17,6 @@ public class UsersImportDto : UsersDto
     this.NickName = user.NickName;
     this.UserName = user.UserName;
     this.Email = user.Email;
-    this.Roles.AddRange(user.Roles);
+    this.Roles.AddRange( user.Roles );
   }
 }

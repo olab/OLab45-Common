@@ -28,7 +28,7 @@ public partial class ReportEndpoint : OLabEndpoint
   public ReportEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
-    OLabDBContext context) : base(logger, configuration, context)
+    OLabDBContext context) : base( logger, configuration, context )
   {
   }
 
@@ -36,16 +36,16 @@ public partial class ReportEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     string contextId)
   {
-    GetLogger().LogInformation($"{auth.UserContext.UserId}: ReportEndpoint.ReadAsync");
+    GetLogger().LogInformation( $"{auth.UserContext.UserId}: ReportEndpoint.ReadAsync" );
 
     var dto = new SessionReport();
 
-    _session = await GetDbContext().UserSessions.FirstOrDefaultAsync(x => x.Uuid == contextId);
-    if (_session == null)
-      throw new OLabObjectNotFoundException("Session", contextId);
+    _session = await GetDbContext().UserSessions.FirstOrDefaultAsync( x => x.Uuid == contextId );
+    if ( _session == null )
+      throw new OLabObjectNotFoundException( "Session", contextId );
 
-    ReadSessionFromDb(contextId);
-    BuildSessionDto(dto);
+    ReadSessionFromDb( contextId );
+    BuildSessionDto( dto );
 
     return dto;
   }
@@ -53,37 +53,37 @@ public partial class ReportEndpoint : OLabEndpoint
   private void ReadSessionFromDb(string contextId)
   {
     _sessionTraces = GetDbContext().UserSessiontraces
-      .Where(x => x.SessionId == _session.Id)
-      .OrderBy(x => x.DateStamp).ToList();
-    GetLogger().LogInformation($"Found {_sessionTraces.Count} UserSessionTraces records for userSession {contextId}");
+      .Where( x => x.SessionId == _session.Id )
+      .OrderBy( x => x.DateStamp ).ToList();
+    GetLogger().LogInformation( $"Found {_sessionTraces.Count} UserSessionTraces records for userSession {contextId}" );
 
     _sessionResponses = GetDbContext().UserResponses
-      .Where(x => x.SessionId == _session.Id)
-      .OrderBy(x => x.CreatedAt).ToList();
-    GetLogger().LogInformation($"Found {_sessionResponses.Count} UserResponses records for userSession {contextId}");
+      .Where( x => x.SessionId == _session.Id )
+      .OrderBy( x => x.CreatedAt ).ToList();
+    GetLogger().LogInformation( $"Found {_sessionResponses.Count} UserResponses records for userSession {contextId}" );
 
     _userStates = GetDbContext().UserState
-      .Where(x => x.SessionId == _session.Id).ToList();
-    GetLogger().LogInformation($"Found {_userStates.Count} UserState records for userSession {contextId}");
+      .Where( x => x.SessionId == _session.Id ).ToList();
+    GetLogger().LogInformation( $"Found {_userStates.Count} UserState records for userSession {contextId}" );
 
     _questionsTypes = GetDbContext().SystemQuestionTypes.ToList();
 
-    var questionIds = _sessionResponses.Select(x => x.QuestionId).ToList();
+    var questionIds = _sessionResponses.Select( x => x.QuestionId ).ToList();
     _questions = GetDbContext().SystemQuestions
-      .Where(x => questionIds.Contains(x.Id)).ToList();
-    GetLogger().LogInformation($"Found {_questions.Count} question records for userSession {contextId}");
+      .Where( x => questionIds.Contains( x.Id ) ).ToList();
+    GetLogger().LogInformation( $"Found {_questions.Count} question records for userSession {contextId}" );
 
     _questionsResponses = GetDbContext().SystemQuestionResponses
-      .Where(x => questionIds.Contains(x.QuestionId.Value)).ToList();
-    GetLogger().LogInformation($"Found {_questionsResponses.Count} question correctREsponses records for userSession {contextId}");
+      .Where( x => questionIds.Contains( x.QuestionId.Value ) ).ToList();
+    GetLogger().LogInformation( $"Found {_questionsResponses.Count} question correctREsponses records for userSession {contextId}" );
 
-    var nodeIds = _sessionTraces.Select(x => x.NodeId).ToList();
+    var nodeIds = _sessionTraces.Select( x => x.NodeId ).ToList();
     _nodes = GetDbContext().MapNodes
-      .Where(x => nodeIds.Contains(x.Id)).ToList();
-    GetLogger().LogInformation($"Found {_nodes.Count} node records for userSession {contextId}");
+      .Where( x => nodeIds.Contains( x.Id ) ).ToList();
+    GetLogger().LogInformation( $"Found {_nodes.Count} node records for userSession {contextId}" );
 
     var mapId = _session.MapId;
-    _map = GetDbContext().Maps.FirstOrDefault(x => x.Id == mapId);
+    _map = GetDbContext().Maps.FirstOrDefault( x => x.Id == mapId );
   }
 
 
@@ -91,14 +91,14 @@ public partial class ReportEndpoint : OLabEndpoint
   {
     dto.CourseName = _session.CourseName;
     dto.SessionId = _session.Uuid;
-    dto.Start = Conversions.GetTime(_session.StartTime);
-    if (_session.EndTime.HasValue)
-      dto.End = Conversions.GetTime(_session.EndTime.Value);
+    dto.Start = Conversions.GetTime( _session.StartTime );
+    if ( _session.EndTime.HasValue )
+      dto.End = Conversions.GetTime( _session.EndTime.Value );
     dto.UserName = _session.UserId.ToString();
 
     // build nodes sections
     dto.Nodes = BuildNodesReportDto();
-    dto.CheckSum = BuildCheckSum(dto);
+    dto.CheckSum = BuildCheckSum( dto );
 
   }
 
@@ -106,16 +106,16 @@ public partial class ReportEndpoint : OLabEndpoint
   {
     var plainText = "";
 
-    foreach (var counter in dto.Counters)
+    foreach ( var counter in dto.Counters )
       plainText += counter.Value;
 
-    foreach (var node in dto.Nodes)
+    foreach ( var node in dto.Nodes )
     {
-      foreach (var response in node.Responses)
+      foreach ( var response in node.Responses )
         plainText += response.ResponseText;
     }
 
-    var cypherText = StringUtils.GenerateCheckSum(plainText);
+    var cypherText = StringUtils.GenerateCheckSum( plainText );
     return cypherText;
   }
 
@@ -123,20 +123,20 @@ public partial class ReportEndpoint : OLabEndpoint
   {
     var sessionNodes = new List<NodeSession>();
 
-    foreach (var sessionTrace in _sessionTraces)
+    foreach ( var sessionTrace in _sessionTraces )
     {
       var sessionNode = new NodeSession();
 
-      var node = _nodes.FirstOrDefault(x => x.Id == sessionTrace.NodeId);
+      var node = _nodes.FirstOrDefault( x => x.Id == sessionTrace.NodeId );
       sessionNode.NodeName = node.Title;
 
       sessionNode.NodeId = sessionTrace.NodeId;
-      sessionNode.TimeStamp = Conversions.GetTime(sessionTrace.DateStamp.Value);
+      sessionNode.TimeStamp = Conversions.GetTime( sessionTrace.DateStamp.Value );
 
       // build question correctResponses section
-      sessionNode.Responses = BuildNodeResponsesDto(sessionNode.NodeId);
+      sessionNode.Responses = BuildNodeResponsesDto( sessionNode.NodeId );
 
-      sessionNodes.Add(sessionNode);
+      sessionNodes.Add( sessionNode );
     }
 
     return sessionNodes;
@@ -145,62 +145,62 @@ public partial class ReportEndpoint : OLabEndpoint
   private IList<NodeResponse> BuildNodeResponsesDto(uint nodeId)
   {
     var nodeResponses = new List<NodeResponse>();
-    var nodeSessionResponses = _sessionResponses.Where(x => x.NodeId == nodeId).ToList();
+    var nodeSessionResponses = _sessionResponses.Where( x => x.NodeId == nodeId ).ToList();
     var processedConversations = new List<string>();
 
-    foreach (var nodeSessionResponse in nodeSessionResponses)
+    foreach ( var nodeSessionResponse in nodeSessionResponses )
     {
       var nodeResponse = new NodeResponse();
-      nodeResponse.TimeStamp = Conversions.GetTime(nodeSessionResponse.CreatedAt);
+      nodeResponse.TimeStamp = Conversions.GetTime( nodeSessionResponse.CreatedAt );
 
-      var question = _questions.FirstOrDefault(x => x.Id == nodeSessionResponse.QuestionId);
+      var question = _questions.FirstOrDefault( x => x.Id == nodeSessionResponse.QuestionId );
       var questionResponses =
-        _questionsResponses.Where(x => x.QuestionId == question.Id).ToList();
+        _questionsResponses.Where( x => x.QuestionId == question.Id ).ToList();
 
       nodeResponse.QuestionId = question.Id;
       nodeResponse.QuestionName = question.Name;
       var questionType =
-        _questionsTypes.FirstOrDefault(x => x.Id == question.EntryTypeId);
+        _questionsTypes.FirstOrDefault( x => x.Id == question.EntryTypeId );
       nodeResponse.QuestionType = questionType.Title;
       nodeResponse.QuestionStem = question.Stem;
 
       // handle special case of DnD or MCQ, which only the last response is
       // displayed so this code jsut removes any previous responses for the question.
-      if ((question.EntryTypeId == 6) || (question.EntryTypeId == 3))
+      if ( (question.EntryTypeId == 6) || (question.EntryTypeId == 3) )
       {
-        var previousResponse = nodeResponses.FirstOrDefault(x => (x.QuestionId == question.Id));
-        if (previousResponse != null)
-          nodeResponses.Remove(previousResponse);
+        var previousResponse = nodeResponses.FirstOrDefault( x => (x.QuestionId == question.Id) );
+        if ( previousResponse != null )
+          nodeResponses.Remove( previousResponse );
       }
 
       // handle special case of TTalk responses which are handled together
-      if (question.EntryTypeId == 15)
+      if ( question.EntryTypeId == 15 )
       {
         // test if conversation already processed
-        if (processedConversations.Contains($"{question.Id}:{nodeId}:{_session.Id}"))
+        if ( processedConversations.Contains( $"{question.Id}:{nodeId}:{_session.Id}" ) )
           continue;
 
         var conversationTextResponses = _sessionResponses
-          .Where(x => x.QuestionId == question.Id && x.NodeId == nodeId && x.SessionId == _session.Id).OrderBy(x => x.CreatedAt).ToList();
+          .Where( x => x.QuestionId == question.Id && x.NodeId == nodeId && x.SessionId == _session.Id ).OrderBy( x => x.CreatedAt ).ToList();
 
-        foreach (var textResponse in conversationTextResponses)
+        foreach ( var textResponse in conversationTextResponses )
           nodeResponse.ResponseText += $"{textResponse.Response}<br/>\n";
 
-        processedConversations.Add($"{question.Id}:{nodeId}:{_session.Id}");
+        processedConversations.Add( $"{question.Id}:{nodeId}:{_session.Id}" );
       }
       else
       {
         nodeResponse.ResponseText = GetResponseText(
           question,
           questionResponses,
-          nodeSessionResponse.Response);
+          nodeSessionResponse.Response );
       }
 
       nodeResponse.CorrectResponse = GetQuestionCorrectResponse(
         question,
-        questionResponses.Where(x => x.QuestionId == question.Id).ToList());
+        questionResponses.Where( x => x.QuestionId == question.Id ).ToList() );
 
-      nodeResponses.Add(nodeResponse);
+      nodeResponses.Add( nodeResponse );
     }
 
     return nodeResponses;
@@ -213,7 +213,7 @@ public partial class ReportEndpoint : OLabEndpoint
   {
     var responseText = "???";
 
-    switch (question.EntryTypeId)
+    switch ( question.EntryTypeId )
     {
       case 1:
       case 2:
@@ -221,22 +221,22 @@ public partial class ReportEndpoint : OLabEndpoint
         responseText = response;
         break;
       case 3:
-        responseText = ProcessMultipleChoiceQuestion(question, questionResponses, response);
+        responseText = ProcessMultipleChoiceQuestion( question, questionResponses, response );
         break;
       case 4:
-        responseText = ProcessPickChoiceQuestion(question, questionResponses, response);
+        responseText = ProcessPickChoiceQuestion( question, questionResponses, response );
         break;
       case 5:
-        responseText = ProcessSliderQuestion(question, questionResponses, response);
+        responseText = ProcessSliderQuestion( question, questionResponses, response );
         break;
       case 6:
-        responseText = ProcessDragAndDropQuestion(question, questionResponses, response);
+        responseText = ProcessDragAndDropQuestion( question, questionResponses, response );
         break;
       case 12:
-        responseText = ProcessDropDownQuestion(question, questionResponses, response);
+        responseText = ProcessDropDownQuestion( question, questionResponses, response );
         break;
       case 15:
-        responseText = ProcessTurkTalkQuestion(question, questionResponses, response);
+        responseText = ProcessTurkTalkQuestion( question, questionResponses, response );
         break;
     }
 
@@ -255,57 +255,57 @@ public partial class ReportEndpoint : OLabEndpoint
 
   private string ProcessDropDownQuestion(SystemQuestions question, IList<SystemQuestionResponses> questionResponses, string response)
   {
-    return ProcessPickChoiceQuestion(question, questionResponses, response);
+    return ProcessPickChoiceQuestion( question, questionResponses, response );
   }
 
   private string ProcessDragAndDropQuestion(SystemQuestions question, IList<SystemQuestionResponses> questionResponses, string response)
   {
-    var responseIdStrings = response.Split(',');
+    var responseIdStrings = response.Split( ',' );
     var responseTexts = new List<string>();
 
-    foreach (var responseIdString in responseIdStrings)
+    foreach ( var responseIdString in responseIdStrings )
     {
       var responseId = 0;
-      if (!Int32.TryParse(responseIdString, out responseId))
-        responseTexts.Add(responseIdString.ToString());
+      if ( !Int32.TryParse( responseIdString, out responseId ) )
+        responseTexts.Add( responseIdString.ToString() );
       else
       {
-        var questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
-        responseTexts.Add(questionResponse.Response);
+        var questionResponse = _questionsResponses.FirstOrDefault( x => x.Id == responseId );
+        responseTexts.Add( questionResponse.Response );
       }
     }
 
-    return string.Join("<br/><br/>", responseTexts);
+    return string.Join( "<br/><br/>", responseTexts );
   }
 
   private string ProcessPickChoiceQuestion(SystemQuestions question, IList<SystemQuestionResponses> questionResponses, string response)
   {
     var responseId = 0;
-    if (!Int32.TryParse(response, out responseId))
+    if ( !Int32.TryParse( response, out responseId ) )
       return response;
 
-    var questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
+    var questionResponse = _questionsResponses.FirstOrDefault( x => x.Id == responseId );
     return questionResponse.Response;
   }
 
   private string ProcessMultipleChoiceQuestion(SystemQuestions question, IList<SystemQuestionResponses> questionResponses, string response)
   {
-    var responseIdStrings = response.Split(",");
+    var responseIdStrings = response.Split( "," );
     var responsesText = new List<string>();
 
-    foreach (var responseIdString in responseIdStrings)
+    foreach ( var responseIdString in responseIdStrings )
     {
       var responseId = 0;
       // if any non-id responses, then this probably isn't a MCQ
-      if (!Int32.TryParse(responseIdString, out responseId))
+      if ( !Int32.TryParse( responseIdString, out responseId ) )
         return response;
 
-      var questionResponse = _questionsResponses.FirstOrDefault(x => x.Id == responseId);
-      responsesText.Add(questionResponse.Response);
+      var questionResponse = _questionsResponses.FirstOrDefault( x => x.Id == responseId );
+      responsesText.Add( questionResponse.Response );
 
     }
 
-    return string.Join("<br/>", responsesText);
+    return string.Join( "<br/>", responsesText );
 
   }
 
@@ -313,13 +313,13 @@ public partial class ReportEndpoint : OLabEndpoint
     SystemQuestions question,
     IList<SystemQuestionResponses> questionResponses)
   {
-    var correctResponses = questionResponses.Where(x => x.IsCorrect.HasValue && (x.IsCorrect.Value == 1)).ToList();
+    var correctResponses = questionResponses.Where( x => x.IsCorrect.HasValue && (x.IsCorrect.Value == 1) ).ToList();
 
-    if (correctResponses.Count == 0)
+    if ( correctResponses.Count == 0 )
       return "N/A";
 
-    var responseTexts = correctResponses.Select(x => x.Response).ToList();
-    var correctText = string.Join(',', responseTexts);
+    var responseTexts = correctResponses.Select( x => x.Response ).ToList();
+    var correctText = string.Join( ',', responseTexts );
     return correctText;
   }
 

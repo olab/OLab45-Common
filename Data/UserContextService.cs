@@ -98,8 +98,8 @@ public abstract class UserContextService : IUserContext
     IOLabLogger logger,
     OLabDBContext dbContext)
   {
-    Guard.Argument(logger).NotNull(nameof(logger));
-    Guard.Argument(dbContext).NotNull(nameof(dbContext));
+    Guard.Argument( logger ).NotNull( nameof( logger ) );
+    Guard.Argument( dbContext ).NotNull( nameof( dbContext ) );
 
     _logger = logger;
     _dbContext = dbContext;
@@ -125,62 +125,62 @@ public abstract class UserContextService : IUserContext
 
   protected string GetClaimValue(string key, bool isRequired = true)
   {
-    if (_claims.TryGetValue(key, out var value))
+    if ( _claims.TryGetValue( key, out var value ) )
       return value;
 
-    if (isRequired)
-      throw new Exception($"claim value '{key}' does not exist");
+    if ( isRequired )
+      throw new Exception( $"claim value '{key}' does not exist" );
 
     return string.Empty;
   }
 
   protected string GetHeaderValue(string key, bool isRequired = true)
   {
-    if (_headers.TryGetValue(key, out var value))
+    if ( _headers.TryGetValue( key, out var value ) )
       return value;
 
-    if (isRequired)
-      throw new Exception($"header value '{key}' does not exist");
+    if ( isRequired )
+      throw new Exception( $"header value '{key}' does not exist" );
 
     return string.Empty;
   }
 
   protected void LoadContext()
   {
-    var sessionId = GetHeaderValue("OLabSessionId".ToLower(), false);
-    if (sessionId != string.Empty)
+    var sessionId = GetHeaderValue( "OLabSessionId".ToLower(), false );
+    if ( sessionId != string.Empty )
     {
-      if (!string.IsNullOrEmpty(sessionId) && sessionId != "null")
+      if ( !string.IsNullOrEmpty( sessionId ) && sessionId != "null" )
       {
         SessionId = sessionId;
-        if (!string.IsNullOrWhiteSpace(SessionId))
-          GetLogger().LogInformation($"Found sessionId '{SessionId}'.");
+        if ( !string.IsNullOrWhiteSpace( SessionId ) )
+          GetLogger().LogInformation( $"Found sessionId '{SessionId}'." );
       }
     }
 
     // add special case to detect 2 possible forms of the 'name' claim
     // "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name" or "name"
-    UserName = GetClaimValue(ClaimTypes.Name, false);
-    if (string.IsNullOrEmpty(UserName))
-      UserName = GetClaimValue("name");
+    UserName = GetClaimValue( ClaimTypes.Name, false );
+    if ( string.IsNullOrEmpty( UserName ) )
+      UserName = GetClaimValue( "name" );
 
     ReferringCourse = "olabinternal";
-    ReferringCourse = GetClaimValue(ClaimTypes.UserData, false);
-    Issuer = GetClaimValue("iss");
-    UserId = (uint)Convert.ToInt32(GetClaimValue("id"));
-    AppName = GetClaimValue("app");
+    ReferringCourse = GetClaimValue( ClaimTypes.UserData, false );
+    Issuer = GetClaimValue( "iss" );
+    UserId = (uint)Convert.ToInt32( GetClaimValue( "id" ) );
+    AppName = GetClaimValue( "app" );
 
     // add special case to detect 2 possible forms of the 'role' claim
     // "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role" or "role"
-    var groupRoleString = GetClaimValue(ClaimTypes.Role, false);
-    if (string.IsNullOrEmpty(groupRoleString))
-      groupRoleString = GetClaimValue("role");
+    var groupRoleString = GetClaimValue( ClaimTypes.Role, false );
+    if ( string.IsNullOrEmpty( groupRoleString ) )
+      groupRoleString = GetClaimValue( "role" );
 
-    GroupRoles = UserGrouproles.StringToObjectList(GetDbContext(), groupRoleString);
+    GroupRoles = UserGrouproles.StringToObjectList( GetDbContext(), groupRoleString );
   }
 
   public override string ToString()
   {
-    return $"{UserId} {Issuer} {UserName} {UserGrouproles.ListToString(GroupRoles)} {IPAddress} {ReferringCourse}";
+    return $"{UserId} {Issuer} {UserName} {UserGrouproles.ListToString( GroupRoles )} {IPAddress} {ReferringCourse}";
   }
 }

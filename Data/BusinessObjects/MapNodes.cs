@@ -6,149 +6,149 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
-[Table("map_nodes")]
-[Index("LinkStyleId", Name = "link_style_id")]
-[Index("MapId", Name = "map_id")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[Table( "map_nodes" )]
+[Index( "LinkStyleId", Name = "link_style_id" )]
+[Index( "MapId", Name = "map_id" )]
+[MySqlCharSet( "utf8mb3" )]
+[MySqlCollation( "utf8mb3_general_ci" )]
 public partial class MapNodes
 {
   [Key]
-  [Column("id", TypeName = "int(10) unsigned")]
+  [Column( "id", TypeName = "int(10) unsigned" )]
   public uint Id { get; set; }
 
-  [Column("map_id", TypeName = "int(10) unsigned")]
+  [Column( "map_id", TypeName = "int(10) unsigned" )]
   public uint MapId { get; set; }
 
-  [Column("title")]
-  [StringLength(200)]
+  [Column( "title" )]
+  [StringLength( 200 )]
   public string Title { get; set; }
 
-  [Column("text", TypeName = "text")]
+  [Column( "text", TypeName = "text" )]
   public string Text { get; set; }
 
-  [Column("type_id", TypeName = "int(10) unsigned")]
+  [Column( "type_id", TypeName = "int(10) unsigned" )]
   public uint? TypeId { get; set; }
 
-  [Column("probability")]
+  [Column( "probability" )]
   public bool? Probability { get; set; }
 
-  [Column("conditional")]
-  [StringLength(500)]
+  [Column( "conditional" )]
+  [StringLength( 500 )]
   public string Conditional { get; set; }
 
-  [Column("conditional_message")]
-  [StringLength(1000)]
+  [Column( "conditional_message" )]
+  [StringLength( 1000 )]
   public string ConditionalMessage { get; set; }
 
-  [Column("info", TypeName = "text")]
+  [Column( "info", TypeName = "text" )]
   public string Info { get; set; }
 
-  [Column("is_private", TypeName = "int(4)")]
+  [Column( "is_private", TypeName = "int(4)" )]
   public int IsPrivate { get; set; }
 
-  [Column("link_style_id", TypeName = "int(10) unsigned")]
+  [Column( "link_style_id", TypeName = "int(10) unsigned" )]
   public uint? LinkStyleId { get; set; }
 
-  [Column("link_type_id", TypeName = "int(10) unsigned")]
+  [Column( "link_type_id", TypeName = "int(10) unsigned" )]
   public uint? LinkTypeId { get; set; }
 
-  [Column("priority_id", TypeName = "int(10)")]
+  [Column( "priority_id", TypeName = "int(10)" )]
   public int? PriorityId { get; set; }
 
-  [Column("kfp")]
+  [Column( "kfp" )]
   public bool? Kfp { get; set; }
 
-  [Column("undo")]
+  [Column( "undo" )]
   public bool? Undo { get; set; }
 
-  [Column("end")]
+  [Column( "end" )]
   public bool? End { get; set; }
 
-  [Column("x")]
+  [Column( "x" )]
   public double? X { get; set; }
 
-  [Column("y")]
+  [Column( "y" )]
   public double? Y { get; set; }
 
-  [Column("rgb")]
-  [StringLength(8)]
+  [Column( "rgb" )]
+  [StringLength( 8 )]
   public string Rgb { get; set; }
 
-  [Column("show_info", TypeName = "tinyint(4)")]
+  [Column( "show_info", TypeName = "tinyint(4)" )]
   public sbyte ShowInfo { get; set; }
 
-  [Column("annotation", TypeName = "text")]
+  [Column( "annotation", TypeName = "text" )]
   public string Annotation { get; set; }
 
-  [Column("height", TypeName = "int(10)")]
+  [Column( "height", TypeName = "int(10)" )]
   public int? Height { get; set; }
 
-  [Column("width", TypeName = "int(10)")]
+  [Column( "width", TypeName = "int(10)" )]
   public int? Width { get; set; }
 
-  [Column("locked", TypeName = "int(10)")]
+  [Column( "locked", TypeName = "int(10)" )]
   public int? Locked { get; set; }
 
-  [Column("collapsed", TypeName = "int(10)")]
+  [Column( "collapsed", TypeName = "int(10)" )]
   public int? Collapsed { get; set; }
 
-  [Column("visit_once", TypeName = "int(4)")]
+  [Column( "visit_once", TypeName = "int(4)" )]
   public int? VisitOnce { get; set; }
 
-  [Column("force_reload", TypeName = "int(10)")]
+  [Column( "force_reload", TypeName = "int(10)" )]
   public int? ForceReload { get; set; }
 
-  [Column("created_at", TypeName = "datetime")]
+  [Column( "created_at", TypeName = "datetime" )]
   public DateTime? CreatedAt { get; set; }
 
-  [Column("updated_At", TypeName = "datetime")]
+  [Column( "updated_At", TypeName = "datetime" )]
   public DateTime? UpdatedAt { get; set; }
 
-  [ForeignKey("LinkStyleId")]
-  [InverseProperty("MapNodes")]
+  [ForeignKey( "LinkStyleId" )]
+  [InverseProperty( "MapNodes" )]
   public virtual MapNodeLinkStylies LinkStyle { get; set; }
 
-  [ForeignKey("MapId")]
-  [InverseProperty("MapNodes")]
+  [ForeignKey( "MapId" )]
+  [InverseProperty( "MapNodes" )]
   public virtual Maps Map { get; set; }
 
-  [InverseProperty("Node")]
+  [InverseProperty( "Node" )]
   public virtual ICollection<MapNodeCounters> MapNodeCounters { get; } = new List<MapNodeCounters>();
 
-  [InverseProperty("Node")]
+  [InverseProperty( "Node" )]
   public virtual ICollection<MapNodeGrouproles> MapNodeGrouproles { get; } = new List<MapNodeGrouproles>();
 
-  [InverseProperty("Node")]
+  [InverseProperty( "Node" )]
   public virtual ICollection<MapNodeJumps> MapNodeJumps { get; } = new List<MapNodeJumps>();
 
-  [InverseProperty("NodeId1Navigation")]
+  [InverseProperty( "NodeId1Navigation" )]
   public virtual ICollection<MapNodeLinks> MapNodeLinksNodeId1Navigation { get; } = new List<MapNodeLinks>();
 
-  [InverseProperty("NodeId2Navigation")]
+  [InverseProperty( "NodeId2Navigation" )]
   public virtual ICollection<MapNodeLinks> MapNodeLinksNodeId2Navigation { get; } = new List<MapNodeLinks>();
 
-  [InverseProperty("MapNode")]
+  [InverseProperty( "MapNode" )]
   public virtual ICollection<MapNodeNotes> MapNodeNotes { get; } = new List<MapNodeNotes>();
 
-  [InverseProperty("Node")]
+  [InverseProperty( "Node" )]
   public virtual ICollection<MapNodeSectionNodes> MapNodeSectionNodes { get; } = new List<MapNodeSectionNodes>();
 
-  [InverseProperty("Node")]
+  [InverseProperty( "Node" )]
   public virtual ICollection<UserBookmarks> UserBookmarks { get; } = new List<UserBookmarks>();
 
-  [InverseProperty("Node")]
+  [InverseProperty( "Node" )]
   public virtual ICollection<UserSessiontraces> UserSessiontraces { get; } = new List<UserSessiontraces>();
 
-  [InverseProperty("MapNode")]
+  [InverseProperty( "MapNode" )]
   public virtual ICollection<UserState> UserState { get; } = new List<UserState>();
 
-  [InverseProperty("Node")]
+  [InverseProperty( "Node" )]
   public virtual ICollection<WebinarNodePoll> WebinarNodePoll { get; } = new List<WebinarNodePoll>();
 
-  [InverseProperty("OnNodeNavigation")]
+  [InverseProperty( "OnNodeNavigation" )]
   public virtual ICollection<WebinarPoll> WebinarPollOnNodeNavigation { get; } = new List<WebinarPoll>();
 
-  [InverseProperty("ToNodeNavigation")]
+  [InverseProperty( "ToNodeNavigation" )]
   public virtual ICollection<WebinarPoll> WebinarPollToNodeNavigation { get; } = new List<WebinarPoll>();
 }

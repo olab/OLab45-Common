@@ -6,7 +6,7 @@ namespace OLab.Api.Dto;
 
 public class MapNodesFullDto : MapNodesDto
 {
-  [JsonProperty("isEnd")]
+  [JsonProperty( "isEnd" )]
   public bool? End { get; set; }
   public bool? Kfp { get; set; }
   public bool? Probability { get; set; }
@@ -36,6 +36,6 @@ public class MapNodesFullDto : MapNodesDto
   public uint? MapId { get; set; }
   public string Color { get; set; }
   public ScopedObjectsDto ScopedObjects { get; set; }
-  [JsonProperty("groupRoles")]
+  [JsonProperty( "groupRoles" )]
   public IList<MapNodeGroupRolesDto> MapNodeGrouproles { get; } = new List<MapNodeGroupRolesDto>();
 }

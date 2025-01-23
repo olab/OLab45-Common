@@ -11,7 +11,7 @@ public class Constants : OLabMapper<SystemConstants, ScopedObjectDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 
@@ -27,7 +27,7 @@ public class Constants : OLabMapper<SystemConstants, ScopedObjectDto>
   /// <returns>Dto object</returns>
   public override ScopedObjectDto PhysicalToDto(SystemConstants phys, ScopedObjectDto dto)
   {
-    if (string.IsNullOrEmpty(phys.Name))
+    if ( string.IsNullOrEmpty( phys.Name ) )
       dto.Wiki = $"[[CONST:{phys.Id}]]";
     else
       dto.Wiki = $"[[CONST:{phys.Name}]]";
@@ -40,10 +40,10 @@ public class Constants : OLabMapper<SystemConstants, ScopedObjectDto>
   /// <returns>MapperConfiguration</returns>
   protected override MapperConfiguration GetConfiguration()
   {
-    return new MapperConfiguration(cfg =>
+    return new MapperConfiguration( cfg =>
      cfg.CreateMap<SystemConstants, ScopedObjectDto>()
-      .ForMember(dest => dest.ScopeLevel, act => act.MapFrom(src => src.ImageableType))
-      .ForMember(dest => dest.ParentId, act => act.MapFrom(src => src.ImageableId))
+      .ForMember( dest => dest.ScopeLevel, act => act.MapFrom( src => src.ImageableType ) )
+      .ForMember( dest => dest.ParentId, act => act.MapFrom( src => src.ImageableId ) )
       .ReverseMap()
     );
   }

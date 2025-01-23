@@ -29,13 +29,13 @@ public partial class RolesEndpoint : OLabEndpoint
       configuration,
       dbContext,
       wikiTagProvider,
-      fileStorageProvider)
+      fileStorageProvider )
   {
-    _readerWriter = RoleReaderWriter.Instance(logger, dbContext);
+    _readerWriter = RoleReaderWriter.Instance( logger, dbContext );
     _mapper = new RolesMapper(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider());
+        GetWikiProvider() );
   }
 
   /// <summary>
@@ -48,12 +48,12 @@ public partial class RolesEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     int? take, int? skip)
   {
-    GetLogger().LogInformation($"RolesEndpoint.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
-    var pagedDataPhys = await _readerWriter.GetPagedAsync(take, skip);
+    GetLogger().LogInformation( $"RolesEndpoint.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})" );
+    var pagedDataPhys = await _readerWriter.GetPagedAsync( take, skip );
 
     var pagedDataDto = new OLabAPIPagedResponse<RolesDto>();
 
-    pagedDataDto.Data = _mapper.PhysicalToDto(pagedDataPhys.Data);
+    pagedDataDto.Data = _mapper.PhysicalToDto( pagedDataPhys.Data );
     pagedDataDto.Remaining = pagedDataPhys.Remaining;
     pagedDataDto.Count = pagedDataPhys.Count;
 
@@ -71,10 +71,10 @@ public partial class RolesEndpoint : OLabEndpoint
     string source)
   {
 
-    GetLogger().LogInformation($"RolesEndpoint.ReadAsync(source={source})");
-    var phys = await _readerWriter.GetAsync(source);
+    GetLogger().LogInformation( $"RolesEndpoint.ReadAsync(source={source})" );
+    var phys = await _readerWriter.GetAsync( source );
 
-    return _mapper.PhysicalToDto(phys);
+    return _mapper.PhysicalToDto( phys );
   }
 
   /// <summary>
@@ -87,19 +87,19 @@ public partial class RolesEndpoint : OLabEndpoint
     string groupName,
     CancellationToken token)
   {
-    GetLogger().LogInformation($"RolesEndpoint.PostAsync()");
+    GetLogger().LogInformation( $"RolesEndpoint.PostAsync()" );
 
     // test if user has access 
-    if (!await auth.IsSystemSuperuserAsync())
+    if ( !await auth.IsSystemSuperuserAsync() )
       throw new OLabUnauthorizedException();
 
     // test for reserved object
-    var orgPhys = await _readerWriter.GetAsync(groupName);
-    if ((orgPhys != null) && (orgPhys.IsSystem == 1))
+    var orgPhys = await _readerWriter.GetAsync( groupName );
+    if ( (orgPhys != null) && (orgPhys.IsSystem == 1) )
       throw new OLabUnauthorizedException();
 
-    var phys = await _readerWriter.CreateAsync(groupName);
-    return _mapper.PhysicalToDto(phys);
+    var phys = await _readerWriter.CreateAsync( groupName );
+    return _mapper.PhysicalToDto( phys );
   }
 
   /// <summary>
@@ -111,26 +111,26 @@ public partial class RolesEndpoint : OLabEndpoint
     string source)
   {
     {
-      GetLogger().LogInformation($"RolesEndpoint.DeleteAsync()");
+      GetLogger().LogInformation( $"RolesEndpoint.DeleteAsync()" );
 
       // test if user has access 
-      if (!await auth.IsSystemSuperuserAsync())
+      if ( !await auth.IsSystemSuperuserAsync() )
         throw new OLabUnauthorizedException();
 
-      var phys = await _readerWriter.GetAsync(source);
-      if (phys == null)
-        throw new OLabObjectNotFoundException("Roles", source);
+      var phys = await _readerWriter.GetAsync( source );
+      if ( phys == null )
+        throw new OLabObjectNotFoundException( "Roles", source );
 
       // test if reserved object
-      if ((phys != null) && (phys.IsSystem == 1))
+      if ( (phys != null) && (phys.IsSystem == 1) )
         throw new OLabUnauthorizedException();
 
       // test if in use somewhere
-      var inUse = await GetDbContext().UserGrouproles.AnyAsync(x => x.RoleId == phys.Id);
-      if (inUse)
-        throw new OLabGeneralException($"Role '{source}' in use.");
+      var inUse = await GetDbContext().UserGrouproles.AnyAsync( x => x.RoleId == phys.Id );
+      if ( inUse )
+        throw new OLabGeneralException( $"Role '{source}' in use." );
 
-      await _readerWriter.DeleteAsync(source);
+      await _readerWriter.DeleteAsync( source );
     }
   }
 

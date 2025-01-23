@@ -2,7 +2,7 @@ using System;
 
 namespace OLab.Common.Attributes;
 
-[AttributeUsage(AttributeTargets.Class)]
+[AttributeUsage( AttributeTargets.Class )]
 public class OLabModuleAttribute : Attribute
 {
   private string _name;

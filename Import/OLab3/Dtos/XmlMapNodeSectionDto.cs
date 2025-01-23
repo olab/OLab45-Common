@@ -12,7 +12,7 @@ public class XmlMapNodeSectionDto : XmlImportDto<XmlMapNodeSection>
       logger,
       importer,
       Importer.DtoTypes.XmlMapNodeSectionDto,
-      "map_node_section.xml")
+      "map_node_section.xml" )
   {
 
   }

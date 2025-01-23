@@ -17,9 +17,9 @@ public class XmlMapCounterDto : XmlImportDto<XmlMapCounters>
       logger,
       importer,
       Importer.DtoTypes.XmlMapCounterDto,
-      "map_counter.xml")
+      "map_counter.xml" )
   {
-    _mapper = new Api.ObjectMapper.CounterMapper(GetLogger(), GetDbContext(), GetWikiProvider());
+    _mapper = new Api.ObjectMapper.CounterMapper( GetLogger(), GetDbContext(), GetWikiProvider() );
   }
 
   /// <summary>
@@ -43,21 +43,21 @@ public class XmlMapCounterDto : XmlImportDto<XmlMapCounters>
     int recordIndex,
     IEnumerable<dynamic> elements)
   {
-    var item = _mapper.ElementsToPhys(elements);
-    item.ImageableId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "map_id").Value);
+    var item = _mapper.ElementsToPhys( elements );
+    item.ImageableId = Convert.ToUInt32( elements.FirstOrDefault( x => x.Name == "map_id" ).Value );
 
     var oldId = item.Id;
 
     item.Id = 0;
 
-    var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
-    item.ImageableId = mapDto.GetIdTranslation(GetFileName(), item.ImageableId).Value;
+    var mapDto = GetImporter().GetDto( Importer.DtoTypes.XmlMapDto ) as XmlMapDto;
+    item.ImageableId = mapDto.GetIdTranslation( GetFileName(), item.ImageableId ).Value;
     item.ImageableType = "Maps";
 
-    GetDbContext().SystemCounters.Add(item);
+    GetDbContext().SystemCounters.Add( item );
     GetDbContext().SaveChanges();
 
-    CreateIdTranslation(oldId, item.Id);
+    CreateIdTranslation( oldId, item.Id );
 
     return true;
   }

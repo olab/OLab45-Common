@@ -12,7 +12,7 @@ public class TimeUtils
   {
     var now = DateTime.UtcNow;
     // truncate the sub-secondportion
-    now = now.AddTicks(-(now.Ticks % TimeSpan.TicksPerSecond));
+    now = now.AddTicks( -(now.Ticks % TimeSpan.TicksPerSecond) );
     return now;
   }
 
@@ -23,10 +23,10 @@ public class TimeUtils
   /// <returns></returns>
   public static DateTime? ToUtc(DateTime? source)
   {
-    if (source.HasValue)
+    if ( source.HasValue )
     {
-      if (source.Value.Kind != DateTimeKind.Utc)
-        return DateTime.SpecifyKind(source.Value, DateTimeKind.Utc);
+      if ( source.Value.Kind != DateTimeKind.Utc )
+        return DateTime.SpecifyKind( source.Value, DateTimeKind.Utc );
       return source;
     }
 

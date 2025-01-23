@@ -20,7 +20,7 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <returns></returns>
   public Model.MapNodeLinks GetLinkSimple(OLabDBContext context, uint id)
   {
-    var phys = context.MapNodeLinks.FirstOrDefault(x => x.Id == id);
+    var phys = context.MapNodeLinks.FirstOrDefault( x => x.Id == id );
     return phys;
   }
 
@@ -38,28 +38,28 @@ public partial class MapsEndpoint : OLabEndpoint
     uint linkId,
     MapNodeLinksFullDto linkdto)
   {
-    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.PutMapNodeLinksAsync");
+    GetLogger().LogInformation( $"{auth.UserContext.UserId}: MapsEndpoint.PutMapNodeLinksAsync" );
 
     // test if user has access to map.
-    if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId))
-      throw new OLabUnauthorizedException(Utils.Constants.ScopeLevelMap, mapId);
+    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId ) )
+      throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
 
     try
     {
       var builder = new MapNodeLinksFullMapper(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider());
-      var phys = builder.DtoToPhysical(linkdto);
+        GetWikiProvider() );
+      var phys = builder.DtoToPhysical( linkdto );
 
-      GetDbContext().Entry(phys).State = EntityState.Modified;
+      GetDbContext().Entry( phys ).State = EntityState.Modified;
       await GetDbContext().SaveChangesAsync();
     }
-    catch (DbUpdateConcurrencyException)
+    catch ( DbUpdateConcurrencyException )
     {
-      var existingMap = GetLinkSimple(GetDbContext(), linkId);
-      if (existingMap == null)
-        throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, mapId);
+      var existingMap = GetLinkSimple( GetDbContext(), linkId );
+      if ( existingMap == null )
+        throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, mapId );
     }
 
   }

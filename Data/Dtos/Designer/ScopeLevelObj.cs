@@ -4,10 +4,10 @@ namespace OLab.Api.Dto.Designer;
 
 public class ScopeLevelObj
 {
-  [JsonProperty("id")]
+  [JsonProperty( "id" )]
   public uint Id { get; set; }
-  [JsonProperty("name")]
+  [JsonProperty( "name" )]
   public string Name { get; set; }
-  [JsonProperty("description")]
+  [JsonProperty( "description" )]
   public string Description { get; set; }
 }

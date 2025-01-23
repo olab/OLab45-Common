@@ -17,12 +17,12 @@ public class OlabResult : ActionResult
     ErrorCode = StatusCodes.Status200OK;
   }
 
-  [JsonProperty("status")]
+  [JsonProperty( "status" )]
   public int Status { get; set; }
-  [JsonProperty("message")]
+  [JsonProperty( "message" )]
   public string Message { get; set; }
-  [JsonProperty("error_code")]
+  [JsonProperty( "error_code" )]
   public int ErrorCode { get; set; }
-  [JsonProperty("diagnostics")]
+  [JsonProperty( "diagnostics" )]
   public IList<Diagnostics> Diagnostics { get; set; }
 }

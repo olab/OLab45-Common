@@ -26,7 +26,7 @@ public class Participant
   public string RemoteIpAddress { get; set; }
   // group name for direct-to-user method messages
   public string CommandChannel { get; set; }
-  [JsonProperty("slotIndex")]
+  [JsonProperty( "slotIndex" )]
   public int SlotIndex { get; set; }
 
   // this is used for misc purposes, like atrium insertion, etc.
@@ -51,18 +51,18 @@ public class Participant
 
     // extract fields from bearer token
     var identity = (ClaimsIdentity)context.User.Identity;
-    var nameClaim = identity.FindFirst("name");
-    var userId = identity.FindFirst(ClaimTypes.Name).Value;
+    var nameClaim = identity.FindFirst( "name" );
+    var userId = identity.FindFirst( ClaimTypes.Name ).Value;
 
     var nickName = "";
-    if (nameClaim != null)
+    if ( nameClaim != null )
       nickName = nameClaim.Value;
     else
       nickName = userId;
 
-    Guard.Argument(context.ConnectionId).NotNull(nameof(context.ConnectionId));
-    Guard.Argument(userId).NotNull(nameof(userId));
-    Guard.Argument(nickName).NotNull(nameof(nickName));
+    Guard.Argument( context.ConnectionId ).NotNull( nameof( context.ConnectionId ) );
+    Guard.Argument( userId ).NotNull( nameof( userId ) );
+    Guard.Argument( nickName ).NotNull( nameof( nickName ) );
 
     _connectionId = context.ConnectionId;
     _nickName = nickName;
@@ -71,17 +71,17 @@ public class Participant
     RemoteIpAddress = httpContext.Connection.RemoteIpAddress.ToString();
 
     IPAddress clientIp;
-    IPAddress.TryParse(httpContext.Request.Headers["cf-connecting-ip"], out clientIp);
+    IPAddress.TryParse( httpContext.Request.Headers[ "cf-connecting-ip" ], out clientIp );
   }
 
   public Participant(string topicName, string userId, string nickName, string connectionId)
   {
-    Initialize(topicName, userId, nickName, connectionId);
+    Initialize( topicName, userId, nickName, connectionId );
   }
 
   public string GetUniqueKey()
   {
-    return $"{UserId}:{ConnectionIdUtils.Shorten(ConnectionId)}";
+    return $"{UserId}:{ConnectionIdUtils.Shorten( ConnectionId )}";
   }
 
   private void Initialize(string topicName, string userId, string nickName, string connectionId)
@@ -89,25 +89,25 @@ public class Participant
     _connectionId = connectionId;
     _nickName = nickName;
 
-    Guard.Argument(userId).NotEmpty(userId);
-    Guard.Argument(topicName).NotEmpty(topicName);
+    Guard.Argument( userId ).NotEmpty( userId );
+    Guard.Argument( topicName ).NotEmpty( topicName );
 
-    var topicNameParts = topicName.Split("/");
+    var topicNameParts = topicName.Split( "/" );
 
     // test not a multipart topic, then this learner is for the atrium
-    if (topicNameParts.Length == 1)
+    if ( topicNameParts.Length == 1 )
     {
       _topicName = topicName;
       _userId = userId;
     }
     else
     {
-      _topicName = topicNameParts[0];
+      _topicName = topicNameParts[ 0 ];
       // if not room index passed in, this this is an 
       // atrium group, not an actual room
-      if (!string.IsNullOrEmpty(topicNameParts[1]))
-        _roomNumber = Convert.ToInt32(topicNameParts[1]);
-      _userId = topicNameParts[3];
+      if ( !string.IsNullOrEmpty( topicNameParts[ 1 ] ) )
+        _roomNumber = Convert.ToInt32( topicNameParts[ 1 ] );
+      _userId = topicNameParts[ 3 ];
     }
   }
 

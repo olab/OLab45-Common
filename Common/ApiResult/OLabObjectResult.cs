@@ -9,7 +9,7 @@ public class OLabObjectResult<D> : ObjectResult
   {
   }
 
-  public static OLabApiResult<D> Result(D value, HttpStatusCode statusCode = HttpStatusCode.OK )
+  public static OLabApiResult<D> Result(D value, HttpStatusCode statusCode = HttpStatusCode.OK)
   {
     var result = new OLabApiResult<D>
     {

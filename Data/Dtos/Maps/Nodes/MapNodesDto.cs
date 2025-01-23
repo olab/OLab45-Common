@@ -4,12 +4,12 @@ namespace OLab.Api.Dto;
 
 public class MapNodesDto
 {
-  [JsonProperty("contextId")]
+  [JsonProperty( "contextId" )]
   public string ContextId { get; set; }
-  [JsonProperty("title")]
+  [JsonProperty( "title" )]
   public string Title { get; set; }
-  [JsonProperty("url")]
+  [JsonProperty( "url" )]
   public string Url { get; set; }
-  [JsonProperty("id")]
+  [JsonProperty( "id" )]
   public uint? Id { get; set; }
 }

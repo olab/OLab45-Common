@@ -16,9 +16,9 @@ public class XmlMapNodeLinkDto : XmlImportDto<XmlMapNodeLinks>
       logger,
       importer,
       Importer.DtoTypes.XmlMapNodeLinkDto,
-      "map_node_link.xml")
+      "map_node_link.xml" )
   {
-    _mapper = new MapNodeLinksMapper(logger, GetDbContext());
+    _mapper = new MapNodeLinksMapper( logger, GetDbContext() );
   }
 
   /// <summary>
@@ -42,22 +42,22 @@ public class XmlMapNodeLinkDto : XmlImportDto<XmlMapNodeLinks>
     int recordIndex,
     IEnumerable<dynamic> elements)
   {
-    var item = _mapper.ElementsToPhys(elements);
+    var item = _mapper.ElementsToPhys( elements );
     var oldId = item.Id;
 
     item.Id = 0;
 
-    var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
-    item.MapId = mapDto.GetIdTranslation(GetFileName(), item.MapId).Value;
+    var mapDto = GetImporter().GetDto( Importer.DtoTypes.XmlMapDto ) as XmlMapDto;
+    item.MapId = mapDto.GetIdTranslation( GetFileName(), item.MapId ).Value;
 
-    var nodeDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapNodeDto) as XmlMapNodeDto;
-    item.NodeId1 = nodeDto.GetIdTranslation(GetFileName(), item.NodeId1).Value;
-    item.NodeId2 = nodeDto.GetIdTranslation(GetFileName(), item.NodeId2).Value;
+    var nodeDto = GetImporter().GetDto( Importer.DtoTypes.XmlMapNodeDto ) as XmlMapNodeDto;
+    item.NodeId1 = nodeDto.GetIdTranslation( GetFileName(), item.NodeId1 ).Value;
+    item.NodeId2 = nodeDto.GetIdTranslation( GetFileName(), item.NodeId2 ).Value;
 
-    GetDbContext().MapNodeLinks.Add(item);
+    GetDbContext().MapNodeLinks.Add( item );
     GetDbContext().SaveChanges();
 
-    CreateIdTranslation(oldId, item.Id);
+    CreateIdTranslation( oldId, item.Id );
 
     return true;
   }

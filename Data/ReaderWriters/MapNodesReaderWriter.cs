@@ -22,13 +22,13 @@ public partial class MapNodesReaderWriter : ReaderWriter
     OLabDBContext context,
     WikiTagModuleProvider tagProvider)
   {
-    return new MapNodesReaderWriter(logger, context, tagProvider);
+    return new MapNodesReaderWriter( logger, context, tagProvider );
   }
 
   public MapNodesReaderWriter(
     IOLabLogger logger,
     OLabDBContext context,
-    WikiTagModuleProvider tagProvider) : base(logger, context)
+    WikiTagModuleProvider tagProvider) : base( logger, context )
   {
     _tagProvider = tagProvider;
   }
@@ -41,7 +41,7 @@ public partial class MapNodesReaderWriter : ReaderWriter
   public async Task<IList<MapNodes>> GetNodesAsync(IList<uint> ids)
   {
     var nodesPhys = await GetDbContext().MapNodes
-      .Where(x => ids.Contains(x.Id)).ToListAsync();
+      .Where( x => ids.Contains( x.Id ) ).ToListAsync();
     return nodesPhys;
   }
 
@@ -54,9 +54,9 @@ public partial class MapNodesReaderWriter : ReaderWriter
   {
     var mapNodesPhys = await GetDbContext()
       .MapNodes
-      .Include("Map")
-      .Where(x => x.MapId == mapId).ToListAsync();
-    GetLogger().LogInformation(string.Format("found {0} mapNodes for {1}", mapNodesPhys.Count, mapId));
+      .Include( "Map" )
+      .Where( x => x.MapId == mapId ).ToListAsync();
+    GetLogger().LogInformation( string.Format( "found {0} mapNodes for {1}", mapNodesPhys.Count, mapId ) );
     return mapNodesPhys;
   }
 
@@ -67,7 +67,7 @@ public partial class MapNodesReaderWriter : ReaderWriter
   public IList<IdName> GetNodeIdNames()
   {
     return GetDbContext().MapNodes
-      .Select(x => new IdName() { Id = x.Id, Name = x.Title }).ToList();
+      .Select( x => new IdName() { Id = x.Id, Name = x.Title } ).ToList();
   }
 
   /// <summary>
@@ -78,8 +78,8 @@ public partial class MapNodesReaderWriter : ReaderWriter
   public async Task<MapNodes> GetNodeAsync(uint id)
   {
     var node = await GetDbContext().MapNodes
-      .Include("MapNodeGrouproles")
-      .FirstOrDefaultAsync(x => x.Id == id);
+      .Include( "MapNodeGrouproles" )
+      .FirstOrDefaultAsync( x => x.Id == id );
 
     return node;
   }
@@ -93,9 +93,9 @@ public partial class MapNodesReaderWriter : ReaderWriter
   public async Task<MapNodes> GetNodeAsync(uint mapId, uint nodeId)
   {
     var node = await GetDbContext().MapNodes
-     .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Group)
-     .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Role)
-     .FirstOrDefaultAsync(x => x.MapId == mapId && x.Id == nodeId);
+     .Include( c => c.MapNodeGrouproles ).ThenInclude( d => d.Group )
+     .Include( c => c.MapNodeGrouproles ).ThenInclude( d => d.Role )
+     .FirstOrDefaultAsync( x => x.MapId == mapId && x.Id == nodeId );
 
     return node;
   }
@@ -110,27 +110,27 @@ public partial class MapNodesReaderWriter : ReaderWriter
   {
     MapNodes node = null;
 
-    if (nodeId != 0)
+    if ( nodeId != 0 )
       node = await GetDbContext().MapNodes
-        .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Group)
-        .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Role)
-        .Where(x => x.MapId == mapId && x.Id == nodeId)
-        .FirstOrDefaultAsync(x => x.Id == nodeId);
+        .Include( c => c.MapNodeGrouproles ).ThenInclude( d => d.Group )
+        .Include( c => c.MapNodeGrouproles ).ThenInclude( d => d.Role )
+        .Where( x => x.MapId == mapId && x.Id == nodeId )
+        .FirstOrDefaultAsync( x => x.Id == nodeId );
     else
       node = await GetDbContext().MapNodes
-          .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Group)
-          .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Role)
-          .Where(x => x.MapId == mapId && x.TypeId == 1)
-          .FirstOrDefaultAsync(x => x.Id == nodeId);
+          .Include( c => c.MapNodeGrouproles ).ThenInclude( d => d.Group )
+          .Include( c => c.MapNodeGrouproles ).ThenInclude( d => d.Role )
+          .Where( x => x.MapId == mapId && x.TypeId == 1 )
+          .FirstOrDefaultAsync( x => x.Id == nodeId );
 
     // if no explicit map root node, get first node 
     // in database
-    if (node == null)
+    if ( node == null )
       node = await GetDbContext().MapNodes
-        .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Group)
-        .Include(c => c.MapNodeGrouproles).ThenInclude(d => d.Role)
-        .Where(x => x.MapId == mapId)
-        .OrderBy(x => x.Id)
+        .Include( c => c.MapNodeGrouproles ).ThenInclude( d => d.Group )
+        .Include( c => c.MapNodeGrouproles ).ThenInclude( d => d.Role )
+        .Where( x => x.MapId == mapId )
+        .OrderBy( x => x.Id )
       .FirstAsync();
 
     return node;
@@ -150,48 +150,48 @@ public partial class MapNodesReaderWriter : ReaderWriter
     bool hideHidden,
     bool enableWikiTranslation)
   {
-    var phys = await GetMapRootNode(mapId, nodeId);
+    var phys = await GetMapRootNode( mapId, nodeId );
 
-    if (phys == null)
+    if ( phys == null )
     {
-      GetLogger().LogError($"GetNodeSync unable to find map {mapId}, node {nodeId}");
+      GetLogger().LogError( $"GetNodeSync unable to find map {mapId}, node {nodeId}" );
       return new MapsNodesFullRelationsDto();
     }
 
     // explicitly load the related objects.
-    GetDbContext().Entry(phys).Collection(b => b.MapNodeLinksNodeId1Navigation).Load();
+    GetDbContext().Entry( phys ).Collection( b => b.MapNodeLinksNodeId1Navigation ).Load();
 
     var builder = new MapsNodesFullRelationsMapper(
       GetLogger(),
       GetDbContext(),
       _tagProvider,
-      enableWikiTranslation);
-    var dto = builder.PhysicalToDto(phys);
+      enableWikiTranslation );
+    var dto = builder.PhysicalToDto( phys );
 
     var linkedIds =
-      phys.MapNodeLinksNodeId1Navigation.Select(x => x.NodeId2).Distinct().ToList();
+      phys.MapNodeLinksNodeId1Navigation.Select( x => x.NodeId2 ).Distinct().ToList();
 
     var linkedNodes =
       GetDbContext().MapNodes
-        .Where(x => linkedIds.Contains(x.Id)).ToList();
+        .Where( x => linkedIds.Contains( x.Id ) ).ToList();
 
     // add destination node title to link information
-    foreach (var item in dto.MapNodeLinks)
+    foreach ( var item in dto.MapNodeLinks )
     {
-      var link = linkedNodes.Where(x => x.Id == item.DestinationId).FirstOrDefault();
+      var link = linkedNodes.Where( x => x.Id == item.DestinationId ).FirstOrDefault();
       item.DestinationTitle = linkedNodes
-        .Where(x => x.Id == item.DestinationId)
-        .Select(x => x.Title).FirstOrDefault();
+        .Where( x => x.Id == item.DestinationId )
+        .Select( x => x.Title ).FirstOrDefault();
 
-      if (string.IsNullOrEmpty(item.LinkText))
+      if ( string.IsNullOrEmpty( item.LinkText ) )
         item.LinkText = item.DestinationTitle;
     }
 
     // if asked for, remove any hidden links
-    if (hideHidden)
+    if ( hideHidden )
     {
-      GetLogger().LogInformation($"GetNodeSync hiding hidden links");
-      dto.MapNodeLinks = dto.MapNodeLinks.Where(x => !x.IsHidden).ToList();
+      GetLogger().LogInformation( $"GetNodeSync hiding hidden links" );
+      dto.MapNodeLinks = dto.MapNodeLinks.Where( x => !x.IsHidden ).ToList();
     }
 
     return dto;
@@ -217,17 +217,17 @@ public partial class MapNodesReaderWriter : ReaderWriter
       var builder = new MapNodesFullMapper(
         GetLogger(),
       GetDbContext(),
-        wikiProvider);
-      var newMapNodePhys = builder.DtoToPhysical(dto);
+        wikiProvider );
+      var newMapNodePhys = builder.DtoToPhysical( dto );
 
       // entity as it currently exists in the db
-      var dbMapNodePhys = GetDbContext().MapNodes.Include(c => c.MapNodeGrouproles)
-          .FirstOrDefault(g => g.Id == newMapNodePhys.Id);
+      var dbMapNodePhys = GetDbContext().MapNodes.Include( c => c.MapNodeGrouproles )
+          .FirstOrDefault( g => g.Id == newMapNodePhys.Id );
       // update properties on the parent
-      GetDbContext().Entry(dbMapNodePhys).CurrentValues.SetValues(newMapNodePhys);
+      GetDbContext().Entry( dbMapNodePhys ).CurrentValues.SetValues( newMapNodePhys );
 
       dbMapNodePhys.MapNodeGrouproles.Clear();
-      foreach (var groupRolePhys in newMapNodePhys.MapNodeGrouproles)
+      foreach ( var groupRolePhys in newMapNodePhys.MapNodeGrouproles )
         dbMapNodePhys.MapNodeGrouproles.Add(
           new MapNodeGrouproles
           {
@@ -237,13 +237,13 @@ public partial class MapNodesReaderWriter : ReaderWriter
           }
         );
 
-      if (save)
+      if ( save )
         await GetDbContext().SaveChangesAsync();
 
       await transaction.CommitAsync();
 
     }
-    catch (Exception)
+    catch ( Exception )
     {
       await transaction.RollbackAsync();
       throw;
@@ -267,25 +267,25 @@ public partial class MapNodesReaderWriter : ReaderWriter
     try
     {
       var links = GetDbContext().MapNodeLinks.
-        Where(x => (x.NodeId1 == nodeId) || (x.NodeId2 == nodeId)).ToArray();
+        Where( x => (x.NodeId1 == nodeId) || (x.NodeId2 == nodeId) ).ToArray();
 
-      GetLogger().LogInformation($"deleting {links.Count()} links");
-      GetDbContext().MapNodeLinks.RemoveRange(links);
+      GetLogger().LogInformation( $"deleting {links.Count()} links" );
+      GetDbContext().MapNodeLinks.RemoveRange( links );
 
-      var node = await GetDbContext().MapNodes.FirstOrDefaultAsync(x => x.Id == nodeId);
+      var node = await GetDbContext().MapNodes.FirstOrDefaultAsync( x => x.Id == nodeId );
 
-      if (node == null)
-        throw new OLabObjectNotFoundException("MapNodes", nodeId);
+      if ( node == null )
+        throw new OLabObjectNotFoundException( "MapNodes", nodeId );
 
-      GetDbContext().MapNodes.Remove(node);
-      GetLogger().LogInformation($"deleting node id: {node.Id}");
+      GetDbContext().MapNodes.Remove( node );
+      GetLogger().LogInformation( $"deleting node id: {node.Id}" );
 
       await GetDbContext().SaveChangesAsync();
 
       await transaction.CommitAsync();
 
     }
-    catch (Exception)
+    catch ( Exception )
     {
       await transaction.RollbackAsync();
       throw;

@@ -11,9 +11,9 @@ public static class SemaphoreLogger
     SemaphoreSlim semaphore,
     CancellationToken cancellation = default)
   {
-    logger.LogInformation($"key {key} requesting lock. remaining threads = {semaphore.CurrentCount}");
-    await semaphore.WaitAsync(cancellation);
-    logger.LogInformation($"key {key} lock granted. remaining threads = {semaphore.CurrentCount}");
+    logger.LogInformation( $"key {key} requesting lock. remaining threads = {semaphore.CurrentCount}" );
+    await semaphore.WaitAsync( cancellation );
+    logger.LogInformation( $"key {key} lock granted. remaining threads = {semaphore.CurrentCount}" );
   }
 
   public static void Release(
@@ -22,6 +22,6 @@ public static class SemaphoreLogger
     SemaphoreSlim semaphore)
   {
     semaphore.Release();
-    logger.LogInformation($"key {key} released lock. remaining threads = {semaphore.CurrentCount}");
+    logger.LogInformation( $"key {key} released lock. remaining threads = {semaphore.CurrentCount}" );
   }
 }

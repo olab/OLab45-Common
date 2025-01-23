@@ -11,7 +11,7 @@ public class MapNodeLinksFullMapper : OLabMapper<Model.MapNodeLinks, MapNodeLink
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 
@@ -21,10 +21,10 @@ public class MapNodeLinksFullMapper : OLabMapper<Model.MapNodeLinks, MapNodeLink
   /// <returns>MapperConfiguration</returns>
   protected override MapperConfiguration GetConfiguration()
   {
-    return new MapperConfiguration(cfg =>
+    return new MapperConfiguration( cfg =>
      cfg.CreateMap<Model.MapNodeLinks, Dto.MapNodeLinksFullDto>()
-      .ForMember(dest => dest.SourceId, act => act.MapFrom(src => src.NodeId1))
-      .ForMember(dest => dest.DestinationId, act => act.MapFrom(src => src.NodeId2))
+      .ForMember( dest => dest.SourceId, act => act.MapFrom( src => src.NodeId1 ) )
+      .ForMember( dest => dest.DestinationId, act => act.MapFrom( src => src.NodeId2 ) )
       .ReverseMap()
     );
   }

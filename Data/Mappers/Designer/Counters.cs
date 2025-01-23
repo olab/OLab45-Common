@@ -12,7 +12,7 @@ public class Counters : OLabMapper<SystemCounters, ScopedObjectDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 
@@ -28,7 +28,7 @@ public class Counters : OLabMapper<SystemCounters, ScopedObjectDto>
   /// <returns>Dto object</returns>
   public override ScopedObjectDto PhysicalToDto(SystemCounters phys, ScopedObjectDto dto)
   {
-    if (string.IsNullOrEmpty(phys.Name))
+    if ( string.IsNullOrEmpty( phys.Name ) )
       dto.Wiki = $"[[CR:{phys.Id}]]";
     else
       dto.Wiki = $"[[CR:{phys.Name}]]";
@@ -41,10 +41,10 @@ public class Counters : OLabMapper<SystemCounters, ScopedObjectDto>
   /// <returns>MapperConfiguration</returns>
   protected override MapperConfiguration GetConfiguration()
   {
-    return new MapperConfiguration(cfg =>
+    return new MapperConfiguration( cfg =>
      cfg.CreateMap<SystemCounters, ScopedObjectDto>()
-      .ForMember(dest => dest.ScopeLevel, act => act.MapFrom(src => src.ImageableType))
-      .ForMember(dest => dest.ParentId, act => act.MapFrom(src => src.ImageableId))
+      .ForMember( dest => dest.ScopeLevel, act => act.MapFrom( src => src.ImageableType ) )
+      .ForMember( dest => dest.ParentId, act => act.MapFrom( src => src.ImageableId ) )
       .ReverseMap()
     );
   }

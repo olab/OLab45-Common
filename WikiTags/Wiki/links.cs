@@ -2,13 +2,13 @@ using OLab.Api.Common;
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 
-[OLabModule("LINKS")]
+[OLabModule( "LINKS" )]
 public class LinksWikiTag : WikiTag0ArgumentModule
 {
   public LinksWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration)
+    IOLabConfiguration configuration) : base( logger, configuration )
   {
-    SetHtmlElementName("OlabLinksTag");
+    SetHtmlElementName( "OlabLinksTag" );
   }
 }

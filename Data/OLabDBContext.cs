@@ -5,7 +5,7 @@ namespace OLab.Api.Model;
 public partial class OLabDBContext : DbContext
 {
   public OLabDBContext(DbContextOptions<OLabDBContext> options)
-      : base(options)
+      : base( options )
   {
   }
 
@@ -278,1007 +278,1007 @@ public partial class OLabDBContext : DbContext
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
     modelBuilder
-        .UseCollation("utf8mb4_general_ci")
-        .HasCharSet("utf8mb4");
+        .UseCollation( "utf8mb4_general_ci" )
+        .HasCharSet( "utf8mb4" );
 
-    modelBuilder.Entity<AuthorRights>(entity =>
+    modelBuilder.Entity<AuthorRights>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<Cron>(entity =>
+    modelBuilder.Entity<Cron>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Rule).WithMany(p => p.Cron).HasConstraintName("cron_ibfk_1");
-    });
+      entity.HasOne( d => d.Rule ).WithMany( p => p.Cron ).HasConstraintName( "cron_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<GrouproleAcls>(entity =>
+    modelBuilder.Entity<GrouproleAcls>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Acl2).HasDefaultValueSql("b'0'");
+      entity.Property( e => e.Acl2 ).HasDefaultValueSql( "b'0'" );
 
-      entity.HasOne(d => d.Group).WithMany(p => p.GrouproleAcls)
-              .OnDelete(DeleteBehavior.Cascade)
-              .HasConstraintName("ifk_gra_group");
+      entity.HasOne( d => d.Group ).WithMany( p => p.GrouproleAcls )
+              .OnDelete( DeleteBehavior.Cascade )
+              .HasConstraintName( "ifk_gra_group" );
 
-      entity.HasOne(d => d.Role).WithMany(p => p.GrouproleAcls)
-              .OnDelete(DeleteBehavior.Cascade)
-              .HasConstraintName("ifk_gra_role");
-    });
+      entity.HasOne( d => d.Role ).WithMany( p => p.GrouproleAcls )
+              .OnDelete( DeleteBehavior.Cascade )
+              .HasConstraintName( "ifk_gra_role" );
+    } );
 
-    modelBuilder.Entity<Groups>(entity =>
+    modelBuilder.Entity<Groups>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<H5pContents>(entity =>
+    modelBuilder.Entity<H5pContents>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.CreatedAt).HasDefaultValueSql("'0000-00-00 00:00:00'");
-      entity.Property(e => e.UpdatedAt).HasDefaultValueSql("'0000-00-00 00:00:00'");
-    });
+      entity.Property( e => e.CreatedAt ).HasDefaultValueSql( "'0000-00-00 00:00:00'" );
+      entity.Property( e => e.UpdatedAt ).HasDefaultValueSql( "'0000-00-00 00:00:00'" );
+    } );
 
-    modelBuilder.Entity<H5pContentsLibraries>(entity =>
+    modelBuilder.Entity<H5pContentsLibraries>( entity =>
     {
-      entity.HasKey(e => new { e.ContentId, e.LibraryId, e.DependencyType })
-              .HasName("PRIMARY")
-              .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
-    });
+      entity.HasKey( e => new { e.ContentId, e.LibraryId, e.DependencyType } )
+              .HasName( "PRIMARY" )
+              .HasAnnotation( "MySql:IndexPrefixLength", new[] { 0, 0, 0 } );
+    } );
 
-    modelBuilder.Entity<H5pContentsTags>(entity =>
+    modelBuilder.Entity<H5pContentsTags>( entity =>
     {
-      entity.HasKey(e => new { e.ContentId, e.TagId })
-              .HasName("PRIMARY")
-              .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
-    });
+      entity.HasKey( e => new { e.ContentId, e.TagId } )
+              .HasName( "PRIMARY" )
+              .HasAnnotation( "MySql:IndexPrefixLength", new[] { 0, 0 } );
+    } );
 
-    modelBuilder.Entity<H5pContentsUserData>(entity =>
+    modelBuilder.Entity<H5pContentsUserData>( entity =>
     {
-      entity.HasKey(e => new { e.ContentId, e.UserId, e.SubContentId, e.DataId })
-              .HasName("PRIMARY")
-              .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0, 0 });
+      entity.HasKey( e => new { e.ContentId, e.UserId, e.SubContentId, e.DataId } )
+              .HasName( "PRIMARY" )
+              .HasAnnotation( "MySql:IndexPrefixLength", new[] { 0, 0, 0, 0 } );
 
-      entity.Property(e => e.UpdatedAt).HasDefaultValueSql("'0000-00-00 00:00:00'");
-    });
+      entity.Property( e => e.UpdatedAt ).HasDefaultValueSql( "'0000-00-00 00:00:00'" );
+    } );
 
-    modelBuilder.Entity<H5pCounters>(entity =>
+    modelBuilder.Entity<H5pCounters>( entity =>
     {
-      entity.HasKey(e => new { e.Type, e.LibraryName, e.LibraryVersion })
-              .HasName("PRIMARY")
-              .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
-    });
+      entity.HasKey( e => new { e.Type, e.LibraryName, e.LibraryVersion } )
+              .HasName( "PRIMARY" )
+              .HasAnnotation( "MySql:IndexPrefixLength", new[] { 0, 0, 0 } );
+    } );
 
-    modelBuilder.Entity<H5pEvents>(entity =>
+    modelBuilder.Entity<H5pEvents>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<H5pLibraries>(entity =>
+    modelBuilder.Entity<H5pLibraries>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.CreatedAt)
+      entity.Property( e => e.CreatedAt )
               .ValueGeneratedOnAddOrUpdate()
-              .HasDefaultValueSql("current_timestamp()");
-      entity.Property(e => e.UpdatedAt).HasDefaultValueSql("'0000-00-00 00:00:00'");
-    });
+              .HasDefaultValueSql( "current_timestamp()" );
+      entity.Property( e => e.UpdatedAt ).HasDefaultValueSql( "'0000-00-00 00:00:00'" );
+    } );
 
-    modelBuilder.Entity<H5pLibrariesCachedassets>(entity =>
+    modelBuilder.Entity<H5pLibrariesCachedassets>( entity =>
     {
-      entity.HasKey(e => new { e.LibraryId, e.Hash })
-              .HasName("PRIMARY")
-              .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
-    });
+      entity.HasKey( e => new { e.LibraryId, e.Hash } )
+              .HasName( "PRIMARY" )
+              .HasAnnotation( "MySql:IndexPrefixLength", new[] { 0, 0 } );
+    } );
 
-    modelBuilder.Entity<H5pLibrariesLanguages>(entity =>
+    modelBuilder.Entity<H5pLibrariesLanguages>( entity =>
     {
-      entity.HasKey(e => new { e.LibraryId, e.LanguageCode })
-              .HasName("PRIMARY")
-              .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
-    });
+      entity.HasKey( e => new { e.LibraryId, e.LanguageCode } )
+              .HasName( "PRIMARY" )
+              .HasAnnotation( "MySql:IndexPrefixLength", new[] { 0, 0 } );
+    } );
 
-    modelBuilder.Entity<H5pLibrariesLibraries>(entity =>
+    modelBuilder.Entity<H5pLibrariesLibraries>( entity =>
     {
-      entity.HasKey(e => new { e.LibraryId, e.RequiredLibraryId })
-              .HasName("PRIMARY")
-              .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
-    });
+      entity.HasKey( e => new { e.LibraryId, e.RequiredLibraryId } )
+              .HasName( "PRIMARY" )
+              .HasAnnotation( "MySql:IndexPrefixLength", new[] { 0, 0 } );
+    } );
 
-    modelBuilder.Entity<H5pResults>(entity =>
+    modelBuilder.Entity<H5pResults>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<H5pTags>(entity =>
+    modelBuilder.Entity<H5pTags>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<Languages>(entity =>
+    modelBuilder.Entity<Languages>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<Lrs>(entity =>
+    modelBuilder.Entity<Lrs>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<LrsStatement>(entity =>
+    modelBuilder.Entity<LrsStatement>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Lrs).WithMany(p => p.LrsStatement).HasConstraintName("lrs_statement_ibfk_1");
+      entity.HasOne( d => d.Lrs ).WithMany( p => p.LrsStatement ).HasConstraintName( "lrs_statement_ibfk_1" );
 
-      entity.HasOne(d => d.Statement).WithMany(p => p.LrsStatement).HasConstraintName("lrs_statement_ibfk_2");
-    });
+      entity.HasOne( d => d.Statement ).WithMany( p => p.LrsStatement ).HasConstraintName( "lrs_statement_ibfk_2" );
+    } );
 
-    modelBuilder.Entity<LtiConsumer>(entity =>
+    modelBuilder.Entity<LtiConsumer>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Role).HasDefaultValueSql("'1'");
-    });
+      entity.Property( e => e.Role ).HasDefaultValueSql( "'1'" );
+    } );
 
-    modelBuilder.Entity<LtiConsumers>(entity =>
+    modelBuilder.Entity<LtiConsumers>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Role).HasDefaultValueSql("'1'");
-    });
+      entity.Property( e => e.Role ).HasDefaultValueSql( "'1'" );
+    } );
 
-    modelBuilder.Entity<LtiContexts>(entity =>
+    modelBuilder.Entity<LtiContexts>( entity =>
     {
-      entity.HasKey(e => e.ConsumerKey).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.ConsumerKey ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<LtiNonces>(entity =>
+    modelBuilder.Entity<LtiNonces>( entity =>
     {
-      entity.HasKey(e => e.ConsumerKey).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.ConsumerKey ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<LtiProviders>(entity =>
+    modelBuilder.Entity<LtiProviders>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<LtiSharekeys>(entity =>
+    modelBuilder.Entity<LtiSharekeys>( entity =>
     {
-      entity.HasKey(e => e.ShareKeyId).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.ShareKeyId ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<LtiUsers>(entity =>
+    modelBuilder.Entity<LtiUsers>( entity =>
     {
-      entity.HasKey(e => e.ConsumerKey).HasName("PRIMARY");
+      entity.HasKey( e => e.ConsumerKey ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.ConsumerKeyNavigation).WithOne(p => p.LtiUsers).HasConstraintName("lti_users_ibfk_2");
-    });
+      entity.HasOne( d => d.ConsumerKeyNavigation ).WithOne( p => p.LtiUsers ).HasConstraintName( "lti_users_ibfk_2" );
+    } );
 
-    modelBuilder.Entity<MapAvatars>(entity =>
+    modelBuilder.Entity<MapAvatars>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.MapAvatars).HasConstraintName("map_avatars_ibfk_1");
-    });
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapAvatars ).HasConstraintName( "map_avatars_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapChatElements>(entity =>
+    modelBuilder.Entity<MapChatElements>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Chat).WithMany(p => p.MapChatElements).HasConstraintName("map_chat_elements_ibfk_1");
-    });
+      entity.HasOne( d => d.Chat ).WithMany( p => p.MapChatElements ).HasConstraintName( "map_chat_elements_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapChats>(entity =>
+    modelBuilder.Entity<MapChats>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.MapChats).HasConstraintName("map_chats_ibfk_1");
-    });
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapChats ).HasConstraintName( "map_chats_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapCollectionMaps>(entity =>
+    modelBuilder.Entity<MapCollectionMaps>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Collection).WithMany(p => p.MapCollectionMaps).HasConstraintName("map_collectionmaps_ibfk_1");
+      entity.HasOne( d => d.Collection ).WithMany( p => p.MapCollectionMaps ).HasConstraintName( "map_collectionmaps_ibfk_1" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.MapCollectionMaps).HasConstraintName("map_collectionmaps_ibfk_2");
-    });
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapCollectionMaps ).HasConstraintName( "map_collectionmaps_ibfk_2" );
+    } );
 
-    modelBuilder.Entity<MapCollections>(entity =>
+    modelBuilder.Entity<MapCollections>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapContributorRoles>(entity =>
+    modelBuilder.Entity<MapContributorRoles>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapContributors>(entity =>
+    modelBuilder.Entity<MapContributors>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Order).HasDefaultValueSql("'1'");
+      entity.Property( e => e.Order ).HasDefaultValueSql( "'1'" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.MapContributors).HasConstraintName("map_contributors_ibfk_1");
-    });
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapContributors ).HasConstraintName( "map_contributors_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapCounterCommonRules>(entity =>
+    modelBuilder.Entity<MapCounterCommonRules>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.MapCounterCommonRules).HasConstraintName("map_counter_common_rules_ibfk_1");
-    });
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapCounterCommonRules ).HasConstraintName( "map_counter_common_rules_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapCounterRuleRelations>(entity =>
+    modelBuilder.Entity<MapCounterRuleRelations>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapCounterRules>(entity =>
+    modelBuilder.Entity<MapCounterRules>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.CounterNavigation).WithMany(p => p.MapCounterRules).HasConstraintName("map_counter_rules_ibfk_1");
-    });
+      entity.HasOne( d => d.CounterNavigation ).WithMany( p => p.MapCounterRules ).HasConstraintName( "map_counter_rules_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapCounters>(entity =>
+    modelBuilder.Entity<MapCounters>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Visible).HasDefaultValueSql("'0'");
+      entity.Property( e => e.Visible ).HasDefaultValueSql( "'0'" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.MapCounters)
-              .OnDelete(DeleteBehavior.Cascade)
-              .HasConstraintName("map_counters_ibfk_1");
-    });
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapCounters )
+              .OnDelete( DeleteBehavior.Cascade )
+              .HasConstraintName( "map_counters_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapDamElements>(entity =>
+    modelBuilder.Entity<MapDamElements>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Order).HasDefaultValueSql("'0'");
+      entity.Property( e => e.Order ).HasDefaultValueSql( "'0'" );
 
-      entity.HasOne(d => d.Dam).WithMany(p => p.MapDamElements).HasConstraintName("map_dam_elements_ibfk_1");
-    });
+      entity.HasOne( d => d.Dam ).WithMany( p => p.MapDamElements ).HasConstraintName( "map_dam_elements_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapDams>(entity =>
+    modelBuilder.Entity<MapDams>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.MapDams).HasConstraintName("map_dams_ibfk_1");
-    });
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapDams ).HasConstraintName( "map_dams_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapElements>(entity =>
+    modelBuilder.Entity<MapElements>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.HeightType).HasDefaultValueSql("'px'");
-      entity.Property(e => e.IsShared).HasDefaultValueSql("'1'");
-      entity.Property(e => e.WidthType).HasDefaultValueSql("'px'");
+      entity.Property( e => e.HeightType ).HasDefaultValueSql( "'px'" );
+      entity.Property( e => e.IsShared ).HasDefaultValueSql( "'1'" );
+      entity.Property( e => e.WidthType ).HasDefaultValueSql( "'px'" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.MapElements).HasConstraintName("map_elements_ibfk_1");
-    });
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapElements ).HasConstraintName( "map_elements_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapElementsMetadata>(entity =>
+    modelBuilder.Entity<MapElementsMetadata>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapFeedbackOperators>(entity =>
+    modelBuilder.Entity<MapFeedbackOperators>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapFeedbackRules>(entity =>
+    modelBuilder.Entity<MapFeedbackRules>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.MapFeedbackRules).HasConstraintName("map_feedback_rules_ibfk_1");
-    });
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapFeedbackRules ).HasConstraintName( "map_feedback_rules_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapFeedbackTypes>(entity =>
+    modelBuilder.Entity<MapFeedbackTypes>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapGrouproles>(entity =>
+    modelBuilder.Entity<MapGrouproles>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Group).WithMany(p => p.MapGrouproles).HasConstraintName("mgr_ibfk_group");
+      entity.HasOne( d => d.Group ).WithMany( p => p.MapGrouproles ).HasConstraintName( "mgr_ibfk_group" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.MapGrouproles).HasConstraintName("mgr_ibfk_node");
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapGrouproles ).HasConstraintName( "mgr_ibfk_node" );
 
-      entity.HasOne(d => d.Role).WithMany(p => p.MapGrouproles).HasConstraintName("mgr_ibfk_role");
-    });
+      entity.HasOne( d => d.Role ).WithMany( p => p.MapGrouproles ).HasConstraintName( "mgr_ibfk_role" );
+    } );
 
-    modelBuilder.Entity<MapKeys>(entity =>
+    modelBuilder.Entity<MapKeys>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.MapKeys).HasConstraintName("map_keys_ibfk_1");
-    });
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapKeys ).HasConstraintName( "map_keys_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapNodeCounters>(entity =>
+    modelBuilder.Entity<MapNodeCounters>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Display).HasDefaultValueSql("'1'");
+      entity.Property( e => e.Display ).HasDefaultValueSql( "'1'" );
 
-      entity.HasOne(d => d.Node).WithMany(p => p.MapNodeCounters).HasConstraintName("map_node_counters_ibfk_1");
-    });
+      entity.HasOne( d => d.Node ).WithMany( p => p.MapNodeCounters ).HasConstraintName( "map_node_counters_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapNodeGrouproles>(entity =>
+    modelBuilder.Entity<MapNodeGrouproles>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Group).WithMany(p => p.MapNodeGrouproles).HasConstraintName("mngr_ibfk_group");
+      entity.HasOne( d => d.Group ).WithMany( p => p.MapNodeGrouproles ).HasConstraintName( "mngr_ibfk_group" );
 
-      entity.HasOne(d => d.Node).WithMany(p => p.MapNodeGrouproles).HasConstraintName("mngr_ibfk_node");
+      entity.HasOne( d => d.Node ).WithMany( p => p.MapNodeGrouproles ).HasConstraintName( "mngr_ibfk_node" );
 
-      entity.HasOne(d => d.Role).WithMany(p => p.MapNodeGrouproles).HasConstraintName("mngr_ibfk_role");
-    });
+      entity.HasOne( d => d.Role ).WithMany( p => p.MapNodeGrouproles ).HasConstraintName( "mngr_ibfk_role" );
+    } );
 
-    modelBuilder.Entity<MapNodeJumps>(entity =>
+    modelBuilder.Entity<MapNodeJumps>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Hidden).HasDefaultValueSql("'0'");
-      entity.Property(e => e.Order).HasDefaultValueSql("'1'");
-      entity.Property(e => e.Probability).HasDefaultValueSql("'0'");
+      entity.Property( e => e.Hidden ).HasDefaultValueSql( "'0'" );
+      entity.Property( e => e.Order ).HasDefaultValueSql( "'1'" );
+      entity.Property( e => e.Probability ).HasDefaultValueSql( "'0'" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.MapNodeJumps).HasConstraintName("map_jumps_ibfk_1");
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapNodeJumps ).HasConstraintName( "map_jumps_ibfk_1" );
 
-      entity.HasOne(d => d.Node).WithMany(p => p.MapNodeJumps).HasConstraintName("map_jumps_ibfk_4");
-    });
+      entity.HasOne( d => d.Node ).WithMany( p => p.MapNodeJumps ).HasConstraintName( "map_jumps_ibfk_4" );
+    } );
 
-    modelBuilder.Entity<MapNodeLinkStylies>(entity =>
+    modelBuilder.Entity<MapNodeLinkStylies>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapNodeLinkTypes>(entity =>
+    modelBuilder.Entity<MapNodeLinkTypes>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapNodeLinks>(entity =>
+    modelBuilder.Entity<MapNodeLinks>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Hidden).HasDefaultValueSql("'0'");
-      entity.Property(e => e.Order).HasDefaultValueSql("'1'");
-      entity.Property(e => e.Probability).HasDefaultValueSql("'0'");
+      entity.Property( e => e.Hidden ).HasDefaultValueSql( "'0'" );
+      entity.Property( e => e.Order ).HasDefaultValueSql( "'1'" );
+      entity.Property( e => e.Probability ).HasDefaultValueSql( "'0'" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.MapNodeLinks).HasConstraintName("map_node_links_ibfk_1");
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapNodeLinks ).HasConstraintName( "map_node_links_ibfk_1" );
 
-      entity.HasOne(d => d.NodeId1Navigation).WithMany(p => p.MapNodeLinksNodeId1Navigation).HasConstraintName("map_node_links_ibfk_4");
+      entity.HasOne( d => d.NodeId1Navigation ).WithMany( p => p.MapNodeLinksNodeId1Navigation ).HasConstraintName( "map_node_links_ibfk_4" );
 
-      entity.HasOne(d => d.NodeId2Navigation).WithMany(p => p.MapNodeLinksNodeId2Navigation).HasConstraintName("map_node_links_ibfk_5");
-    });
+      entity.HasOne( d => d.NodeId2Navigation ).WithMany( p => p.MapNodeLinksNodeId2Navigation ).HasConstraintName( "map_node_links_ibfk_5" );
+    } );
 
-    modelBuilder.Entity<MapNodeNotes>(entity =>
+    modelBuilder.Entity<MapNodeNotes>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Id).ValueGeneratedNever();
+      entity.Property( e => e.Id ).ValueGeneratedNever();
 
-      entity.HasOne(d => d.MapNode).WithMany(p => p.MapNodeNotes).HasConstraintName("fk_map_node");
-    });
+      entity.HasOne( d => d.MapNode ).WithMany( p => p.MapNodeNotes ).HasConstraintName( "fk_map_node" );
+    } );
 
-    modelBuilder.Entity<MapNodePriorities>(entity =>
+    modelBuilder.Entity<MapNodePriorities>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapNodeReferences>(entity =>
+    modelBuilder.Entity<MapNodeReferences>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapNodeSectionNodes>(entity =>
+    modelBuilder.Entity<MapNodeSectionNodes>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Node).WithMany(p => p.MapNodeSectionNodes).HasConstraintName("map_node_section_nodes_ibfk_3");
+      entity.HasOne( d => d.Node ).WithMany( p => p.MapNodeSectionNodes ).HasConstraintName( "map_node_section_nodes_ibfk_3" );
 
-      entity.HasOne(d => d.Section).WithMany(p => p.MapNodeSectionNodes).HasConstraintName("map_node_section_nodes_ibfk_1");
-    });
+      entity.HasOne( d => d.Section ).WithMany( p => p.MapNodeSectionNodes ).HasConstraintName( "map_node_section_nodes_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapNodeSections>(entity =>
+    modelBuilder.Entity<MapNodeSections>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.MapNodeSections).HasConstraintName("map_node_sections_ibfk_1");
-    });
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapNodeSections ).HasConstraintName( "map_node_sections_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapNodeTypes>(entity =>
+    modelBuilder.Entity<MapNodeTypes>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapNodes>(entity =>
+    modelBuilder.Entity<MapNodes>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.ForceReload).HasDefaultValueSql("'0'");
-      entity.Property(e => e.LinkTypeId).HasDefaultValueSql("'1'");
+      entity.Property( e => e.ForceReload ).HasDefaultValueSql( "'0'" );
+      entity.Property( e => e.LinkTypeId ).HasDefaultValueSql( "'1'" );
 
-      entity.HasOne(d => d.LinkStyle).WithMany(p => p.MapNodes)
-              .OnDelete(DeleteBehavior.Cascade)
-              .HasConstraintName("map_nodes_ibfk_2");
+      entity.HasOne( d => d.LinkStyle ).WithMany( p => p.MapNodes )
+              .OnDelete( DeleteBehavior.Cascade )
+              .HasConstraintName( "map_nodes_ibfk_2" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.MapNodes).HasConstraintName("map_nodes_ibfk_1");
-    });
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapNodes ).HasConstraintName( "map_nodes_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapPopupAssignTypes>(entity =>
+    modelBuilder.Entity<MapPopupAssignTypes>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapPopupPositionTypes>(entity =>
+    modelBuilder.Entity<MapPopupPositionTypes>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapPopupPositions>(entity =>
+    modelBuilder.Entity<MapPopupPositions>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapPopups>(entity =>
+    modelBuilder.Entity<MapPopups>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapPopupsAssign>(entity =>
+    modelBuilder.Entity<MapPopupsAssign>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.RedirectTypeId).HasDefaultValueSql("'1'");
-    });
+      entity.Property( e => e.RedirectTypeId ).HasDefaultValueSql( "'1'" );
+    } );
 
-    modelBuilder.Entity<MapPopupsCounters>(entity =>
+    modelBuilder.Entity<MapPopupsCounters>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Popup).WithMany(p => p.MapPopupsCounters).HasConstraintName("map_popups_counters_ibfk_1");
-    });
+      entity.HasOne( d => d.Popup ).WithMany( p => p.MapPopupsCounters ).HasConstraintName( "map_popups_counters_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapPopupsStyles>(entity =>
+    modelBuilder.Entity<MapPopupsStyles>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.IsDefaultBackgroundColor).HasDefaultValueSql("'1'");
-    });
+      entity.Property( e => e.IsDefaultBackgroundColor ).HasDefaultValueSql( "'1'" );
+    } );
 
-    modelBuilder.Entity<MapQuestionResponses>(entity =>
+    modelBuilder.Entity<MapQuestionResponses>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Parent).WithMany(p => p.InverseParent)
-              .OnDelete(DeleteBehavior.Cascade)
-              .HasConstraintName("map_question_responses_ibfk_2");
+      entity.HasOne( d => d.Parent ).WithMany( p => p.InverseParent )
+              .OnDelete( DeleteBehavior.Cascade )
+              .HasConstraintName( "map_question_responses_ibfk_2" );
 
-      entity.HasOne(d => d.Question).WithMany(p => p.MapQuestionResponses)
-              .OnDelete(DeleteBehavior.Cascade)
-              .HasConstraintName("map_question_responses_ibfk_1");
-    });
+      entity.HasOne( d => d.Question ).WithMany( p => p.MapQuestionResponses )
+              .OnDelete( DeleteBehavior.Cascade )
+              .HasConstraintName( "map_question_responses_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapQuestionTypes>(entity =>
+    modelBuilder.Entity<MapQuestionTypes>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapQuestionValidation>(entity =>
+    modelBuilder.Entity<MapQuestionValidation>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Question).WithMany(p => p.MapQuestionValidation).HasConstraintName("map_question_validation_ibfk_1");
-    });
+      entity.HasOne( d => d.Question ).WithMany( p => p.MapQuestionValidation ).HasConstraintName( "map_question_validation_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapQuestions>(entity =>
+    modelBuilder.Entity<MapQuestions>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.NumTries).HasDefaultValueSql("-1");
+      entity.Property( e => e.NumTries ).HasDefaultValueSql( "-1" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.MapQuestions)
-              .OnDelete(DeleteBehavior.Cascade)
-              .HasConstraintName("map_questions_ibfk_1");
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapQuestions )
+              .OnDelete( DeleteBehavior.Cascade )
+              .HasConstraintName( "map_questions_ibfk_1" );
 
-      entity.HasOne(d => d.Parent).WithMany(p => p.InverseParent)
-              .OnDelete(DeleteBehavior.Cascade)
-              .HasConstraintName("map_questions_ibfk_2");
-    });
+      entity.HasOne( d => d.Parent ).WithMany( p => p.InverseParent )
+              .OnDelete( DeleteBehavior.Cascade )
+              .HasConstraintName( "map_questions_ibfk_2" );
+    } );
 
-    modelBuilder.Entity<MapSections>(entity =>
+    modelBuilder.Entity<MapSections>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapSecurities>(entity =>
+    modelBuilder.Entity<MapSecurities>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapSkins>(entity =>
+    modelBuilder.Entity<MapSkins>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapTypes>(entity =>
+    modelBuilder.Entity<MapTypes>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapUsers>(entity =>
+    modelBuilder.Entity<MapUsers>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.MapUsers).HasConstraintName("map_users_ibfk_1");
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapUsers ).HasConstraintName( "map_users_ibfk_1" );
 
-      entity.HasOne(d => d.User).WithMany(p => p.MapUsers).HasConstraintName("map_users_ibfk_2");
-    });
+      entity.HasOne( d => d.User ).WithMany( p => p.MapUsers ).HasConstraintName( "map_users_ibfk_2" );
+    } );
 
-    modelBuilder.Entity<MapVpdElements>(entity =>
+    modelBuilder.Entity<MapVpdElements>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Vpd).WithMany(p => p.MapVpdElements).HasConstraintName("map_vpd_elements_ibfk_1");
-    });
+      entity.HasOne( d => d.Vpd ).WithMany( p => p.MapVpdElements ).HasConstraintName( "map_vpd_elements_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<MapVpdTypes>(entity =>
+    modelBuilder.Entity<MapVpdTypes>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<MapVpds>(entity =>
+    modelBuilder.Entity<MapVpds>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.VpdType).WithMany(p => p.MapVpds).HasConstraintName("map_vpds_ibfk_1");
-    });
+      entity.HasOne( d => d.VpdType ).WithMany( p => p.MapVpds ).HasConstraintName( "map_vpds_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<Maps>(entity =>
+    modelBuilder.Entity<Maps>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.IsTemplate).HasDefaultValueSql("'0'");
-      entity.Property(e => e.Keywords).HasDefaultValueSql("''''''");
-      entity.Property(e => e.LanguageId).HasDefaultValueSql("'1'");
-      entity.Property(e => e.ReminderMsg).HasDefaultValueSql("''");
+      entity.Property( e => e.IsTemplate ).HasDefaultValueSql( "'0'" );
+      entity.Property( e => e.Keywords ).HasDefaultValueSql( "''''''" );
+      entity.Property( e => e.LanguageId ).HasDefaultValueSql( "'1'" );
+      entity.Property( e => e.ReminderMsg ).HasDefaultValueSql( "''" );
 
-      entity.HasOne(d => d.Language).WithMany(p => p.Maps).HasConstraintName("maps_ibfk_7");
+      entity.HasOne( d => d.Language ).WithMany( p => p.Maps ).HasConstraintName( "maps_ibfk_7" );
 
-      entity.HasOne(d => d.Section).WithMany(p => p.Maps)
-              .OnDelete(DeleteBehavior.ClientSetNull)
-              .HasConstraintName("maps_ibfk_6");
+      entity.HasOne( d => d.Section ).WithMany( p => p.Maps )
+              .OnDelete( DeleteBehavior.ClientSetNull )
+              .HasConstraintName( "maps_ibfk_6" );
 
-      entity.HasOne(d => d.Security).WithMany(p => p.Maps)
-              .OnDelete(DeleteBehavior.ClientSetNull)
-              .HasConstraintName("maps_ibfk_2");
+      entity.HasOne( d => d.Security ).WithMany( p => p.Maps )
+              .OnDelete( DeleteBehavior.ClientSetNull )
+              .HasConstraintName( "maps_ibfk_2" );
 
-      entity.HasOne(d => d.Type).WithMany(p => p.Maps)
-              .OnDelete(DeleteBehavior.ClientSetNull)
-              .HasConstraintName("maps_ibfk_3");
-    });
+      entity.HasOne( d => d.Type ).WithMany( p => p.Maps )
+              .OnDelete( DeleteBehavior.ClientSetNull )
+              .HasConstraintName( "maps_ibfk_3" );
+    } );
 
-    modelBuilder.Entity<OauthProviders>(entity =>
+    modelBuilder.Entity<OauthProviders>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<Options>(entity =>
+    modelBuilder.Entity<Options>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Autoload).HasDefaultValueSql("'yes'");
-      entity.Property(e => e.Name).HasDefaultValueSql("''");
-    });
+      entity.Property( e => e.Autoload ).HasDefaultValueSql( "'yes'" );
+      entity.Property( e => e.Name ).HasDefaultValueSql( "''" );
+    } );
 
-    modelBuilder.Entity<Phinxlog>(entity =>
+    modelBuilder.Entity<Phinxlog>( entity =>
     {
-      entity.HasKey(e => e.Version).HasName("PRIMARY");
+      entity.HasKey( e => e.Version ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Version).ValueGeneratedNever();
-      entity.Property(e => e.EndTime).HasDefaultValueSql("'0000-00-00 00:00:00'");
-      entity.Property(e => e.StartTime)
+      entity.Property( e => e.Version ).ValueGeneratedNever();
+      entity.Property( e => e.EndTime ).HasDefaultValueSql( "'0000-00-00 00:00:00'" );
+      entity.Property( e => e.StartTime )
               .ValueGeneratedOnAddOrUpdate()
-              .HasDefaultValueSql("current_timestamp()");
-    });
+              .HasDefaultValueSql( "current_timestamp()" );
+    } );
 
-    modelBuilder.Entity<QCumulative>(entity =>
+    modelBuilder.Entity<QCumulative>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.QCumulative).HasConstraintName("q_cumulative_ibfk_2");
+      entity.HasOne( d => d.Map ).WithMany( p => p.QCumulative ).HasConstraintName( "q_cumulative_ibfk_2" );
 
-      entity.HasOne(d => d.Question).WithMany(p => p.QCumulative).HasConstraintName("q_cumulative_ibfk_1");
-    });
+      entity.HasOne( d => d.Question ).WithMany( p => p.QCumulative ).HasConstraintName( "q_cumulative_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<Roles>(entity =>
+    modelBuilder.Entity<Roles>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.IsSystem).HasDefaultValueSql("'0'");
-    });
+      entity.Property( e => e.IsSystem ).HasDefaultValueSql( "'0'" );
+    } );
 
-    modelBuilder.Entity<ScenarioMaps>(entity =>
+    modelBuilder.Entity<ScenarioMaps>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Id).ValueGeneratedNever();
+      entity.Property( e => e.Id ).ValueGeneratedNever();
 
-      entity.HasOne(d => d.Map).WithMany(p => p.ScenarioMaps)
-              .OnDelete(DeleteBehavior.ClientSetNull)
-              .HasConstraintName("fk_scenario_maps_maps");
+      entity.HasOne( d => d.Map ).WithMany( p => p.ScenarioMaps )
+              .OnDelete( DeleteBehavior.ClientSetNull )
+              .HasConstraintName( "fk_scenario_maps_maps" );
 
-      entity.HasOne(d => d.Scenario).WithMany(p => p.ScenarioMaps)
-              .OnDelete(DeleteBehavior.ClientSetNull)
-              .HasConstraintName("fk_scenario_maps_scenarios");
-    });
+      entity.HasOne( d => d.Scenario ).WithMany( p => p.ScenarioMaps )
+              .OnDelete( DeleteBehavior.ClientSetNull )
+              .HasConstraintName( "fk_scenario_maps_scenarios" );
+    } );
 
-    modelBuilder.Entity<Scenarios>(entity =>
+    modelBuilder.Entity<Scenarios>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Id).ValueGeneratedNever();
-    });
+      entity.Property( e => e.Id ).ValueGeneratedNever();
+    } );
 
-    modelBuilder.Entity<ScopeTypes>(entity =>
+    modelBuilder.Entity<ScopeTypes>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<Servers>(entity =>
+    modelBuilder.Entity<Servers>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<SjtResponse>(entity =>
+    modelBuilder.Entity<SjtResponse>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Response).WithMany(p => p.SjtResponse).HasConstraintName("sjt_response_ibfk_1");
-    });
+      entity.HasOne( d => d.Response ).WithMany( p => p.SjtResponse ).HasConstraintName( "sjt_response_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<Statements>(entity =>
+    modelBuilder.Entity<Statements>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Initiator).HasDefaultValueSql("'1'");
+      entity.Property( e => e.Initiator ).HasDefaultValueSql( "'1'" );
 
-      entity.HasOne(d => d.Session).WithMany(p => p.Statements)
-              .OnDelete(DeleteBehavior.SetNull)
-              .HasConstraintName("statements_ibfk_1");
-    });
+      entity.HasOne( d => d.Session ).WithMany( p => p.Statements )
+              .OnDelete( DeleteBehavior.SetNull )
+              .HasConstraintName( "statements_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<StatisticsUserDatesave>(entity =>
+    modelBuilder.Entity<StatisticsUserDatesave>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<StatisticsUserResponses>(entity =>
+    modelBuilder.Entity<StatisticsUserResponses>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<StatisticsUserSessions>(entity =>
+    modelBuilder.Entity<StatisticsUserSessions>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<StatisticsUserSessiontraces>(entity =>
+    modelBuilder.Entity<StatisticsUserSessiontraces>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<SystemApplications>(entity =>
+    modelBuilder.Entity<SystemApplications>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<SystemConstants>(entity =>
+    modelBuilder.Entity<SystemConstants>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<SystemCounterActions>(entity =>
+    modelBuilder.Entity<SystemCounterActions>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Counter).WithMany(p => p.SystemCounterActions)
-              .OnDelete(DeleteBehavior.ClientSetNull)
-              .HasConstraintName("fk_counter_action_counter");
+      entity.HasOne( d => d.Counter ).WithMany( p => p.SystemCounterActions )
+              .OnDelete( DeleteBehavior.ClientSetNull )
+              .HasConstraintName( "fk_counter_action_counter" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.SystemCounterActions)
-              .OnDelete(DeleteBehavior.Cascade)
-              .HasConstraintName("fk_counter_action_map");
-    });
+      entity.HasOne( d => d.Map ).WithMany( p => p.SystemCounterActions )
+              .OnDelete( DeleteBehavior.Cascade )
+              .HasConstraintName( "fk_counter_action_map" );
+    } );
 
-    modelBuilder.Entity<SystemCounters>(entity =>
+    modelBuilder.Entity<SystemCounters>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Visible).HasDefaultValueSql("'0'");
-    });
+      entity.Property( e => e.Visible ).HasDefaultValueSql( "'0'" );
+    } );
 
-    modelBuilder.Entity<SystemCourses>(entity =>
+    modelBuilder.Entity<SystemCourses>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<SystemFiles>(entity =>
+    modelBuilder.Entity<SystemFiles>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.HeightType).HasDefaultValueSql("'px'");
-      entity.Property(e => e.IsMedia).HasDefaultValueSql("'1'");
-      entity.Property(e => e.IsShared).HasDefaultValueSql("'1'");
-      entity.Property(e => e.IsSystem).HasDefaultValueSql("'0'");
-      entity.Property(e => e.WidthType).HasDefaultValueSql("'px'");
-    });
+      entity.Property( e => e.HeightType ).HasDefaultValueSql( "'px'" );
+      entity.Property( e => e.IsMedia ).HasDefaultValueSql( "'1'" );
+      entity.Property( e => e.IsShared ).HasDefaultValueSql( "'1'" );
+      entity.Property( e => e.IsSystem ).HasDefaultValueSql( "'0'" );
+      entity.Property( e => e.WidthType ).HasDefaultValueSql( "'px'" );
+    } );
 
-    modelBuilder.Entity<SystemGlobals>(entity =>
+    modelBuilder.Entity<SystemGlobals>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<SystemQuestionResponses>(entity =>
+    modelBuilder.Entity<SystemQuestionResponses>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Parent).WithMany(p => p.InverseParent)
-              .OnDelete(DeleteBehavior.Cascade)
-              .HasConstraintName("system_question_responses_ibfk_2");
+      entity.HasOne( d => d.Parent ).WithMany( p => p.InverseParent )
+              .OnDelete( DeleteBehavior.Cascade )
+              .HasConstraintName( "system_question_responses_ibfk_2" );
 
-      entity.HasOne(d => d.Question).WithMany(p => p.SystemQuestionResponses)
-              .OnDelete(DeleteBehavior.Cascade)
-              .HasConstraintName("system_question_responses_ibfk_1");
-    });
+      entity.HasOne( d => d.Question ).WithMany( p => p.SystemQuestionResponses )
+              .OnDelete( DeleteBehavior.Cascade )
+              .HasConstraintName( "system_question_responses_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<SystemQuestionTypes>(entity =>
+    modelBuilder.Entity<SystemQuestionTypes>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<SystemQuestionValidation>(entity =>
+    modelBuilder.Entity<SystemQuestionValidation>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Question).WithMany(p => p.SystemQuestionValidation).HasConstraintName("system_question_validation_ibfk_1");
-    });
+      entity.HasOne( d => d.Question ).WithMany( p => p.SystemQuestionValidation ).HasConstraintName( "system_question_validation_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<SystemQuestions>(entity =>
+    modelBuilder.Entity<SystemQuestions>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.NumTries).HasDefaultValueSql("-1");
+      entity.Property( e => e.NumTries ).HasDefaultValueSql( "-1" );
 
-      entity.HasOne(d => d.Parent).WithMany(p => p.InverseParent)
-              .OnDelete(DeleteBehavior.Cascade)
-              .HasConstraintName("system_questions_ibfk_2");
-    });
+      entity.HasOne( d => d.Parent ).WithMany( p => p.InverseParent )
+              .OnDelete( DeleteBehavior.Cascade )
+              .HasConstraintName( "system_questions_ibfk_2" );
+    } );
 
-    modelBuilder.Entity<SystemScripts>(entity =>
+    modelBuilder.Entity<SystemScripts>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.IsRaw).HasDefaultValueSql("b'0'");
-    });
+      entity.Property( e => e.IsRaw ).HasDefaultValueSql( "b'0'" );
+    } );
 
-    modelBuilder.Entity<SystemServers>(entity =>
+    modelBuilder.Entity<SystemServers>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<SystemSettings>(entity =>
+    modelBuilder.Entity<SystemSettings>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<SystemThemes>(entity =>
+    modelBuilder.Entity<SystemThemes>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<TodayTips>(entity =>
+    modelBuilder.Entity<TodayTips>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<TwitterCredits>(entity =>
+    modelBuilder.Entity<TwitterCredits>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<UserAcls>(entity =>
+    modelBuilder.Entity<UserAcls>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Acl2).HasDefaultValueSql("b'0'");
-    });
+      entity.Property( e => e.Acl2 ).HasDefaultValueSql( "b'0'" );
+    } );
 
-    modelBuilder.Entity<UserBookmarks>(entity =>
+    modelBuilder.Entity<UserBookmarks>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Node).WithMany(p => p.UserBookmarks).HasConstraintName("user_bookmarks_ibfk_2");
+      entity.HasOne( d => d.Node ).WithMany( p => p.UserBookmarks ).HasConstraintName( "user_bookmarks_ibfk_2" );
 
-      entity.HasOne(d => d.Session).WithMany(p => p.UserBookmarks).HasConstraintName("user_bookmarks_ibfk_1");
+      entity.HasOne( d => d.Session ).WithMany( p => p.UserBookmarks ).HasConstraintName( "user_bookmarks_ibfk_1" );
 
-      entity.HasOne(d => d.User).WithMany(p => p.UserBookmarks).HasConstraintName("user_bookmarks_ibfk_3");
-    });
+      entity.HasOne( d => d.User ).WithMany( p => p.UserBookmarks ).HasConstraintName( "user_bookmarks_ibfk_3" );
+    } );
 
-    modelBuilder.Entity<UserCounterUpdate>(entity =>
+    modelBuilder.Entity<UserCounterUpdate>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<UserGrouproles>(entity =>
+    modelBuilder.Entity<UserGrouproles>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.Iss).HasDefaultValueSql("'olab'");
+      entity.Property( e => e.Iss ).HasDefaultValueSql( "'olab'" );
 
-      entity.HasOne(d => d.Group).WithMany(p => p.UserGrouproles).HasConstraintName("user_grouproles_ibfk_2");
+      entity.HasOne( d => d.Group ).WithMany( p => p.UserGrouproles ).HasConstraintName( "user_grouproles_ibfk_2" );
 
-      entity.HasOne(d => d.Role).WithMany(p => p.UserGrouproles)
-              .OnDelete(DeleteBehavior.ClientSetNull)
-              .HasConstraintName("user_grouproles_ibfk_3");
+      entity.HasOne( d => d.Role ).WithMany( p => p.UserGrouproles )
+              .OnDelete( DeleteBehavior.ClientSetNull )
+              .HasConstraintName( "user_grouproles_ibfk_3" );
 
-      entity.HasOne(d => d.User).WithMany(p => p.UserGrouproles).HasConstraintName("user_grouproles_ibfk_1");
-    });
+      entity.HasOne( d => d.User ).WithMany( p => p.UserGrouproles ).HasConstraintName( "user_grouproles_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<UserNotes>(entity =>
+    modelBuilder.Entity<UserNotes>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Session).WithOne(p => p.UserNotes)
-              .OnDelete(DeleteBehavior.Cascade)
-              .HasConstraintName("user_notes_ibfk_2");
+      entity.HasOne( d => d.Session ).WithOne( p => p.UserNotes )
+              .OnDelete( DeleteBehavior.Cascade )
+              .HasConstraintName( "user_notes_ibfk_2" );
 
-      entity.HasOne(d => d.User).WithMany(p => p.UserNotes)
-              .OnDelete(DeleteBehavior.Cascade)
-              .HasConstraintName("user_notes_ibfk_1");
+      entity.HasOne( d => d.User ).WithMany( p => p.UserNotes )
+              .OnDelete( DeleteBehavior.Cascade )
+              .HasConstraintName( "user_notes_ibfk_1" );
 
-      entity.HasOne(d => d.Webinar).WithMany(p => p.UserNotes)
-              .OnDelete(DeleteBehavior.Cascade)
-              .HasConstraintName("user_notes_ibfk_3");
-    });
+      entity.HasOne( d => d.Webinar ).WithMany( p => p.UserNotes )
+              .OnDelete( DeleteBehavior.Cascade )
+              .HasConstraintName( "user_notes_ibfk_3" );
+    } );
 
-    modelBuilder.Entity<UserResponses>(entity =>
+    modelBuilder.Entity<UserResponses>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Question).WithMany(p => p.UserResponses)
-              .OnDelete(DeleteBehavior.ClientSetNull)
-              .HasConstraintName("user_responses_ibfk_1");
+      entity.HasOne( d => d.Question ).WithMany( p => p.UserResponses )
+              .OnDelete( DeleteBehavior.ClientSetNull )
+              .HasConstraintName( "user_responses_ibfk_1" );
 
-      entity.HasOne(d => d.Session).WithMany(p => p.UserResponses).HasConstraintName("user_responses_ibfk_3");
-    });
+      entity.HasOne( d => d.Session ).WithMany( p => p.UserResponses ).HasConstraintName( "user_responses_ibfk_3" );
+    } );
 
-    modelBuilder.Entity<UserSessions>(entity =>
+    modelBuilder.Entity<UserSessions>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.UserSessions).HasConstraintName("user_sessions_ibfk_2");
-    });
+      entity.HasOne( d => d.Map ).WithMany( p => p.UserSessions ).HasConstraintName( "user_sessions_ibfk_2" );
+    } );
 
-    modelBuilder.Entity<UserSessiontraces>(entity =>
+    modelBuilder.Entity<UserSessiontraces>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.UserSessiontraces).HasConstraintName("user_sessiontraces_ibfk_3");
+      entity.HasOne( d => d.Map ).WithMany( p => p.UserSessiontraces ).HasConstraintName( "user_sessiontraces_ibfk_3" );
 
-      entity.HasOne(d => d.Node).WithMany(p => p.UserSessiontraces).HasConstraintName("user_sessiontraces_ibfk_6");
+      entity.HasOne( d => d.Node ).WithMany( p => p.UserSessiontraces ).HasConstraintName( "user_sessiontraces_ibfk_6" );
 
-      entity.HasOne(d => d.Session).WithMany(p => p.UserSessiontraces).HasConstraintName("user_sessiontraces_ibfk_5");
-    });
+      entity.HasOne( d => d.Session ).WithMany( p => p.UserSessiontraces ).HasConstraintName( "user_sessiontraces_ibfk_5" );
+    } );
 
-    modelBuilder.Entity<UserState>(entity =>
+    modelBuilder.Entity<UserState>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Map).WithMany(p => p.UserState).HasConstraintName("map_fk");
+      entity.HasOne( d => d.Map ).WithMany( p => p.UserState ).HasConstraintName( "map_fk" );
 
-      entity.HasOne(d => d.MapNode).WithMany(p => p.UserState).HasConstraintName("map_node_fk");
-    });
+      entity.HasOne( d => d.MapNode ).WithMany( p => p.UserState ).HasConstraintName( "map_node_fk" );
+    } );
 
-    modelBuilder.Entity<UserTypes>(entity =>
+    modelBuilder.Entity<UserTypes>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<UserresponseCounterupdate>(entity =>
+    modelBuilder.Entity<UserresponseCounterupdate>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Counterupdate).WithMany(p => p.UserresponseCounterupdate).HasConstraintName("urcu_fk_cu");
+      entity.HasOne( d => d.Counterupdate ).WithMany( p => p.UserresponseCounterupdate ).HasConstraintName( "urcu_fk_cu" );
 
-      entity.HasOne(d => d.Userresponse).WithMany(p => p.UserresponseCounterupdate).HasConstraintName("urcu_fk_ur");
-    });
+      entity.HasOne( d => d.Userresponse ).WithMany( p => p.UserresponseCounterupdate ).HasConstraintName( "urcu_fk_ur" );
+    } );
 
-    modelBuilder.Entity<Users>(entity =>
+    modelBuilder.Entity<Users>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.Property(e => e.IsLti).HasDefaultValueSql("'0'");
-      entity.Property(e => e.VisualEditorAutosaveTime).HasDefaultValueSql("'50000'");
-    });
+      entity.Property( e => e.IsLti ).HasDefaultValueSql( "'0'" );
+      entity.Property( e => e.VisualEditorAutosaveTime ).HasDefaultValueSql( "'50000'" );
+    } );
 
-    modelBuilder.Entity<UsersessiontraceCounterupdate>(entity =>
+    modelBuilder.Entity<UsersessiontraceCounterupdate>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Counterupdate).WithMany(p => p.UsersessiontraceCounterupdate).HasConstraintName("stcu_fk_cu");
+      entity.HasOne( d => d.Counterupdate ).WithMany( p => p.UsersessiontraceCounterupdate ).HasConstraintName( "stcu_fk_cu" );
 
-      entity.HasOne(d => d.Sessiontrace).WithMany(p => p.UsersessiontraceCounterupdate).HasConstraintName("stcu_fk_st");
-    });
+      entity.HasOne( d => d.Sessiontrace ).WithMany( p => p.UsersessiontraceCounterupdate ).HasConstraintName( "stcu_fk_st" );
+    } );
 
-    modelBuilder.Entity<Vocablets>(entity =>
+    modelBuilder.Entity<Vocablets>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<WebinarGroups>(entity =>
+    modelBuilder.Entity<WebinarGroups>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<WebinarMacros>(entity =>
+    modelBuilder.Entity<WebinarMacros>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<WebinarMaps>(entity =>
+    modelBuilder.Entity<WebinarMaps>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.StepNavigation).WithMany(p => p.WebinarMaps).HasConstraintName("webinar_maps_ibfk_1");
-    });
+      entity.HasOne( d => d.StepNavigation ).WithMany( p => p.WebinarMaps ).HasConstraintName( "webinar_maps_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<WebinarNodePoll>(entity =>
+    modelBuilder.Entity<WebinarNodePoll>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.Node).WithMany(p => p.WebinarNodePoll).HasConstraintName("webinar_node_poll_ibfk_2");
+      entity.HasOne( d => d.Node ).WithMany( p => p.WebinarNodePoll ).HasConstraintName( "webinar_node_poll_ibfk_2" );
 
-      entity.HasOne(d => d.Webinar).WithMany(p => p.WebinarNodePoll).HasConstraintName("webinar_node_poll_ibfk_1");
-    });
+      entity.HasOne( d => d.Webinar ).WithMany( p => p.WebinarNodePoll ).HasConstraintName( "webinar_node_poll_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<WebinarPoll>(entity =>
+    modelBuilder.Entity<WebinarPoll>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.OnNodeNavigation).WithMany(p => p.WebinarPollOnNodeNavigation).HasConstraintName("webinar_poll_ibfk_1");
+      entity.HasOne( d => d.OnNodeNavigation ).WithMany( p => p.WebinarPollOnNodeNavigation ).HasConstraintName( "webinar_poll_ibfk_1" );
 
-      entity.HasOne(d => d.ToNodeNavigation).WithMany(p => p.WebinarPollToNodeNavigation).HasConstraintName("webinar_poll_ibfk_2");
-    });
+      entity.HasOne( d => d.ToNodeNavigation ).WithMany( p => p.WebinarPollToNodeNavigation ).HasConstraintName( "webinar_poll_ibfk_2" );
+    } );
 
-    modelBuilder.Entity<WebinarSteps>(entity =>
+    modelBuilder.Entity<WebinarSteps>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    modelBuilder.Entity<WebinarUsers>(entity =>
+    modelBuilder.Entity<WebinarUsers>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne(d => d.User).WithMany(p => p.WebinarUsers).HasConstraintName("webinar_users_ibfk_1");
-    });
+      entity.HasOne( d => d.User ).WithMany( p => p.WebinarUsers ).HasConstraintName( "webinar_users_ibfk_1" );
+    } );
 
-    modelBuilder.Entity<Webinars>(entity =>
+    modelBuilder.Entity<Webinars>( entity =>
     {
-      entity.HasKey(e => e.Id).HasName("PRIMARY");
-    });
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+    } );
 
-    OnModelCreatingPartial(modelBuilder);
+    OnModelCreatingPartial( modelBuilder );
   }
 
   partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
