@@ -4,6 +4,10 @@ namespace OLab.Api.Model;
 
 public partial class OLabDBContext : DbContext
 {
+  public OLabDBContext()
+  {
+    
+  }
   public OLabDBContext(DbContextOptions<OLabDBContext> options)
       : base( options )
   {

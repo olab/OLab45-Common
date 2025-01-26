@@ -89,7 +89,7 @@ public class OLabLogger : IOLabLogger
     _messages.Clear();
   }
 
-  private void Log(OLabLogMessage.MessageLevel level, string message)
+  private void SpoolLogMessage(OLabLogMessage.MessageLevel level, string message)
   {
     if ( _keepMessages )
     {
@@ -119,7 +119,7 @@ public class OLabLogger : IOLabLogger
   public void LogDebug(string message)
   {
     _logger?.LogDebug( message );
-    Log( OLabLogMessage.MessageLevel.Debug, message );
+    SpoolLogMessage( OLabLogMessage.MessageLevel.Debug, message );
   }
 
   public void LogDebug(string type, int index, string message)
@@ -131,7 +131,7 @@ public class OLabLogger : IOLabLogger
   public void LogFatal(string message)
   {
     _logger?.LogCritical( message );
-    Log( OLabLogMessage.MessageLevel.Fatal, message );
+    SpoolLogMessage( OLabLogMessage.MessageLevel.Fatal, message );
   }
 
   public void LogFatal(string type, int index, string message)
@@ -166,7 +166,7 @@ public class OLabLogger : IOLabLogger
   public void LogError(string message)
   {
     _logger?.LogError( message );
-    Log( OLabLogMessage.MessageLevel.Error, message );
+    SpoolLogMessage( OLabLogMessage.MessageLevel.Error, message );
   }
 
   public void LogError(string type, int index, string message)
@@ -178,13 +178,13 @@ public class OLabLogger : IOLabLogger
   public void LogInformation(string message)
   {
     _logger?.LogInformation( message );
-    Log( OLabLogMessage.MessageLevel.Info, message );
+    SpoolLogMessage( OLabLogMessage.MessageLevel.Info, message );
   }
 
   public void LogWarning(string message)
   {
     _logger?.LogWarning( message );
-    Log( OLabLogMessage.MessageLevel.Warn, message );
+    SpoolLogMessage( OLabLogMessage.MessageLevel.Warn, message );
   }
 
   public void LogInformation(string type, int index, string message)
