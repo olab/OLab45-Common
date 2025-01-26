@@ -36,6 +36,17 @@ public abstract class UserContext : IUserContext
   public string CourseName { get { return _courseName; } }
 
   private IDictionary<string, string> _claims = new Dictionary<string, string>();
+  private IDictionary<string, string> _headers = new Dictionary<string, string>();
+
+  public IDictionary<string, string> Claims 
+  { 
+    get { return _claims; }  
+  }
+
+  public IDictionary<string, string> Headers 
+  { 
+    get { return _headers; } 
+  }
 
   public string SessionId
   {
@@ -105,10 +116,23 @@ public abstract class UserContext : IUserContext
     _dbContext = dbContext;
   }
 
+  protected void SetHeaders(IDictionary<string, string> headers)
+  {
+    foreach ( var header in headers )
+      _headers.Add( header.Key.ToLower(), header.Value );
+
+    GetLogger().LogInformation( $"found {Headers.Count} headers" );
+
+    //foreach ( var header in _headers )
+    //  _logger.LogInformation( $"  header: {header.Key} = {header.Value}" );
+  }
+
   protected void SetClaims(IDictionary<string, string> claims)
   {
     foreach ( var claim in claims )
       _claims.Add( claim.Key.ToLower(), claim.Value );
+
+    GetLogger().LogInformation( $"found {Claims.Count} claims" );
 
     //foreach ( var claim in _claims )
     //  _logger.LogInformation( $"  claim: {claim.Key} = {claim.Value}" );
@@ -125,9 +149,12 @@ public abstract class UserContext : IUserContext
     return string.Empty;
   }
 
-  protected void LoadContext()
+  protected void LoadUserContext()
   {
-    var sessionId = GetHeader( "OLabSessionId", false );
+    if ( _headers.Count == 0 )
+      throw new Exception( "no headers found" );
+
+    var sessionId = GetHeader( "sessionid", false );
     if ( sessionId != string.Empty )
     {
       if ( !string.IsNullOrEmpty( sessionId ) && sessionId != "null" )
@@ -137,6 +164,8 @@ public abstract class UserContext : IUserContext
           GetLogger().LogInformation( $"Found sessionId '{SessionId}'." );
       }
     }
+    else
+      _logger.LogWarning( "no OLabSessionId provided" );
 
     // add special case to detect 2 possible forms of the 'name' claim
     // "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name" or "name"
@@ -157,6 +186,24 @@ public abstract class UserContext : IUserContext
       groupRoleString = GetClaim( "role" );
 
     GroupRoles = UserGrouproles.StringToObjectList( GetDbContext(), groupRoleString );
+  }
+
+  /// <summary>
+  /// Retrieves the value of a specified header from the request headers.
+  /// </summary>
+  /// <param name="key">The key of the header to retrieve.</param>
+  /// <param name="isRequired">Indicates whether the header is required. If true, an exception is thrown if the header is not found.</param>
+  /// <returns>The value of the specified header if found; otherwise, an empty string if the header is not required and not found.</returns>
+  /// <exception cref="Exception">Thrown if the header is required and not found.</exception>
+  protected string GetHeader(string key, bool isRequired = true)
+  {
+    if ( _headers.TryGetValue( key.ToLower(), out var value ) )
+      return value;
+
+    if ( isRequired )
+      throw new Exception( $"header value '{key}' does not exist" );
+
+    return string.Empty;
   }
 
   public override string ToString()
