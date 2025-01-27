@@ -96,8 +96,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
 
       logger.LogInformation( $"  file '{item.Name}' mapped to url '{item.OriginUrl}'" );
     }
-    else
-      logger.LogError( $"  file '{filePath}' not found" );
+
   }
 
   /// <summary>

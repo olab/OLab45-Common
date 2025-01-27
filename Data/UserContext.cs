@@ -11,6 +11,7 @@ namespace OLab.Api.Data;
 
 public abstract class UserContext : IUserContext
 {
+  public const string HEADER_SESSIONID = "olabsessionid";
   public const string WildCardObjectType = "*";
   public const uint WildCardObjectId = 0;
   public const string NonAccessAcl = "-";
@@ -154,18 +155,18 @@ public abstract class UserContext : IUserContext
     if ( _headers.Count == 0 )
       throw new Exception( "no headers found" );
 
-    var sessionId = GetHeader( "sessionid", false );
+    var sessionId = GetHeader( HEADER_SESSIONID, false );
     if ( sessionId != string.Empty )
     {
       if ( !string.IsNullOrEmpty( sessionId ) && sessionId != "null" )
       {
         SessionId = sessionId;
         if ( !string.IsNullOrWhiteSpace( SessionId ) )
-          GetLogger().LogInformation( $"Found sessionId '{SessionId}'." );
+          GetLogger().LogInformation( $"Found {HEADER_SESSIONID} '{SessionId}'." );
       }
     }
     else
-      _logger.LogWarning( "no OLabSessionId provided" );
+      _logger.LogWarning( $"no {HEADER_SESSIONID} provided" );
 
     // add special case to detect 2 possible forms of the 'name' claim
     // "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name" or "name"
