@@ -21,7 +21,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   protected IOLabLogger logger;
   protected IOLabConfiguration cfg;
 
-  public abstract string GetUrlPath(string path, string fileName);
+  public abstract SystemFiles UpdateUrlPath(string path, SystemFiles source);
 
   protected OLabFileStorageModule(IOLabLogger logger, IOLabConfiguration configuration)
   {
@@ -89,9 +89,9 @@ public abstract class OLabFileStorageModule : IFileStorageModule
 
     if ( FileExists( filePath ) )
     {
-      item.OriginUrl = GetUrlPath(
+      item = UpdateUrlPath(
         scopeFolder,
-        item.Path
+        item
       );
 
       logger.LogInformation( $"  file '{item.Name}' mapped to url '{item.OriginUrl}'" );
