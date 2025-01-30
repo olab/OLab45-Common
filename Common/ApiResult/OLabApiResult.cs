@@ -23,11 +23,11 @@ public class OLabApiResult<D> : ActionResult
 {
   public const string MessageSuccess = "success";
 
-  public OLabApiResult()
+  public OLabApiResult( HttpStatusCode status = HttpStatusCode.OK)
   {
     Message = MessageSuccess;
-    ErrorCode = HttpStatusCode.OK;
-    Status = (int)HttpStatusCode.OK;
+    ErrorCode = status;
+    Status = (int)status;
   }
 
   [JsonProperty("extended_status_code")]

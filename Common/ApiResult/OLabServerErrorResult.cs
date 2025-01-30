@@ -22,10 +22,9 @@ public class OLabServerErrorResult
   {
     var diags = new List<Diagnostics>();
 
-    return new OLabApiResult<string>()
+    return new OLabApiResult<string>( ErrorCode )
     {
       Diagnostics = diags,
-      ErrorCode = ErrorCode,
       Message = ex.Message
     };
   }
