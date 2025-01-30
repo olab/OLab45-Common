@@ -6,24 +6,24 @@ public class QuestionResponsesDto : ScopedObjectDto
 {
   protected readonly QuestionsDto ParentQuestion;
 
-  [JsonProperty("response")]
+  [JsonProperty( "response" )]
   public string Response { get; set; }
-  [JsonProperty("feedback")]
+  [JsonProperty( "feedback" )]
   public string Feedback { get; set; }
-  [JsonProperty("isCorrect")]
+  [JsonProperty( "isCorrect" )]
   public int? IsCorrect { get; set; }
-  [JsonProperty("score")]
+  [JsonProperty( "score" )]
   public int? Score { get; set; }
-  [JsonProperty("from")]
+  [JsonProperty( "from" )]
   public string From { get; set; }
-  [JsonProperty("to")]
+  [JsonProperty( "to" )]
   public string To { get; set; }
-  [JsonProperty("order")]
+  [JsonProperty( "order" )]
   public uint Order { get; set; }
-  [JsonProperty("questionId")]
+  [JsonProperty( "questionId" )]
   public uint QuestionId { get; set; }
 
   // calculated properties
-  [JsonProperty("value")]
+  [JsonProperty( "value" )]
   public object Value { get; set; }
 }

@@ -11,11 +11,11 @@ public class Diagnostics
   {
   }
 
-  [JsonProperty("stack")]
+  [JsonProperty( "stack" )]
   public string Stack { get; set; }
-  [JsonProperty("file")]
+  [JsonProperty( "file" )]
   public string File { get; set; }
-  [JsonProperty("line")]
+  [JsonProperty( "line" )]
   public int Line { get; set; }
 }
 
@@ -30,14 +30,14 @@ public class OLabApiResult<D> : ActionResult
     Status = (int)status;
   }
 
-  [JsonProperty("extended_status_code")]
+  [JsonProperty( "extended_status_code" )]
   public int? Status { get; set; }
-  [JsonProperty("message")]
+  [JsonProperty( "message" )]
   public string Message { get; set; }
-  [JsonProperty("error_code")]
+  [JsonProperty( "error_code" )]
   public HttpStatusCode ErrorCode { get; set; }
   [JsonProperty( "diagnostics" )]
   public IList<Diagnostics> Diagnostics { get; set; } = new List<Diagnostics>();
-  [JsonProperty("data")]
+  [JsonProperty( "data" )]
   public D Data { get; set; }
 }

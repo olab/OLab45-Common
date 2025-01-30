@@ -14,7 +14,7 @@ public partial class SessionEndpoint : OLabEndpoint
   public SessionEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
-    OLabDBContext dbContext) : base(logger, configuration, dbContext)
+    OLabDBContext dbContext) : base( logger, configuration, dbContext )
   {
   }
 
@@ -27,21 +27,21 @@ public partial class SessionEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     string sessionUuid)
   {
-    GetLogger().LogInformation($"{auth.UserContext.UserId}: SessionEndpoint.ReadAsync");
+    GetLogger().LogInformation( $"{auth.UserContext.UserId}: SessionEndpoint.ReadAsync" );
 
     var session = await GetDbContext().UserSessions
-      .Include(session => session.Statements)
-      .Include(session => session.UserBookmarks)
-      .Include(session => session.UserSessiontraces)
-      .FirstOrDefaultAsync(x => x.Uuid == sessionUuid);
+      .Include( session => session.Statements )
+      .Include( session => session.UserBookmarks )
+      .Include( session => session.UserSessiontraces )
+      .FirstOrDefaultAsync( x => x.Uuid == sessionUuid );
 
-    if (session == null)
-      throw new OLabObjectNotFoundException("UserSession", sessionUuid);
+    if ( session == null )
+      throw new OLabObjectNotFoundException( "UserSession", sessionUuid );
 
     var dto = new SessionMapper(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider()).PhysicalToDto(session);
+        GetWikiProvider() ).PhysicalToDto( session );
 
     return dto;
   }

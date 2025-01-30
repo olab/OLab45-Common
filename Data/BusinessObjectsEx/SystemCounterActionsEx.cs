@@ -6,51 +6,51 @@ public partial class SystemCounterActions
 {
   public bool ApplyFunctionToCounter(SystemCounters targetCounter)
   {
-    if (targetCounter.IsValueNumeric())
-      return ProcessNumericCounter(targetCounter);
+    if ( targetCounter.IsValueNumeric() )
+      return ProcessNumericCounter( targetCounter );
     else
-      return ProcessStringCounter(targetCounter);
+      return ProcessStringCounter( targetCounter );
   }
 
   private bool ProcessNumericCounter(SystemCounters targetCounter)
   {
     // test for numeric constant function expression
-    var regex = new Regex("=[-,+]?[0-9]+");
-    var match = regex.Match(Expression);
-    if (match.Success)
+    var regex = new Regex( "=[-,+]?[0-9]+" );
+    var match = regex.Match( Expression );
+    if ( match.Success )
     {
-      if (!decimal.TryParse(match.Value[1..], out var newValue))
-        targetCounter.ValueFromString(SystemCounters.NotANumber);
+      if ( !decimal.TryParse( match.Value[ 1.. ], out var newValue ) )
+        targetCounter.ValueFromString( SystemCounters.NotANumber );
       else
-        targetCounter.ValueFromNumber(newValue);
+        targetCounter.ValueFromNumber( newValue );
 
       return true;
     }
 
     // test for numeric mathematic function expression
-    regex = new Regex("[-,+]?[0-9]+");
-    match = regex.Match(Expression);
-    if (match.Success)
+    regex = new Regex( "[-,+]?[0-9]+" );
+    match = regex.Match( Expression );
+    if ( match.Success )
     {
       var orgValue = targetCounter.ValueAsNumber();
-      if (!decimal.TryParse(match.Value[0..], out var newValue))
-        targetCounter.ValueFromString(SystemCounters.NotANumber);
+      if ( !decimal.TryParse( match.Value[ 0.. ], out var newValue ) )
+        targetCounter.ValueFromString( SystemCounters.NotANumber );
       else
-        targetCounter.ValueFromNumber(orgValue + newValue);
+        targetCounter.ValueFromNumber( orgValue + newValue );
 
       return true;
 
     }
 
     // test for legacy numeric constant function expression
-    regex = new Regex("[0-9]+");
-    match = regex.Match(Expression);
-    if (match.Success)
+    regex = new Regex( "[0-9]+" );
+    match = regex.Match( Expression );
+    if ( match.Success )
     {
-      if (!decimal.TryParse(match.Value[0..], out var newValue))
-        targetCounter.ValueFromString(SystemCounters.NotANumber);
+      if ( !decimal.TryParse( match.Value[ 0.. ], out var newValue ) )
+        targetCounter.ValueFromString( SystemCounters.NotANumber );
       else
-        targetCounter.ValueFromNumber(newValue);
+        targetCounter.ValueFromNumber( newValue );
 
       return true;
 
@@ -65,22 +65,22 @@ public partial class SystemCounterActions
     try
     {
       // test string literal function expression
-      var regex = new Regex("=[a-z,A-Z,0-9,\\ ]+");
-      var match = regex.Match(Expression);
+      var regex = new Regex( "=[a-z,A-Z,0-9,\\ ]+" );
+      var match = regex.Match( Expression );
 
-      if (match.Success)
+      if ( match.Success )
       {
         var orgValue = targetCounter.ValueAsString();
-        var newValue = match.Value[1..];
-        if (orgValue != newValue)
-          targetCounter.ValueFromString(newValue);
+        var newValue = match.Value[ 1.. ];
+        if ( orgValue != newValue )
+          targetCounter.ValueFromString( newValue );
       }
 
       return match.Success;
     }
-    catch (System.Exception)
+    catch ( System.Exception )
     {
-      targetCounter.ValueFromString(SystemCounters.NotANumber);
+      targetCounter.ValueFromString( SystemCounters.NotANumber );
     }
 
     return false;

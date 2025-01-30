@@ -38,17 +38,17 @@ public partial class GrouproleAcls
     OLabDBContext dbContext,
     string groupName)
   {
-    if (string.IsNullOrEmpty(groupName))
+    if ( string.IsNullOrEmpty( groupName ) )
     {
       var items = dbContext.GrouproleAcls
-        .Where(x => !x.GroupId.HasValue);
+        .Where( x => !x.GroupId.HasValue );
       return items.ToList();
     }
     else
     {
 
       var items = dbContext.GrouproleAcls
-        .Where(x => x.Group.Name == groupName);
+        .Where( x => x.Group.Name == groupName );
       return items.ToList();
     }
   }
@@ -59,7 +59,7 @@ public partial class GrouproleAcls
   string roleName)
   {
     var groupRolePhys = dbContext.GrouproleAcls
-      .FirstOrDefault(x => x.Role.Name == groupName && x.Group.Name == roleName);
+      .FirstOrDefault( x => x.Role.Name == groupName && x.Group.Name == roleName );
     return groupRolePhys;
   }
 
@@ -67,10 +67,10 @@ public partial class GrouproleAcls
   {
     var groupName = (Group != null) ? $"{Group.Name}({Group.Id})" : "NULL";
     var roleName = (Role != null) ? $"{Role.Name}({Role.Id})" : "NULL";
-    var imageableType = string.IsNullOrEmpty(ImageableType) ? ImageableType : "*";
+    var imageableType = string.IsNullOrEmpty( ImageableType ) ? ImageableType : "*";
     var imageableId = ImageableId.HasValue ? $"{ImageableId.Value}" : "*";
 
-    return $"{Id}: {groupName}{UserGrouproles.ItemSeparator}{roleName} {imageableType}({imageableId}) acl: '{Convert.ToString((int)Acl2, 2)}'";
+    return $"{Id}: {groupName}{UserGrouproles.ItemSeparator}{roleName} {imageableType}({imageableId}) acl: '{Convert.ToString( (int)Acl2, 2 )}'";
   }
 
 }

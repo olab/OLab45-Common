@@ -2,12 +2,12 @@ using OLab.Api.Common;
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 
-[OLabModule("SESSION")]
+[OLabModule( "SESSION" )]
 public class SessionWikiTag : WikiTag0ArgumentModule
 {
   public SessionWikiTag(IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration)
+    IOLabConfiguration configuration) : base( logger, configuration )
   {
-    SetHtmlElementName("OlabSessionTag");
+    SetHtmlElementName( "OlabSessionTag" );
   }
 }

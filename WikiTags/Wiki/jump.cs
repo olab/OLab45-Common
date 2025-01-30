@@ -2,13 +2,13 @@ using OLab.Api.Common;
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 
-[OLabModule("JUMP")]
+[OLabModule( "JUMP" )]
 public class JumpWikiTag : WikiTag1ArgumentModule
 {
   public JumpWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration)
+    IOLabConfiguration configuration) : base( logger, configuration )
   {
-    SetHtmlElementName("OlabJumpTag");
+    SetHtmlElementName( "OlabJumpTag" );
   }
 }

@@ -17,7 +17,7 @@ public class CountersFull : OLabMapper<SystemCounters, CountersFullDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 
@@ -25,7 +25,7 @@ public class CountersFull : OLabMapper<SystemCounters, CountersFullDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 
@@ -41,12 +41,12 @@ public class CountersFull : OLabMapper<SystemCounters, CountersFullDto>
   /// <returns>Dto object</returns>
   public override CountersFullDto PhysicalToDto(SystemCounters phys, CountersFullDto source)
   {
-    if (phys.Value == null)
+    if ( phys.Value == null )
       phys.Value = new List<byte>().ToArray();
-    if (phys.StartValue == null)
+    if ( phys.StartValue == null )
       phys.StartValue = new List<byte>().ToArray();
 
-    source.Description = Conversions.Base64Decode(phys.Description, false);
+    source.Description = Conversions.Base64Decode( phys.Description, false );
 
     return source;
   }
@@ -63,10 +63,10 @@ public class CountersFull : OLabMapper<SystemCounters, CountersFullDto>
   /// <returns>Physical object</returns>
   public override SystemCounters DtoToPhysical(CountersFullDto dto, SystemCounters source)
   {
-    if (string.IsNullOrEmpty(dto.StartValue))
-      source.StartValue = BitConverter.GetBytes(0);
-    if (string.IsNullOrEmpty(dto.Value))
-      source.Value = BitConverter.GetBytes(0);
+    if ( string.IsNullOrEmpty( dto.StartValue ) )
+      source.StartValue = BitConverter.GetBytes( 0 );
+    if ( string.IsNullOrEmpty( dto.Value ) )
+      source.Value = BitConverter.GetBytes( 0 );
     return source;
   }
 
@@ -76,12 +76,12 @@ public class CountersFull : OLabMapper<SystemCounters, CountersFullDto>
   /// <returns>MapperConfiguration</returns>
   protected override MapperConfiguration GetConfiguration()
   {
-    return new MapperConfiguration(cfg =>
+    return new MapperConfiguration( cfg =>
     {
-      cfg.CreateMap<string, byte[]>().ConvertUsing(s => Encoding.ASCII.GetBytes(s));
-      cfg.CreateMap<byte[], string>().ConvertUsing(s => Encoding.ASCII.GetString(s));
+      cfg.CreateMap<string, byte[]>().ConvertUsing( s => Encoding.ASCII.GetBytes( s ) );
+      cfg.CreateMap<byte[], string>().ConvertUsing( s => Encoding.ASCII.GetString( s ) );
       cfg.CreateMap<SystemCounters, CountersFullDto>().ReverseMap();
-    });
+    } );
   }
 
 }

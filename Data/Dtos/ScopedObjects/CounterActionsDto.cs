@@ -4,15 +4,15 @@ namespace OLab.Api.Dto;
 
 public class CounterActionsDto
 {
-  [JsonProperty("id")]
+  [JsonProperty( "id" )]
   public uint Id { get; set; }
-  [JsonProperty("nodeId")]
+  [JsonProperty( "nodeId" )]
   public uint NodeId { get; set; }
-  [JsonProperty("counterId")]
+  [JsonProperty( "counterId" )]
   public uint CounterId { get; set; }
-  [JsonProperty("function")]
+  [JsonProperty( "function" )]
   public string Function { get; set; }
-  [JsonProperty("display")]
+  [JsonProperty( "display" )]
   public int Display { get; set; }
 
   public override string ToString()

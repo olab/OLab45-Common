@@ -10,7 +10,7 @@ public class ApplicationsMapper : OLabMapper<SystemApplications, ApplicationsDto
 
   public ApplicationsMapper(
     IOLabLogger logger,
-    OLabDBContext dbContext) : base(logger, dbContext)
+    OLabDBContext dbContext) : base( logger, dbContext )
   {
   }
 }

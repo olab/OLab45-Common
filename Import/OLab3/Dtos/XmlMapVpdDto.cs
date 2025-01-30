@@ -1,6 +1,5 @@
 using OLab.Api.Importer;
 using OLab.Common.Interfaces;
-using OLab.Common.Utils;
 using OLab.Import.OLab3.Model;
 using System;
 using System.Collections.Generic;
@@ -21,9 +20,9 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
       logger,
       importer,
       Importer.DtoTypes.XmlMapVpdDto,
-      "map_vpd.xml")
+      "map_vpd.xml" )
   {
-    _mapper = new Api.ObjectMapper.MapVpd(GetLogger(), GetDbContext(), GetWikiProvider());
+    _mapper = new Api.ObjectMapper.MapVpd( GetLogger(), GetDbContext(), GetWikiProvider() );
   }
 
   /// <summary>
@@ -33,7 +32,7 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
   /// <param name="displayProgressMessage">Display progress messages</param>
   /// <returns></returns>
   public override async Task<bool> LoadAsync(
-    string physicalFileFolder, 
+    string physicalFileFolder,
     bool displayProgressMessage = true)
   {
     var rc = true;
@@ -42,34 +41,34 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
     {
       var physicalModuleFile = GetFileModule().BuildPath(
         physicalFileFolder,
-        GetFileName());
+        GetFileName() );
 
-      GetLogger().LogInformation($"Loading {physicalModuleFile}");
+      GetLogger().LogInformation( $"Loading {physicalModuleFile}" );
 
       using var moduleFileStream = new MemoryStream();
-      if (await GetFileModule().ReadFileAsync(
+      if ( await GetFileModule().ReadFileAsync(
         moduleFileStream,
         physicalModuleFile,
-        new System.Threading.CancellationToken()))
-        _phys = DynamicXml.Load(moduleFileStream);
+        new System.Threading.CancellationToken() ) )
+        _phys = DynamicXml.Load( moduleFileStream );
       else
       {
-        GetLogger().LogInformation($"File {physicalFileFolder}{GetFileModule().GetFolderSeparator()}{GetFileName()} does not exist");
+        GetLogger().LogInformation( $"File {physicalFileFolder}{GetFileModule().GetFolderSeparator()}{GetFileName()} does not exist" );
         return false;
       }
 
-      dynamic outerElements = GetElements(GetXmlPhys());
+      dynamic outerElements = GetElements( GetXmlPhys() );
       var record = 0;
 
-      foreach (var innerElements in outerElements)
+      foreach ( var innerElements in outerElements )
       {
         try
         {
           ++record;
           var elements = (IEnumerable<dynamic>)innerElements.Elements();
-          xmlImportElementSets.Add(elements);
+          xmlImportElementSets.Add( elements );
 
-          var item = _mapper.ElementsToPhys(elements);
+          var item = _mapper.ElementsToPhys( elements );
 
           var phys = new XmlMapVpd
           {
@@ -78,26 +77,26 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
             VpdTypeId = item.VpdTypeId
           };
 
-          GetLogger().LogInformation($"  loaded '{phys.Id}'");
+          GetLogger().LogInformation( $"  loaded '{phys.Id}'" );
 
-          GetModel().Data.Add(phys);
+          GetModel().Data.Add( phys );
           record++;
         }
-        catch (Exception ex)
+        catch ( Exception ex )
         {
-          GetLogger().LogError(ex, $"error loading '{GetFileName()}' record #{record}: {ex.Message}");
+          GetLogger().LogError( ex, $"error loading '{GetFileName()}' record #{record}: {ex.Message}" );
         }
 
-        GetLogger().LogInformation($"imported {xmlImportElementSets.Count()} {GetFileName()} objects");
+        GetLogger().LogInformation( $"imported {xmlImportElementSets.Count()} {GetFileName()} objects" );
 
       }
 
       // delete data file
-      await GetFileModule().DeleteFileAsync(physicalModuleFile);
+      await GetFileModule().DeleteFileAsync( physicalModuleFile );
     }
-    catch (Exception ex)
+    catch ( Exception ex )
     {
-      GetLogger().LogError(ex, $"Load error: {ex.Message}");
+      GetLogger().LogError( ex, $"Load error: {ex.Message}" );
       rc = false;
     }
 
@@ -125,14 +124,14 @@ public class XmlMapVpdDto : XmlImportDto<XmlMapVpds>
     int recordIndex,
     IEnumerable<dynamic> elements)
   {
-    var item = _mapper.ElementsToPhys(elements);
+    var item = _mapper.ElementsToPhys( elements );
     var oldId = item.Id;
     item.Id = 0;
 
-    GetDbContext().MapVpds.Add(item);
+    GetDbContext().MapVpds.Add( item );
     GetDbContext().SaveChanges();
 
-    CreateIdTranslation(oldId, item.Id);
+    CreateIdTranslation( oldId, item.Id );
 
     return true;
   }

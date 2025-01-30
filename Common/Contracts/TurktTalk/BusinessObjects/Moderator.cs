@@ -12,28 +12,28 @@ public class Moderator : Participant
 
   }
 
-  public Moderator(string roomName, HubCallerContext context) : base(context)
+  public Moderator(string roomName, HubCallerContext context) : base( context )
   {
-    var roomNameParts = roomName.Split("/");
+    var roomNameParts = roomName.Split( "/" );
 
-    TopicName = roomNameParts[0];
+    TopicName = roomNameParts[ 0 ];
     RoomName = TopicName;
     CommandChannel = $"{TopicName}/{_prefix}/{UserId}";
 
     // test for topic and room
-    if (roomNameParts.Length == 2)
-      AssignToRoom(Convert.ToInt32(roomNameParts[1]));
+    if ( roomNameParts.Length == 2 )
+      AssignToRoom( Convert.ToInt32( roomNameParts[ 1 ] ) );
   }
 
   public Moderator(string topicName, string userName = null, string nickName = null, string connectionId = null)
-  : base(topicName, userName, nickName, connectionId)
+  : base( topicName, userName, nickName, connectionId )
   {
   }
 
   public override void AssignToRoom(int index)
   {
     RoomNumber = index;
-    if (RoomNumber.HasValue)
+    if ( RoomNumber.HasValue )
       RoomName = $"{TopicName}/{RoomNumber.Value}";
     else
       RoomName = null;

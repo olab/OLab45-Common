@@ -1,14 +1,14 @@
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 
-[OLabModule("QUMP")]
+[OLabModule( "QUMP" )]
 public class QuestionMultiPickWikiTag : QuestionWikiTag
 {
   public QuestionMultiPickWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration)
+    IOLabConfiguration configuration) : base( logger, configuration )
   {
-    SetHtmlElementName("OlabMultiPickQuestion");
+    SetHtmlElementName( "OlabMultiPickQuestion" );
   }
 
 }

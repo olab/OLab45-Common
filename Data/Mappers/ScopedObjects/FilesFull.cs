@@ -13,7 +13,7 @@ public class FilesFull : OLabMapper<SystemFiles, FilesFullDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 
@@ -21,7 +21,7 @@ public class FilesFull : OLabMapper<SystemFiles, FilesFullDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 
@@ -29,14 +29,14 @@ public class FilesFull : OLabMapper<SystemFiles, FilesFullDto>
     SystemFiles phys,
     FilesFullDto source)
   {
-    var dto = base.PhysicalToDto(phys, source);
-    dto.FileName = Path.GetFileName(phys.Path);
+    var dto = base.PhysicalToDto( phys, source );
+    dto.FileName = Path.GetFileName( phys.Path );
     return dto;
   }
 
   public override SystemFiles DtoToPhysical(FilesFullDto dto)
   {
-    var phys = base.DtoToPhysical(dto);
+    var phys = base.DtoToPhysical( dto );
     phys.Path = dto.FileName;
     return phys;
   }

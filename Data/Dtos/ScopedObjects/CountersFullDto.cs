@@ -4,18 +4,18 @@ namespace OLab.Api.Dto;
 
 public class CountersFullDto : CountersDto
 {
-  [JsonProperty("startValue")]
+  [JsonProperty( "startValue" )]
   public string StartValue { get; set; }
-  [JsonProperty("iconId")]
+  [JsonProperty( "iconId" )]
   public int? IconId { get; set; }
-  [JsonProperty("prefix")]
+  [JsonProperty( "prefix" )]
   public string Prefix { get; set; }
-  [JsonProperty("suffix")]
+  [JsonProperty( "suffix" )]
   public string Suffix { get; set; }
-  [JsonProperty("visible")]
+  [JsonProperty( "visible" )]
   public bool? Visible { get; set; }
-  [JsonProperty("outOf")]
+  [JsonProperty( "outOf" )]
   public int? OutOf { get; set; }
-  [JsonProperty("status")]
+  [JsonProperty( "status" )]
   public int Status { get; set; }
 }

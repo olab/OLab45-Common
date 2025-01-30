@@ -12,11 +12,11 @@ public partial class Maps
   public static Maps CreateDefault(Maps templateMap)
   {
     // use AutoMapper to do a Deep Copy
-    var mapper = new Mapper(new MapperConfiguration(cfg =>
+    var mapper = new Mapper( new MapperConfiguration( cfg =>
       cfg.CreateMap<Maps, Maps>().ReverseMap()
-    ));
+    ) );
 
-    var map = mapper.Map<Maps>(templateMap);
+    var map = mapper.Map<Maps>( templateMap );
 
     map.Id = 0;
     map.IsTemplate = 0;
@@ -26,8 +26,8 @@ public partial class Maps
 
   public void AppendMapNodes(Maps sourceMap)
   {
-    foreach (var node in sourceMap.MapNodes)
-      MapNodes.Add(node);
+    foreach ( var node in sourceMap.MapNodes )
+      MapNodes.Add( node );
   }
 
   public static Maps CreateDefault()
@@ -61,7 +61,7 @@ public partial class Maps
       ReportNodeId = 0
     };
 
-    map.MapNodes.Add(new MapNodes { Title = "New Node", TypeId = 1, Text = "Sample Text" });
+    map.MapNodes.Add( new MapNodes { Title = "New Node", TypeId = 1, Text = "Sample Text" } );
 
     return map;
   }

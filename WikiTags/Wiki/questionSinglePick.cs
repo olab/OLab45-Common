@@ -1,14 +1,14 @@
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
 
-[OLabModule("QUSP")]
+[OLabModule( "QUSP" )]
 public class QuestionSinglePickWikiTag : QuestionWikiTag
 {
   public QuestionSinglePickWikiTag(
     IOLabLogger logger,
-    IOLabConfiguration configuration) : base(logger, configuration)
+    IOLabConfiguration configuration) : base( logger, configuration )
   {
-    SetHtmlElementName("OlabSinglePickQuestion");
+    SetHtmlElementName( "OlabSinglePickQuestion" );
   }
 
 }

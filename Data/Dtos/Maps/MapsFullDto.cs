@@ -40,6 +40,6 @@ public class MapsFullDto : MapsDto
   public uint TypeId { get; set; }
   public uint? LanguageId { get; set; }
   public uint? ReportNodeId { get; set; }
-  [JsonProperty("groupRoles")]
+  [JsonProperty( "groupRoles" )]
   public IList<MapGrouprolesDto> MapGroupRoles { get; set; }
 }

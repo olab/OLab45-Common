@@ -43,7 +43,7 @@ public partial class MapNodes
   public static bool Reassign(Maps destinationMap, MapNodes node)
   {
     // test if node has already been re-assigned
-    if (node.Id == 0)
+    if ( node.Id == 0 )
       return false;
 
     node.Id = 0;

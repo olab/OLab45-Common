@@ -4,25 +4,25 @@ namespace OLab.Api.Dto;
 
 public class DesignerConstantsDto
 {
-  [JsonProperty("id")]
+  [JsonProperty( "id" )]
   public uint Id { get; set; }
-  [JsonProperty("name")]
+  [JsonProperty( "name" )]
   public string Name { get; set; }
-  [JsonProperty("description")]
+  [JsonProperty( "description" )]
   public string Description { get; set; }
-  [JsonProperty("ScopeLevel")]
+  [JsonProperty( "ScopeLevel" )]
   public string ImageableType { get; set; }
-  [JsonProperty("ScopeId")]
+  [JsonProperty( "ScopeId" )]
   public uint ImageableId { get; set; }
-  [JsonProperty("wiki")]
+  [JsonProperty( "wiki" )]
   public string Wiki { get; set; }
 
-  [JsonProperty("acl")]
+  [JsonProperty( "acl" )]
   public string Acl { get; set; }
 
-  [JsonProperty("isSystem")]
+  [JsonProperty( "isSystem" )]
   public int? IsSystem { get; set; }
-  [JsonProperty("url")]
+  [JsonProperty( "url" )]
   public int? Url { get; set; }
 
 }

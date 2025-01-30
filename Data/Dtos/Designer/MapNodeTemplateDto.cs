@@ -4,42 +4,42 @@ namespace OLab.Api.Dto.Designer;
 
 public class MapNodeTemplateDto
 {
-  [JsonProperty("title")]
+  [JsonProperty( "title" )]
   public string Title { get; set; }
-  [JsonProperty("text")]
+  [JsonProperty( "text" )]
   public string Text { get; set; }
-  [JsonProperty("x")]
+  [JsonProperty( "x" )]
   public double X { get; set; }
-  [JsonProperty("y")]
+  [JsonProperty( "y" )]
   public double Y { get; set; }
-  [JsonProperty("locked")]
+  [JsonProperty( "locked" )]
   public int Locked { get; set; }
-  [JsonProperty("collapsed")]
+  [JsonProperty( "collapsed" )]
   public int Collapsed { get; set; }
-  [JsonProperty("height")]
+  [JsonProperty( "height" )]
   public int Height { get; set; }
-  [JsonProperty("width")]
+  [JsonProperty( "width" )]
   public int Width { get; set; }
-  [JsonProperty("probability")]
+  [JsonProperty( "probability" )]
   public int Probability { get; set; }
-  [JsonProperty("info")]
+  [JsonProperty( "info" )]
   public string Info { get; set; }
-  [JsonProperty("annotation")]
+  [JsonProperty( "annotation" )]
   public string Annotation { get; set; }
-  [JsonProperty("linkStyleId")]
+  [JsonProperty( "linkStyleId" )]
   public uint LinkStyleId { get; set; }
-  [JsonProperty("linkTypeId")]
+  [JsonProperty( "linkTypeId" )]
   public uint LinkTypeId { get; set; }
-  [JsonProperty("typeId")]
+  [JsonProperty( "typeId" )]
   public uint TypeId { get; set; }
-  [JsonProperty("isPrivate")]
+  [JsonProperty( "isPrivate" )]
   public int IsPrivate { get; set; }
-  [JsonProperty("color")]
+  [JsonProperty( "color" )]
   public string Rgb { get; set; }
-  [JsonProperty("visitOnce")]
+  [JsonProperty( "visitOnce" )]
   public int VisitOnce { get; set; }
-  [JsonProperty("priorityId")]
+  [JsonProperty( "priorityId" )]
   public int PriorityId { get; set; }
-  [JsonProperty("isEnd")]
+  [JsonProperty( "isEnd" )]
   public int End { get; set; }
 }

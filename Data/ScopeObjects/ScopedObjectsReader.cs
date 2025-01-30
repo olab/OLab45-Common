@@ -24,10 +24,10 @@ public partial class ScopedObjects
     string scopeLevel,
     uint id)
   {
-    _logger.LogInformation($"  Reading scope {scopeLevel} {id} from database");
+    _logger.LogInformation( $"  Reading scope {scopeLevel} {id} from database" );
 
-    var phys = await LoadAllFromDatabaseAsync(scopeLevel, id);
-    Combine(phys);
+    var phys = await LoadAllFromDatabaseAsync( scopeLevel, id );
+    Combine( phys );
 
     return phys;
   }
@@ -39,10 +39,10 @@ public partial class ScopedObjects
   public void AddScopeFromDto(
     ScopedObjectsDto dto)
   {
-    var builder = new ScopedObjectsMapper(GetLogger(), GetDbContext(), GetWikiProvider());
+    var builder = new ScopedObjectsMapper( GetLogger(), GetDbContext(), GetWikiProvider() );
 
-    var phys = builder.DtoToPhysical(dto);
-    Combine(phys);
+    var phys = builder.DtoToPhysical( dto );
+    Combine( phys );
   }
 
   private async ValueTask<ScopedObjects> LoadAllFromDatabaseAsync(
@@ -51,13 +51,13 @@ public partial class ScopedObjects
   {
     var phys = new ScopedObjects
     {
-      ConstantsPhys = await LoadConstantsFromDatabaseAsync(scopeLevel, id),
-      QuestionsPhys = await LoadQuestionsFromDatabaseAsync(scopeLevel, id),
-      FilesPhys = await LoadFilesFromDatabaseAsync(scopeLevel, id),
-      ScriptsPhys = await LoadScriptsFromDatabaseAsync(scopeLevel, id),
-      ThemesPhys = await LoadThemesFromDatabaseAsync(scopeLevel, id),
-      CountersPhys = await LoadCountersFromDatabaseAsync(scopeLevel, id, 0),
-      CounterActionsPhys = await LoadCounterActionsFromDatabaseAsync(scopeLevel, id)
+      ConstantsPhys = await LoadConstantsFromDatabaseAsync( scopeLevel, id ),
+      QuestionsPhys = await LoadQuestionsFromDatabaseAsync( scopeLevel, id ),
+      FilesPhys = await LoadFilesFromDatabaseAsync( scopeLevel, id ),
+      ScriptsPhys = await LoadScriptsFromDatabaseAsync( scopeLevel, id ),
+      ThemesPhys = await LoadThemesFromDatabaseAsync( scopeLevel, id ),
+      CountersPhys = await LoadCountersFromDatabaseAsync( scopeLevel, id, 0 ),
+      CounterActionsPhys = await LoadCounterActionsFromDatabaseAsync( scopeLevel, id )
     };
 
     return phys;
@@ -74,14 +74,14 @@ public partial class ScopedObjects
     string scopeLevel,
     uint id)
   {
-    Guard.Argument(_dbContext).NotNull(nameof(_dbContext));
+    Guard.Argument( _dbContext ).NotNull( nameof( _dbContext ) );
     var items = new List<SystemConstants>();
 
-    items.AddRange(await _dbContext.SystemConstants.Where(x =>
-      x.ImageableType == scopeLevel && x.ImageableId == id).ToListAsync());
+    items.AddRange( await _dbContext.SystemConstants.Where( x =>
+      x.ImageableType == scopeLevel && x.ImageableId == id ).ToListAsync() );
 
-    if (items.Count > 0)
-      _logger.LogInformation($"  constants read {items.Count}");
+    if ( items.Count > 0 )
+      _logger.LogInformation( $"  constants read {items.Count}" );
 
     return items;
   }
@@ -94,21 +94,21 @@ public partial class ScopedObjects
     string scopeLevel,
     uint id)
   {
-    Guard.Argument(_dbContext).NotNull(nameof(_dbContext));
+    Guard.Argument( _dbContext ).NotNull( nameof( _dbContext ) );
     var questionsPhys = new List<SystemQuestions>();
 
-    questionsPhys.AddRange(await _dbContext.SystemQuestions
-      .Where(x => x.ImageableType == scopeLevel && x.ImageableId == id)
-      .Include("SystemQuestionResponses")
-      .ToListAsync());
+    questionsPhys.AddRange( await _dbContext.SystemQuestions
+      .Where( x => x.ImageableType == scopeLevel && x.ImageableId == id )
+      .Include( "SystemQuestionResponses" )
+      .ToListAsync() );
 
     // order the responses by Order field
-    foreach (var questionPhys in questionsPhys.Where(x => x.SystemQuestionResponses.Count > 0))
+    foreach ( var questionPhys in questionsPhys.Where( x => x.SystemQuestionResponses.Count > 0 ) )
     {
-      _logger.LogInformation($"  question '{questionPhys.Stem}'. read {questionPhys.SystemQuestionResponses.Count} responses");
-      var orderedResponses = questionPhys.SystemQuestionResponses.OrderBy(x => x.Order).ToList();
+      _logger.LogInformation( $"  question '{questionPhys.Stem}'. read {questionPhys.SystemQuestionResponses.Count} responses" );
+      var orderedResponses = questionPhys.SystemQuestionResponses.OrderBy( x => x.Order ).ToList();
       questionPhys.SystemQuestionResponses.Clear();
-      questionPhys.SystemQuestionResponses.AddRange(orderedResponses);
+      questionPhys.SystemQuestionResponses.AddRange( orderedResponses );
     }
 
     return questionsPhys;
@@ -123,24 +123,24 @@ public partial class ScopedObjects
     string scopeLevel,
     uint id)
   {
-    Guard.Argument(_dbContext).NotNull(nameof(_dbContext));
+    Guard.Argument( _dbContext ).NotNull( nameof( _dbContext ) );
 
-    var items = await _dbContext.SystemFiles.Where(x =>
-      x.ImageableType == scopeLevel && x.ImageableId == id).ToListAsync();
+    var items = await _dbContext.SystemFiles.Where( x =>
+      x.ImageableType == scopeLevel && x.ImageableId == id ).ToListAsync();
 
     // ask the module to add appropriate URLs to files
-    if (_fileStorageModule != null)
-      _fileStorageModule.AttachUrls(items);
+    if ( _fileStorageModule != null )
+      _fileStorageModule.AttachUrls( items );
 
     // enhance the records with mime type
-    foreach (var item in items)
+    foreach ( var item in items )
     {
-      if (string.IsNullOrEmpty(item.Mime))
-        item.Mime = MimeTypesMap.GetMimeType(Path.GetFileName(item.Path));
+      if ( string.IsNullOrEmpty( item.Mime ) )
+        item.Mime = MimeTypesMap.GetMimeType( Path.GetFileName( item.Path ) );
     }
 
-    if (items.Count > 0)
-      _logger.LogInformation($"  files read {items.Count}");
+    if ( items.Count > 0 )
+      _logger.LogInformation( $"  files read {items.Count}" );
 
     return items;
   }
@@ -153,14 +153,14 @@ public partial class ScopedObjects
     string scopeLevel,
     uint id)
   {
-    Guard.Argument(_dbContext).NotNull(nameof(_dbContext));
+    Guard.Argument( _dbContext ).NotNull( nameof( _dbContext ) );
     var items = new List<SystemThemes>();
 
-    items.AddRange(await _dbContext.SystemThemes.Where(x =>
-      x.ImageableType == scopeLevel && x.ImageableId == id).ToListAsync());
+    items.AddRange( await _dbContext.SystemThemes.Where( x =>
+      x.ImageableType == scopeLevel && x.ImageableId == id ).ToListAsync() );
 
-    if (items.Count > 0)
-      _logger.LogInformation($"  themes read {items.Count}");
+    if ( items.Count > 0 )
+      _logger.LogInformation( $"  themes read {items.Count}" );
 
     return items;
   }
@@ -173,14 +173,14 @@ public partial class ScopedObjects
     string scopeLevel,
     uint id)
   {
-    Guard.Argument(_dbContext).NotNull(nameof(_dbContext));
+    Guard.Argument( _dbContext ).NotNull( nameof( _dbContext ) );
     var items = new List<SystemScripts>();
 
-    items.AddRange(await _dbContext.SystemScripts.Where(x =>
-      x.ImageableType == scopeLevel && x.ImageableId == id).ToListAsync());
+    items.AddRange( await _dbContext.SystemScripts.Where( x =>
+      x.ImageableType == scopeLevel && x.ImageableId == id ).ToListAsync() );
 
-    if (items.Count > 0)
-      _logger.LogInformation($"  script read {items.Count}");
+    if ( items.Count > 0 )
+      _logger.LogInformation( $"  script read {items.Count}" );
 
     return items;
   }
@@ -194,25 +194,25 @@ public partial class ScopedObjects
     uint id,
     uint sinceTime = 0)
   {
-    Guard.Argument(_dbContext).NotNull(nameof(_dbContext));
+    Guard.Argument( _dbContext ).NotNull( nameof( _dbContext ) );
     var items = new List<SystemCounters>();
 
-    if (sinceTime != 0)
+    if ( sinceTime != 0 )
     {
       // generate DateTime from sinceTime
-      var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-      dateTime = dateTime.AddSeconds(sinceTime).ToLocalTime();
-      items.AddRange(await _dbContext.SystemCounters.Where(x =>
-        x.ImageableType == scopeLevel && x.ImageableId == id && x.UpdatedAt >= dateTime).ToListAsync());
+      var dateTime = new DateTime( 1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc );
+      dateTime = dateTime.AddSeconds( sinceTime ).ToLocalTime();
+      items.AddRange( await _dbContext.SystemCounters.Where( x =>
+        x.ImageableType == scopeLevel && x.ImageableId == id && x.UpdatedAt >= dateTime ).ToListAsync() );
     }
     else
     {
-      items.AddRange(await _dbContext.SystemCounters.Where(x =>
-        x.ImageableType == scopeLevel && x.ImageableId == id).ToListAsync());
+      items.AddRange( await _dbContext.SystemCounters.Where( x =>
+        x.ImageableType == scopeLevel && x.ImageableId == id ).ToListAsync() );
     }
 
-    if (items.Count > 0)
-      _logger.LogInformation($"  counters read {items.Count}");
+    if ( items.Count > 0 )
+      _logger.LogInformation( $"  counters read {items.Count}" );
 
     return items;
   }
@@ -225,14 +225,14 @@ public partial class ScopedObjects
     string scopeLevel,
     uint id)
   {
-    if (ScopeLevel == Api.Utils.Constants.ScopeLevelMap)
+    if ( ScopeLevel == Api.Utils.Constants.ScopeLevelMap )
     {
       var items = new List<SystemCounterActions>();
-      items.AddRange(await _dbContext.SystemCounterActions.Where(x =>
-          x.MapId == ScopeId).ToListAsync());
+      items.AddRange( await _dbContext.SystemCounterActions.Where( x =>
+          x.MapId == ScopeId ).ToListAsync() );
 
-      if (items.Count > 0)
-        _logger.LogInformation($"  counter actions read {items.Count}");
+      if ( items.Count > 0 )
+        _logger.LogInformation( $"  counter actions read {items.Count}" );
 
       return items;
     }

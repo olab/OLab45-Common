@@ -20,43 +20,43 @@ public partial class SystemCounters
     try
     {
       var orgValue = ValueAsString();
-      if (source != orgValue)
+      if ( source != orgValue )
       {
-        Value = Encoding.UTF8.GetBytes(source);
+        Value = Encoding.UTF8.GetBytes( source );
         UpdatedAt = DateTime.Now;
       }
     }
-    catch (Exception)
+    catch ( Exception )
     {
-      ValueFromString(NotANumber);
+      ValueFromString( NotANumber );
     }
   }
 
   public void ValueFromNumber(decimal source)
   {
-    ValueFromString(source.ToString());
+    ValueFromString( source.ToString() );
   }
 
   public string ValueAsString()
   {
-    if (Value == null)
+    if ( Value == null )
       return "";
-    return Encoding.Default.GetString(Value);
+    return Encoding.Default.GetString( Value );
   }
 
   public decimal ValueAsNumber()
   {
-    if (Value == null)
+    if ( Value == null )
       return 0;
 
-    var str = Encoding.Default.GetString(Value);
-    var num = Convert.ToDecimal(str);
+    var str = Encoding.Default.GetString( Value );
+    var num = Convert.ToDecimal( str );
     return num;
   }
 
   public bool IsValueString()
   {
-    if (Value == null)
+    if ( Value == null )
       return true;
 
     return !IsValueNumeric();
@@ -64,10 +64,10 @@ public partial class SystemCounters
 
   public bool IsValueNumeric()
   {
-    if (Value == null)
+    if ( Value == null )
       return true;
 
-    var str = Encoding.Default.GetString(Value);
-    return decimal.TryParse(str, out _);
+    var str = Encoding.Default.GetString( Value );
+    return decimal.TryParse( str, out _ );
   }
 }

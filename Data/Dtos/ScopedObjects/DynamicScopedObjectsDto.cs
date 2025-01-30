@@ -12,7 +12,7 @@ namespace OLab.Api.Dto;
 
 public class DynamicScopedObject
 {
-  [JsonProperty("counters")]
+  [JsonProperty( "counters" )]
   public List<CountersDto> Counters { get; set; }
 
   public DynamicScopedObject()
@@ -51,19 +51,19 @@ public class CounterDynamicScopedObjects : DynamicScopedObject
 
 public class DynamicScopedObjectsDto
 {
-  [JsonProperty("newPlay")]
+  [JsonProperty( "newPlay" )]
   public bool NewPlay { get; set; }
 
-  [JsonProperty("updatedAt")]
+  [JsonProperty( "updatedAt" )]
   public DateTime UpdatedAt { get; private set; }
 
-  [JsonProperty("checksum")]
+  [JsonProperty( "checksum" )]
   public string Checksum { get; set; }
 
-  [JsonProperty("counters")]
+  [JsonProperty( "counters" )]
   public CounterDynamicScopedObjects Counters { get; set; }
 
-  [JsonProperty("nodesVisitedList")]
+  [JsonProperty( "nodesVisitedList" )]
   public IList<uint> NodesVisited { get; set; }
 
   public DynamicScopedObjectsDto()
@@ -84,7 +84,7 @@ public class DynamicScopedObjectsDto
   /// <returns>true/false</returns>
   public bool IsValid()
   {
-    if (IsEmpty())
+    if ( IsEmpty() )
       return true;
 
     var expectedCheckSum = GenerateChecksum();
@@ -98,16 +98,16 @@ public class DynamicScopedObjectsDto
   public string GenerateChecksum()
   {
     var plainText = GetObjectPlainText();
-    var cypherText = GetStringHash(plainText);
+    var cypherText = GetStringHash( plainText );
     return cypherText;
   }
 
   public int GetPlainTextBytes(string plainText)
   {
-    var bytes = Encoding.ASCII.GetBytes(plainText);
+    var bytes = Encoding.ASCII.GetBytes( plainText );
     var byteSum = 0;
 
-    foreach (var singleByte in bytes)
+    foreach ( var singleByte in bytes )
       byteSum += singleByte;
 
     return byteSum;
@@ -120,7 +120,7 @@ public class DynamicScopedObjectsDto
   /// <returns>MD5 hash</returns>
   private string GetStringHash(string plaintext)
   {
-    var cypherString = StringUtils.GenerateCheckSum(plaintext);
+    var cypherString = StringUtils.GenerateCheckSum( plaintext );
     return cypherString;
   }
 
@@ -136,7 +136,7 @@ public class DynamicScopedObjectsDto
   {
     var counterValues = UpdatedAt.ToString() + "/";
 
-    foreach (var counter in Counters.Counters.OrderBy(x => x.Id))
+    foreach ( var counter in Counters.Counters.OrderBy( x => x.Id ) )
       counterValues += counter.Value + "/";
 
     return counterValues;
@@ -153,23 +153,23 @@ public class DynamicScopedObjectsDto
   {
     CountersDto dto = null;
 
-    if (string.IsNullOrEmpty(scopeType))
-      dto = Counters.Counters.FirstOrDefault(x => x.Id == id);
+    if ( string.IsNullOrEmpty( scopeType ) )
+      dto = Counters.Counters.FirstOrDefault( x => x.Id == id );
 
     return dto;
   }
 
   public string ToJson()
   {
-    var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
-    return JToken.Parse(rawJson).ToString(Formatting.Indented);
+    var rawJson = System.Text.Json.JsonSerializer.Serialize( this );
+    return JToken.Parse( rawJson ).ToString( Formatting.Indented );
   }
 
   public void Dump(IOLabLogger logger, string prefix)
   {
     var message = $"{prefix}{Environment.NewLine}";
 
-    if (IsEmpty())
+    if ( IsEmpty() )
     {
       message += $"IsEmpty{Environment.NewLine}";
       return;
@@ -177,15 +177,15 @@ public class DynamicScopedObjectsDto
 
     var plainText = GetObjectPlainText();
     message += $"Text:   {plainText}{Environment.NewLine}";
-    message += $"Bytes:  {GetPlainTextBytes(plainText)}{Environment.NewLine}";
+    message += $"Bytes:  {GetPlainTextBytes( plainText )}{Environment.NewLine}";
 
-    foreach (var counter in Counters.Counters)
+    foreach ( var counter in Counters.Counters )
       message += $"Counter:    {counter}{Environment.NewLine}";
 
     message += $"Update  {UpdatedAt.ToString()}{Environment.NewLine}";
     message += $"ChkSum  {Checksum}{Environment.NewLine}";
 
-    logger.LogDebug(message);
+    logger.LogDebug( message );
 
   }
 
@@ -198,20 +198,20 @@ public class DynamicScopedObjectsDto
   {
     CountersDto responseCounterDto = null;
 
-    if (counterDto == null)
+    if ( counterDto == null )
     {
-      logger.LogDebug($"no counter to update");
+      logger.LogDebug( $"no counter to update" );
       return;
     }
 
-    responseCounterDto = Counters.Counters.FirstOrDefault(x => x.Id == counterDto.Id);
+    responseCounterDto = Counters.Counters.FirstOrDefault( x => x.Id == counterDto.Id );
 
-    if (responseCounterDto == null)
-      logger.LogError($"unable to update counter {counterDto.Name}({counterDto.Id}) value. not found in response");
+    if ( responseCounterDto == null )
+      logger.LogError( $"unable to update counter {counterDto.Name}({counterDto.Id}) value. not found in response" );
 
-    responseCounterDto.SetValue(counterDto.Value);
+    responseCounterDto.SetValue( counterDto.Value );
 
-    logger.LogDebug($"response counter {responseCounterDto.Name}({responseCounterDto.Id}) = {responseCounterDto.Value}");
+    logger.LogDebug( $"response counter {responseCounterDto.Name}({responseCounterDto.Id}) = {responseCounterDto.Value}" );
 
   }
 }

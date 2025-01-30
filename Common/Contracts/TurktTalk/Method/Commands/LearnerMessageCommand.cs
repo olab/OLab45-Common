@@ -11,15 +11,15 @@ public class LearnerMessageCommand : Method
   /// <summary>
   /// Defines a Moderator removed command method
   /// </summary>
-  public LearnerMessageCommand(MessagePayload payload) : base(payload.Envelope.To, "TURKEEMESSAGE")
+  public LearnerMessageCommand(MessagePayload payload) : base( payload.Envelope.To, "TURKEEMESSAGE" )
   {
     Data = payload.Data;
   }
 
   public override string ToJson()
   {
-    var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
-    return JToken.Parse(rawJson).ToString(Formatting.Indented);
+    var rawJson = System.Text.Json.JsonSerializer.Serialize( this );
+    return JToken.Parse( rawJson ).ToString( Formatting.Indented );
   }
 
 }

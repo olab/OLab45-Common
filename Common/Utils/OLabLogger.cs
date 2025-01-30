@@ -46,7 +46,7 @@ public class OLabLogger : IOLabLogger
 
   // for cases where we don't have/need an actual ILogger
   public OLabLogger(bool keepMessages = false)
-    : this(NullLoggerFactory.Instance, keepMessages)
+    : this( NullLoggerFactory.Instance, keepMessages )
   {
   }
 
@@ -54,7 +54,7 @@ public class OLabLogger : IOLabLogger
   {
     _loggerFactory = loggerFactory;
     _keepMessages = keepMessages;
-    _logger = _loggerFactory.CreateLogger("default");
+    _logger = _loggerFactory.CreateLogger( "default" );
   }
 
   private OLabLogger(ILoggerFactory loggerFactory, ILogger logger, bool keepMessages = false)
@@ -66,22 +66,22 @@ public class OLabLogger : IOLabLogger
 
   public static IOLabLogger CreateNew<T>(IOLabLogger source, bool keepMessages = false)
   {
-    var logger = new OLabLogger(source.GetLoggerFactory(), source.GetLoggerFactory().CreateLogger<T>(), keepMessages);
+    var logger = new OLabLogger( source.GetLoggerFactory(), source.GetLoggerFactory().CreateLogger<T>(), keepMessages );
     return logger;
   }
 
   public static IOLabLogger CreateNew<T>(ILoggerFactory loggerFactory, bool keepMessages = false)
   {
-    var logger = new OLabLogger(loggerFactory, loggerFactory.CreateLogger<T>(), keepMessages);
+    var logger = new OLabLogger( loggerFactory, loggerFactory.CreateLogger<T>(), keepMessages );
     return logger;
   }
 
-  public bool HaveFatalError => _messages.Any(x => x.Level == OLabLogMessage.MessageLevel.Fatal);
+  public bool HaveFatalError => _messages.Any( x => x.Level == OLabLogMessage.MessageLevel.Fatal );
 
   public IList<OLabLogMessage> GetMessages(OLabLogMessage.MessageLevel level = OLabLogMessage.MessageLevel.Debug)
   {
     //return _messages.Where(x => x.Level >= level).Select(x => x.Message).ToList();
-    return _messages.Where(x => x.Level >= level).ToList();
+    return _messages.Where( x => x.Level >= level ).ToList();
   }
 
   public void Clear()
@@ -89,9 +89,9 @@ public class OLabLogger : IOLabLogger
     _messages.Clear();
   }
 
-  private void Log(OLabLogMessage.MessageLevel level, string message)
+  private void SpoolLogMessage(OLabLogMessage.MessageLevel level, string message)
   {
-    if (_keepMessages)
+    if ( _keepMessages )
     {
       var obj = new OLabLogMessage
       {
@@ -99,7 +99,7 @@ public class OLabLogger : IOLabLogger
         Time = DateTime.Now,
         Level = level
       };
-      _messages.Add(obj);
+      _messages.Add( obj );
     }
   }
 
@@ -113,94 +113,94 @@ public class OLabLogger : IOLabLogger
       Time = DateTime.Now,
       Level = level
     };
-    _messages.Add(obj);
+    _messages.Add( obj );
   }
 
   public void LogDebug(string message)
   {
-    _logger?.LogDebug(message);
-    Log(OLabLogMessage.MessageLevel.Debug, message);
+    _logger?.LogDebug( message );
+    SpoolLogMessage( OLabLogMessage.MessageLevel.Debug, message );
   }
 
   public void LogDebug(string type, int index, string message)
   {
-    _logger?.LogDebug(message);
-    Log(OLabLogMessage.MessageLevel.Debug, type, index, message);
+    _logger?.LogDebug( message );
+    Log( OLabLogMessage.MessageLevel.Debug, type, index, message );
   }
 
   public void LogFatal(string message)
   {
-    _logger?.LogCritical(message);
-    Log(OLabLogMessage.MessageLevel.Fatal, message);
+    _logger?.LogCritical( message );
+    SpoolLogMessage( OLabLogMessage.MessageLevel.Fatal, message );
   }
 
   public void LogFatal(string type, int index, string message)
   {
-    _logger?.LogCritical(message);
-    Log(OLabLogMessage.MessageLevel.Fatal, type, index, message);
+    _logger?.LogCritical( message );
+    Log( OLabLogMessage.MessageLevel.Fatal, type, index, message );
   }
 
   public void LogError(Exception ex, string message = null)
   {
-    if (string.IsNullOrEmpty(message))
-      LogError($"ERROR: {ex.Message}");
+    if ( string.IsNullOrEmpty( message ) )
+      LogError( $"ERROR: {ex.Message}" );
     else
-      LogError($"ERROR: {message} {ex.Message}");
+      LogError( $"ERROR: {message} {ex.Message}" );
 
     var inner = ex.InnerException;
-    while (inner != null)
+    while ( inner != null )
     {
-      LogError($"ERROR: {inner.Message}");
+      LogError( $"ERROR: {inner.Message}" );
       inner = inner.InnerException;
     }
 
-    _logger.LogError($"{ex.StackTrace}");
+    _logger.LogError( $"{ex.StackTrace}" );
   }
 
   public void LogError(string type, int index, Exception ex, string message)
   {
-    _logger?.LogError(ex, message);
-    Log(OLabLogMessage.MessageLevel.Error, type, index, message);
+    _logger?.LogError( ex, message );
+    Log( OLabLogMessage.MessageLevel.Error, type, index, message );
   }
 
   public void LogError(string message)
   {
-    _logger?.LogError(message);
-    Log(OLabLogMessage.MessageLevel.Error, message);
+    _logger?.LogError( message );
+    SpoolLogMessage( OLabLogMessage.MessageLevel.Error, message );
   }
 
   public void LogError(string type, int index, string message)
   {
-    _logger?.LogError(message);
-    Log(OLabLogMessage.MessageLevel.Error, type, index, message);
+    _logger?.LogError( message );
+    Log( OLabLogMessage.MessageLevel.Error, type, index, message );
   }
 
   public void LogInformation(string message)
   {
-    _logger?.LogInformation(message);
-    Log(OLabLogMessage.MessageLevel.Info, message);
+    _logger?.LogInformation( message );
+    SpoolLogMessage( OLabLogMessage.MessageLevel.Info, message );
   }
 
   public void LogWarning(string message)
   {
-    _logger?.LogWarning(message);
-    Log(OLabLogMessage.MessageLevel.Warn, message);
+    _logger?.LogWarning( message );
+    SpoolLogMessage( OLabLogMessage.MessageLevel.Warn, message );
   }
 
   public void LogInformation(string type, int index, string message)
   {
-    _logger?.LogInformation(message);
-    Log(OLabLogMessage.MessageLevel.Info, type, index, message);
+    _logger?.LogInformation( message );
+    Log( OLabLogMessage.MessageLevel.Info, type, index, message );
   }
 
   public void LogWarning(string type, int index, string message)
   {
-    _logger?.LogWarning(message);
-    Log(OLabLogMessage.MessageLevel.Warn, type, index, message);
+    _logger?.LogWarning( message );
+    Log( OLabLogMessage.MessageLevel.Warn, type, index, message );
   }
 
   public bool HasErrorMessage()
   {
-    return _messages.Any(x => x.Level >= OLabLogMessage.MessageLevel.Error);
+    return _messages.Any( x => x.Level >= OLabLogMessage.MessageLevel.Error );
   }
 }

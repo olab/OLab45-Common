@@ -17,7 +17,7 @@ public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
     _enableWikiTranslation = enableWikiTranslation;
   }
@@ -28,12 +28,12 @@ public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
   /// <returns>MapperConfiguration</returns>
   protected override MapperConfiguration GetConfiguration()
   {
-    return new MapperConfiguration(cfg =>
+    return new MapperConfiguration( cfg =>
     {
       cfg.CreateMap<Maps, MapsFullRelationsDto>().ReverseMap();
       cfg.CreateMap<MapNodes, MapNodesFullDto>().ReverseMap();
       cfg.CreateMap<MapNodeLinks, MapNodeLinksFullDto>().ReverseMap();
-    });
+    } );
   }
 
   /// <summary>
@@ -54,27 +54,27 @@ public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
         GetDbContext(),
         _wikiTagModules,
         _enableWikiTranslation
-      ).PhysicalToDto(mapPhys),
+      ).PhysicalToDto( mapPhys ),
 
       MapNodes = new MapNodesFullMapper(
         _logger,
         GetDbContext(),
         _wikiTagModules,
         _enableWikiTranslation
-      ).PhysicalToDto(mapPhys.MapNodes.ToList())
+      ).PhysicalToDto( mapPhys.MapNodes.ToList() )
     };
 
-    dto.Map.Feedback = Conversions.Base64Decode(mapPhys.Feedback);
-    dto.Map.CreatedAt = TimeUtils.ToUtc(mapPhys.CreatedAt);
+    dto.Map.Feedback = Conversions.Base64Decode( mapPhys.Feedback );
+    dto.Map.CreatedAt = TimeUtils.ToUtc( mapPhys.CreatedAt );
 
     var links = new List<MapNodeLinks>();
-    links.AddRange(mapPhys.MapNodeLinks);
+    links.AddRange( mapPhys.MapNodeLinks );
 
     dto.MapNodeLinks = new MapNodeLinksMapper(
       _logger,
       GetDbContext(),
       GetWikiProvider(),
-      _enableWikiTranslation).PhysicalToDto(links);
+      _enableWikiTranslation ).PhysicalToDto( links );
 
     return dto;
   }

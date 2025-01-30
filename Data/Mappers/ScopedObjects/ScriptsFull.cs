@@ -12,7 +12,7 @@ public class ScriptsFull : OLabMapper<SystemScripts, ScriptsFullDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 
@@ -20,16 +20,16 @@ public class ScriptsFull : OLabMapper<SystemScripts, ScriptsFullDto>
     SystemScripts phys,
     ScriptsFullDto source)
   {
-    var dto = base.PhysicalToDto(phys, source);
-    dto.Source = Encoding.ASCII.GetString(phys.Source);
+    var dto = base.PhysicalToDto( phys, source );
+    dto.Source = Encoding.ASCII.GetString( phys.Source );
     return dto;
   }
 
   public override SystemScripts DtoToPhysical(
     ScriptsFullDto dto)
   {
-    var phys = base.DtoToPhysical(dto);
-    phys.Source = Encoding.ASCII.GetBytes(dto.Source);
+    var phys = base.DtoToPhysical( dto );
+    phys.Source = Encoding.ASCII.GetBytes( dto.Source );
     return phys;
   }
 

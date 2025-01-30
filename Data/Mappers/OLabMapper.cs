@@ -13,7 +13,7 @@ public class DateTimeTypeConverter : ITypeConverter<decimal, DateTime>
 {
   public DateTime Convert(decimal source, DateTime destination, ResolutionContext context)
   {
-    return new System.DateTime(1970, 1, 1).AddSeconds(System.Convert.ToDouble(source));
+    return new System.DateTime( 1970, 1, 1 ).AddSeconds( System.Convert.ToDouble( source ) );
   }
 }
 
@@ -21,9 +21,9 @@ public class DecimalDateTimeTypeConverter : ITypeConverter<DateTime, decimal>
 {
   public decimal Convert(DateTime source, decimal destination, ResolutionContext context)
   {
-    var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+    var origin = new DateTime( 1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc );
     var diff = source.ToUniversalTime() - origin;
-    return System.Convert.ToDecimal(Math.Floor(diff.TotalSeconds));
+    return System.Convert.ToDecimal( Math.Floor( diff.TotalSeconds ) );
   }
 }
 
@@ -49,13 +49,13 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
     IOLabLogger logger,
     OLabDBContext dbContext)
   {
-    Guard.Argument(logger).NotNull(nameof(logger));
-    Guard.Argument(dbContext).NotNull(nameof(dbContext));
+    Guard.Argument( logger ).NotNull( nameof( logger ) );
+    Guard.Argument( dbContext ).NotNull( nameof( dbContext ) );
 
-    _logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
+    _logger = OLabLogger.CreateNew<OLabMapper<P, D>>( logger );
     _dbContext = dbContext;
 
-    _mapper = new Mapper(GetConfiguration());
+    _mapper = new Mapper( GetConfiguration() );
   }
 
 
@@ -64,15 +64,15 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> wikiTagModules)
   {
-    Guard.Argument(logger).NotNull(nameof(logger));
-    Guard.Argument(dbContext).NotNull(nameof(dbContext));
+    Guard.Argument( logger ).NotNull( nameof( logger ) );
+    Guard.Argument( dbContext ).NotNull( nameof( dbContext ) );
 
-    _logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
+    _logger = OLabLogger.CreateNew<OLabMapper<P, D>>( logger );
     _dbContext = dbContext;
 
-    if (wikiTagModules != null)
+    if ( wikiTagModules != null )
       _wikiTagModules = wikiTagModules as WikiTagModuleProvider;
-    _mapper = new Mapper(GetConfiguration());
+    _mapper = new Mapper( GetConfiguration() );
   }
 
   /// <summary>
@@ -81,10 +81,10 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   /// <returns>MapperConfiguration</returns>
   protected virtual MapperConfiguration GetConfiguration()
   {
-    return new MapperConfiguration(cfg =>
+    return new MapperConfiguration( cfg =>
     {
       cfg.CreateMap<P, D>().ReverseMap();
-    });
+    } );
   }
 
   /// <summary>
@@ -113,8 +113,8 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   /// <returns>Dto object</returns>
   public virtual D PhysicalToDto(P phys)
   {
-    var dto = _mapper.Map<D>(phys);
-    dto = PhysicalToDto(phys, dto);
+    var dto = _mapper.Map<D>( phys );
+    dto = PhysicalToDto( phys, dto );
     return dto;
   }
 
@@ -126,10 +126,10 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   public virtual IList<D> PhysicalToDto(IList<P> physList)
   {
     var dtoList = new List<D>();
-    foreach (var phys in physList)
+    foreach ( var phys in physList )
     {
-      var dto = PhysicalToDto(phys);
-      dtoList.Add(dto);
+      var dto = PhysicalToDto( phys );
+      dtoList.Add( dto );
     }
 
     return dtoList;
@@ -162,9 +162,9 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   public virtual P DtoToPhysical(D dto)
   {
     var phys = new P();
-    _mapper.Map(dto, phys);
+    _mapper.Map( dto, phys );
 
-    phys = DtoToPhysical(dto, phys);
+    phys = DtoToPhysical( dto, phys );
     return phys;
   }
 
@@ -176,10 +176,10 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   public virtual IList<P> DtoToPhysical(IList<D> dtoList)
   {
     var physList = new List<P>();
-    foreach (var dto in dtoList)
+    foreach ( var dto in dtoList )
     {
-      var phys = DtoToPhysical(dto);
-      physList.Add(phys);
+      var phys = DtoToPhysical( dto );
+      physList.Add( phys );
     }
 
     return physList;
@@ -192,7 +192,7 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   /// <returns>Dto</returns>
   public virtual D GetDto(Object source = null)
   {
-    if (source == null)
+    if ( source == null )
       return new D();
 
     return (D)source;
@@ -205,7 +205,7 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
   /// <returns>Physical</returns>
   public virtual P GetPhys(Object source = null)
   {
-    if (source == null)
+    if ( source == null )
       return new P();
 
     return (P)source;
@@ -213,22 +213,22 @@ public abstract class OLabMapper<P, D> : object where P : new() where D : new()
 
   protected void CreateIdTranslation(uint originalId)
   {
-    if (_idTranslation.ContainsKey(originalId))
+    if ( _idTranslation.ContainsKey( originalId ) )
       return;
-    _idTranslation.Add(originalId, null);
+    _idTranslation.Add( originalId, null );
   }
 
   protected bool SetIdTranslation(uint originalId, uint newId)
   {
-    return _idTranslation.TryAdd(originalId, newId);
+    return _idTranslation.TryAdd( originalId, newId );
   }
 
   protected uint? GetIdTranslation(uint originalId)
   {
-    if (!_idTranslation.TryGetValue(originalId, out var newId))
+    if ( !_idTranslation.TryGetValue( originalId, out var newId ) )
       return newId;
 
-    throw new KeyNotFoundException($"Cound not find Id key {originalId}");
+    throw new KeyNotFoundException( $"Cound not find Id key {originalId}" );
   }
 
 }

@@ -27,15 +27,15 @@ public partial class MapNodeLinks
     link.Id = 0;
     link.MapId = mapId;
 
-    if (reverseNodeIdMap.ContainsKey(link.NodeId1))
-      link.NodeId1 = reverseNodeIdMap[link.NodeId1];
+    if ( reverseNodeIdMap.ContainsKey( link.NodeId1 ) )
+      link.NodeId1 = reverseNodeIdMap[ link.NodeId1 ];
     else
-      throw new Exception($"NodeId1 {link.NodeId1} not found in mapping");
+      throw new Exception( $"NodeId1 {link.NodeId1} not found in mapping" );
 
-    if (reverseNodeIdMap.ContainsKey(link.NodeId2))
-      link.NodeId2 = reverseNodeIdMap[link.NodeId2];
+    if ( reverseNodeIdMap.ContainsKey( link.NodeId2 ) )
+      link.NodeId2 = reverseNodeIdMap[ link.NodeId2 ];
     else
-      throw new Exception($"NodeId2 {link.NodeId1} not found in mapping");
+      throw new Exception( $"NodeId2 {link.NodeId1} not found in mapping" );
 
   }
 

@@ -19,16 +19,16 @@ public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
       logger,
       importer,
       Importer.DtoTypes.XmlMapAvatarDto,
-      "map_avatar.xml")
+      "map_avatar.xml" )
   {
     _avMapper = new AvatarsMapper(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider());
+        GetWikiProvider() );
     _fileMapper = new Files(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider());
+        GetWikiProvider() );
   }
 
   /// <summary>
@@ -68,20 +68,20 @@ public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
     int recordIndex,
     IEnumerable<dynamic> elements)
   {
-    var avItem = _avMapper.ElementsToPhys(elements);
+    var avItem = _avMapper.ElementsToPhys( elements );
     var oldId = avItem.Id;
 
     avItem.Id = 0;
 
-    var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
-    avItem.MapId = mapDto.GetIdTranslation(GetFileName(), avItem.MapId).Value;
+    var mapDto = GetImporter().GetDto( Importer.DtoTypes.XmlMapDto ) as XmlMapDto;
+    avItem.MapId = mapDto.GetIdTranslation( GetFileName(), avItem.MapId ).Value;
 
-    GetDbContext().MapAvatars.Add(avItem);
+    GetDbContext().MapAvatars.Add( avItem );
     GetDbContext().SaveChanges();
 
-    GetLogger().LogInformation($"Saved {GetFileName()} id {avItem.Id}");
+    GetLogger().LogInformation( $"Saved {GetFileName()} id {avItem.Id}" );
 
-    var fileItem = CreateAvatarSystemFile(elements, avItem);
+    var fileItem = CreateAvatarSystemFile( elements, avItem );
 
     fileItem.ImageableId = avItem.MapId;
     fileItem.ImageableType = "Maps";
@@ -91,16 +91,16 @@ public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
       GetFileModule().GetPublicFileDirectory(
         fileItem.ImageableType,
         fileItem.ImageableId,
-        fileItem.Path);
+        fileItem.Path );
 
-    if (!File.Exists(physFile))
-      GetLogger().LogWarning(GetFileName(), 0, $"media file '{physFile}' does not exist in public directory");
+    if ( !File.Exists( physFile ) )
+      GetLogger().LogWarning( GetFileName(), 0, $"media file '{physFile}' does not exist in public directory" );
 
-    GetDbContext().SystemFiles.Add(fileItem);
+    GetDbContext().SystemFiles.Add( fileItem );
     GetDbContext().SaveChanges();
 
-    CreateIdTranslation(oldId, fileItem.Id);
-    GetLogger().LogInformation($"Saved SystemFile {fileItem.Id}");
+    CreateIdTranslation( oldId, fileItem.Id );
+    GetLogger().LogInformation( $"Saved SystemFile {fileItem.Id}" );
 
     return true;
   }

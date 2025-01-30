@@ -15,7 +15,7 @@ public class JumpNodeCommand : CommandMethod
   public string From { get; set; }
 
   // message for specific group
-  public JumpNodeCommand(JumpNodePayload payload) : base(payload.Envelope.To, "jumpnode")
+  public JumpNodeCommand(JumpNodePayload payload) : base( payload.Envelope.To, "jumpnode" )
   {
     Data = payload.Data;
     SessionId = payload.Session.ContextId;
@@ -23,8 +23,8 @@ public class JumpNodeCommand : CommandMethod
   }
   public override string ToJson()
   {
-    var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
-    return JValue.Parse(rawJson).ToString(Formatting.Indented);
+    var rawJson = System.Text.Json.JsonSerializer.Serialize( this );
+    return JValue.Parse( rawJson ).ToString( Formatting.Indented );
   }
 
 }

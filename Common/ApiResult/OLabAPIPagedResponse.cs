@@ -5,9 +5,9 @@ namespace OLab.Api.Common;
 
 public class OLabAPIPagedResponse<D> : OLabApiResult<IList<D>>
 {
-  [JsonProperty("count")]
+  [JsonProperty( "count" )]
   public int Count { get; set; }
-  [JsonProperty("remaining")]
+  [JsonProperty( "remaining" )]
   public int Remaining { get; set; }
 
   public OLabAPIPagedResponse()

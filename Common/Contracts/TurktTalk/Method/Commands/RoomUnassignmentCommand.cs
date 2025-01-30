@@ -18,9 +18,9 @@ public class RoomUnassignmentCommand : CommandMethod
 {
   public RoomUnassignmentPayload Data { get; set; }
 
-  public RoomUnassignmentCommand(string recipientGroupName, Participant participant) : base(recipientGroupName, "learnerunassignment")
+  public RoomUnassignmentCommand(string recipientGroupName, Participant participant) : base( recipientGroupName, "learnerunassignment" )
   {
-    Guard.Argument(participant).NotNull(nameof(participant));
+    Guard.Argument( participant ).NotNull( nameof( participant ) );
     Data = new RoomUnassignmentPayload
     {
       Participant = participant,
@@ -30,8 +30,8 @@ public class RoomUnassignmentCommand : CommandMethod
 
   public override string ToJson()
   {
-    var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
-    return JToken.Parse(rawJson).ToString(Formatting.Indented);
+    var rawJson = System.Text.Json.JsonSerializer.Serialize( this );
+    return JToken.Parse( rawJson ).ToString( Formatting.Indented );
   }
 
 }

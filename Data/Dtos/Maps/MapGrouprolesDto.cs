@@ -4,17 +4,17 @@ namespace OLab.Api.Dto;
 
 public partial class MapGrouprolesDto
 {
-  [JsonProperty("id")]
+  [JsonProperty( "id" )]
   public uint? Id { get; set; }
-  [JsonProperty("mapId")]
+  [JsonProperty( "mapId" )]
   public uint MapId { get; set; }
-  [JsonProperty("groupId")]
+  [JsonProperty( "groupId" )]
   public uint? GroupId { get; set; }
-  [JsonProperty("groupName")]
+  [JsonProperty( "groupName" )]
   public string GroupName { get; set; }
-  [JsonProperty("roleId")]
+  [JsonProperty( "roleId" )]
   public uint? RoleId { get; set; }
-  [JsonProperty("roleName")]
+  [JsonProperty( "roleName" )]
   public string RoleName { get; set; }
 
 }

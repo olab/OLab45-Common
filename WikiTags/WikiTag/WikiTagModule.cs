@@ -24,7 +24,7 @@ public abstract class WikiTagModule : IWikiTagModule
   {
     var t = GetType();
     var attribute =
-        (OLabModuleAttribute)Attribute.GetCustomAttribute(t, typeof(OLabModuleAttribute));
+        (OLabModuleAttribute)Attribute.GetCustomAttribute( t, typeof( OLabModuleAttribute ) );
     _wikiType = attribute.Name;
 
     Logger = logger;
@@ -44,23 +44,23 @@ public abstract class WikiTagModule : IWikiTagModule
 
   public string GetUnquotedWiki()
   {
-    var wiki = GetWiki().Replace("[[", "[");
-    wiki = wiki.Replace("]]", "]");
+    var wiki = GetWiki().Replace( "[[", "[" );
+    wiki = wiki.Replace( "]]", "]" );
     return wiki;
   }
 
   public string GetWiki() { return _wiki; }
   public string BuildWiki(uint id, string name = "")
   {
-    if (string.IsNullOrEmpty(name))
+    if ( string.IsNullOrEmpty( name ) )
       return $"[[{GetWikiType()}:{id}]]";
     return $"[[{GetWikiType()}:{name}]]";
   }
 
   protected string ReplaceWikiTag(string original, string replaceString)
   {
-    var preWikiPart = original[..wikiStart];
-    var postWikiPart = original[wikiEnd..];
+    var preWikiPart = original[ ..wikiStart ];
+    var postWikiPart = original[ wikiEnd.. ];
     return preWikiPart + replaceString + postWikiPart;
   }
 
@@ -71,11 +71,11 @@ public abstract class WikiTagModule : IWikiTagModule
   /// <returns>true/false</returns>
   public virtual bool HaveWikiTag(string source)
   {
-    foreach (var pattern in wikiTagPatterns)
+    foreach ( var pattern in wikiTagPatterns )
     {
-      var regex = new Regex(pattern);
-      var match = regex.Match(source);
-      if (match.Success)
+      var regex = new Regex( pattern );
+      var match = regex.Match( source );
+      if ( match.Success )
       {
         wikiStart = match.Index;
         wikiEnd = match.Index + match.Length;

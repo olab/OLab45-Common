@@ -14,17 +14,17 @@ public class ThemesFull : OLabMapper<SystemThemes, ThemesFullDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider = null,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
     this.enableWikiTranslation = enableWikiTranslation;
   }
 
   public override ThemesFullDto PhysicalToDto(SystemThemes phys, ThemesFullDto dto)
   {
-    if (enableWikiTranslation)
+    if ( enableWikiTranslation )
     {
-      dto.HeaderText = GetWikiProvider().Translate(phys.HeaderText);
-      dto.FooterText = GetWikiProvider().Translate(phys.FooterText);
+      dto.HeaderText = GetWikiProvider().Translate( phys.HeaderText );
+      dto.FooterText = GetWikiProvider().Translate( phys.FooterText );
     }
     else
     {
@@ -34,8 +34,8 @@ public class ThemesFull : OLabMapper<SystemThemes, ThemesFullDto>
     return dto;
   }
 
-  [JsonProperty("header")]
+  [JsonProperty( "header" )]
   public string HeaderText { get; set; }
-  [JsonProperty("footer")]
+  [JsonProperty( "footer" )]
   public string FooterText { get; set; }
 }

@@ -18,15 +18,15 @@ public class AtriumAssignmentCommand : CommandMethod
   }
 
   public AtriumAssignmentCommand(Participant participant, Learner atriumParticipant)
-    : base(participant.CommandChannel, "atriumassignment")
+    : base( participant.CommandChannel, "atriumassignment" )
   {
     Data = atriumParticipant;
   }
 
   public override string ToJson()
   {
-    var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
-    return JToken.Parse(rawJson).ToString(Formatting.Indented);
+    var rawJson = System.Text.Json.JsonSerializer.Serialize( this );
+    return JToken.Parse( rawJson ).ToString( Formatting.Indented );
   }
 
 }

@@ -27,10 +27,10 @@ public partial class UserGrouproles
   {
     var groupRoles = new List<string>();
 
-    foreach (var item in items)
-      groupRoles.Add(item.ToString());
+    foreach ( var item in items )
+      groupRoles.Add( item.ToString() );
 
-    return string.Join(ItemSeparator, groupRoles);
+    return string.Join( ItemSeparator, groupRoles );
   }
 
   /// <summary>
@@ -41,8 +41,8 @@ public partial class UserGrouproles
   /// <returns>String</returns>
   public static string ToString(string groupName, string roleName)
   {
-    Guard.Argument(groupName, nameof(groupName)).NotEmpty();
-    Guard.Argument(roleName, nameof(roleName)).NotEmpty();
+    Guard.Argument( groupName, nameof( groupName ) ).NotEmpty();
+    Guard.Argument( roleName, nameof( roleName ) ).NotEmpty();
 
     return $"{groupName}{PartSeparator}{roleName}";
   }
@@ -55,15 +55,15 @@ public partial class UserGrouproles
   /// <returns>UserGrouproles</returns>
   public static UserGrouproles StringToObject(OLabDBContext dbContext, string source)
   {
-    var parts = source.Split(PartSeparator);
+    var parts = source.Split( PartSeparator );
 
-    if (parts.Length != 2)
+    if ( parts.Length != 2 )
       return null;
 
-    var groupPhys = dbContext.Groups.FirstOrDefault(x => x.Name == parts[0]);
-    var rolePhys = dbContext.Roles.FirstOrDefault(x => x.Name == parts[1]);
+    var groupPhys = dbContext.Groups.FirstOrDefault( x => x.Name == parts[ 0 ] );
+    var rolePhys = dbContext.Roles.FirstOrDefault( x => x.Name == parts[ 1 ] );
 
-    if ((groupPhys != null) && (rolePhys != null))
+    if ( (groupPhys != null) && (rolePhys != null) )
     {
       return new UserGrouproles
       {
@@ -88,13 +88,13 @@ public partial class UserGrouproles
     string sourceList)
   {
     var items = new List<UserGrouproles>();
-    var groupRoleStrings = sourceList.Split(ItemSeparator);
+    var groupRoleStrings = sourceList.Split( ItemSeparator );
 
-    foreach (var groupRoleString in groupRoleStrings)
+    foreach ( var groupRoleString in groupRoleStrings )
     {
-      var item = StringToObject(dbContext, groupRoleString);
-      if (item != null)
-        items.Add(item);
+      var item = StringToObject( dbContext, groupRoleString );
+      if ( item != null )
+        items.Add( item );
     }
 
     return items;

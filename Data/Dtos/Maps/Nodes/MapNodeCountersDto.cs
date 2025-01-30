@@ -4,14 +4,14 @@ namespace OLab.Api.Dto;
 
 public class MapNodeCountersDto
 {
-  [JsonProperty("id")]
+  [JsonProperty( "id" )]
   public uint Id { get; set; }
-  [JsonProperty("nodeId")]
+  [JsonProperty( "nodeId" )]
   public uint NodeId { get; set; }
-  [JsonProperty("counterId")]
+  [JsonProperty( "counterId" )]
   public int CounterId { get; set; }
-  [JsonProperty("function")]
+  [JsonProperty( "function" )]
   public string Function { get; set; }
-  [JsonProperty("display")]
+  [JsonProperty( "display" )]
   public int Display { get; set; }
 }

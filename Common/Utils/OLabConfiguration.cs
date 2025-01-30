@@ -24,10 +24,10 @@ public class OLabConfiguration : IOLabConfiguration
     _configuration = configuration;
     var logger = OLabLogger.CreateNew<OLabConfiguration>( loggerFactory );
 
-    logger.LogInformation( $"Configuration:" );
+    //logger.LogInformation( $"Configuration:" );
 
-    foreach ( var item in _configuration.AsEnumerable() )
-      logger.LogInformation( $"  {item.Key} -> {item.Value}" );
+    //foreach ( var item in _configuration.AsEnumerable() )
+    //  logger.LogInformation( $"  {item.Key} -> {item.Value}" );
 
     _appSettings = new AppSettings
     {

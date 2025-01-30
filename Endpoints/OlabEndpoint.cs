@@ -45,23 +45,23 @@ public class OLabEndpoint
     IOLabLogger logger,
     OLabDBContext context)
   {
-    Guard.Argument(logger).NotNull(nameof(logger));
-    Guard.Argument(context).NotNull(nameof(context));
+    Guard.Argument( logger ).NotNull( nameof( logger ) );
+    Guard.Argument( context ).NotNull( nameof( context ) );
 
     _dbContext = context;
     _logger = logger;
 
-    _nodesReaderWriter = new MapNodesReaderWriter(GetLogger(), GetDbContext(), GetWikiProvider());
-    _mapsReaderWriter = new MapsReaderWriter(GetLogger(), GetDbContext());
+    _nodesReaderWriter = new MapNodesReaderWriter( GetLogger(), GetDbContext(), GetWikiProvider() );
+    _mapsReaderWriter = new MapsReaderWriter( GetLogger(), GetDbContext() );
 
   }
 
   public OLabEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
-    OLabDBContext dbContext) : this(logger, dbContext)
+    OLabDBContext dbContext) : this( logger, dbContext )
   {
-    Guard.Argument(configuration).NotNull(nameof(configuration));
+    Guard.Argument( configuration ).NotNull( nameof( configuration ) );
 
     _configuration = configuration;
   }
@@ -71,16 +71,16 @@ public class OLabEndpoint
     IOLabConfiguration configuration,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
-    IOLabModuleProvider<IFileStorageModule> fileStorageProvider) : this(logger, configuration, dbContext)
+    IOLabModuleProvider<IFileStorageModule> fileStorageProvider) : this( logger, configuration, dbContext )
   {
-    Guard.Argument(wikiTagProvider).NotNull(nameof(wikiTagProvider));
-    Guard.Argument(fileStorageProvider).NotNull(nameof(fileStorageProvider));
+    Guard.Argument( wikiTagProvider ).NotNull( nameof( wikiTagProvider ) );
+    Guard.Argument( fileStorageProvider ).NotNull( nameof( fileStorageProvider ) );
 
     var fileSystemModuleName = _configuration.GetAppSettings().FileStorageType;
-    if (string.IsNullOrEmpty(fileSystemModuleName))
-      throw new ConfigurationErrorsException($"missing FileStorageType");
+    if ( string.IsNullOrEmpty( fileSystemModuleName ) )
+      throw new ConfigurationErrorsException( $"missing FileStorageType" );
 
-    _fileStorageModule = fileStorageProvider.GetModule(fileSystemModuleName);
+    _fileStorageModule = fileStorageProvider.GetModule( fileSystemModuleName );
     _wikiTagModules = wikiTagProvider;
   }
 
@@ -96,29 +96,29 @@ public class OLabEndpoint
   [NonAction]
   protected void AttachParentObject(ScopedObjectDto dto)
   {
-    if (dto.ImageableType == Constants.ScopeLevelServer)
+    if ( dto.ImageableType == Constants.ScopeLevelServer )
     {
-      var obj = GetDbContext().Servers.FirstOrDefault(x => x.Id == dto.ImageableId);
-      if (obj == null)
-        throw new Exception($"orphaned object cannot find {dto.ImageableType} {dto.ImageableId}");
+      var obj = GetDbContext().Servers.FirstOrDefault( x => x.Id == dto.ImageableId );
+      if ( obj == null )
+        throw new Exception( $"orphaned object cannot find {dto.ImageableType} {dto.ImageableId}" );
       dto.ParentInfo.Id = obj.Id;
       dto.ParentInfo.Name = obj.Name;
     }
 
-    else if (dto.ImageableType == Constants.ScopeLevelMap)
+    else if ( dto.ImageableType == Constants.ScopeLevelMap )
     {
-      var obj = GetDbContext().Maps.FirstOrDefault(x => x.Id == dto.ImageableId);
-      if (obj == null)
-        throw new Exception($"orphaned object cannot find {dto.ImageableType} {dto.ImageableId}");
+      var obj = GetDbContext().Maps.FirstOrDefault( x => x.Id == dto.ImageableId );
+      if ( obj == null )
+        throw new Exception( $"orphaned object cannot find {dto.ImageableType} {dto.ImageableId}" );
       dto.ParentInfo.Id = obj.Id;
       dto.ParentInfo.Name = obj.Name;
     }
 
-    else if (dto.ImageableType == Constants.ScopeLevelNode)
+    else if ( dto.ImageableType == Constants.ScopeLevelNode )
     {
-      var obj = GetDbContext().MapNodes.FirstOrDefault(x => x.Id == dto.ImageableId);
-      if (obj == null)
-        throw new Exception($"orphaned object cannot find {dto.ImageableType} {dto.ImageableId}");
+      var obj = GetDbContext().MapNodes.FirstOrDefault( x => x.Id == dto.ImageableId );
+      if ( obj == null )
+        throw new Exception( $"orphaned object cannot find {dto.ImageableType} {dto.ImageableId}" );
       dto.ParentInfo.Id = obj.Id;
       dto.ParentInfo.Name = obj.Title;
     }
@@ -127,7 +127,7 @@ public class OLabEndpoint
   protected IList<IdName> GetServerIdNames()
   {
     return GetDbContext().Servers
-      .Select(x => new IdName() { Id = x.Id, Name = x.Name }).ToList();
+      .Select( x => new IdName() { Id = x.Id, Name = x.Name } ).ToList();
   }
 
   protected IdName FindParentInfo(
@@ -137,14 +137,14 @@ public class OLabEndpoint
     IList<IdName> nodes,
     IList<IdName> servers)
   {
-    if (scopeLevel == Constants.ScopeLevelServer)
-      return servers.FirstOrDefault(x => x.Id == parentId);
+    if ( scopeLevel == Constants.ScopeLevelServer )
+      return servers.FirstOrDefault( x => x.Id == parentId );
 
-    if (scopeLevel == Constants.ScopeLevelMap)
-      return maps.FirstOrDefault(x => x.Id == parentId);
+    if ( scopeLevel == Constants.ScopeLevelMap )
+      return maps.FirstOrDefault( x => x.Id == parentId );
 
-    if (scopeLevel == Constants.ScopeLevelNode)
-      return nodes.FirstOrDefault(x => x.Id == parentId);
+    if ( scopeLevel == Constants.ScopeLevelNode )
+      return nodes.FirstOrDefault( x => x.Id == parentId );
 
     return null;
   }
@@ -158,12 +158,12 @@ public class OLabEndpoint
   [NonAction]
   protected async Task<IList<MapNodesFullDto>> GetNodesAsync(Maps map, bool enableWikiTanslation = true)
   {
-    var physList = await _nodesReaderWriter.GetByMapAsync(map.Id);
+    var physList = await _nodesReaderWriter.GetByMapAsync( map.Id );
 
     // patch up any malformed nodes that have 0-by-0 size, 
     // which prevent them from being displayed
-    var physNodes = physList.Where(x => (x.Height == 0) || (x.Width == 0)).ToList();
-    foreach (var physNode in physNodes)
+    var physNodes = physList.Where( x => (x.Height == 0) || (x.Width == 0) ).ToList();
+    foreach ( var physNode in physNodes )
     {
       physNode.Height = 440;
       physNode.Width = 300;
@@ -173,7 +173,7 @@ public class OLabEndpoint
       GetLogger(),
       GetDbContext(),
       GetWikiProvider(),
-      enableWikiTanslation).PhysicalToDto(physList);
+      enableWikiTanslation ).PhysicalToDto( physList );
     return dtoList;
   }
 
@@ -192,28 +192,28 @@ public class OLabEndpoint
     bool hideHidden,
     bool enableWikiTranslation)
   {
-    var phys = await _nodesReaderWriter.GetNodeAsync(mapId, nodeId);
-    if (phys == null)
+    var phys = await _nodesReaderWriter.GetNodeAsync( mapId, nodeId );
+    if ( phys == null )
     {
-      GetLogger().LogError($"GetNodeSync unable to find map {mapId}, node {nodeId}");
+      GetLogger().LogError( $"GetNodeSync unable to find map {mapId}, node {nodeId}" );
       return new MapsNodesFullRelationsDto();
     }
 
     // explicitly load the related objects.
-    GetDbContext().Entry(phys).Collection(b => b.MapNodeLinksNodeId1Navigation).Load();
+    GetDbContext().Entry( phys ).Collection( b => b.MapNodeLinksNodeId1Navigation ).Load();
 
     var mapper = new ObjectMapper.MapsNodesFullRelationsMapper(
       GetLogger(),
       GetDbContext(),
       GetWikiProvider(),
-      enableWikiTranslation);
-    var dto = mapper.PhysicalToDto(phys);
+      enableWikiTranslation );
+    var dto = mapper.PhysicalToDto( phys );
 
     // if asked for, remove any hidden links
-    if (hideHidden)
+    if ( hideHidden )
     {
-      GetLogger().LogInformation($"GetNodeSync hiding hidden links");
-      dto.MapNodeLinks = dto.MapNodeLinks.Where(x => !x.IsHidden).ToList();
+      GetLogger().LogInformation( $"GetNodeSync hiding hidden links" );
+      dto.MapNodeLinks = dto.MapNodeLinks.Where( x => !x.IsHidden ).ToList();
     }
 
     return dto;
@@ -227,12 +227,12 @@ public class OLabEndpoint
   [NonAction]
   public async ValueTask<MapNodes> GetMapNodeAsync(uint nodeId)
   {
-    var item = await _nodesReaderWriter.GetNodeAsync(nodeId);
-    if (item == null)
-      throw new OLabObjectNotFoundException("MapNodes", nodeId);
+    var item = await _nodesReaderWriter.GetNodeAsync( nodeId );
+    if ( item == null )
+      throw new OLabObjectNotFoundException( "MapNodes", nodeId );
 
     // explicitly load the related objects.
-    GetDbContext().Entry(item).Collection(b => b.MapNodeLinksNodeId1Navigation).Load();
+    GetDbContext().Entry( item ).Collection( b => b.MapNodeLinksNodeId1Navigation ).Load();
 
     return item;
   }
@@ -245,10 +245,10 @@ public class OLabEndpoint
   [NonAction]
   protected async ValueTask<SystemQuestionResponses> GetQuestionResponseAsync(uint id)
   {
-    var item = await GetDbContext().SystemQuestionResponses.FirstOrDefaultAsync(x => x.Id == id);
+    var item = await GetDbContext().SystemQuestionResponses.FirstOrDefaultAsync( x => x.Id == id );
 
-    if (item == null)
-      throw new OLabObjectNotFoundException("SystemQuestionResponses", id);
+    if ( item == null )
+      throw new OLabObjectNotFoundException( "SystemQuestionResponses", id );
 
     return item;
   }
@@ -262,10 +262,10 @@ public class OLabEndpoint
   protected async ValueTask<SystemConstants> GetConstantAsync(uint id)
   {
     var item = await GetDbContext().SystemConstants
-      .FirstOrDefaultAsync(x => x.Id == id);
+      .FirstOrDefaultAsync( x => x.Id == id );
 
-    if (item == null)
-      throw new OLabObjectNotFoundException("SystemConstants", id);
+    if ( item == null )
+      throw new OLabObjectNotFoundException( "SystemConstants", id );
 
     return item;
   }
@@ -279,10 +279,10 @@ public class OLabEndpoint
   protected async ValueTask<SystemFiles> GetFileAsync(uint id)
   {
     var item = await GetDbContext().SystemFiles
-      .FirstOrDefaultAsync(x => x.Id == id);
+      .FirstOrDefaultAsync( x => x.Id == id );
 
-    if (item == null)
-      throw new OLabObjectNotFoundException("SystemFiles", id);
+    if ( item == null )
+      throw new OLabObjectNotFoundException( "SystemFiles", id );
 
     return item;
   }
@@ -296,10 +296,10 @@ public class OLabEndpoint
   protected async ValueTask<SystemQuestions> GetQuestionSimpleAsync(uint id)
   {
     var item = await GetDbContext().SystemQuestions
-      .FirstOrDefaultAsync(x => x.Id == id);
+      .FirstOrDefaultAsync( x => x.Id == id );
 
-    if (item == null)
-      throw new OLabObjectNotFoundException("SystemQuestions", id);
+    if ( item == null )
+      throw new OLabObjectNotFoundException( "SystemQuestions", id );
 
     return item;
   }
@@ -313,11 +313,11 @@ public class OLabEndpoint
   protected async ValueTask<SystemQuestions> GetQuestionAsync(uint id)
   {
     var item = await GetDbContext().SystemQuestions
-      .Include(x => x.SystemQuestionResponses)
-      .FirstOrDefaultAsync(x => x.Id == id);
+      .Include( x => x.SystemQuestionResponses )
+      .FirstOrDefaultAsync( x => x.Id == id );
 
-    if (item == null)
-      throw new OLabObjectNotFoundException("SystemQuestions", id);
+    if ( item == null )
+      throw new OLabObjectNotFoundException( "SystemQuestions", id );
 
     return item;
   }
@@ -330,12 +330,12 @@ public class OLabEndpoint
   [NonAction]
   protected async Task<SystemCounters> GetCounterAsync(uint id)
   {
-    var phys = await GetDbContext().SystemCounters.SingleOrDefaultAsync(x => x.Id == id);
-    if (phys != null)
+    var phys = await GetDbContext().SystemCounters.SingleOrDefaultAsync( x => x.Id == id );
+    if ( phys != null )
     {
-      if (phys.Value == null)
+      if ( phys.Value == null )
         phys.Value = new List<byte>().ToArray();
-      if (phys.StartValue == null)
+      if ( phys.StartValue == null )
         phys.StartValue = new List<byte>().ToArray();
     }
 

@@ -22,7 +22,7 @@ public partial class Import4Endpoint : OLabEndpoint
     : base(
         logger,
         configuration,
-        context)
+        context )
   {
   }
 
@@ -37,14 +37,14 @@ public partial class Import4Endpoint : OLabEndpoint
         configuration,
         context,
         wikiTagProvider,
-        fileStorageProvider)
+        fileStorageProvider )
   {
     _importer = new Importer(
       GetLogger(),
       _configuration,
       GetDbContext(),
       GetWikiProvider(),
-      _fileStorageModule);
+      _fileStorageModule );
   }
 
   public async Task<Maps> ImportAsync(
@@ -57,7 +57,7 @@ public partial class Import4Endpoint : OLabEndpoint
       auth,
       archiveFileStream,
       archiveFileName,
-      token);
+      token );
   }
 
   public async Task ExportAsync(
@@ -65,13 +65,13 @@ public partial class Import4Endpoint : OLabEndpoint
     uint mapId,
     CancellationToken token)
   {
-    await _importer.ExportAsync(stream, mapId, token);
+    await _importer.ExportAsync( stream, mapId, token );
   }
 
   public async Task<MapsFullRelationsDto> ExportAsync(
     uint mapId,
     CancellationToken token)
   {
-    return await _importer.ExportAsync(mapId, token);
+    return await _importer.ExportAsync( mapId, token );
   }
 }

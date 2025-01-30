@@ -4,7 +4,7 @@ namespace OLab.Api.Dto;
 
 public class QuestionsDto : ScopedObjectDto
 {
-  [JsonProperty("questionType")]
+  [JsonProperty( "questionType" )]
   public uint EntryTypeId { get; set; }
 
   public QuestionsDto()

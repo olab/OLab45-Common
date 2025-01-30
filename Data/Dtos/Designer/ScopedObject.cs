@@ -5,26 +5,26 @@ namespace OLab.Api.Dto.Designer;
 
 public class ScopedObjectDto
 {
-  [JsonProperty("id")]
+  [JsonProperty( "id" )]
   public uint Id { get; set; }
-  [JsonProperty("name")]
+  [JsonProperty( "name" )]
   public string Name { get; set; }
-  [JsonProperty("description")]
+  [JsonProperty( "description" )]
   public string Description { get; set; }
-  [JsonProperty("ScopeLevel")]
+  [JsonProperty( "ScopeLevel" )]
   public string ScopeLevel { get; set; }
-  [JsonProperty("ScopeId")]
+  [JsonProperty( "ScopeId" )]
   public uint ParentId { get; set; }
-  [JsonProperty("wiki")]
+  [JsonProperty( "wiki" )]
   public string Wiki { get; set; }
-  [JsonProperty("acl")]
+  [JsonProperty( "acl" )]
   public string Acl { get; set; }
-  [JsonProperty("isSystem")]
+  [JsonProperty( "isSystem" )]
   public int? IsSystem { get; set; }
-  [JsonProperty("url")]
+  [JsonProperty( "url" )]
   public string Url { get; set; }
 
-  [JsonProperty("parentInfo")]
+  [JsonProperty( "parentInfo" )]
   public IdName ParentInfo { get; set; }
 
   public ScopedObjectDto()

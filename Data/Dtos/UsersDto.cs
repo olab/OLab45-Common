@@ -10,7 +10,7 @@ public class UsersDto
   public string NickName { get; set; }
   public string UserName { get; set; }
   public string Email { get; set; }
-  [JsonProperty("hash")]
+  [JsonProperty( "hash" )]
   public string Password { get; set; }
   public string Salt { get; set; }
 

@@ -10,7 +10,7 @@ public class UsersMapper : OLabMapper<Users, UsersDto>
 {
   public UsersMapper(
     IOLabLogger logger,
-    OLabDBContext dbContext) : base(logger, dbContext)
+    OLabDBContext dbContext) : base( logger, dbContext )
   {
   }
 
@@ -26,10 +26,10 @@ public class UsersMapper : OLabMapper<Users, UsersDto>
   /// <returns>Dto object</returns>
   public override UsersDto PhysicalToDto(Users phys, UsersDto source)
   {
-    var dto = base.PhysicalToDto(phys, source);
+    var dto = base.PhysicalToDto( phys, source );
 
     dto.Roles =
-      new UserGroupRolesMapper(GetLogger(), GetDbContext()).PhysicalToDto(phys.UserGrouproles.ToList());
+      new UserGroupRolesMapper( GetLogger(), GetDbContext() ).PhysicalToDto( phys.UserGrouproles.ToList() );
 
     return dto;
   }

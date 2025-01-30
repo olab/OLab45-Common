@@ -13,18 +13,18 @@ public class MapVpd : OLabMapper<MapVpds, MapVpdsDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 
   public override MapVpds ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
   {
-    var phys = GetPhys(source);
+    var phys = GetPhys( source );
 
-    phys.Id = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
-    CreateIdTranslation(phys.Id);
-    phys.MapId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "map_id").Value);
-    phys.VpdTypeId = Convert.ToUInt32(elements.FirstOrDefault(x => x.Name == "vpd_type_id").Value);
+    phys.Id = Convert.ToUInt32( elements.FirstOrDefault( x => x.Name == "id" ).Value );
+    CreateIdTranslation( phys.Id );
+    phys.MapId = Convert.ToUInt32( elements.FirstOrDefault( x => x.Name == "map_id" ).Value );
+    phys.VpdTypeId = Convert.ToUInt32( elements.FirstOrDefault( x => x.Name == "vpd_type_id" ).Value );
 
     // Logger.LogInformation($"loaded MapVpd {phys.Id}");
 

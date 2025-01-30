@@ -5,38 +5,38 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
-[Table("vocablets")]
-[Index("Guid", Name = "guid", IsUnique = true)]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[Table( "vocablets" )]
+[Index( "Guid", Name = "guid", IsUnique = true )]
+[MySqlCharSet( "utf8mb3" )]
+[MySqlCollation( "utf8mb3_general_ci" )]
 public partial class Vocablets
 {
   [Required]
-  [Column("guid")]
-  [StringLength(50)]
+  [Column( "guid" )]
+  [StringLength( 50 )]
   public string Guid { get; set; }
 
   [Required]
-  [Column("state")]
-  [StringLength(10)]
+  [Column( "state" )]
+  [StringLength( 10 )]
   public string State { get; set; }
 
   [Required]
-  [Column("version")]
-  [StringLength(5)]
+  [Column( "version" )]
+  [StringLength( 5 )]
   public string Version { get; set; }
 
   [Required]
-  [Column("name")]
-  [StringLength(64)]
+  [Column( "name" )]
+  [StringLength( 64 )]
   public string Name { get; set; }
 
   [Required]
-  [Column("path")]
-  [StringLength(128)]
+  [Column( "path" )]
+  [StringLength( 128 )]
   public string Path { get; set; }
 
   [Key]
-  [Column("id", TypeName = "int(10) unsigned")]
+  [Column( "id", TypeName = "int(10) unsigned" )]
   public uint Id { get; set; }
 }

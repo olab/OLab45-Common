@@ -16,19 +16,19 @@ public class Constants : OLabMapper<SystemConstants, ConstantsDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 
   public override ConstantsDto PhysicalToDto(SystemConstants phys, ConstantsDto dto)
   {
-    dto.Value = Encoding.UTF8.GetString(phys.Value);
+    dto.Value = Encoding.UTF8.GetString( phys.Value );
     return dto;
   }
 
   public override SystemConstants DtoToPhysical(ConstantsDto dto, SystemConstants phys)
   {
-    phys.Value = Encoding.UTF8.GetBytes(dto.Value);
+    phys.Value = Encoding.UTF8.GetBytes( dto.Value );
     return phys;
   }
 
@@ -40,19 +40,19 @@ public class Constants : OLabMapper<SystemConstants, ConstantsDto>
   /// <returns>Physical object</returns>
   public override SystemConstants ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
   {
-    var phys = GetPhys(source);
+    var phys = GetPhys( source );
 
-    phys.Id = Convert.ToInt32(elements.FirstOrDefault(x => x.Name == "id").Value);
-    CreateIdTranslation(phys.Id);
+    phys.Id = Convert.ToInt32( elements.FirstOrDefault( x => x.Name == "id" ).Value );
+    CreateIdTranslation( phys.Id );
 
-    if (uint.TryParse(elements.FirstOrDefault(x => x.Name == "map_id").Value, out uint id))
+    if ( uint.TryParse( elements.FirstOrDefault( x => x.Name == "map_id" ).Value, out uint id ) )
       phys.ImageableId = id;
     phys.ImageableType = Utils.Constants.ScopeLevelMap;
 
-    dynamic value = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "mime"));
-    phys.Name = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "name"));
+    dynamic value = Conversions.Base64Decode( elements.FirstOrDefault( x => x.Name == "mime" ) );
+    phys.Name = Conversions.Base64Decode( elements.FirstOrDefault( x => x.Name == "name" ) );
 
-    value = Conversions.Base64Decode(elements.FirstOrDefault(x => x.Name == "path"));
+    value = Conversions.Base64Decode( elements.FirstOrDefault( x => x.Name == "path" ) );
 
     phys.CreatedAt = DateTime.Now;
 

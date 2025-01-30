@@ -14,7 +14,7 @@ public class SessionMapper : OLabMapper<UserSessions, SessionDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 
@@ -24,12 +24,12 @@ public class SessionMapper : OLabMapper<UserSessions, SessionDto>
   /// <returns>MapperConfiguration</returns>
   protected override MapperConfiguration GetConfiguration()
   {
-    return new MapperConfiguration(cfg =>
+    return new MapperConfiguration( cfg =>
     {
       cfg.CreateMap<UserSessions, SessionDto>().ReverseMap();
-      cfg.CreateMap<decimal, DateTime>().ConvertUsing(new DateTimeTypeConverter());
-      cfg.CreateMap<DateTime, decimal>().ConvertUsing(new DecimalDateTimeTypeConverter());
-    });
+      cfg.CreateMap<decimal, DateTime>().ConvertUsing( new DateTimeTypeConverter() );
+      cfg.CreateMap<DateTime, decimal>().ConvertUsing( new DecimalDateTimeTypeConverter() );
+    } );
   }
 
 }

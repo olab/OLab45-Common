@@ -19,20 +19,20 @@ public static class ZipFileHelper
   {
     var files = new List<string>();
 
-    if (ZipArchive.IsZipFile(stream))
+    if ( ZipArchive.IsZipFile( stream ) )
     {
       var zipReaderOptions = new ReaderOptions()
       {
-        ArchiveEncoding = new ArchiveEncoding(Encoding.UTF8, Encoding.UTF8),
+        ArchiveEncoding = new ArchiveEncoding( Encoding.UTF8, Encoding.UTF8 ),
         LookForHeader = true
       };
 
       stream.Position = 0;
 
-      using var reader = ZipArchive.Open(stream, zipReaderOptions);
+      using var reader = ZipArchive.Open( stream, zipReaderOptions );
 
-      foreach (var archiveEntry in reader.Entries.Where(entry => !entry.IsDirectory))
-        files.Add(archiveEntry.Key);
+      foreach ( var archiveEntry in reader.Entries.Where( entry => !entry.IsDirectory ) )
+        files.Add( archiveEntry.Key );
 
       stream.Position = 0;
     }
@@ -49,17 +49,17 @@ public static class ZipFileHelper
   {
     var entries = new List<ZipArchiveEntry>();
 
-    if (ZipArchive.IsZipFile(stream))
+    if ( ZipArchive.IsZipFile( stream ) )
     {
       var zipReaderOptions = new ReaderOptions()
       {
-        ArchiveEncoding = new ArchiveEncoding(Encoding.UTF8, Encoding.UTF8),
+        ArchiveEncoding = new ArchiveEncoding( Encoding.UTF8, Encoding.UTF8 ),
         LookForHeader = true
       };
 
       stream.Position = 0;
 
-      using var reader = ZipArchive.Open(stream, zipReaderOptions);
+      using var reader = ZipArchive.Open( stream, zipReaderOptions );
       entries = reader.Entries.ToList();
 
       stream.Position = 0;

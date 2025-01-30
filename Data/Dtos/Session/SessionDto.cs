@@ -17,17 +17,17 @@ public partial class SessionDto
 
   public uint Id { get; set; }
   public string Uuid { get; set; }
-  [JsonProperty("Issuer")]
+  [JsonProperty( "Issuer" )]
   public string Iss { get; set; }
   public uint UserId { get; set; }
   public uint MapId { get; set; }
   public DateTime StartTime { get; set; }
   public DateTime? EndTime { get; set; }
 
-  [JsonProperty("Statements")]
+  [JsonProperty( "Statements" )]
   public HashSet<StatementsDto> StatementsDtos { get; set; }
-  [JsonProperty("Responses")]
+  [JsonProperty( "Responses" )]
   public HashSet<UserResponsesDto> UserResponsesDtos { get; set; }
-  [JsonProperty("Activity")]
+  [JsonProperty( "Activity" )]
   public HashSet<UserSessionTracesDto> UserSessionTracesDtos { get; set; }
 }

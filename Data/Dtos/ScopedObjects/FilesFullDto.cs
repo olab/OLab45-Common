@@ -25,6 +25,7 @@ public class FilesFullDto : FilesDto
   public string HeightType { get; set; }
   public string Mime { get; set; }
   public string OriginUrl { get; set; }
+  public string HostName { get; set; }
   public string Path { get; set; }
   public string VAlign { get; set; }
   public string WidthType { get; set; }
@@ -44,19 +45,19 @@ public class FilesFullDto : FilesDto
 
   public FilesFullDto(IOLabFormFieldHelper form)
   {
-    Id = Convert.ToUInt32(form.Field("id"));
-    Name = form.Field("name").ToString();
-    Description = form.Field("description").ToString();
-    Copyright = form.Field("copyright").ToString();
-    ImageableId = Convert.ToUInt32(form.Field("parentId"));
-    ImageableType = form.Field("scopeLevel").ToString();
-    IsMediaResource = Convert.ToBoolean(form.Field("isMediaResource"));
-    SelectedFileName = form.Fields["selectedFileName"].ToString();
+    Id = Convert.ToUInt32( form.Field( "id" ) );
+    Name = form.Field( "name" ).ToString();
+    Description = form.Field( "description" ).ToString();
+    Copyright = form.Field( "copyright" ).ToString();
+    ImageableId = Convert.ToUInt32( form.Field( "parentId" ) );
+    ImageableType = form.Field( "scopeLevel" ).ToString();
+    IsMediaResource = Convert.ToBoolean( form.Field( "isMediaResource" ) );
+    SelectedFileName = form.Fields[ "selectedFileName" ].ToString();
     CreatedAt = DateTime.UtcNow;
 
     FileContentsStream = form.Stream;
-    FileSize = Convert.ToInt32(FileContentsStream.Length);
-    FileName = form.Fields["selectedFileName"].ToString();
+    FileSize = Convert.ToInt32( FileContentsStream.Length );
+    FileName = form.Fields[ "selectedFileName" ].ToString();
   }
 
 }

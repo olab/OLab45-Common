@@ -4,19 +4,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
-[Table("h5p_tags")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[Table( "h5p_tags" )]
+[MySqlCharSet( "utf8mb3" )]
+[MySqlCollation( "utf8mb3_general_ci" )]
 public partial class H5pTags
 {
   [Key]
-  [Column("id", TypeName = "int(10) unsigned")]
+  [Column( "id", TypeName = "int(10) unsigned" )]
   public uint Id { get; set; }
 
   [Required]
-  [Column("name")]
-  [StringLength(31)]
-  [MySqlCharSet("utf8mb4")]
-  [MySqlCollation("utf8mb4_unicode_ci")]
+  [Column( "name" )]
+  [StringLength( 31 )]
+  [MySqlCharSet( "utf8mb4" )]
+  [MySqlCollation( "utf8mb4_unicode_ci" )]
   public string Name { get; set; }
 }

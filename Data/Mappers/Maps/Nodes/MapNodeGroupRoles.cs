@@ -10,7 +10,7 @@ public class MapNodeGroupRolesMapper : OLabMapper<MapNodeGrouproles, MapNodeGrou
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 
@@ -21,10 +21,10 @@ public class MapNodeGroupRolesMapper : OLabMapper<MapNodeGrouproles, MapNodeGrou
     dto.Id = phys.Id;
     dto.NodeId = phys.NodeId;
 
-    if (phys.Group != null)
+    if ( phys.Group != null )
       dto.GroupName = phys.Group.Name;
 
-    if (phys.Role != null)
+    if ( phys.Role != null )
       dto.RoleName = phys.Role.Name;
 
     return dto;
@@ -36,13 +36,13 @@ public class MapNodeGroupRolesMapper : OLabMapper<MapNodeGrouproles, MapNodeGrou
   {
     phys.NodeId = dto.NodeId;
 
-    if (dto.Id.HasValue)
+    if ( dto.Id.HasValue )
       phys.Id = dto.Id.Value;
 
-    if (dto.GroupId == null)
+    if ( dto.GroupId == null )
       phys.Group = null;
 
-    if (dto.RoleId == null)
+    if ( dto.RoleId == null )
       phys.Role = null;
 
     return phys;

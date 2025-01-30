@@ -4,20 +4,20 @@ namespace OLab.Api.Dto;
 
 public class QuestionResponsePostDataDto
 {
-  [JsonProperty("questionId")]
+  [JsonProperty( "questionId" )]
   public uint QuestionId { get; set; }
-  [JsonProperty("previousResponseId")]
+  [JsonProperty( "previousResponseId" )]
   public uint? PreviousResponseId { get; set; }
-  [JsonProperty("responseId")]
+  [JsonProperty( "responseId" )]
   public uint? ResponseId { get; set; }
-  [JsonProperty("previousValue")]
+  [JsonProperty( "previousValue" )]
   public string PreviousValue { get; set; }
-  [JsonProperty("value")]
+  [JsonProperty( "value" )]
   public string Value { get; set; }
-  [JsonProperty("mapid")]
+  [JsonProperty( "mapid" )]
   public uint MapId { get; set; }
-  [JsonProperty("NodeId")]
+  [JsonProperty( "NodeId" )]
   public uint NodeId { get; set; }
-  [JsonProperty("dynamicObjects")]
+  [JsonProperty( "dynamicObjects" )]
   public DynamicScopedObjectsDto DynamicObjects { get; set; }
 }

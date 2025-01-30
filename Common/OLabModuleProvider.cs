@@ -19,11 +19,11 @@ public class OLabModuleProvider<T> : IOLabModuleProvider<T> where T : class
     IOLabLogger logger,
     IOLabConfiguration configuration)
   {
-    Guard.Argument(logger).NotNull(nameof(logger));
-    Guard.Argument(configuration).NotNull(nameof(configuration));
+    Guard.Argument( logger ).NotNull( nameof( logger ) );
+    Guard.Argument( configuration ).NotNull( nameof( configuration ) );
 
-    Logger = OLabLogger.CreateNew<OLabModuleProvider<T>>(logger);
-    Logger.LogInformation($"{GetType().Name} ctor");
+    Logger = OLabLogger.CreateNew<OLabModuleProvider<T>>( logger );
+    Logger.LogInformation( $"{GetType().Name} ctor" );
 
     _configuration = configuration;
   }
@@ -34,17 +34,17 @@ public class OLabModuleProvider<T> : IOLabModuleProvider<T> where T : class
   /// <param name="sourceFileWildcard">Source files wildcard</param>
   protected void Load(string sourceFileWildcard)
   {
-    Guard.Argument(sourceFileWildcard).NotEmpty(nameof(sourceFileWildcard));
+    Guard.Argument( sourceFileWildcard ).NotEmpty( nameof( sourceFileWildcard ) );
 
-    Logger.LogInformation($"{GetType().Name} loading '{sourceFileWildcard}'");
+    Logger.LogInformation( $"{GetType().Name} loading '{sourceFileWildcard}'" );
 
-    if (null == Modules)
+    if ( null == Modules )
       Modules = new Dictionary<string, T>();
     else
       Modules.Clear();
 
-    var plugInAssemblies = LoadPlugInAssemblies(sourceFileWildcard);
-    Modules = GetPlugIns(plugInAssemblies);
+    var plugInAssemblies = LoadPlugInAssemblies( sourceFileWildcard );
+    Modules = GetPlugIns( plugInAssemblies );
   }
 
   /// <summary>
@@ -54,22 +54,22 @@ public class OLabModuleProvider<T> : IOLabModuleProvider<T> where T : class
   private List<Assembly> LoadPlugInAssemblies(string sourceFiles)
   {
     var currentAssemblyFile = Assembly.GetExecutingAssembly().Location;
-    var rootPath = Path.GetDirectoryName(currentAssemblyFile);
+    var rootPath = Path.GetDirectoryName( currentAssemblyFile );
 
     // remove the URI specifier (both for Windows and Linux)
-    rootPath = rootPath.Replace("file:\\", "");
-    rootPath = rootPath.Replace("file:", "");
+    rootPath = rootPath.Replace( "file:\\", "" );
+    rootPath = rootPath.Replace( "file:", "" );
 
-    if (!Directory.Exists(rootPath))
-      throw new DirectoryNotFoundException($"Unable to load plugin path. '{rootPath}'");
+    if ( !Directory.Exists( rootPath ) )
+      throw new DirectoryNotFoundException( $"Unable to load plugin path. '{rootPath}'" );
 
-    var files = Directory.GetFiles(rootPath, sourceFiles);
+    var files = Directory.GetFiles( rootPath, sourceFiles );
     var plugInAssemblyList = new List<Assembly>();
 
-    foreach (var file in files)
+    foreach ( var file in files )
     {
-      Logger.LogInformation($"Loading file '{Path.GetFileName(file)}'");
-      plugInAssemblyList.Add(Assembly.LoadFile(file));
+      Logger.LogInformation( $"Loading file '{Path.GetFileName( file )}'" );
+      plugInAssemblyList.Add( Assembly.LoadFile( file ) );
     }
 
     return plugInAssemblyList;
@@ -84,23 +84,23 @@ public class OLabModuleProvider<T> : IOLabModuleProvider<T> where T : class
   {
     var availableTypes = new List<Type>();
 
-    foreach (var currentAssembly in assemblies)
-      availableTypes.AddRange(currentAssembly.GetTypes());
+    foreach ( var currentAssembly in assemblies )
+      availableTypes.AddRange( currentAssembly.GetTypes() );
 
     // get a list of objects that implement the desired interface AND 
     // have the OLabModule attribute
-    var typeList = availableTypes.FindAll(delegate (Type t)
+    var typeList = availableTypes.FindAll( delegate (Type t)
     {
-      var interfaceTypes = new List<Type>(t.GetInterfaces());
-      var arr = t.GetCustomAttributes(typeof(OLabModuleAttribute), true);
-      return !(arr == null || arr.Length == 0) && interfaceTypes.Contains(typeof(T));
-    });
+      var interfaceTypes = new List<Type>( t.GetInterfaces() );
+      var arr = t.GetCustomAttributes( typeof( OLabModuleAttribute ), true );
+      return !(arr == null || arr.Length == 0) && interfaceTypes.Contains( typeof( T ) );
+    } );
 
     var dict = new Dictionary<string, T>();
-    foreach (var item in typeList)
+    foreach ( var item in typeList )
     {
       var t = item.GetCustomAttribute<OLabModuleAttribute>();
-      dict.Add(t.Name, (T)Activator.CreateInstance(item, Logger, _configuration));
+      dict.Add( t.Name, (T)Activator.CreateInstance( item, Logger, _configuration ) );
     }
     return dict;
   }
@@ -113,9 +113,9 @@ public class OLabModuleProvider<T> : IOLabModuleProvider<T> where T : class
   /// <exception cref="KeyNotFoundException"></exception>
   public T GetModule(string moduleName)
   {
-    if (!Modules.ContainsKey(moduleName))
-      throw new KeyNotFoundException($"'{moduleName}' not implemented");
+    if ( !Modules.ContainsKey( moduleName ) )
+      throw new KeyNotFoundException( $"'{moduleName}' not implemented" );
 
-    return Modules[moduleName];
+    return Modules[ moduleName ];
   }
 }

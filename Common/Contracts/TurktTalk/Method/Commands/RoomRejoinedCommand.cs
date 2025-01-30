@@ -12,15 +12,15 @@ public class RoomRejoinedCommand : CommandMethod
 {
   public Participant Data { get; set; }
 
-  public RoomRejoinedCommand(string recipientGroupName, Participant participant) : base(recipientGroupName, "roomrejoined")
+  public RoomRejoinedCommand(string recipientGroupName, Participant participant) : base( recipientGroupName, "roomrejoined" )
   {
     Data = participant;
   }
 
   public override string ToJson()
   {
-    var rawJson = System.Text.Json.JsonSerializer.Serialize(this);
-    return JToken.Parse(rawJson).ToString(Formatting.Indented);
+    var rawJson = System.Text.Json.JsonSerializer.Serialize( this );
+    return JToken.Parse( rawJson ).ToString( Formatting.Indented );
   }
 
 }

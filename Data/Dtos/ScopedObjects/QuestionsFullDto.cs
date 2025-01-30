@@ -10,43 +10,43 @@ public class QuestionsFullDto : QuestionsDto
     Responses = new List<QuestionResponsesDto>();
   }
 
-  [JsonProperty("stem")]
+  [JsonProperty( "stem" )]
   public string Stem { get; set; }
-  [JsonProperty("width")]
+  [JsonProperty( "width" )]
   public int Width { get; set; }
-  [JsonProperty("height")]
+  [JsonProperty( "height" )]
   public int Height { get; set; }
-  [JsonProperty("settings")]
+  [JsonProperty( "settings" )]
   public string Settings { get; set; }
-  [JsonProperty("feedback")]
+  [JsonProperty( "feedback" )]
   public string Feedback { get; set; }
-  [JsonProperty("prompt")]
+  [JsonProperty( "prompt" )]
   public string Prompt { get; set; }
-  [JsonProperty("showAnswer")]
+  [JsonProperty( "showAnswer" )]
   public bool? ShowAnswer { get; set; }
-  [JsonProperty("showSubmit")]
+  [JsonProperty( "showSubmit" )]
   public sbyte ShowSubmit { get; set; }
-  [JsonProperty("layoutType")]
+  [JsonProperty( "layoutType" )]
   public int TypeDisplay { get; set; }
-  [JsonProperty("isPrivate")]
+  [JsonProperty( "isPrivate" )]
   public int IsPrivate { get; set; }
-  [JsonProperty("order")]
+  [JsonProperty( "order" )]
   public int? Order { get; set; }
-  [JsonProperty("responses")]
+  [JsonProperty( "responses" )]
   public List<QuestionResponsesDto> Responses { get; set; }
 
   // calculated/transient state fields
-  [JsonProperty("tryCount")]
+  [JsonProperty( "tryCount" )]
   public int TryCount { get; set; }
-  [JsonProperty("numTries")]
+  [JsonProperty( "numTries" )]
   public int NumTries { get; set; }
-  [JsonProperty("disabled")]
+  [JsonProperty( "disabled" )]
   public int Disabled { get; set; }
 
   // calculated properties
-  [JsonProperty("wiki")]
+  [JsonProperty( "wiki" )]
   public string Wiki { get; set; }
-  [JsonProperty("value")]
+  [JsonProperty( "value" )]
   public string Value { get; set; }
 
 }

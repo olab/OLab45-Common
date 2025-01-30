@@ -13,7 +13,7 @@ public class XmlMetadataDto : XmlImportDto<XmlMetadata>
       logger,
       importer,
       Importer.DtoTypes.XmlMetadataDto,
-      "metadata.xml")
+      "metadata.xml" )
   {
 
   }

@@ -83,15 +83,15 @@ public partial class ScopedObjects
     // UserState = new HashSet<UserState>();
   }
 
-  public void AddMapIdCrossReference(uint from, uint to) { _mapIds.Add(from, to); }
-  public void AddCounterIdCrossReference(uint from, uint to) { _counterIds.Add(from, to); }
-  public void AddMapNodeIdCrossReference(uint from, uint to) { _nodeIds.Add(from, to); }
-  public void AddQuestionIdCrossReference(uint from, uint to) { _questionIds.Add(from, to); }
+  public void AddMapIdCrossReference(uint from, uint to) { _mapIds.Add( from, to ); }
+  public void AddCounterIdCrossReference(uint from, uint to) { _counterIds.Add( from, to ); }
+  public void AddMapNodeIdCrossReference(uint from, uint to) { _nodeIds.Add( from, to ); }
+  public void AddQuestionIdCrossReference(uint from, uint to) { _questionIds.Add( from, to ); }
 
-  public uint GetMapIdCrossReference(uint from) { return _mapIds[from]; }
-  public uint GetMapNodeIdCrossReference(uint from) { return _nodeIds[from]; }
-  public uint GetQuestionIdCrossReference(uint from) { return _questionIds[from]; }
-  public uint GetCounterIdCrossReference(uint from) { return _counterIds[from]; }
+  public uint GetMapIdCrossReference(uint from) { return _mapIds[ from ]; }
+  public uint GetMapNodeIdCrossReference(uint from) { return _nodeIds[ from ]; }
+  public uint GetQuestionIdCrossReference(uint from) { return _questionIds[ from ]; }
+  public uint GetCounterIdCrossReference(uint from) { return _counterIds[ from ]; }
 
   /// <summary>
   /// Appends a ScopedObjectsMapper to the current one
@@ -99,12 +99,12 @@ public partial class ScopedObjects
   /// <param name="source">Source ScopedObjectsMapper</param>
   public void Combine(ScopedObjects source)
   {
-    ConstantsPhys.AddRange(source.ConstantsPhys);
-    CountersPhys.AddRange(source.CountersPhys);
-    CounterActionsPhys.AddRange(source.CounterActionsPhys);
-    QuestionsPhys.AddRange(source.QuestionsPhys);
-    FilesPhys.AddRange(source.FilesPhys);
-    ScriptsPhys.AddRange(source.ScriptsPhys);
-    ThemesPhys.AddRange(source.ThemesPhys);
+    ConstantsPhys.AddRange( source.ConstantsPhys );
+    CountersPhys.AddRange( source.CountersPhys );
+    CounterActionsPhys.AddRange( source.CounterActionsPhys );
+    QuestionsPhys.AddRange( source.QuestionsPhys );
+    FilesPhys.AddRange( source.FilesPhys );
+    ScriptsPhys.AddRange( source.ScriptsPhys );
+    ThemesPhys.AddRange( source.ThemesPhys );
   }
 }

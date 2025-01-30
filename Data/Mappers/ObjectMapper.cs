@@ -31,17 +31,17 @@ public abstract class ObjectMapper<P, D> : object where P : new() where D : new(
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> wikiTagProvider = null)
   {
-    Guard.Argument(logger).NotNull(nameof(logger));
-    Guard.Argument(dbContext).NotNull(nameof(dbContext));
+    Guard.Argument( logger ).NotNull( nameof( logger ) );
+    Guard.Argument( dbContext ).NotNull( nameof( dbContext ) );
 
-    _logger = OLabLogger.CreateNew<OLabMapper<P, D>>(logger);
+    _logger = OLabLogger.CreateNew<OLabMapper<P, D>>( logger );
     _dbContext = dbContext;
     _wikiTagModules = wikiTagProvider as WikiTagModuleProvider;
   }
 
   public virtual D GetDto(Object source = null)
   {
-    if (source == null)
+    if ( source == null )
       return new D();
 
     return (D)source;
@@ -49,7 +49,7 @@ public abstract class ObjectMapper<P, D> : object where P : new() where D : new(
 
   public virtual P GetPhys(Object source = null)
   {
-    if (source == null)
+    if ( source == null )
       return new P();
 
     return (P)source;
@@ -58,10 +58,10 @@ public abstract class ObjectMapper<P, D> : object where P : new() where D : new(
   public virtual IList<D> PhysicalToDto(IList<P> physList)
   {
     var dtoList = new List<D>();
-    foreach (var phys in physList)
+    foreach ( var phys in physList )
     {
-      var dto = PhysicalToDto(phys);
-      dtoList.Add(dto);
+      var dto = PhysicalToDto( phys );
+      dtoList.Add( dto );
     }
 
     return dtoList;
@@ -69,22 +69,22 @@ public abstract class ObjectMapper<P, D> : object where P : new() where D : new(
 
   protected void CreateIdTranslation(uint originalId)
   {
-    if (_idTranslation.ContainsKey(originalId))
+    if ( _idTranslation.ContainsKey( originalId ) )
       return;
-    _idTranslation.Add(originalId, null);
+    _idTranslation.Add( originalId, null );
   }
 
   protected bool SetIdTranslation(uint originalId, uint newId)
   {
-    return _idTranslation.TryAdd(originalId, newId);
+    return _idTranslation.TryAdd( originalId, newId );
   }
 
   protected uint? GetIdTranslation(uint originalId)
   {
-    if (!_idTranslation.TryGetValue(originalId, out var newId))
+    if ( !_idTranslation.TryGetValue( originalId, out var newId ) )
       return newId;
 
-    throw new KeyNotFoundException($"Cound not find Id key {originalId}");
+    throw new KeyNotFoundException( $"Cound not find Id key {originalId}" );
   }
 
 }

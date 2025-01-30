@@ -10,31 +10,31 @@ public class QueryStringUtils
 
   public QueryStringUtils(HttpRequest req)
   {
-    foreach (var item in req.Query)
+    foreach ( var item in req.Query )
     {
-      _values.Add(item.Key, item.Value);
+      _values.Add( item.Key, item.Value );
     }
   }
 
   public string Get(string key)
   {
-    if (!_values.TryGetValue(key, out var value))
-      throw new KeyNotFoundException(key);
+    if ( !_values.TryGetValue( key, out var value ) )
+      throw new KeyNotFoundException( key );
 
     return value;
   }
 
   public int? GetOptional(string key, int? defaultValue)
   {
-    if (!_values.TryGetValue(key, out var value))
+    if ( !_values.TryGetValue( key, out var value ) )
       return defaultValue;
 
-    return Convert.ToInt32(value);
+    return Convert.ToInt32( value );
   }
 
   public string GetOptional(string key, string defaultValue)
   {
-    if (!_values.TryGetValue(key, out var value))
+    if ( !_values.TryGetValue( key, out var value ) )
       return defaultValue;
     return value;
   }

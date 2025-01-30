@@ -4,9 +4,9 @@ namespace OLab.Api.Dto;
 
 public class ConstantsDto : ScopedObjectDto
 {
-  [JsonProperty("value")]
+  [JsonProperty( "value" )]
   public string Value { get; set; }
-  [JsonProperty("isSystem")]
+  [JsonProperty( "isSystem" )]
   public int? IsSystem { get; set; }
 
   public ConstantsDto()

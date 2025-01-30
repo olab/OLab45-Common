@@ -4,8 +4,8 @@ namespace OLab.Api.Dto;
 
 public class ThemesFullDto : ThemesDto
 {
-  [JsonProperty("header")]
+  [JsonProperty( "header" )]
   public string HeaderText { get; set; }
-  [JsonProperty("footer")]
+  [JsonProperty( "footer" )]
   public string FooterText { get; set; }
 }

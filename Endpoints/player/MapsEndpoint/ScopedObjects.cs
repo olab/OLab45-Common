@@ -17,13 +17,13 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <returns></returns>
   public async Task<Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(IOLabAuthorization auth, uint id)
   {
-    GetLogger().LogInformation($"{auth.UserContext.UserId}: MapsEndpoint.GetScopedObjectsRawAsync");
+    GetLogger().LogInformation( $"{auth.UserContext.UserId}: MapsEndpoint.GetScopedObjectsRawAsync" );
 
     // test if user has access to map.
-    if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, id))
-      throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
+    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, id ) )
+      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, id );
 
-    var result = await GetScopedObjectsAsync(id, false);
+    var result = await GetScopedObjectsAsync( id, false );
     return result;
   }
 
@@ -35,10 +35,10 @@ public partial class MapsEndpoint : OLabEndpoint
   public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(IOLabAuthorization auth, uint id)
   {
     // test if user has access to map.
-    if (!await auth.HasAccessAsync(IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, id))
-      throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
+    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, id ) )
+      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, id );
 
-    var result = await GetScopedObjectsAsync(id, true);
+    var result = await GetScopedObjectsAsync( id, true );
     return result;
   }
 
@@ -52,46 +52,46 @@ public partial class MapsEndpoint : OLabEndpoint
     uint id,
     bool enableWikiTranslation)
   {
-    var map = GetSimple(GetDbContext(), id);
-    if (map == null)
-      throw new OLabObjectNotFoundException(Utils.Constants.ScopeLevelMap, id);
+    var map = GetSimple( GetDbContext(), id );
+    if ( map == null )
+      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, id );
 
     var phys = new ScopedObjects(
       GetLogger(),
       GetDbContext(),
       GetWikiProvider(),
-      _fileStorageModule);
-    await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelMap, map.Id);
+      _fileStorageModule );
+    await phys.AddScopeFromDatabaseAsync( Constants.ScopeLevelMap, map.Id );
 
     // add map-level derived constants
-    phys.ConstantsPhys.Add(new SystemConstants
+    phys.ConstantsPhys.Add( new SystemConstants
     {
       Id = 0,
       Name = Utils.Constants.ReservedConstantMapId,
       ImageableId = map.Id,
       ImageableType = Utils.Constants.ScopeLevelMap,
       IsSystem = 1,
-      Value = Encoding.ASCII.GetBytes(map.Id.ToString())
-    });
+      Value = Encoding.ASCII.GetBytes( map.Id.ToString() )
+    } );
 
-    phys.ConstantsPhys.Add(new SystemConstants
+    phys.ConstantsPhys.Add( new SystemConstants
     {
       Id = 0,
       Name = Utils.Constants.ReservedConstantMapName,
       ImageableId = map.Id,
       ImageableType = Utils.Constants.ScopeLevelMap,
       IsSystem = 1,
-      Value = Encoding.UTF8.GetBytes(map.Name)
-    });
+      Value = Encoding.UTF8.GetBytes( map.Name )
+    } );
 
     var builder = new ObjectMapper.ScopedObjectsMapper(
       GetLogger(),
       GetDbContext(),
       GetWikiProvider(),
-      enableWikiTranslation);
+      enableWikiTranslation );
 
-    var dto = builder.PhysicalToDto(phys);
-    dto.Dump(GetLogger());
+    var dto = builder.PhysicalToDto( phys );
+    dto.Dump( GetLogger() );
 
     return dto;
   }

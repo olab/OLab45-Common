@@ -13,9 +13,9 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
   private readonly Api.ObjectMapper.MapNodesMapper _mapper;
   private readonly IOLabConfiguration _configuration;
 
-  public XmlMapNodeDto(IOLabLogger logger, Importer importer) : base(logger, importer, Importer.DtoTypes.XmlMapNodeDto, "map_node.xml")
+  public XmlMapNodeDto(IOLabLogger logger, Importer importer) : base( logger, importer, Importer.DtoTypes.XmlMapNodeDto, "map_node.xml" )
   {
-    _mapper = new Api.ObjectMapper.MapNodesMapper(GetLogger(), GetDbContext(), GetWikiProvider());
+    _mapper = new Api.ObjectMapper.MapNodesMapper( GetLogger(), GetDbContext(), GetWikiProvider() );
     _configuration = importer.GetConfiguration();
   }
 
@@ -40,31 +40,31 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     int recordIndex,
     IEnumerable<dynamic> elements)
   {
-    var item = _mapper.ElementsToPhys(elements);
+    var item = _mapper.ElementsToPhys( elements );
     var oldId = item.Id;
 
     CurrentRecordIndex = recordIndex;
 
     item.Id = 0;
 
-    var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto);
-    item.MapId = mapDto.GetIdTranslation(GetFileName(), item.MapId).Value;
+    var mapDto = GetImporter().GetDto( Importer.DtoTypes.XmlMapDto );
+    item.MapId = mapDto.GetIdTranslation( GetFileName(), item.MapId ).Value;
 
     // remap 'true' MR's before Avatars since Avatars are rendered as MR's.
-    RemapWikiTags<MediaResourceWikiTag>(item, Importer.DtoTypes.XmlMapElementDto);
-    RemapWikiTags<QuestionWikiTag>(item, Importer.DtoTypes.XmlMapQuestionDto);
-    RemapWikiTags<ConstantWikiTag>(item, Importer.DtoTypes.XmlMapVpdElementDto);
-    RemapWikiTags<CounterWikiTag>(item, Importer.DtoTypes.XmlMapCounterDto);
-    ReplaceVpdWikiTags(item);
-    ReplaceAvWikiTags(item);
+    RemapWikiTags<MediaResourceWikiTag>( item, Importer.DtoTypes.XmlMapElementDto );
+    RemapWikiTags<QuestionWikiTag>( item, Importer.DtoTypes.XmlMapQuestionDto );
+    RemapWikiTags<ConstantWikiTag>( item, Importer.DtoTypes.XmlMapVpdElementDto );
+    RemapWikiTags<CounterWikiTag>( item, Importer.DtoTypes.XmlMapCounterDto );
+    ReplaceVpdWikiTags( item );
+    ReplaceAvWikiTags( item );
 
     item.Info = $"\nImported from map_node.xml. id = {oldId}";
 
-    GetDbContext().MapNodes.Add(item);
+    GetDbContext().MapNodes.Add( item );
     GetDbContext().SaveChanges();
 
-    CreateIdTranslation(oldId, item.Id);
-    GetModel().Data.Add(item);
+    CreateIdTranslation( oldId, item.Id );
+    GetModel().Data.Add( item );
 
     return true;
   }
@@ -79,29 +79,29 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     var rc = false;
 
     // replace all VPD with CONST in node text
-    var dto = GetImporter().GetDto(Importer.DtoTypes.XmlMapVpdElementDto) as XmlMapVpdElementDto;
+    var dto = GetImporter().GetDto( Importer.DtoTypes.XmlMapVpdElementDto ) as XmlMapVpdElementDto;
 
-    var wiki = new VpdWikiTag(GetLogger(), _configuration);
-    while (wiki.HaveWikiTag(item.Text))
+    var wiki = new VpdWikiTag( GetLogger(), _configuration );
+    while ( wiki.HaveWikiTag( item.Text ) )
     {
       try
       {
-        var id = Convert.ToUInt32(wiki.GetWikiArgument1());
-        var newId = dto.GetIdTranslation(GetFileName(), id);
+        var id = Convert.ToUInt32( wiki.GetWikiArgument1() );
+        var newId = dto.GetIdTranslation( GetFileName(), id );
 
-        var newWiki = new VpdWikiTag(GetLogger(), _configuration);
-        newWiki.Set("CONST", newId.Value.ToString());
+        var newWiki = new VpdWikiTag( GetLogger(), _configuration );
+        newWiki.Set( "CONST", newId.Value.ToString() );
 
-        GetLogger().LogInformation($"    replacing '{wiki.GetWiki()}' -> '{newWiki.GetWiki()}'");
-        item.Text = item.Text.Replace(wiki.GetWiki(), newWiki.GetWiki());
+        GetLogger().LogInformation( $"    replacing '{wiki.GetWiki()}' -> '{newWiki.GetWiki()}'" );
+        item.Text = item.Text.Replace( wiki.GetWiki(), newWiki.GetWiki() );
 
         rc = true;
       }
-      catch (KeyNotFoundException)
+      catch ( KeyNotFoundException )
       {
-        GetLogger().LogError($"ERROR: MapNode '{item.Title}': could not resolve: '{wiki.GetWiki()}'");
+        GetLogger().LogError( $"ERROR: MapNode '{item.Title}': could not resolve: '{wiki.GetWiki()}'" );
 
-        item.Text = item.Text.Replace(wiki.GetWiki(), $"{wiki.GetUnquotedWiki()}: could not resolve");
+        item.Text = item.Text.Replace( wiki.GetWiki(), $"{wiki.GetUnquotedWiki()}: could not resolve" );
 
         rc = false;
       }
@@ -120,19 +120,19 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     var rc = false;
 
     // replace all VPD with CONST in node text
-    var dto = GetImporter().GetDto(Importer.DtoTypes.XmlMapAvatarDto) as XmlMapAvatarDto;
+    var dto = GetImporter().GetDto( Importer.DtoTypes.XmlMapAvatarDto ) as XmlMapAvatarDto;
 
-    var wiki = new AvatarWikiTag(GetLogger(), _configuration);
-    while (wiki.HaveWikiTag(item.Text))
+    var wiki = new AvatarWikiTag( GetLogger(), _configuration );
+    while ( wiki.HaveWikiTag( item.Text ) )
     {
-      var id = Convert.ToUInt16(wiki.GetWikiArgument1());
-      var newId = dto.GetIdTranslation(GetFileName(), id);
+      var id = Convert.ToUInt16( wiki.GetWikiArgument1() );
+      var newId = dto.GetIdTranslation( GetFileName(), id );
 
-      var newWiki = new AvatarWikiTag(GetLogger(), _configuration);
-      newWiki.Set("MR", newId.Value.ToString());
+      var newWiki = new AvatarWikiTag( GetLogger(), _configuration );
+      newWiki.Set( "MR", newId.Value.ToString() );
 
-      GetLogger().LogInformation($"    replacing '{wiki.GetWiki()}' -> '{newWiki.GetWiki()}'");
-      item.Text = item.Text.Replace(wiki.GetWiki(), newWiki.GetWiki());
+      GetLogger().LogInformation( $"    replacing '{wiki.GetWiki()}' -> '{newWiki.GetWiki()}'" );
+      item.Text = item.Text.Replace( wiki.GetWiki(), newWiki.GetWiki() );
 
       rc = true;
     }
@@ -145,40 +145,40 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     var rc = true;
 
     // remap all MR with new id's in node text
-    var dto = GetImporter().GetDto(dtoType);
+    var dto = GetImporter().GetDto( dtoType );
     var mappedWikiTags = new Dictionary<string, string>();
 
-    var wiki = (T)Activator.CreateInstance(typeof(T), GetLogger(), _configuration);
-    while (wiki.HaveWikiTag(item.Text))
+    var wiki = (T)Activator.CreateInstance( typeof( T ), GetLogger(), _configuration );
+    while ( wiki.HaveWikiTag( item.Text ) )
     {
-      var id = Convert.ToUInt32(wiki.GetWikiArgument1());
+      var id = Convert.ToUInt32( wiki.GetWikiArgument1() );
 
       try
       {
-        var newId = dto.GetIdTranslation(GetFileName(), id);
+        var newId = dto.GetIdTranslation( GetFileName(), id );
 
-        var newWiki = (T)Activator.CreateInstance(typeof(T), GetLogger(), _configuration);
-        newWiki.Set(wiki.GetWikiType().ToLower(), newId.Value.ToString());
+        var newWiki = (T)Activator.CreateInstance( typeof( T ), GetLogger(), _configuration );
+        newWiki.Set( wiki.GetWikiType().ToLower(), newId.Value.ToString() );
 
-        item.Text = item.Text.Replace(wiki.GetWiki(), newWiki.GetWiki());
+        item.Text = item.Text.Replace( wiki.GetWiki(), newWiki.GetWiki() );
 
-        mappedWikiTags.Add(newWiki.GetWiki(), wiki.GetWiki());
+        mappedWikiTags.Add( newWiki.GetWiki(), wiki.GetWiki() );
       }
-      catch (KeyNotFoundException)
+      catch ( KeyNotFoundException )
       {
-        GetLogger().LogError($"ERROR: MapNode '{item.Title}': could not resolve: '{wiki.GetWiki()}'");
+        GetLogger().LogError( $"ERROR: MapNode '{item.Title}': could not resolve: '{wiki.GetWiki()}'" );
 
-        item.Text = item.Text.Replace(wiki.GetWiki(), $"{wiki.GetUnquotedWiki()}: could not resolve");
+        item.Text = item.Text.Replace( wiki.GetWiki(), $"{wiki.GetUnquotedWiki()}: could not resolve" );
 
         rc = false;
       }
 
     }
 
-    foreach (var key in mappedWikiTags.Keys)
+    foreach ( var key in mappedWikiTags.Keys )
     {
-      GetLogger().LogInformation($"    remapping '{mappedWikiTags[key]}' -> {key.ToUpper()}");
-      item.Text = item.Text.Replace(key, key.ToUpper());
+      GetLogger().LogInformation( $"    remapping '{mappedWikiTags[ key ]}' -> {key.ToUpper()}" );
+      item.Text = item.Text.Replace( key, key.ToUpper() );
     }
 
     return rc;

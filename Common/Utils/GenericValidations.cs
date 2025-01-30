@@ -8,16 +8,16 @@ public class GenericValidations
 {
   public static bool IsValidUsername(string username)
   {
-    if (string.IsNullOrWhiteSpace(username))
+    if ( string.IsNullOrWhiteSpace( username ) )
       return false;
 
     try
     {
-      return Regex.IsMatch(username,
+      return Regex.IsMatch( username,
           @"^[a-zA-Z0-9_-]{2,}$",
-          RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+          RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds( 250 ) );
     }
-    catch (Exception)
+    catch ( Exception )
     {
       return false;
     }
@@ -26,14 +26,14 @@ public class GenericValidations
   // @See https://learn.microsoft.com/en-us/dotnet/standard/base-types/how-to-verify-that-strings-are-in-valid-email-format
   public static bool IsValidEmail(string email)
   {
-    if (string.IsNullOrWhiteSpace(email))
+    if ( string.IsNullOrWhiteSpace( email ) )
       return false;
 
     try
     {
       // Normalize the domain
-      email = Regex.Replace(email, @"(@)(.+)$", DomainMapper,
-                            RegexOptions.None, TimeSpan.FromMilliseconds(200));
+      email = Regex.Replace( email, @"(@)(.+)$", DomainMapper,
+                            RegexOptions.None, TimeSpan.FromMilliseconds( 200 ) );
 
       // Examines the domain part of the email and normalizes it.
       string DomainMapper(Match match)
@@ -42,27 +42,27 @@ public class GenericValidations
         var idn = new IdnMapping();
 
         // Pull out and process domain name (throws ArgumentException on invalid)
-        var domainName = idn.GetAscii(match.Groups[2].Value);
+        var domainName = idn.GetAscii( match.Groups[ 2 ].Value );
 
-        return match.Groups[1].Value + domainName;
+        return match.Groups[ 1 ].Value + domainName;
       }
     }
-    catch (RegexMatchTimeoutException)
+    catch ( RegexMatchTimeoutException )
     {
       return false;
     }
-    catch (ArgumentException)
+    catch ( ArgumentException )
     {
       return false;
     }
 
     try
     {
-      return Regex.IsMatch(email,
+      return Regex.IsMatch( email,
           @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
-          RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+          RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds( 250 ) );
     }
-    catch (RegexMatchTimeoutException)
+    catch ( RegexMatchTimeoutException )
     {
       return false;
     }

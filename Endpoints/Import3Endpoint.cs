@@ -21,7 +21,7 @@ public partial class Import3Endpoint : OLabEndpoint
     : base(
         logger,
         configuration,
-        context)
+        context )
   {
   }
 
@@ -36,14 +36,14 @@ public partial class Import3Endpoint : OLabEndpoint
         configuration,
         context,
         wikiTagProvider,
-        fileStorageProvider)
+        fileStorageProvider )
   {
     _importer = new Importer(
       GetLogger(),
       _configuration,
       GetDbContext(),
       GetWikiProvider(),
-      _fileStorageModule);
+      _fileStorageModule );
   }
 
   public async Task<Maps> ImportAsync(
@@ -56,7 +56,7 @@ public partial class Import3Endpoint : OLabEndpoint
       auth,
       archvieFileStream,
       archiveFileName,
-      token);
+      token );
     return mapPhys;
   }
 

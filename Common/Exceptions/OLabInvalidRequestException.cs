@@ -7,10 +7,10 @@ namespace OLab.Api.Common.Exceptions;
 public class OLabInvalidRequestException : Exception
 {
   public OLabInvalidRequestException(Exception exception)
-      : base("Invalid request", exception)
+      : base( "Invalid request", exception )
   { }
 
   public OLabInvalidRequestException(string message)
-      : base(message)
+      : base( message )
   { }
 }

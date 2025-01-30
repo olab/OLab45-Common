@@ -17,19 +17,19 @@ public class QuestionReaderWriter : ReaderWriter
     OLabDBContext context,
     IOLabModuleProvider<IWikiTagModule> wikiTagProvider)
   {
-    return new QuestionReaderWriter(logger, context, wikiTagProvider);
+    return new QuestionReaderWriter( logger, context, wikiTagProvider );
   }
 
   public QuestionReaderWriter(
   IOLabLogger logger,
-  OLabDBContext context) : base(logger, context)
+  OLabDBContext context) : base( logger, context )
   {
   }
 
   public QuestionReaderWriter(
     IOLabLogger logger,
     OLabDBContext context,
-    IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base(logger, context)
+    IOLabModuleProvider<IWikiTagModule> wikiTagProvider) : base( logger, context )
   {
     _wikiTagProvider = wikiTagProvider;
   }
@@ -43,10 +43,10 @@ public class QuestionReaderWriter : ReaderWriter
   {
     SystemQuestions phys;
 
-    if (uint.TryParse(source, out var id))
-      phys = GetDbContext().SystemQuestions.FirstOrDefault(x => x.Id == id);
+    if ( uint.TryParse( source, out var id ) )
+      phys = GetDbContext().SystemQuestions.FirstOrDefault( x => x.Id == id );
     else
-      phys = GetDbContext().SystemQuestions.FirstOrDefault(x => x.Name == source);
+      phys = GetDbContext().SystemQuestions.FirstOrDefault( x => x.Name == source );
 
     return phys;
   }
@@ -60,10 +60,10 @@ public class QuestionReaderWriter : ReaderWriter
   {
     SystemQuestions phys;
 
-    if (uint.TryParse(source, out var id))
-      phys = await GetDbContext().SystemQuestions.FirstOrDefaultAsync(x => x.Id == id);
+    if ( uint.TryParse( source, out var id ) )
+      phys = await GetDbContext().SystemQuestions.FirstOrDefaultAsync( x => x.Id == id );
     else
-      phys = await GetDbContext().SystemQuestions.FirstOrDefaultAsync(x => x.Name == source);
+      phys = await GetDbContext().SystemQuestions.FirstOrDefaultAsync( x => x.Name == source );
 
     return phys;
   }
@@ -76,21 +76,21 @@ public class QuestionReaderWriter : ReaderWriter
   /// <returns>Revised node text string</returns>
   public string DisambiguateWikiQuestions(string source)
   {
-    var wikiMatches = WikiTagUtils.GetWikiTags("QU", source);
-    foreach (var wikiMatch in wikiMatches)
+    var wikiMatches = WikiTagUtils.GetWikiTags( "QU", source );
+    foreach ( var wikiMatch in wikiMatches )
     {
-      var idName = WikiTagUtils.GetWikiArgument1(wikiMatch);
-      GetLogger().LogInformation($"disambiguating question '{wikiMatch}'");
+      var idName = WikiTagUtils.GetWikiArgument1( wikiMatch );
+      GetLogger().LogInformation( $"disambiguating question '{wikiMatch}'" );
 
-      var questionPhys = Get(idName);
-      if (questionPhys == null)
+      var questionPhys = Get( idName );
+      if ( questionPhys == null )
       {
-        GetLogger().LogError($"unable to disambiguate question '{wikiMatch}'");
+        GetLogger().LogError( $"unable to disambiguate question '{wikiMatch}'" );
         continue;
       }
 
       var newWikiType = "QU";
-      switch (questionPhys.EntryTypeId)
+      switch ( questionPhys.EntryTypeId )
       {
         case 1:
           newWikiType = "QUST";
@@ -117,10 +117,10 @@ public class QuestionReaderWriter : ReaderWriter
           break;
       }
 
-      var newWikiTag = wikiMatch.Replace("QU:", $"{newWikiType}:");
-      GetLogger().LogInformation($"disambiguating entry type {questionPhys.EntryTypeId}: '{wikiMatch}' => '{newWikiTag}'");
+      var newWikiTag = wikiMatch.Replace( "QU:", $"{newWikiType}:" );
+      GetLogger().LogInformation( $"disambiguating entry type {questionPhys.EntryTypeId}: '{wikiMatch}' => '{newWikiTag}'" );
 
-      source = source.Replace(wikiMatch, newWikiTag);
+      source = source.Replace( wikiMatch, newWikiTag );
     }
 
     return source;
@@ -134,7 +134,7 @@ public class QuestionReaderWriter : ReaderWriter
   /// <returns>Roles</returns>
   public async Task<IList<SystemQuestions>> GetAsync(string scopeLevel, uint id)
   {
-    IList<SystemQuestions> phys = await GetDbContext().SystemQuestions.Where(x => x.ImageableType == scopeLevel && x.ImageableId == id).ToListAsync();
+    IList<SystemQuestions> phys = await GetDbContext().SystemQuestions.Where( x => x.ImageableType == scopeLevel && x.ImageableId == id ).ToListAsync();
     return phys;
   }
 }

@@ -8,14 +8,14 @@ public static class Conversions
 {
   public static uint? OptionalIdSafeAssign(uint source)
   {
-    if (source > 0)
+    if ( source > 0 )
       return source;
     return null;
   }
 
   public static uint? OptionalIdSafeAssign(uint? source)
   {
-    if ((source > 0) && (source.HasValue))
+    if ( (source > 0) && (source.HasValue) )
       return source;
     return null;
   }
@@ -33,23 +33,23 @@ public static class Conversions
     {
       name = data.Name.ToString();
     }
-    catch (RuntimeBinderException)
+    catch ( RuntimeBinderException )
     {
     }
 
     try
     {
-      byte[] binary = Convert.FromBase64String(data.Value);
-      return Encoding.Default.GetString(binary);
+      byte[] binary = Convert.FromBase64String( data.Value );
+      return Encoding.Default.GetString( binary );
     }
-    catch (FormatException)
+    catch ( FormatException )
     {
-      if (!returnClearTextIfError)
+      if ( !returnClearTextIfError )
       {
-        if (string.IsNullOrEmpty(name))
-          throw new Exception($"cannot decode '{data.Value.ToString()}'");
+        if ( string.IsNullOrEmpty( name ) )
+          throw new Exception( $"cannot decode '{data.Value.ToString()}'" );
         else
-          throw new Exception($"cannot decode '{name}' = '{data.Value.ToString()}'");
+          throw new Exception( $"cannot decode '{name}' = '{data.Value.ToString()}'" );
       }
     }
 
@@ -67,13 +67,13 @@ public static class Conversions
 
     try
     {
-      if (isBase64Encoded && !string.IsNullOrEmpty(source))
+      if ( isBase64Encoded && !string.IsNullOrEmpty( source ) )
       {
-        var base64Bytes = Convert.FromBase64String(source);
-        data = Encoding.Default.GetString(base64Bytes);
+        var base64Bytes = Convert.FromBase64String( source );
+        data = Encoding.Default.GetString( base64Bytes );
       }
     }
-    catch (Exception)
+    catch ( Exception )
     {
     }
 
@@ -86,7 +86,7 @@ public static class Conversions
   /// <returns>Seconds (including fractional) since epoch</returns>
   public static decimal GetCurrentUnixTime()
   {
-    var span = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+    var span = DateTime.UtcNow - new DateTime( 1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc );
     var unixTime = span.TotalSeconds;
     return (decimal)unixTime;
   }
@@ -98,7 +98,7 @@ public static class Conversions
   /// <returns>DateTime</returns>
   public static DateTime GetTime(decimal epochSeconds)
   {
-    var dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds((long)epochSeconds);
+    var dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds( (long)epochSeconds );
     return dateTimeOffset.DateTime;
   }
 

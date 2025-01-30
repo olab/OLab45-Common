@@ -18,7 +18,7 @@ public class XmlManifestDto : XmlImportDto<XmlManifest>
       logger,
       importer,
       Importer.DtoTypes.XmlManifestDto,
-      "manifest.xml")
+      "manifest.xml" )
   { }
 
   public override string GetLoggerString(IEnumerable<dynamic> elements)
@@ -33,27 +33,27 @@ public class XmlManifestDto : XmlImportDto<XmlManifest>
   /// <param name="displayProgressMessage">Display progress messages</param>
   /// <returns></returns>
   public override async Task<bool> LoadAsync(
-    string physicalFileFolder, 
+    string physicalFileFolder,
     bool displayProgressMessage = true)
   {
-    var result = await base.LoadAsync(physicalFileFolder);
+    var result = await base.LoadAsync( physicalFileFolder );
 
-    if (result)
+    if ( result )
     {
-      dynamic elements = GetElements(GetXmlPhys());
+      dynamic elements = GetElements( GetXmlPhys() );
 
       var record = 0;
-      foreach (var element in elements)
+      foreach ( var element in elements )
       {
         try
         {
           ++record;
-          dynamic value = Conversions.Base64Decode(element.Value) + ".xml";
-          GetModel().Data.Add(value);
+          dynamic value = Conversions.Base64Decode( element.Value ) + ".xml";
+          GetModel().Data.Add( value );
         }
-        catch (Exception ex)
+        catch ( Exception ex )
         {
-          GetLogger().LogError(ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}");
+          GetLogger().LogError( ex, $"Error loading '{GetFileName()}' record #{record}: {ex.Message}" );
         }
 
       }

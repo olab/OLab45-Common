@@ -14,7 +14,7 @@ public class ScopedObjectMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
-    bool enableWikiTranslation = true) : base(logger, dbContext, tagProvider)
+    bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
 
@@ -22,19 +22,19 @@ public class ScopedObjectMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
     ScopedObjects phys,
     object source = null)
   {
-    var dto = GetDto(source);
+    var dto = GetDto( source );
 
-    var dtConstantsList = new Constants(GetLogger(), GetDbContext(), GetWikiProvider()).PhysicalToDto(phys.ConstantsPhys);
-    dto.Constants.AddRange(dtConstantsList);
+    var dtConstantsList = new Constants( GetLogger(), GetDbContext(), GetWikiProvider() ).PhysicalToDto( phys.ConstantsPhys );
+    dto.Constants.AddRange( dtConstantsList );
 
-    var dtoQuestionsList = new Questions(GetLogger(), GetDbContext(), GetWikiProvider()).PhysicalToDto(phys.QuestionsPhys);
-    dto.Questions.AddRange(dtoQuestionsList);
+    var dtoQuestionsList = new Questions( GetLogger(), GetDbContext(), GetWikiProvider() ).PhysicalToDto( phys.QuestionsPhys );
+    dto.Questions.AddRange( dtoQuestionsList );
 
-    var dtCountersList = new Counters(GetLogger(), GetDbContext(), GetWikiProvider()).PhysicalToDto(phys.CountersPhys);
-    dto.Counters.AddRange(dtCountersList);
+    var dtCountersList = new Counters( GetLogger(), GetDbContext(), GetWikiProvider() ).PhysicalToDto( phys.CountersPhys );
+    dto.Counters.AddRange( dtCountersList );
 
-    var dtFilesList = new Files(GetLogger(), GetDbContext(), GetWikiProvider()).PhysicalToDto(phys.FilesPhys);
-    dto.Files.AddRange(dtFilesList);
+    var dtFilesList = new Files( GetLogger(), GetDbContext(), GetWikiProvider() ).PhysicalToDto( phys.FilesPhys );
+    dto.Files.AddRange( dtFilesList );
 
     return dto;
   }

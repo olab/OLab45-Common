@@ -5,33 +5,33 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
-[Table("map_chat_elements")]
-[Index("ChatId", Name = "chat_id")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[Table( "map_chat_elements" )]
+[Index( "ChatId", Name = "chat_id" )]
+[MySqlCharSet( "utf8mb3" )]
+[MySqlCollation( "utf8mb3_general_ci" )]
 public partial class MapChatElements
 {
   [Key]
-  [Column("id", TypeName = "int(10) unsigned")]
+  [Column( "id", TypeName = "int(10) unsigned" )]
   public uint Id { get; set; }
 
-  [Column("chat_id", TypeName = "int(10) unsigned")]
+  [Column( "chat_id", TypeName = "int(10) unsigned" )]
   public uint ChatId { get; set; }
 
   [Required]
-  [Column("question", TypeName = "text")]
+  [Column( "question", TypeName = "text" )]
   public string Question { get; set; }
 
   [Required]
-  [Column("response", TypeName = "text")]
+  [Column( "response", TypeName = "text" )]
   public string Response { get; set; }
 
   [Required]
-  [Column("function")]
-  [StringLength(10)]
+  [Column( "function" )]
+  [StringLength( 10 )]
   public string Function { get; set; }
 
-  [ForeignKey("ChatId")]
-  [InverseProperty("MapChatElements")]
+  [ForeignKey( "ChatId" )]
+  [InverseProperty( "MapChatElements" )]
   public virtual MapChats Chat { get; set; }
 }

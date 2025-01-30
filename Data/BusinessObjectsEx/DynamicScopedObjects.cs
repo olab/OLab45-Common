@@ -62,18 +62,18 @@ public class DynamicScopedObjects
   /// <returns></returns>
   public async Task GetDynamicScopedObjectsAsync()
   {
-    var phys = new ScopedObjects(GetLogger(), GetDbContext(), GetWikiProvider());
+    var phys = new ScopedObjects( GetLogger(), GetDbContext(), GetWikiProvider() );
 
-    var scopedObjects = await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelServer, serverId);
+    var scopedObjects = await phys.AddScopeFromDatabaseAsync( Constants.ScopeLevelServer, serverId );
     ServerCounters = scopedObjects.CountersPhys;
 
-    scopedObjects = await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelMap, mapId);
+    scopedObjects = await phys.AddScopeFromDatabaseAsync( Constants.ScopeLevelMap, mapId );
     MapCounters = scopedObjects.CountersPhys;
 
-    scopedObjects = await phys.AddScopeFromDatabaseAsync(Constants.ScopeLevelNode, nodeId);
+    scopedObjects = await phys.AddScopeFromDatabaseAsync( Constants.ScopeLevelNode, nodeId );
     NodeCounters = scopedObjects.CountersPhys;
 
-    await ProcessNodeCounters(MapCounters);
+    await ProcessNodeCounters( MapCounters );
   }
 
   /// <summary>
@@ -84,21 +84,21 @@ public class DynamicScopedObjects
   /// <returns>void</returns>
   private async Task<IList<SystemCounters>> ProcessNodeCounters(IList<SystemCounters> physList)
   {
-    var counterActions = await GetDbContext().SystemCounterActions.Where(x =>
+    var counterActions = await GetDbContext().SystemCounterActions.Where( x =>
       (x.ImageableId == nodeId) &&
       (x.ImageableType == Constants.ScopeLevelNode) &&
-      (x.OperationType == "open")).ToListAsync();
+      (x.OperationType == "open") ).ToListAsync();
 
-    GetLogger().LogDebug($"Found {counterActions.Count} counterActions records for node {nodeId} ");
+    GetLogger().LogDebug( $"Found {counterActions.Count} counterActions records for node {nodeId} " );
 
-    foreach (var counterAction in counterActions)
+    foreach ( var counterAction in counterActions )
     {
-      var phys = physList.FirstOrDefault(x => x.Id == counterAction.CounterId);
-      if (phys == null)
-        GetLogger().LogError($"Enable to lookup counter {counterAction.CounterId} in action {counterAction.Id}");
+      var phys = physList.FirstOrDefault( x => x.Id == counterAction.CounterId );
+      if ( phys == null )
+        GetLogger().LogError( $"Enable to lookup counter {counterAction.CounterId} in action {counterAction.Id}" );
 
-      else if (counterAction.ApplyFunctionToCounter(phys))
-        GetLogger().LogDebug($"Updated counter '{phys.Name}' ({phys.Id}) with function '{counterAction.Expression}'. now = {phys.Value}");
+      else if ( counterAction.ApplyFunctionToCounter( phys ) )
+        GetLogger().LogDebug( $"Updated counter '{phys.Name}' ({phys.Id}) with function '{counterAction.Expression}'. now = {phys.Value}" );
     }
 
     return physList;

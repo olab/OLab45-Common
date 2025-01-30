@@ -15,9 +15,9 @@ public class XmlMapElementDto : XmlImportDto<XmlMapElements>
       logger,
       importer,
       Importer.DtoTypes.XmlMapElementDto,
-      "map_element.xml")
+      "map_element.xml" )
   {
-    _mapper = new Api.ObjectMapper.Files(GetLogger(), GetDbContext(), GetWikiProvider());
+    _mapper = new Api.ObjectMapper.Files( GetLogger(), GetDbContext(), GetWikiProvider() );
   }
 
   /// <summary>
@@ -40,24 +40,24 @@ public class XmlMapElementDto : XmlImportDto<XmlMapElements>
     int recordIndex,
     IEnumerable<dynamic> elements)
   {
-    var item = _mapper.ElementsToPhys(elements);
+    var item = _mapper.ElementsToPhys( elements );
     var oldId = item.Id;
 
     item.Id = 0;
 
-    var mapDto = GetImporter().GetDto(Importer.DtoTypes.XmlMapDto) as XmlMapDto;
-    item.ImageableId = mapDto.GetIdTranslation(GetFileName(), item.ImageableId).Value;
+    var mapDto = GetImporter().GetDto( Importer.DtoTypes.XmlMapDto ) as XmlMapDto;
+    item.ImageableId = mapDto.GetIdTranslation( GetFileName(), item.ImageableId ).Value;
     item.ImageableType = "Maps";
 
     //if (!GetFileModule().FileExists(GetMediaDirectory(), Path.GetFileName(item.Path)))
     //  Logger.LogWarning(GetFileName(), 0, $"media file '{item.Path}' does not exist in import package");
 
-    item.Path = Path.GetFileName(item.Path);
+    item.Path = Path.GetFileName( item.Path );
 
-    GetDbContext().SystemFiles.Add(item);
+    GetDbContext().SystemFiles.Add( item );
     GetDbContext().SaveChanges();
 
-    CreateIdTranslation(oldId, item.Id);
+    CreateIdTranslation( oldId, item.Id );
 
     return true;
   }

@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
@@ -6,7 +5,6 @@ using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
-using OLab.Data.Interface;
 using OLab.Data.Mappers;
 using OLab.Data.ReaderWriters;
 using System.Threading;
@@ -25,12 +23,12 @@ public partial class ApplicationsEndpoint : OLabEndpoint
     OLabDBContext dbContext) : base(
       logger,
       configuration,
-      dbContext)
+      dbContext )
   {
-    _readerWriter = ApplicationReaderWriter.Instance(logger, dbContext);
+    _readerWriter = ApplicationReaderWriter.Instance( logger, dbContext );
     _mapper = new ApplicationsMapper(
       GetLogger(),
-      GetDbContext());
+      GetDbContext() );
   }
 
   /// <summary>
@@ -43,12 +41,12 @@ public partial class ApplicationsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     int? take, int? skip)
   {
-    GetLogger().LogInformation($"ApplicationsEndpoint.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})");
-    var pagedDataPhys = await _readerWriter.GetPagedAsync(take, skip);
+    GetLogger().LogInformation( $"ApplicationsEndpoint.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})" );
+    var pagedDataPhys = await _readerWriter.GetPagedAsync( take, skip );
 
     var pagedDataDto = new OLabAPIPagedResponse<ApplicationsDto>();
 
-    pagedDataDto.Data = _mapper.PhysicalToDto(pagedDataPhys.Data);
+    pagedDataDto.Data = _mapper.PhysicalToDto( pagedDataPhys.Data );
     pagedDataDto.Remaining = pagedDataPhys.Remaining;
     pagedDataDto.Count = pagedDataPhys.Count;
 
@@ -66,13 +64,13 @@ public partial class ApplicationsEndpoint : OLabEndpoint
     string source)
   {
 
-    GetLogger().LogInformation($"ApplicationsEndpoint.ReadAsync(source={source})");
+    GetLogger().LogInformation( $"ApplicationsEndpoint.ReadAsync(source={source})" );
 
-    var phys = await _readerWriter.GetAsync(source);
-    if (phys == null)
-      throw new OLabObjectNotFoundException("Group", source);
+    var phys = await _readerWriter.GetAsync( source );
+    if ( phys == null )
+      throw new OLabObjectNotFoundException( "Group", source );
 
-    return _mapper.PhysicalToDto(phys);
+    return _mapper.PhysicalToDto( phys );
   }
 
   /// <summary>
@@ -85,15 +83,15 @@ public partial class ApplicationsEndpoint : OLabEndpoint
     string groupName,
     CancellationToken token)
   {
-    GetLogger().LogInformation($"ApplicationsEndpoint.PostAsync()");
+    GetLogger().LogInformation( $"ApplicationsEndpoint.PostAsync()" );
 
     // test if user has access 
-    if (!await auth.IsSystemSuperuserAsync())
+    if ( !await auth.IsSystemSuperuserAsync() )
       throw new OLabUnauthorizedException();
 
     // test 
-    var phys = await _readerWriter.CreateAsync(groupName);
-    return _mapper.PhysicalToDto(phys);
+    var phys = await _readerWriter.CreateAsync( groupName );
+    return _mapper.PhysicalToDto( phys );
   }
 
   /// <summary>
@@ -104,17 +102,17 @@ public partial class ApplicationsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     string source)
   {
-    GetLogger().LogInformation($"ApplicationsEndpoint.DeleteAsync()");
+    GetLogger().LogInformation( $"ApplicationsEndpoint.DeleteAsync()" );
 
     // test if user has access 
-    if (!await auth.IsSystemSuperuserAsync())
+    if ( !await auth.IsSystemSuperuserAsync() )
       throw new OLabUnauthorizedException();
 
-    var phys = await _readerWriter.GetAsync(source);
-    if (phys == null)
-      throw new OLabObjectNotFoundException("Applications", source);
+    var phys = await _readerWriter.GetAsync( source );
+    if ( phys == null )
+      throw new OLabObjectNotFoundException( "Applications", source );
 
-    await _readerWriter.DeleteAsync(source);
+    await _readerWriter.DeleteAsync( source );
   }
 
 }

@@ -4,6 +4,6 @@ namespace OLab.Api.Dto;
 
 public class MapNodeLinksPostResponseDto
 {
-  [JsonProperty("id")]
+  [JsonProperty( "id" )]
   public uint Id { get; set; }
 }

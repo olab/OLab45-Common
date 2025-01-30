@@ -4,18 +4,18 @@ namespace OLab.Api.Dto;
 
 public class ScriptsFullDto : ScriptsDto
 {
-  [JsonProperty("source")]
+  [JsonProperty( "source" )]
   public string Source { get; set; }
-  [JsonProperty("isRaw")]
+  [JsonProperty( "isRaw" )]
   public ulong? IsRaw { get; set; }
-  [JsonProperty("order")]
+  [JsonProperty( "order" )]
   public int? Order { get; set; }
-  [JsonProperty("postLoadId")]
+  [JsonProperty( "postLoadId" )]
   public int? PostloadId { get; set; }
-  [JsonProperty("scriptCol")]
+  [JsonProperty( "scriptCol" )]
   public string SystemScriptscol { get; set; }
 
   // calculated properties
-  [JsonProperty("wiki")]
+  [JsonProperty( "wiki" )]
   public string Wiki { get; set; }
 }

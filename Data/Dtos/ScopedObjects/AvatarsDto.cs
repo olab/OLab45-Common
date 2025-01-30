@@ -4,48 +4,48 @@ namespace OLab.Api.Dto;
 
 public partial class AvatarsDto
 {
-  [JsonProperty("id")]
+  [JsonProperty( "id" )]
   public uint Id { get; set; }
-  [JsonProperty("map_id")]
+  [JsonProperty( "map_id" )]
   public uint MapId { get; set; }
-  [JsonProperty("skin_1")]
+  [JsonProperty( "skin_1" )]
   public string Skin1 { get; set; }
-  [JsonProperty("skin_2")]
+  [JsonProperty( "skin_2" )]
   public string Skin2 { get; set; }
-  [JsonProperty("cloth")]
+  [JsonProperty( "cloth" )]
   public string Cloth { get; set; }
-  [JsonProperty("nose")]
+  [JsonProperty( "nose" )]
   public string Nose { get; set; }
-  [JsonProperty("hair")]
+  [JsonProperty( "hair" )]
   public string Hair { get; set; }
-  [JsonProperty("environment")]
+  [JsonProperty( "environment" )]
   public string Environment { get; set; }
-  [JsonProperty("accessory_1")]
+  [JsonProperty( "accessory_1" )]
   public string Accessory1 { get; set; }
-  [JsonProperty("bkd")]
+  [JsonProperty( "bkd" )]
   public string Bkd { get; set; }
-  [JsonProperty("sex")]
+  [JsonProperty( "sex" )]
   public string Sex { get; set; }
-  [JsonProperty("mouth")]
+  [JsonProperty( "mouth" )]
   public string Mouth { get; set; }
-  [JsonProperty("outfit")]
+  [JsonProperty( "outfit" )]
   public string Outfit { get; set; }
-  [JsonProperty("bubble")]
+  [JsonProperty( "bubble" )]
   public string Bubble { get; set; }
-  [JsonProperty("bubble_text")]
+  [JsonProperty( "bubble_text" )]
   public string BubbleText { get; set; }
-  [JsonProperty("accessory_2")]
+  [JsonProperty( "accessory_2" )]
   public string Accessory2 { get; set; }
-  [JsonProperty("accessory_3")]
+  [JsonProperty( "accessory_3" )]
   public string Accessory3 { get; set; }
-  [JsonProperty("age")]
+  [JsonProperty( "age" )]
   public string Age { get; set; }
-  [JsonProperty("eyes")]
+  [JsonProperty( "eyes" )]
   public string Eyes { get; set; }
-  [JsonProperty("hair_color")]
+  [JsonProperty( "hair_color" )]
   public string HairColor { get; set; }
-  [JsonProperty("image")]
+  [JsonProperty( "image" )]
   public string Image { get; set; }
-  [JsonProperty("is_private")]
+  [JsonProperty( "is_private" )]
   public int IsPrivate { get; set; }
 }
