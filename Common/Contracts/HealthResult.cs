@@ -1,10 +1,12 @@
+using System.Collections.Generic;
 using System.Net;
 
 namespace OLab.Common.Contracts;
+
 public class HealthResult
 {
-  public HttpStatusCode statusCode;
-  public System.Version main;
-  public object modules;
-  public string message;
+  public HttpStatusCode StatusCode;
+  public System.Version Main;
+  public IDictionary<string, string> Modules;
+  public string Message;
 }
