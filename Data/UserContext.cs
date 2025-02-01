@@ -115,6 +115,9 @@ public abstract class UserContext : IUserContext
 
     _logger = logger;
     _dbContext = dbContext;
+
+    GetLogger().LogInformation( $"UserContext ctor" );
+
   }
 
   protected void SetHeaders(IDictionary<string, string> headers)
