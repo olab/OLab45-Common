@@ -1,5 +1,8 @@
 using System;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Security.Policy;
+using System.Text;
 
 namespace OLab.Api.Model;
 
@@ -32,8 +35,15 @@ public partial class Users
     }
     else
     {
-      if ( !string.IsNullOrEmpty( model.Password ) )
-        sourceUser.Password = model.Password;
+      sourceUser.Salt = GenerateRandomString( SaltLength );
+      var clearText = model.Password + sourceUser.Salt;
+
+      var hash = SHA1.Create();
+      var plainTextBytes = Encoding.ASCII.GetBytes( clearText );
+      var hashBytes = hash.ComputeHash( plainTextBytes );
+      var encryptedPassword = BitConverter.ToString( hashBytes ).Replace( "-", "" ).ToLowerInvariant();
+
+      sourceUser.Password = encryptedPassword;
     }
 
     sourceUser.Username = model.Username;
@@ -54,5 +64,18 @@ public partial class Users
     };
 
     return user;
+  }
+
+  /// <summary>
+  /// Generates a random string of the specified length using lowercase letters and digits.
+  /// </summary>
+  /// <param name="length">The length of the random string to generate.</param>
+  /// <returns>A random string of the specified length.</returns>
+  public static string GenerateRandomString(int length)
+  {
+    const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+    var random = new Random();
+    return new string( Enumerable.Repeat( chars, length )
+      .Select( s => s[ random.Next( s.Length ) ] ).ToArray() );
   }
 }
