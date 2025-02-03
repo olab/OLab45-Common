@@ -32,6 +32,7 @@ public partial class Users
   {
     var user = new Users();
     user.Password = StringUtils.GenerateRandomString( PasswordLength );
+    user.ModeUi = "easy";
     return user;
   }
 }
