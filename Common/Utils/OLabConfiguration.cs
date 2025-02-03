@@ -30,9 +30,27 @@ public class OLabConfiguration : IOLabConfiguration
     //foreach ( var item in _configuration.AsEnumerable() )
     //  logger.LogInformation( $"  {item.Key} -> {item.Value}" );
 
-    // Bind configuration to MySettings class
     _appSettings = new AppSettings();
-    configuration.GetSection( "AppSettings" ).Bind( _appSettings );
+
+    // handle case where settings are in 'AppSettings' section or
+    // as environment variables
+    var sect = configuration.GetSection( "AppSettings" );
+    if ( sect.Exists() )
+      configuration.GetSection( "AppSettings" ).Bind( _appSettings );
+    else
+    {
+
+      var properties = typeof( AppSettings ).GetProperties();
+      foreach ( var property in properties )
+      {
+        var envValue = Environment.GetEnvironmentVariable( property.Name );
+        if ( !string.IsNullOrEmpty( envValue ) )
+        {
+          var convertedValue = Convert.ChangeType( envValue, property.PropertyType );
+          property.SetValue( _appSettings, convertedValue );
+        }
+      }
+    }
 
     //_appSettings = new AppSettings
     //{
@@ -46,7 +64,7 @@ public class OLabConfiguration : IOLabConfiguration
     //  FileStorageConnectionString = _configuration.GetValue<string>( "FileStorageConnectionString" )
     //};
 
-    var json = JsonConvert.SerializeObject( _appSettings );
+    var json = JsonConvert.SerializeObject( _appSettings, Formatting.Indented );
     Console.WriteLine( $" Configuration {json}" );
 
   }
