@@ -8,9 +8,6 @@ namespace OLab.Data.Interface;
 
 public interface IUserService
 {
-  //Users Authenticate(LoginRequest model);
-  void ChangePassword(Users user, ChangePasswordRequest model);
-
   Task<List<UsersDto>> AddUsersAsync(List<AddUserRequest> items);
   Task<List<AddUserResponse>> DeleteUsersAsync(List<DeleteUsersRequest> items);
   Task<UsersDto> AddUserAsync(AddUserRequest item);

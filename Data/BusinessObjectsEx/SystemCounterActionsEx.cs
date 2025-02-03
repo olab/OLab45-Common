@@ -12,7 +12,7 @@ public partial class SystemCounterActions
       return ProcessStringCounter( targetCounter );
   }
 
-  private bool ProcessNumericCounter(SystemCounters targetCounter)
+  public bool ProcessNumericCounter(SystemCounters targetCounter)
   {
     // test for numeric constant function expression
     var regex = new Regex( "=[-,+]?[0-9]+" );

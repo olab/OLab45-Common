@@ -12,6 +12,9 @@ using System.Text.Json;
 
 namespace OLab.Api.Data;
 
+/// <summary>
+/// Represents a session in the OLab application.
+/// </summary>
 public class OLabSession : IOLabSession
 {
   private readonly OLabDBContext _dbContext;
@@ -20,6 +23,13 @@ public class OLabSession : IOLabSession
   private string _sessionId;
   private uint _mapId;
 
+  /// <summary>
+  /// Creates an instance of <see cref="OLabSession"/>.
+  /// </summary>
+  /// <param name="logger">The logger instance.</param>
+  /// <param name="context">The database context.</param>
+  /// <param name="userContext">The user context.</param>
+  /// <returns>An instance of <see cref="IOLabSession"/>.</returns>
   public static IOLabSession CreateInstance(
     IOLabLogger logger,
     OLabDBContext context,
@@ -28,6 +38,12 @@ public class OLabSession : IOLabSession
     return new OLabSession( logger, context, userContext );
   }
 
+  /// <summary>
+  /// Initializes a new instance of the <see cref="OLabSession"/> class.
+  /// </summary>
+  /// <param name="logger">The logger instance.</param>
+  /// <param name="context">The database context.</param>
+  /// <param name="userContext">The user context.</param>
   public OLabSession(
     IOLabLogger logger,
     OLabDBContext context,
@@ -45,25 +61,37 @@ public class OLabSession : IOLabSession
       SetSessionId( _userContext.SessionId );
   }
 
+  /// <summary>
+  /// Sets the map ID for the session.
+  /// </summary>
+  /// <param name="mapId">The map ID.</param>
   public void SetMapId(uint mapId)
   {
     Guard.Argument( mapId, nameof( mapId ) ).Positive();
     _mapId = mapId;
   }
 
+  /// <summary>
+  /// Sets the session ID.
+  /// </summary>
+  /// <param name="sessionId">The session ID.</param>
   public void SetSessionId(string sessionId)
   {
     Guard.Argument( sessionId, nameof( sessionId ) ).NotNull();
     _sessionId = sessionId;
   }
 
+  /// <summary>
+  /// Gets the session ID.
+  /// </summary>
+  /// <returns>The session ID.</returns>
   public string GetSessionId()
   {
     return _sessionId;
   }
 
   /// <summary>
-  /// Create a new session on the map
+  /// Creates a new session on the map.
   /// </summary>
   public void OnStartSession()
   {
@@ -90,9 +118,9 @@ public class OLabSession : IOLabSession
   }
 
   /// <summary>
-  /// Extend the session end time
+  /// Extends the session end time.
   /// </summary>
-  /// <param name="nodeId">Node Id</param>
+  /// <param name="nodeId">The node ID.</param>
   public void OnExtendSessionEnd(uint nodeId)
   {
     Guard.Argument( _mapId, nameof( _mapId ) ).Positive();
@@ -110,9 +138,9 @@ public class OLabSession : IOLabSession
   }
 
   /// <summary>
-  /// Record a node play on the session
+  /// Records a node play on the session.
   /// </summary>
-  /// <param name="nodeId">Node Id</param>
+  /// <param name="dto">The data transfer object containing node information.</param>
   public void OnPlayNode(MapsNodesFullRelationsDto dto)
   {
     Guard.Argument( _mapId, nameof( _mapId ) ).Positive();
@@ -123,8 +151,6 @@ public class OLabSession : IOLabSession
     var session = GetSessionFromDatabase( GetSessionId() );
     if ( session == null )
       return;
-
-    // abbreviate counter dto's into shorter version dto
 
     var countersDto = new List<CounterValueDto>();
 
@@ -154,8 +180,6 @@ public class OLabSession : IOLabSession
     _dbContext.UserCounterUpdate.Add( counterUpdate );
     _dbContext.SaveChanges();
 
-    // hook up session trace to counter update
-
     var userSessionTraceCounterUpdate = new UsersessiontraceCounterupdate
     {
       CounterupdateId = counterUpdate.Id,
@@ -166,6 +190,11 @@ public class OLabSession : IOLabSession
     _dbContext.SaveChanges();
   }
 
+  /// <summary>
+  /// Records a question response on the session.
+  /// </summary>
+  /// <param name="body">The data transfer object containing the question response.</param>
+  /// <param name="questionPhys">The physical question object.</param>
   public void OnQuestionResponse(
     QuestionResponsePostDataDto body,
     SystemQuestions questionPhys)
@@ -180,11 +209,8 @@ public class OLabSession : IOLabSession
 
     _logger.LogInformation( $"OnQuestionResponse: session {GetSessionId()} Map: {_mapId} Node: {body.NodeId} Question: {questionPhys.Id} = {body.Value} " );
 
-    // truncate the message in case it's too long
     if ( string.IsNullOrEmpty( body.Value ) && (body.Value.Length > 1000) )
       body.Value = body.Value[ 997.. ] + "...";
-
-    // save the response and the associated counter dump
 
     var userResponse = new UserResponses
     {
@@ -206,8 +232,6 @@ public class OLabSession : IOLabSession
     _dbContext.UserCounterUpdate.Add( counterUpdate );
     _dbContext.SaveChanges();
 
-    // hook up user response to counter update
-
     var userResponseCounterUpdate = new UserresponseCounterupdate
     {
       CounterupdateId = counterUpdate.Id,
@@ -220,6 +244,11 @@ public class OLabSession : IOLabSession
     _logger.LogInformation( $"OnQuestionResponse: saved user response to session" );
   }
 
+  /// <summary>
+  /// Saves the session state.
+  /// </summary>
+  /// <param name="nodeId">The node ID.</param>
+  /// <param name="dynamicObjects">The dynamic objects data transfer object.</param>
   public void SaveSessionState(uint nodeId, DynamicScopedObjectsDto dynamicObjects)
   {
     Guard.Argument( _mapId, nameof( _mapId ) ).Positive();
@@ -237,10 +266,10 @@ public class OLabSession : IOLabSession
   }
 
   /// <summary>
-  /// Retrieve session database record
+  /// Retrieves the session database record.
   /// </summary>
-  /// <param name="sessionId">Session Id</param>
-  /// <returns></returns>
+  /// <param name="sessionId">The session ID.</param>
+  /// <returns>The session database record.</returns>
   private UserSessions GetSessionFromDatabase(string sessionId)
   {
     Guard.Argument( sessionId ).NotNull( nameof( sessionId ) );
@@ -254,5 +283,4 @@ public class OLabSession : IOLabSession
 
     return physSession;
   }
-
 }

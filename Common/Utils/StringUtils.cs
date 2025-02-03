@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -67,5 +68,18 @@ public class StringUtils
     using var cryptoStream = new CryptoStream( memoryStream, decryptor, CryptoStreamMode.Read );
     using var streamReader = new StreamReader( cryptoStream );
     return streamReader.ReadToEnd();
+  }
+
+  /// <summary>
+  /// Generates a random string of the specified length using lowercase letters and digits.
+  /// </summary>
+  /// <param name="length">The length of the random string to generate.</param>
+  /// <returns>A random string of the specified length.</returns>
+  public static string GenerateRandomString(int length)
+  {
+    const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+    var random = new Random();
+    return new string( Enumerable.Repeat( chars, length )
+      .Select( s => s[ random.Next( s.Length ) ] ).ToArray() );
   }
 }

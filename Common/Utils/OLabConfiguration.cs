@@ -52,18 +52,6 @@ public class OLabConfiguration : IOLabConfiguration
       }
     }
 
-    //_appSettings = new AppSettings
-    //{
-    //  Audience = _configuration.GetValue<string>( "Audience" ),
-    //  Issuer = _configuration.GetValue<string>( "Issuer" ),
-    //  Secret = _configuration.GetValue<string>( "Secret" ),
-    //  TokenExpiryMinutes = _configuration.GetValue<int>( "TokenExpiryMinutes" ),
-    //  FileStorageRoot = _configuration.GetValue<string>( "FileStorageRoot" ),
-    //  FileStorageUrl = _configuration.GetValue<string>( "FileStorageUrl" ),
-    //  FileStorageType = _configuration.GetValue<string>( "FileStorageType" ),
-    //  FileStorageConnectionString = _configuration.GetValue<string>( "FileStorageConnectionString" )
-    //};
-
     var json = JsonConvert.SerializeObject( _appSettings, Formatting.Indented );
     Console.WriteLine( $" Configuration {json}" );
 
