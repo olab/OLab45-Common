@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using System;
 
 namespace OLab.Common.Utils;
 
@@ -29,20 +30,24 @@ public class OLabConfiguration : IOLabConfiguration
     //foreach ( var item in _configuration.AsEnumerable() )
     //  logger.LogInformation( $"  {item.Key} -> {item.Value}" );
 
-    _appSettings = new AppSettings
-    {
-      Audience = _configuration.GetValue<string>( "Audience" ),
-      Issuer = _configuration.GetValue<string>( "Issuer" ),
-      Secret = _configuration.GetValue<string>( "Secret" ),
-      TokenExpiryMinutes = _configuration.GetValue<int>( "TokenExpiryMinutes" ),
-      FileStorageRoot = _configuration.GetValue<string>( "FileStorageRoot" ),
-      FileStorageUrl = _configuration.GetValue<string>( "FileStorageUrl" ),
-      FileStorageType = _configuration.GetValue<string>( "FileStorageType" ),
-      FileStorageConnectionString = _configuration.GetValue<string>( "FileStorageConnectionString" )
-    };
+    // Bind configuration to MySettings class
+    _appSettings = new AppSettings();
+    configuration.GetSection( "AppSettings" ).Bind( _appSettings );
+
+    //_appSettings = new AppSettings
+    //{
+    //  Audience = _configuration.GetValue<string>( "Audience" ),
+    //  Issuer = _configuration.GetValue<string>( "Issuer" ),
+    //  Secret = _configuration.GetValue<string>( "Secret" ),
+    //  TokenExpiryMinutes = _configuration.GetValue<int>( "TokenExpiryMinutes" ),
+    //  FileStorageRoot = _configuration.GetValue<string>( "FileStorageRoot" ),
+    //  FileStorageUrl = _configuration.GetValue<string>( "FileStorageUrl" ),
+    //  FileStorageType = _configuration.GetValue<string>( "FileStorageType" ),
+    //  FileStorageConnectionString = _configuration.GetValue<string>( "FileStorageConnectionString" )
+    //};
 
     var json = JsonConvert.SerializeObject( _appSettings );
-    logger.LogInformation( json );
+    Console.WriteLine( $" Configuration {json}" );
 
   }
 
