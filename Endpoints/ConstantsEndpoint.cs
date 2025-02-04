@@ -47,7 +47,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     int? take,
     int? skip)
   {
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: ConstantsEndpoint.ReadAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: ConstantsEndpoint.ReadAsync" );
 
     var constantsPhys = new List<SystemConstants>();
     var total = 0;
@@ -91,7 +91,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     uint id)
   {
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: ConstantsEndpoint.ReadAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: ConstantsEndpoint.ReadAsync" );
 
     if ( !Exists( id ) )
       throw new OLabObjectNotFoundException( "ConstantsPhys", id );
@@ -125,7 +125,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     uint id,
     ConstantsDto dto)
   {
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: ConstantsEndpoint.PutAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: ConstantsEndpoint.PutAsync" );
 
     dto.ImageableId = dto.ParentInfo.Id;
 
@@ -163,7 +163,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     ConstantsDto dto)
   {
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: ConstantsEndpoint.PostAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: ConstantsEndpoint.PostAsync" );
 
     dto.ImageableId = dto.ParentInfo.Id != 0 ? dto.ParentInfo.Id : dto.ImageableId;
 
@@ -196,7 +196,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     uint id)
   {
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: ConstantsEndpoint.DeleteAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: ConstantsEndpoint.DeleteAsync" );
 
     if ( !Exists( id ) )
       throw new OLabObjectNotFoundException( "ConstantsPhys", id );

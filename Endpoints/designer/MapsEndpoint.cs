@@ -20,6 +20,8 @@ namespace OLab.Api.Endpoints.Designer;
 
 public partial class MapsEndpoint : OLabEndpoint
 {
+  private readonly UserReaderWriter _userReaderWriter;
+
   public MapsEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
@@ -33,6 +35,8 @@ public partial class MapsEndpoint : OLabEndpoint
         wikiTagProvider,
         fileStorageProvider )
   {
+    _userReaderWriter
+      = UserReaderWriter.Instance( GetLogger(), GetDbContext() );
   }
 
   /// <summary>
@@ -496,9 +500,7 @@ public partial class MapsEndpoint : OLabEndpoint
       EMail = body.Email,
     } );
 
-    await GetDbContext().Users.AddAsync( phys );
-    var id = await GetDbContext().SaveChangesAsync();
-
+    phys = await _userReaderWriter.CreateAsync( phys );
     return (int)phys.Id;
   }
 
@@ -537,9 +539,8 @@ public partial class MapsEndpoint : OLabEndpoint
 
     body.CheckAcl();
 
-    var user = GetDbContext().Users.Where( u => u.Id == body.UserId ).FirstOrDefault();
-
-    if ( null == user )
+    var physUser = await _userReaderWriter.GetSingleAsync( body.UserId );
+    if ( null == physUser )
       throw new OLabBadRequestException( "User not found." );
 
     var securityUser = GetDbContext().UserAcls.SingleOrDefault( x => x.ImageableId == map.Id
@@ -554,7 +555,7 @@ public partial class MapsEndpoint : OLabEndpoint
       securityUser = new UserAcls();
 
     securityUser.ImageableId = map.Id;
-    securityUser.UserId = user.Id;
+    securityUser.UserId = physUser.Id;
     securityUser.ImageableType = Utils.Constants.ScopeLevelMap;
     securityUser.Acl = body.Acl;
 

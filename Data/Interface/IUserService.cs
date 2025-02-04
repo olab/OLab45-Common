@@ -12,9 +12,6 @@ public interface IUserService
   Task<List<AddUserResponse>> DeleteUsersAsync(List<DeleteUsersRequest> items);
   Task<UsersDto> AddUserAsync(AddUserRequest item);
   Task<UsersDto> EditUserAsync(AddUserRequest item);
-  IList<UsersDto> GetUsers(string userName);
-
-  Users GetById(uint? id);
-  Users GetByUserName(string userName);
+  Task<IList<UsersDto>> GetUsersAsync(string userName);
   Task<List<UsersImportDto>> ImportUsersAsync(Stream fileStream);
 }

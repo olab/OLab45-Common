@@ -65,7 +65,7 @@ public class XmlMapDto : XmlImportDto<XmlMap>
     item.Id = 0;
 
     item.Name = $"IMPORT: {item.Name}";
-    item.AuthorId = _importer.Authorization.UserContext.UserId;
+    item.AuthorId = _importer.Authorization.OLabUser.Id;
 
     GetDbContext().Maps.Add( item );
     GetDbContext().SaveChanges();

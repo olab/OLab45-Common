@@ -107,8 +107,9 @@ public partial class MapsReaderWriter : ReaderWriter
       .Include( c => c.MapGrouproles ).ThenInclude( d => d.Role )
       .FirstOrDefaultAsync( x => x.Id == id );
 
-    if ( phys.Id == 0 )
+    if ( phys == null || phys.Id == 0 )
       return null;
+
     return phys;
   }
 

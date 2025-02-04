@@ -17,7 +17,7 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <returns></returns>
   public async Task<Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(IOLabAuthorization auth, uint id)
   {
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: MapsEndpoint.GetScopedObjectsRawAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: MapsEndpoint.GetScopedObjectsRawAsync" );
 
     // test if user has access to map.
     if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, id ) )

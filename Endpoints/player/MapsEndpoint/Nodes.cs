@@ -31,7 +31,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId ) )
       throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
 
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: MapsEndpoint.PlayMapNodeAsync: map {mapId}, node {nodeId}, new play? {body.NewPlay}" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: MapsEndpoint.PlayMapNodeAsync: map {mapId}, node {nodeId}, new play? {body.NewPlay}" );
 
     // dump out original dynamic objects for logging
     body.Dump( GetLogger(), "Original" );
@@ -201,7 +201,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId ) )
       throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
 
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: MapsEndpoint.DeleteNodeAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: MapsEndpoint.DeleteNodeAsync" );
 
     nodeId = await _mapNodesReader.DeleteNodeAsync( nodeId );
 
@@ -231,7 +231,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId ) )
       throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
 
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: MapsEndpoint.PutNodeAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: MapsEndpoint.PutNodeAsync" );
 
     var newId = await _mapNodesReader.PutNodeAsync( dto, GetWikiProvider() );
 

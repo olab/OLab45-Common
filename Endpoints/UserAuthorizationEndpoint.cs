@@ -24,7 +24,8 @@ namespace OLab.Api.Endpoints;
 
 public partial class UserAuthorizationEndpoint : OLabEndpoint
 {
-  private readonly UserGroupRolesMapper mapper;
+  private readonly UserGroupRolesMapper _mapper;
+  private readonly UserReaderWriter _userReaderWriter;
 
   public UserAuthorizationEndpoint(
     IOLabLogger logger,
@@ -38,7 +39,9 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
       wikiTagProvider,
       fileStorageProvider )
   {
-    mapper = new UserGroupRolesMapper( GetLogger(), GetDbContext() );
+    _mapper = new UserGroupRolesMapper( GetLogger(), GetDbContext() );
+    _userReaderWriter
+      = UserReaderWriter.Instance( GetLogger(), GetDbContext() );
   }
 
   /// <summary>
@@ -66,7 +69,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     if ( !accessResult )
       throw new OLabUnauthorizedException( "User", dto.UserId );
 
-    var userPhys = await GetDbContext().Users.FirstOrDefaultAsync( x => x.Id == dto.UserId, token );
+    var userPhys = await _userReaderWriter.GetSingleAsync( dto.UserId );
     if ( userPhys == null )
       throw new OLabObjectNotFoundException( "Users", dto.UserId );
 
@@ -84,7 +87,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     else
       throw new OLabObjectNotFoundException( "UserGroupRole", 0 );
 
-    return mapper.PhysicalToDto( userPhys.UserGrouproles.ToList() );
+    return _mapper.PhysicalToDto( userPhys.UserGrouproles.ToList() );
 
   }
 
@@ -114,7 +117,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     if ( !accessResult )
       throw new OLabUnauthorizedException( "User", dto.UserId );
 
-    var userPhys = await GetDbContext().Users.FirstOrDefaultAsync( x => x.Id == dto.UserId, token );
+    var userPhys = await _userReaderWriter.GetSingleAsync( dto.UserId );
     if ( userPhys == null )
       throw new OLabObjectNotFoundException( "Users", dto.UserId );
 
@@ -131,7 +134,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     // test if doesn't already exist
     if ( !userPhys.UserGrouproles.Any( x => (x.RoleId == dto.RoleId) && (x.GroupId == dto.GroupId) ) )
     {
-      var userGroupRolePhys = mapper.DtoToPhysical( dto );
+      var userGroupRolePhys = _mapper.DtoToPhysical( dto );
       userPhys.UserGrouproles.Add( userGroupRolePhys );
 
       GetDbContext().SaveChanges();
@@ -140,7 +143,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
 
     }
 
-    return mapper.PhysicalToDto( userPhys.UserGrouproles.ToList() );
+    return _mapper.PhysicalToDto( userPhys.UserGrouproles.ToList() );
 
   }
 
@@ -153,7 +156,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
   /// <exception cref="OLabObjectNotFoundException"></exception>
   public async Task<IList<GroupsDto>> GetUserGroups(IOLabAuthorization auth, CancellationToken token)
   {
-    var userId = auth.UserContext.UserId;
+    var userId = auth.OLabUser.Id;
     var groupsPhys = new List<Groups>();
 
     if ( await auth.IsSystemSuperuserAsync() )
@@ -163,9 +166,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     }
     else
     {
-      var userPhys = await GetDbContext().Users
-        .Include( "UserGrouproles" )
-        .FirstOrDefaultAsync( x => x.Id == userId, token );
+      var userPhys = await _userReaderWriter.GetSingleAsync( userId );
       if ( userPhys == null )
         throw new OLabObjectNotFoundException( "Users", userId );
 
@@ -181,74 +182,14 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
   }
 
   /// <summary>
-  /// Get all defined users
-  /// </summary>
-  /// <returns>Enumerable list of users</returns>
-  public IEnumerable<Users> GetAll()
-  {
-    return GetDbContext().Users.ToList();
-  }
-
-  /// <summary>
-  /// ReadAsync user by Id
-  /// </summary>
-  /// <param name="id">User id</param>
-  /// <returns>User record</returns>
-  public Users GetById(uint? id)
-  {
-    if ( !id.HasValue )
-      return null;
-    return GetDbContext()
-      .Users
-      .Include( "UserGrouproles" )
-      .FirstOrDefault( x => x.Id == id.Value );
-  }
-
-  /// <summary>
-  /// Get user by name
-  /// </summary>
-  /// <param name="userName">User name</param>
-  /// <returns>User record</returns>
-  public Users GetByUserName(string userName)
-  {
-    return GetDbContext().Users.FirstOrDefault( x => x.Username.ToLower() == userName.ToLower() );
-  }
-
-  /// <summary>
-  /// Retrieves a list of users based on the provided name.
-  /// </summary>
-  /// <param name="name">The name to search for in the users' nicknames or usernames.</param>
-  /// <returns>A list of UsersDto objects that match the search criteria.</returns>
-  public IList<UsersDto> GetUsers(string name)
-  {
-    IList<Users> users = new List<Users>();
-
-    if ( !string.IsNullOrEmpty( name ) )
-      users = GetDbContext().Users
-        .Include( "UserGrouproles" )
-        .Include( "UserGrouproles.Group" )
-        .Include( "UserGrouproles.Role" )
-        .Where( x => x.Nickname.Contains( name ) || x.Username.Contains( name ) ).ToList();
-    else
-      users = GetDbContext().Users
-        .Include( "UserGrouproles" )
-        .Include( "UserGrouproles.Group" )
-        .Include( "UserGrouproles.Role" )
-        .ToList();
-
-    var dtoList = new UsersMapper( GetLogger(), GetDbContext() ).PhysicalToDto( users );
-    return dtoList;
-  }
-
-  /// <summary>
   /// Edit user based on add user request
   /// </summary>
   /// <param name="userRequest">USer request</param>
   /// <returns>Add user response</returns>
   public async Task<UsersDto> EditUserAsync(AddUserRequest userRequest)
   {
-    var user = GetByUserName( userRequest.Username );
-    if ( user == null )
+    var physUser = await _userReaderWriter.GetSingleAsync( userRequest.Username );
+    if ( physUser == null )
       throw new OLabBadRequestException( $"user: '{userRequest.Username}' does not exist" );
 
     GetLogger().LogInformation( $"editing user '{userRequest.Username}'" );
@@ -261,23 +202,21 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     userRequest.BuildGroupRoleObjects();
 
     // build physical User object from request
-    Users.CreatePhysFromRequest( user, userRequest );
+    Users.CreatePhysFromRequest( physUser, userRequest );
 
     // update and encrypt password if one was passed in
     if ( !string.IsNullOrEmpty( userRequest.Password ) )
-      ChangePassword( user, new ChangePasswordRequest
+      ChangePassword( physUser, new ChangePasswordRequest
       {
         NewPassword = userRequest.Password
       } );
 
-    GetDbContext().Users.Update( user );
-    await GetDbContext().SaveChangesAsync();
+    await _userReaderWriter.UpdateAsync( physUser );
 
-    user.UserGrouproles.AddRange( userRequest.GroupRoleObjects );
-    GetDbContext().Users.Update( user );
-    await GetDbContext().SaveChangesAsync();
+    physUser.UserGrouproles.AddRange( userRequest.GroupRoleObjects );
+    await _userReaderWriter.UpdateAsync( physUser );
 
-    var userDto = new UsersMapper( GetLogger(), GetDbContext() ).PhysicalToDto( user );
+    var userDto = new UsersMapper( GetLogger(), GetDbContext() ).PhysicalToDto( physUser );
     return userDto;
   }
 
@@ -286,26 +225,22 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
   {
     GetLogger().LogInformation( $" deleting user '{userRequest.UserName}'" );
 
-    Users user = null;
+    Users physUser = null;
 
     // allow for either id or user name to search for
     if ( userRequest.Id > 0 )
-      user = GetById( userRequest.Id );
+      physUser = await _userReaderWriter.GetSingleAsync( userRequest.Id );
     else if ( !string.IsNullOrEmpty( userRequest.UserName ) )
-      user = GetByUserName( userRequest.UserName );
+      physUser = await _userReaderWriter.GetSingleAsync( userRequest.UserName );
 
-    if ( user == null )
+    if ( physUser == null )
       return new AddUserResponse
       {
         Id = userRequest.Id,
         Error = $"User does not exist"
       };
 
-    var physUser =
-      await GetDbContext().Users.FirstOrDefaultAsync( x => x.Id == userRequest.Id );
-
-    GetDbContext().Users.Remove( physUser );
-    await GetDbContext().SaveChangesAsync();
+    await _userReaderWriter.DeleteAsync( userRequest.Id );
 
     var response = new AddUserResponse
     {
@@ -369,7 +304,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
   /// <returns>ADd user response</returns>
   public async Task<UsersDto> AddUserAsync(AddUserRequest userRequest)
   {
-    var user = GetByUserName( userRequest.Username );
+    var user = await _userReaderWriter.GetSingleAsync( userRequest.Username );
     if ( user != null )
       throw new OLabBadRequestException( $"'{userRequest.Username}' already exists" );
 
@@ -388,8 +323,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
         NewPassword = newUserPhys.Password
       } );
 
-    await GetDbContext().Users.AddAsync( newUserPhys );
-    await GetDbContext().SaveChangesAsync();
+    newUserPhys = await _userReaderWriter.CreateAsync( newUserPhys );
 
     var userDto = new UsersMapper( GetLogger(), GetDbContext() ).PhysicalToDto( newUserPhys );
     return userDto;

@@ -46,9 +46,26 @@ public partial class GrouproleAcls
     }
     else
     {
-
       var items = dbContext.GrouproleAcls
         .Where( x => x.Group.Name == groupName );
+      return items.ToList();
+    }
+  }
+
+  public static IList<GrouproleAcls> FindByRole(
+    OLabDBContext dbContext,
+    string roleName)
+  {
+    if ( string.IsNullOrEmpty( roleName ) )
+    {
+      var items = dbContext.GrouproleAcls
+        .Where( x => !x.RoleId.HasValue );
+      return items.ToList();
+    }
+    else
+    {
+      var items = dbContext.GrouproleAcls
+        .Where( x => x.Role.Name == roleName );
       return items.ToList();
     }
   }

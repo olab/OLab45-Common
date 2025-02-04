@@ -36,7 +36,7 @@ public partial class ReportEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     string contextId)
   {
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: ReportEndpoint.ReadAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: ReportEndpoint.ReadAsync" );
 
     var dto = new SessionReport();
 

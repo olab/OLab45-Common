@@ -38,7 +38,7 @@ public partial class MapsEndpoint : OLabEndpoint
     uint linkId,
     MapNodeLinksFullDto linkdto)
   {
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: MapsEndpoint.PutMapNodeLinksAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: MapsEndpoint.PutMapNodeLinksAsync" );
 
     // test if user has access to map.
     if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId ) )
