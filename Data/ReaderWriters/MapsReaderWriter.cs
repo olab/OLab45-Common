@@ -210,7 +210,7 @@ public partial class MapsReaderWriter : ReaderWriter
       GetDbContext().Entry( map ).State = EntityState.Added;
       await GetDbContext().SaveChangesAsync();
 
-      GetLogger().LogError( $"  New Map {map.Id}" );
+      GetLogger().LogDebug( $"  New Map {map.Id}" );
     }
     else
     {
