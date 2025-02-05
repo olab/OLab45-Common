@@ -166,7 +166,7 @@ public partial class MapsEndpoint : OLabEndpoint
     bool hideHidden,
     bool enableWikiTranslation = true)
   {
-    GetLogger().LogInformation( $"MapsEndpoint.GetRawNodeAsync" );
+    GetLogger().LogInformation( $"MapsEndpoint.GetRawNodeAsync: map {mapId}, node {nodeId}" );
 
     MapsNodesFullRelationsDto dto;
     if ( nodeId > 0 )
