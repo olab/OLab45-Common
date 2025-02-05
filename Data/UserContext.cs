@@ -1,5 +1,4 @@
 using Dawn;
-using DocumentFormat.OpenXml.Spreadsheet;
 using OLab.Api.Data.Interface;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
@@ -51,8 +50,8 @@ public abstract class UserContext : IUserContext
   /// </summary>
   public string CourseName { get { return _courseName; } }
 
-  private IDictionary<string, string> _claims = new Dictionary<string, string>();
-  private IDictionary<string, string> _headers = new Dictionary<string, string>();
+  private readonly IDictionary<string, string> _claims = new Dictionary<string, string>();
+  private readonly IDictionary<string, string> _headers = new Dictionary<string, string>();
 
   /// <summary>
   /// Gets the claims.

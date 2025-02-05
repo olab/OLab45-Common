@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OLab.Api.Common;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using System.Collections.Generic;
@@ -105,7 +104,7 @@ public class UserReaderWriter : ReaderWriter
     await GetDbContext().SaveChangesAsync();
   }
 
-  public async Task<Users> UpdateAsync( Users physUser )
+  public async Task<Users> UpdateAsync(Users physUser)
   {
     GetLogger().LogInformation( $"updating user '{physUser.Username}'" );
 

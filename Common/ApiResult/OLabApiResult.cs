@@ -23,7 +23,7 @@ public class OLabApiResult<D> : ActionResult
 {
   public const string MessageSuccess = "success";
 
-  public OLabApiResult( HttpStatusCode status = HttpStatusCode.OK)
+  public OLabApiResult(HttpStatusCode status = HttpStatusCode.OK)
   {
     Message = MessageSuccess;
     ErrorCode = status;

@@ -34,52 +34,6 @@ public partial class GrouproleAcls
     return acl;
   }
 
-  public static IList<GrouproleAcls> FindByGroup(
-    OLabDBContext dbContext,
-    string groupName)
-  {
-    if ( string.IsNullOrEmpty( groupName ) )
-    {
-      var items = dbContext.GrouproleAcls
-        .Where( x => !x.GroupId.HasValue );
-      return items.ToList();
-    }
-    else
-    {
-      var items = dbContext.GrouproleAcls
-        .Where( x => x.Group.Name == groupName );
-      return items.ToList();
-    }
-  }
-
-  public static IList<GrouproleAcls> FindByRole(
-    OLabDBContext dbContext,
-    string roleName)
-  {
-    if ( string.IsNullOrEmpty( roleName ) )
-    {
-      var items = dbContext.GrouproleAcls
-        .Where( x => !x.RoleId.HasValue );
-      return items.ToList();
-    }
-    else
-    {
-      var items = dbContext.GrouproleAcls
-        .Where( x => x.Role.Name == roleName );
-      return items.ToList();
-    }
-  }
-
-  public static GrouproleAcls Find(
-  OLabDBContext dbContext,
-  string groupName,
-  string roleName)
-  {
-    var groupRolePhys = dbContext.GrouproleAcls
-      .FirstOrDefault( x => x.Role.Name == groupName && x.Group.Name == roleName );
-    return groupRolePhys;
-  }
-
   public override string ToString()
   {
     var groupName = (Group != null) ? $"{Group.Name}({Group.Id})" : "NULL";

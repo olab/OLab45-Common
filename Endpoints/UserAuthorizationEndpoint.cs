@@ -1,5 +1,4 @@
 using Dawn;
-using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
