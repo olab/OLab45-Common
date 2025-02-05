@@ -160,11 +160,15 @@ public partial class MapsEndpoint : OLabEndpoint
   }
 
   /// <summary>
-  /// Create a new node
+  /// Creates a new mode on a map
   /// </summary>
-  /// <returns>IActionResult</returns>
+  /// <param name="auth">IOLabAuthorization</param>
+  /// <param name="mapId">Parent mapId</param>
+  /// <param name="body">PostNewNodeRequest</param>
+  /// <returns></returns>
   public async Task<PostNewNodeResponse> PostMapNodesAsync(
     IOLabAuthorization auth,
+    uint mapId,
     PostNewNodeRequest body)
   {
     GetLogger().LogInformation( $"PostMapNodesAsync(x = {body.X}, y = {body.Y}, sourceId = {body.SourceId})" );
@@ -173,24 +177,20 @@ public partial class MapsEndpoint : OLabEndpoint
 
     try
     {
-      var sourceNode = await GetMapNodeAsync( body.SourceId );
-      if ( sourceNode == null )
-        throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelNode, body.SourceId );
-
       // test if user has access to map.
-      if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, sourceNode.MapId ) )
-        throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, sourceNode.MapId );
+      if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId ) )
+        throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
 
       var phys = MapNodes.CreateDefault();
       phys.X = body.X;
       phys.Y = body.Y;
-      phys.MapId = sourceNode.MapId;
+      phys.MapId = mapId;
       GetDbContext().Entry( phys ).State = EntityState.Added;
 
       await GetDbContext().SaveChangesAsync();
 
       var link = MapNodeLinks.CreateDefault();
-      link.MapId = sourceNode.MapId;
+      link.MapId = mapId;
       link.NodeId1 = body.SourceId;
       link.NodeId2 = phys.Id;
       GetDbContext().Entry( link ).State = EntityState.Added;
@@ -200,6 +200,8 @@ public partial class MapsEndpoint : OLabEndpoint
 
       link.NodeId1Navigation = null;
       link.NodeId2Navigation = null;
+      // thid prevents circular referenes Deserializing
+      link.Map = null;
 
       var dto = new PostNewNodeResponse
       {
