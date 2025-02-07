@@ -17,12 +17,12 @@ public abstract class UserContext : IUserContext
   public const string WildCardObjectType = "*";
   public const uint WildCardObjectId = 0;
   public const string NonAccessAcl = "-";
-  public Model.Users OLabUser;
+  public Users OLabUser;
 
   private readonly IOLabLogger _logger;
   private readonly OLabDBContext _dbContext;
-  protected IList<GrouproleAcls> _roleAcls = new List<GrouproleAcls>();
-  protected IList<UserAcls> _userAcls = new List<UserAcls>();
+  protected IList<GrouproleAcls> _roleAcls = [];
+  protected IList<UserAcls> _userAcls = [];
 
   /// <summary>
   /// Gets the database context.
@@ -36,7 +36,7 @@ public abstract class UserContext : IUserContext
   /// <returns>The logger.</returns>
   protected IOLabLogger GetLogger() { return _logger; }
 
-  private IList<UserGrouproles> _groupRoles = new List<UserGrouproles>();
+  private IList<UserGrouproles> _groupRoles = [];
   private uint _userId;
   private string _userName;
   private string _ipAddress;
@@ -51,7 +51,6 @@ public abstract class UserContext : IUserContext
   public string CourseName { get { return _courseName; } }
 
   private readonly IDictionary<string, string> _claims = new Dictionary<string, string>();
-  private readonly IDictionary<string, string> _headers = new Dictionary<string, string>();
 
   /// <summary>
   /// Gets the claims.
@@ -59,14 +58,6 @@ public abstract class UserContext : IUserContext
   public IDictionary<string, string> Claims
   {
     get { return _claims; }
-  }
-
-  /// <summary>
-  /// Gets the headers.
-  /// </summary>
-  public IDictionary<string, string> Headers
-  {
-    get { return _headers; }
   }
 
   /// <summary>
@@ -147,6 +138,8 @@ public abstract class UserContext : IUserContext
     set => _sessionId = value;
   }
 
+  public IDictionary<string, string> Claims1 => _claims;
+
   /// <summary>
   /// Initializes a new instance of the <see cref="UserContext"/> class.
   /// </summary>
@@ -170,18 +163,6 @@ public abstract class UserContext : IUserContext
     _dbContext = dbContext;
 
     GetLogger().LogInformation( $"UserContext ctor" );
-  }
-
-  /// <summary>
-  /// Sets the headers.
-  /// </summary>
-  /// <param name="headers">The headers to set.</param>
-  protected void SetHeaders(IDictionary<string, string> headers)
-  {
-    foreach ( var header in headers )
-      _headers.Add( header.Key.ToLower(), header.Value );
-
-    GetLogger().LogInformation( $"found {Headers.Count} headers" );
   }
 
   /// <summary>
@@ -219,23 +200,7 @@ public abstract class UserContext : IUserContext
   /// </summary>
   /// <exception cref="Exception">Thrown if no headers are found.</exception>
   protected void LoadUserContext()
-  {
-    if ( _headers.Count == 0 )
-      throw new Exception( "no headers found" );
-
-    var sessionId = GetHeader( HEADER_SESSIONID, false );
-    if ( sessionId != string.Empty )
-    {
-      if ( !string.IsNullOrEmpty( sessionId ) && sessionId != "null" )
-      {
-        SessionId = sessionId;
-        if ( !string.IsNullOrWhiteSpace( SessionId ) )
-          GetLogger().LogInformation( $"Found {HEADER_SESSIONID} '{SessionId}'." );
-      }
-    }
-    else
-      _logger.LogWarning( $"no {HEADER_SESSIONID} provided" );
-
+  { 
     UserName = GetClaim( ClaimTypes.Name, false );
     if ( string.IsNullOrEmpty( UserName ) )
       UserName = GetClaim( "name" );
@@ -251,24 +216,6 @@ public abstract class UserContext : IUserContext
       groupRoleString = GetClaim( "role" );
 
     GroupRoles = UserGrouproles.StringToObjectList( GetDbContext(), groupRoleString );
-  }
-
-  /// <summary>
-  /// Retrieves the value of a specified header from the request headers.
-  /// </summary>
-  /// <param name="key">The key of the header to retrieve.</param>
-  /// <param name="isRequired">Indicates whether the header is required. If true, an exception is thrown if the header is not found.</param>
-  /// <returns>The value of the specified header if found; otherwise, an empty string if the header is not required and not found.</returns>
-  /// <exception cref="Exception">Thrown if the header is required and not found.</exception>
-  protected string GetHeader(string key, bool isRequired = true)
-  {
-    if ( _headers.TryGetValue( key.ToLower(), out var value ) )
-      return value;
-
-    if ( isRequired )
-      throw new Exception( $"header value '{key}' does not exist" );
-
-    return string.Empty;
   }
 
   /// <summary>
