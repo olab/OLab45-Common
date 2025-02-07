@@ -38,7 +38,7 @@ public partial class GrouproleAcls
   {
     var groupName = (Group != null) ? $"{Group.Name}({Group.Id})" : "NULL";
     var roleName = (Role != null) ? $"{Role.Name}({Role.Id})" : "NULL";
-    var imageableType = string.IsNullOrEmpty( ImageableType ) ? ImageableType : "*";
+    var imageableType = string.IsNullOrEmpty( ImageableType ) ? "*" : ImageableType;
     var imageableId = ImageableId.HasValue ? $"{ImageableId.Value}" : "*";
 
     return $"{Id}: {groupName}{UserGrouproles.ItemSeparator}{roleName} {imageableType}({imageableId}) acl: '{Convert.ToString( (int)Acl2, 2 )}'";
