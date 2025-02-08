@@ -1,4 +1,8 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -6,6 +10,73 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 namespace OLab.Api.Utils;
+
+public class DepthLimitedJsonConverter : JsonConverter
+{
+  private readonly int _maxDepth;
+  private readonly HashSet<object> _serializedObjects;
+
+  public DepthLimitedJsonConverter(int maxDepth)
+  {
+    _maxDepth = maxDepth;
+    _serializedObjects = new HashSet<object>();
+  }
+
+  public override bool CanConvert(Type objectType)
+  {
+    return true;
+  }
+
+  public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+  {
+    SerializeValue( writer, value, serializer, 0 );
+  }
+
+  private void SerializeValue(JsonWriter writer, object value, JsonSerializer serializer, int depth)
+  {
+    if ( depth > _maxDepth || value == null || _serializedObjects.Contains( value ) )
+    {
+      writer.WriteNull();
+      return;
+    }
+
+    _serializedObjects.Add( value );
+
+    if ( value is IEnumerable enumerable && !(value is string) )
+    {
+      writer.WriteStartArray();
+      foreach ( var item in enumerable )
+      {
+        SerializeValue( writer, item, serializer, depth + 1 );
+      }
+      writer.WriteEndArray();
+    }
+    else if ( value.GetType().IsClass && !value.GetType().IsPrimitive && !(value is string) )
+    {
+      writer.WriteStartObject();
+      foreach ( var property in value.GetType().GetProperties() )
+      {
+        writer.WritePropertyName( property.Name );
+        SerializeValue( writer, property.GetValue( value ), serializer, depth + 1 );
+      }
+      writer.WriteEndObject();
+    }
+    else
+    {
+      serializer.Serialize( writer, value );
+    }
+
+    _serializedObjects.Remove( value );
+  }
+
+  public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+  {
+    throw new NotImplementedException( "Unnecessary because CanRead is false. The type will skip the converter." );
+  }
+
+  public override bool CanRead => false;
+}
+
 
 public class StringUtils
 {
