@@ -1,4 +1,4 @@
-using OLab.Api.Data.Interface;
+using OLab.Access.Interfaces;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
@@ -41,48 +41,57 @@ public partial class GroupRoleAclsEndpoint : OLabEndpoint
   {
     var groupRoleAclsPhys = new List<GrouproleAcls>();
 
-    // no group, role, maps, node specified, so query all
+    if ( model.GroupId == 0 )
+      model.GroupId = null;
+
+    if ( model.RoleId == 0 )
+      model.RoleId = null;
+
+    // no criteria, so query all
     if ( !model.GroupId.HasValue &&
-      !model.RoleId.HasValue &&
-      (model.MapIds.Count == 0) &&
-      (model.AppIds.Count == 0) &&
-      (model.NodeIds.Count == 0) )
+         !model.RoleId.HasValue &&
+         (model.MapIds.Count == 0) &&
+         (model.AppIds.Count == 0) &&
+         (model.NodeIds.Count == 0) )
       groupRoleAclsPhys.AddRange( await _readerWriter.GetAsync() );
 
     else
     {
+      // query by group and role
+      if ( (model.MapIds.Count == 0) &&
+           (model.AppIds.Count == 0) &&
+           (model.NodeIds.Count == 0) )
+        groupRoleAclsPhys.AddRange( await _readerWriter.GetAsync(
+          model.GroupId,
+          model.RoleId ) );
+
       // query by node
-      if ( model.NodeIds.Count > 0 )
+      else
       {
-        foreach ( var nodeId in model.NodeIds )
-          groupRoleAclsPhys.AddRange( await _readerWriter.GetAsync(
-            model.GroupId,
-            model.RoleId,
-            Constants.ScopeLevelNode,
-            nodeId ) );
+        if ( model.NodeIds.Count > 0 )
+            groupRoleAclsPhys.AddRange( await _readerWriter.GetAsync(
+              model.GroupId,
+              model.RoleId,
+              Constants.ScopeLevelNode,
+              model.NodeIds ) );
+
+        // query by map
+        if ( model.MapIds.Count > 0 )
+            groupRoleAclsPhys.AddRange( await _readerWriter.GetAsync(
+              model.GroupId,
+              model.RoleId,
+              Constants.ScopeLevelMap,
+              model.MapIds ) );
+
+        // query by application
+        if ( model.AppIds.Count > 0 )
+            groupRoleAclsPhys.AddRange( await _readerWriter.GetAsync(
+              model.GroupId,
+              model.RoleId,
+              Constants.ScopeLevelApp,
+              model.AppIds ) );
       }
 
-      // query by map
-      if ( model.MapIds.Count > 0 )
-      {
-        foreach ( var mapId in model.MapIds )
-          groupRoleAclsPhys.AddRange( await _readerWriter.GetAsync(
-            model.GroupId,
-            model.RoleId,
-            Constants.ScopeLevelMap,
-            mapId ) );
-      }
-
-      // query by application
-      if ( model.AppIds.Count > 0 )
-      {
-        foreach ( var appId in model.AppIds )
-          groupRoleAclsPhys.AddRange( await _readerWriter.GetAsync(
-            model.GroupId,
-            model.RoleId,
-            Constants.ScopeLevelApp,
-            appId ) );
-      }
     }
 
     var itemsDto = _mapper.PhysicalToDto( groupRoleAclsPhys );

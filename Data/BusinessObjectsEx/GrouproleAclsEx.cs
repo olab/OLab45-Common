@@ -1,9 +1,6 @@
 #nullable disable
 
-using OLab.Api.Data.Interface;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace OLab.Api.Model;
 
@@ -14,7 +11,6 @@ public partial class GrouproleAcls
   public const int ExecuteMask = 1;
 
   public static GrouproleAcls CreateDefault(
-    IUserContext userContext,
     Groups groupPhys,
     Roles rolePhys,
     string imageableType,

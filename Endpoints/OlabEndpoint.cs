@@ -1,8 +1,8 @@
 using Dawn;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OLab.Access.Interfaces;
 using OLab.Api.Data.Exceptions;
-using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
@@ -31,7 +31,7 @@ public class OLabEndpoint
   public WikiTagModuleProvider GetWikiProvider() { return _wikiTagModules as WikiTagModuleProvider; }
 
   protected string token;
-  protected IUserContext _userContext;
+  protected IAuthenticatedContext _userContext;
   protected readonly IOLabConfiguration _configuration;
 
   protected readonly IFileStorageModule _fileStorageModule;
@@ -84,7 +84,7 @@ public class OLabEndpoint
     _wikiTagModules = wikiTagProvider;
   }
 
-  public void SetUserContext(IUserContext userContext)
+  public void SetUserContext(IAuthenticatedContext userContext)
   {
     _userContext = userContext;
   }

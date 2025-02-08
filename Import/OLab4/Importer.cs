@@ -1,4 +1,4 @@
-using OLab.Api.Data.Interface;
+using OLab.Access.Interfaces;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Api.WikiTag;

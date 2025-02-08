@@ -166,40 +166,59 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   /// <summary>
   /// Gets a list of Group Role ACLs for a set of user group roles.
   /// </summary>
-  /// <param name="groupId">The group ID or null if 'all'.</param>
-  /// <param name="roleId">The role ID or null if 'all'.</param>
-  /// <param name="objectType">The scoped object type.</param>
-  /// <param name="objectId">The scoped object ID.</param>
+  /// <param name="groupId">Group Id: null = ignore, 0 = null, else id</param>
+  /// <param name="roleId">Role Id: null = ignore, 0 = null, else id</param>
+  /// <param name="objectType">Object type: null = ignore</param>
+  /// <param name="objectIds">List of id's: null = ignore, 0 = null, else id</param>
   /// <returns>A list of Group Role ACL records.</returns>
   public async Task<IList<GrouproleAcls>> GetAsync(
     uint? groupId,
     uint? roleId,
-    string objectType,
-    uint? objectId)
+    string objectType = null,
+    IList<uint?> objectIds = null)
   {
     IList<GrouproleAcls> groupAcls = new List<GrouproleAcls>();
 
     // if no object type, change this to null
     objectType = string.IsNullOrEmpty( objectType ) ? null : objectType;
-    objectId = (objectId != null && objectId.HasValue && objectId.Value >= 0) ? objectId.Value : null;
 
-    IQueryable<GrouproleAcls> query = GetDbContext().Set<GrouproleAcls>();
+    var query = GetDbContext().GrouproleAcls.Select( f => f );
 
     if ( groupId.HasValue )
-      query = query.Where( x => x.GroupId == (groupId == 0 ? null : groupId.Value) );
+    {
+      if ( groupId.Value == 0 )
+        query = query.Where( x => !x.GroupId.HasValue );
+      else
+        query = query.Where( x => x.GroupId.HasValue && x.GroupId.Value == groupId.Value );
+    }
 
     if ( roleId.HasValue )
-      query = query.Where( x => x.RoleId == (roleId == 0 ? null : roleId.Value) );
+    {
+      if ( roleId.Value == 0 )
+        query = query.Where( x => !x.RoleId.HasValue );
+      else
+        query = query.Where( x => x.RoleId.HasValue && x.RoleId.Value == roleId.Value );
+    }
 
-    if ( objectType != null )
+    if ( !string.IsNullOrEmpty( objectType ) )
       query = query.Where( x => x.ImageableType == objectType );
 
-    if ( objectId != null )
-      query = query.Where( x => x.ImageableId == (objectId == 0 ? null : objectId.Value) );
+    if ( objectIds != null )
+    {
+      foreach ( var objectId in objectIds )
+      {
+        if ( objectId == null )
+          query = query.Where( x => x.ImageableId == null );
+        else if ( objectId == 0 )
+          query = query.Where( x => x.ImageableId != null );
+        else
+          query = query.Where( x => x.ImageableId == objectId );
+      }
+    }
 
     groupAcls = await query.ToListAsync();
 
-    return groupAcls;
+    return groupAcls.Distinct().ToList();
   }
 
   /// <summary>
@@ -345,4 +364,5 @@ public class GroupRoleAclReaderWriter : ReaderWriter
       return items.ToList();
     }
   }
+
 }
