@@ -121,7 +121,7 @@ public partial class MapsEndpoint : OLabEndpoint
     var session = OLabSession.CreateInstance(
       GetLogger(),
       GetDbContext(),
-      auth.UserContext );
+      auth.AuthenticatedContext );
 
     session.SetMapId( mapId );
 

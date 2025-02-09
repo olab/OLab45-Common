@@ -37,7 +37,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   /// <param name="dbContext">The database context.</param>
   public GroupRoleAclReaderWriter(
     IOLabLogger logger,
-  OLabDBContext dbContext) : base( logger, dbContext )
+    OLabDBContext dbContext) : base( logger, dbContext )
   {
     _roleReaderWriter = RoleReaderWriter.Instance( GetLogger(), GetDbContext() );
   }
@@ -173,7 +173,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   /// <returns>A list of Group Role ACL records.</returns>
   public async Task<IList<GrouproleAcls>> GetAsync(
     uint? groupId,
-    uint? roleId,
+    uint? roleId = null,
     string objectType = null,
     IList<uint?> objectIds = null)
   {
@@ -182,7 +182,10 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     // if no object type, change this to null
     objectType = string.IsNullOrEmpty( objectType ) ? null : objectType;
 
-    var query = GetDbContext().GrouproleAcls.Select( f => f );
+    var query = GetDbContext().GrouproleAcls
+      .Include( "Group" )
+      .Include( "Role" )
+      .Select( f => f );
 
     if ( groupId.HasValue )
     {

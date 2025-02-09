@@ -1,6 +1,9 @@
 #nullable disable
 
+using Newtonsoft.Json;
+using OLab.Common.Utils;
 using System;
+using System.Collections.Generic;
 
 namespace OLab.Api.Model;
 
@@ -32,8 +35,8 @@ public partial class GrouproleAcls
 
   public override string ToString()
   {
-    var groupName = (Group != null) ? $"{Group.Name}({Group.Id})" : "NULL";
-    var roleName = (Role != null) ? $"{Role.Name}({Role.Id})" : "NULL";
+    var groupName = (Group != null) ? $"{Group?.Name}({GroupId})" : (GroupId != null ? GroupId.ToString() : "*");
+    var roleName = (Role != null) ? $"{Role?.Name}({RoleId})" : (RoleId != null ? RoleId.ToString() : "*");
     var imageableType = string.IsNullOrEmpty( ImageableType ) ? "*" : ImageableType;
     var imageableId = ImageableId.HasValue ? $"{ImageableId.Value}" : "*";
 

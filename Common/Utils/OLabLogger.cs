@@ -44,6 +44,8 @@ public class OLabLogger : IOLabLogger
   public ILogger GetLogger() { return _logger; }
   public ILoggerFactory GetLoggerFactory() { return _loggerFactory; }
 
+  private static bool _isUnitTest = false;
+
   // for cases where we don't have/need an actual ILogger
   public OLabLogger(bool keepMessages = false)
     : this( NullLoggerFactory.Instance, keepMessages )
@@ -57,11 +59,19 @@ public class OLabLogger : IOLabLogger
     _logger = _loggerFactory.CreateLogger( "default" );
   }
 
+  public OLabLogger(ILogger logger, bool keepMessages = false)
+  {
+    _keepMessages = keepMessages;
+    _logger = logger;
+  }
+
   private OLabLogger(ILoggerFactory loggerFactory, ILogger logger, bool keepMessages = false)
   {
     _loggerFactory = loggerFactory;
     _logger = logger;
     _keepMessages = keepMessages;
+
+    _isUnitTest = IsRunningFromUnitTest;
   }
 
   public static IOLabLogger CreateNew<T>(IOLabLogger source, bool keepMessages = false)
@@ -77,6 +87,10 @@ public class OLabLogger : IOLabLogger
   }
 
   public bool HaveFatalError => _messages.Any( x => x.Level == OLabLogMessage.MessageLevel.Fatal );
+
+  public static readonly bool IsRunningFromUnitTest =
+    AppDomain.CurrentDomain.GetAssemblies().Any(
+        a => a.FullName.ToLowerInvariant().StartsWith( "xunit" ) );
 
   public IList<OLabLogMessage> GetMessages(OLabLogMessage.MessageLevel level = OLabLogMessage.MessageLevel.Debug)
   {

@@ -25,11 +25,6 @@ public class OLabConfiguration : IOLabConfiguration
     _configuration = configuration;
     var logger = OLabLogger.CreateNew<OLabConfiguration>( loggerFactory );
 
-    //logger.LogInformation( $"Configuration:" );
-
-    //foreach ( var item in _configuration.AsEnumerable() )
-    //  logger.LogInformation( $"  {item.Key} -> {item.Value}" );
-
     _appSettings = new AppSettings();
 
     // handle case where settings are in 'AppSettings' section or
@@ -51,10 +46,6 @@ public class OLabConfiguration : IOLabConfiguration
         }
       }
     }
-
-    var json = JsonConvert.SerializeObject( _appSettings, Formatting.Indented );
-    Console.WriteLine( $" Configuration {json}" );
-
   }
 
   public IConfiguration GetRawConfiguration() { return _configuration; }

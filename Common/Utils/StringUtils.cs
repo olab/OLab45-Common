@@ -1,5 +1,7 @@
+using DocumentFormat.OpenXml.Spreadsheet;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OLab.Common.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,75 +13,27 @@ using System.Text.RegularExpressions;
 
 namespace OLab.Api.Utils;
 
-public class DepthLimitedJsonConverter : JsonConverter
-{
-  private readonly int _maxDepth;
-  private readonly HashSet<object> _serializedObjects;
-
-  public DepthLimitedJsonConverter(int maxDepth)
-  {
-    _maxDepth = maxDepth;
-    _serializedObjects = new HashSet<object>();
-  }
-
-  public override bool CanConvert(Type objectType)
-  {
-    return true;
-  }
-
-  public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-  {
-    SerializeValue( writer, value, serializer, 0 );
-  }
-
-  private void SerializeValue(JsonWriter writer, object value, JsonSerializer serializer, int depth)
-  {
-    if ( depth > _maxDepth || value == null || _serializedObjects.Contains( value ) )
-    {
-      writer.WriteNull();
-      return;
-    }
-
-    _serializedObjects.Add( value );
-
-    if ( value is IEnumerable enumerable && !(value is string) )
-    {
-      writer.WriteStartArray();
-      foreach ( var item in enumerable )
-      {
-        SerializeValue( writer, item, serializer, depth + 1 );
-      }
-      writer.WriteEndArray();
-    }
-    else if ( value.GetType().IsClass && !value.GetType().IsPrimitive && !(value is string) )
-    {
-      writer.WriteStartObject();
-      foreach ( var property in value.GetType().GetProperties() )
-      {
-        writer.WritePropertyName( property.Name );
-        SerializeValue( writer, property.GetValue( value ), serializer, depth + 1 );
-      }
-      writer.WriteEndObject();
-    }
-    else
-    {
-      serializer.Serialize( writer, value );
-    }
-
-    _serializedObjects.Remove( value );
-  }
-
-  public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-  {
-    throw new NotImplementedException( "Unnecessary because CanRead is false. The type will skip the converter." );
-  }
-
-  public override bool CanRead => false;
-}
-
-
 public class StringUtils
 {
+
+  public static string TruncateToJsonObject<T>(T phys, int maxDepth)
+  {
+    var json = JsonConvert.SerializeObject(
+      new List<T> { phys },
+      new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore } );
+
+    return SerializerUtilities.TruncateJsonToDepth( json, maxDepth + 1 );
+  }
+
+  public static string TruncateToJsonObject<T>(IList<T> physList, int maxDepth)
+  {
+    var json = JsonConvert.SerializeObject(
+      physList,
+      new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore } );
+
+    return SerializerUtilities.TruncateJsonToDepth( json, maxDepth + 1 );
+  }
+
   public static string GenerateCheckSum(string plainText)
   {
     var sum = 0;

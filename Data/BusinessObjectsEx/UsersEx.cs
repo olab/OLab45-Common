@@ -1,4 +1,7 @@
+using Newtonsoft.Json;
 using OLab.Api.Utils;
+using OLab.Common.Utils;
+using System.Collections.Generic;
 
 namespace OLab.Api.Model;
 
@@ -29,5 +32,14 @@ public partial class Users
     user.Password = StringUtils.GenerateRandomString( PasswordLength );
     user.ModeUi = "easy";
     return user;
+  }
+
+  public static string TruncateToJsonObject(Users phys, int maxDepth)
+  {
+    var json = JsonConvert.SerializeObject( 
+      new List<Users> { phys }, 
+      new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore} );
+
+    return SerializerUtilities.TruncateJsonToDepth( json, maxDepth + 1 );
   }
 }

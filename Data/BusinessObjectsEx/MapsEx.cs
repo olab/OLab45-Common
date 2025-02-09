@@ -1,4 +1,7 @@
 using AutoMapper;
+using Newtonsoft.Json;
+using OLab.Common.Utils;
+using System.Collections.Generic;
 
 #nullable disable
 
@@ -64,5 +67,14 @@ public partial class Maps
     map.MapNodes.Add( new MapNodes { Title = "New Node", TypeId = 1, Text = "Sample Text" } );
 
     return map;
+  }
+
+  public static string TruncateToJsonObject(IList<Maps> physMaps, int maxDepth)
+  {
+    var json = JsonConvert.SerializeObject(
+      physMaps,
+      new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore } );
+
+    return SerializerUtilities.TruncateJsonToDepth( json, maxDepth + 1 );
   }
 }
