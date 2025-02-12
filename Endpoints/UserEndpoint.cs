@@ -2,6 +2,7 @@ using Dawn;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using NuGet.Packaging;
+using OLab.Access;
 using OLab.Access.Interfaces;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
@@ -30,10 +31,12 @@ public partial class UserEndpoint : OLabEndpoint
 {
   private readonly UserGroupRolesMapper _mapper;
   private readonly UserReaderWriter _userReaderWriter;
+  private readonly IOLabAuthorization _auth;
 
   public UserEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
+    IOLabAuthorization auth,
     OLabDBContext context,
     IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
     IOLabModuleProvider<IFileStorageModule> fileStorageProvider) : base(
@@ -46,6 +49,8 @@ public partial class UserEndpoint : OLabEndpoint
     _mapper = new UserGroupRolesMapper( GetLogger(), GetDbContext() );
     _userReaderWriter
       = UserReaderWriter.Instance( GetLogger(), GetDbContext() );
+    _auth = auth;
+
   }
 
   /// <summary>
@@ -58,14 +63,13 @@ public partial class UserEndpoint : OLabEndpoint
   /// <exception cref="OLabUnauthorizedException"></exception>
   /// <exception cref="OLabObjectNotFoundException"></exception>
   public async Task<IList<UserGroupRolesDto>> DeleteAsync(
-    IOLabAuthorization auth,
     UserGroupRolesDto dto,
     CancellationToken token)
   {
     GetLogger().LogInformation( $"UserAuthorizationEndpoint.DeleteAsync()" );
 
     // test if user has access to parent object
-    var accessResult = await auth.HasAccessAsync(
+    var accessResult = await _auth.HasAccessAsync(
       IOLabAuthorization.AclBitMaskExecute,
       "UserAdmin",
       0 );
@@ -105,7 +109,6 @@ public partial class UserEndpoint : OLabEndpoint
   /// <exception cref="OLabUnauthorizedException"></exception>
   /// <exception cref="OLabObjectNotFoundException"></exception>
   public async Task<IList<UserGroupRolesDto>> AddAsync(
-    IOLabAuthorization auth,
     UserGroupRolesDto dto,
     CancellationToken token)
 
@@ -113,7 +116,7 @@ public partial class UserEndpoint : OLabEndpoint
     GetLogger().LogInformation( $"UserAuthorizationEndpoint.AddAsync()" );
 
     // test if user has access to parent object
-    var accessResult = await auth.HasAccessAsync(
+    var accessResult = await _auth.HasAccessAsync(
       IOLabAuthorization.AclBitMaskExecute,
       "UserAdmin",
       0 );
@@ -158,12 +161,13 @@ public partial class UserEndpoint : OLabEndpoint
   /// <param name="token"></param>
   /// <returns></returns>
   /// <exception cref="OLabObjectNotFoundException"></exception>
-  public async Task<IList<GroupsDto>> GetUserGroups(IOLabAuthorization auth, CancellationToken token)
+  public async Task<IList<GroupsDto>> GetUserGroups(
+    CancellationToken token)
   {
-    var userId = auth.OLabUser.Id;
+    var userId = _auth.OLabUser.Id;
     var groupsPhys = new List<Groups>();
 
-    if ( await auth.IsSystemSuperuserAsync() )
+    if ( await _auth.IsSystemSuperuserAsync() )
     {
       var readerWriter = GroupReaderWriter.Instance( GetLogger(), GetDbContext() );
       groupsPhys.AddRange( await readerWriter.GetAsync() );
@@ -190,7 +194,8 @@ public partial class UserEndpoint : OLabEndpoint
   /// </summary>
   /// <param name="userRequest">USer request</param>
   /// <returns>Add user response</returns>
-  public async Task<UsersDto> EditUserAsync(AddUserRequest userRequest)
+  public async Task<UsersDto> EditUserAsync(
+    AddUserRequest userRequest)
   {
     var physUser = await _userReaderWriter.GetSingleAsync( userRequest.Username );
     if ( physUser == null )
@@ -224,7 +229,8 @@ public partial class UserEndpoint : OLabEndpoint
     return userDto;
   }
 
-  public async Task<AddUserResponse> DeleteUserAsync(DeleteUsersRequest userRequest)
+  public async Task<AddUserResponse> DeleteUserAsync(
+    DeleteUsersRequest userRequest)
   {
     GetLogger().LogInformation( $" deleting user '{userRequest.UserName}'" );
 
@@ -253,7 +259,8 @@ public partial class UserEndpoint : OLabEndpoint
     return response;
   }
 
-  public async Task<List<AddUserResponse>> DeleteUsersAsync(List<DeleteUsersRequest> items)
+  public async Task<List<AddUserResponse>> DeleteUsersAsync(
+    List<DeleteUsersRequest> items)
   {
     try
     {
@@ -282,7 +289,9 @@ public partial class UserEndpoint : OLabEndpoint
   /// <param name="user">Existing user record from DB</param>
   /// <param name="model">Change password request model</param>
   /// <returns></returns>
-  public void ChangePassword(Model.Users user, ChangePasswordRequest model)
+  public void ChangePassword(
+    Users user,
+    ChangePasswordRequest model)
   {
     Guard.Argument( user, nameof( user ) ).NotNull();
     Guard.Argument( model, nameof( model ) ).NotNull();
@@ -305,7 +314,8 @@ public partial class UserEndpoint : OLabEndpoint
   /// </summary>
   /// <param name="userRequest">User request</param>
   /// <returns>ADd user response</returns>
-  public async Task<UsersDto> AddUserAsync(AddUserRequest userRequest)
+  public async Task<UsersDto> AddUserAsync(
+    AddUserRequest userRequest)
   {
     var user = await _userReaderWriter.GetSingleAsync( userRequest.Username );
     if ( user != null )
@@ -321,6 +331,7 @@ public partial class UserEndpoint : OLabEndpoint
     // cleartext, so we need to do a 'change password'
     // on it to convert it to a hash before saving to database.
     if ( string.IsNullOrEmpty( newUserPhys.Salt ) )
+      
       ChangePassword( newUserPhys, new ChangePasswordRequest
       {
         NewPassword = newUserPhys.Password
@@ -332,7 +343,8 @@ public partial class UserEndpoint : OLabEndpoint
     return userDto;
   }
 
-  public async Task<List<UsersDto>> AddUsersAsync(List<AddUserRequest> items)
+  public async Task<List<UsersDto>> AddUsersAsync(
+    List<AddUserRequest> items)
   {
     try
     {
@@ -361,7 +373,8 @@ public partial class UserEndpoint : OLabEndpoint
   /// <param name="fileStream">The stream of the Excel file containing user data.</param>
   /// <returns>A task that represents the asynchronous operation. The task result contains a list of user import DTOs representing the imported users.</returns>
   /// <exception cref="Exception">Thrown when an error occurs while importing users.</exception>
-  public async Task<List<UsersImportDto>> ImportUsersAsync(MemoryStream fileStream)
+  public async Task<List<UsersImportDto>> ImportUsersAsync(
+    MemoryStream fileStream)
   {
     var responses = new List<UsersImportDto>();
     fileStream.Position = 0;
@@ -505,7 +518,8 @@ public partial class UserEndpoint : OLabEndpoint
   /// </summary>
   /// <param name="name">The name to search for. If null or empty, all users are returned.</param>
   /// <returns>A list of user DTOs that match the search criteria.</returns>
-  public async Task<IList<UsersDto>> GetUsersAsync(string name)
+  public async Task<IList<UsersDto>> GetUsersAsync(
+    string name)
   {
     IList<Users> users = new List<Users>();
 
