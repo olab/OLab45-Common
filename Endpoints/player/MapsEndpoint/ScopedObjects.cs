@@ -61,6 +61,7 @@ public partial class MapsEndpoint : OLabEndpoint
       GetDbContext(),
       GetWikiProvider(),
       _fileStorageModule );
+
     await phys.AddScopeFromDatabaseAsync( Constants.ScopeLevelMap, map.Id );
 
     // add map-level derived constants

@@ -13,5 +13,5 @@ public interface IUserService
   Task<UsersDto> AddUserAsync(AddUserRequest item);
   Task<UsersDto> EditUserAsync(AddUserRequest item);
   Task<IList<UsersDto>> GetUsersAsync(string userName);
-  Task<List<UsersImportDto>> ImportUsersAsync(Stream fileStream);
+  Task<List<UsersImportDto>> ImportUsersAsync(MemoryStream fileStream);
 }

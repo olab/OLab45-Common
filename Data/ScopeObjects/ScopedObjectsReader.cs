@@ -179,6 +179,10 @@ public partial class ScopedObjects
     items.AddRange( await _dbContext.SystemScripts.Where( x =>
       x.ImageableType == scopeLevel && x.ImageableId == id ).ToListAsync() );
 
+    // ask the module to add appropriate URLs to files
+    if ( _fileStorageModule != null )
+      _fileStorageModule.AttachUrls( items );
+
     if ( items.Count > 0 )
       _logger.LogInformation( $"  script read {items.Count}" );
 
