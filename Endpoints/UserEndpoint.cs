@@ -1,4 +1,6 @@
 using Dawn;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 using NuGet.Packaging;
 using OLab.Access.Interfaces;
 using OLab.Api.Common.Exceptions;
@@ -13,20 +15,23 @@ using OLab.Data.Mappers;
 using OLab.Data.ReaderWriters;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Groups = OLab.Api.Model.Groups;
+using Users = OLab.Api.Model.Users;
 
 namespace OLab.Api.Endpoints;
 
-public partial class UserAuthorizationEndpoint : OLabEndpoint
+public partial class UserEndpoint : OLabEndpoint
 {
   private readonly UserGroupRolesMapper _mapper;
   private readonly UserReaderWriter _userReaderWriter;
 
-  public UserAuthorizationEndpoint(
+  public UserEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
     OLabDBContext context,
@@ -219,7 +224,6 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
     return userDto;
   }
 
-
   public async Task<AddUserResponse> DeleteUserAsync(DeleteUsersRequest userRequest)
   {
     GetLogger().LogInformation( $" deleting user '{userRequest.UserName}'" );
@@ -278,7 +282,7 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
   /// <param name="user">Existing user record from DB</param>
   /// <param name="model">Change password request model</param>
   /// <returns></returns>
-  public void ChangePassword(Users user, ChangePasswordRequest model)
+  public void ChangePassword(Model.Users user, ChangePasswordRequest model)
   {
     Guard.Argument( user, nameof( user ) ).NotNull();
     Guard.Argument( model, nameof( model ) ).NotNull();
@@ -349,5 +353,168 @@ public partial class UserAuthorizationEndpoint : OLabEndpoint
       GetLogger().LogError( $"AddUserAsync exception {ex.Message}" );
       throw;
     }
+  }
+
+  /// <summary>
+  /// Imports users from an Excel file asynchronously.
+  /// </summary>
+  /// <param name="fileStream">The stream of the Excel file containing user data.</param>
+  /// <returns>A task that represents the asynchronous operation. The task result contains a list of user import DTOs representing the imported users.</returns>
+  /// <exception cref="Exception">Thrown when an error occurs while importing users.</exception>
+  public async Task<List<UsersImportDto>> ImportUsersAsync(MemoryStream fileStream)
+  {
+    var responses = new List<UsersImportDto>();
+    fileStream.Position = 0;
+
+    using ( var spreadsheetDocument = SpreadsheetDocument.Open( fileStream, false ) )
+    {
+
+      var workbookPart =
+        spreadsheetDocument.WorkbookPart ?? spreadsheetDocument.AddWorkbookPart();
+      var worksheetPart = workbookPart.WorksheetParts.First();
+      var sheet = worksheetPart.Worksheet;
+
+      var sstpart = workbookPart.GetPartsOfType<SharedStringTablePart>().First();
+      var sst = sstpart.SharedStringTable;
+
+      var cells = sheet.Descendants<Cell>();
+      var rows = sheet.Descendants<Row>();
+
+      GetLogger().LogInformation( $"Import row count = {rows.LongCount()}" );
+      GetLogger().LogInformation( $"       cell count = {cells.LongCount()}" );
+
+      foreach ( var row in rows )
+      {
+        var column = 0;
+        var userRequest = new AddUserRequest(
+          GetLogger(),
+          GetDbContext() );
+
+        var groupRoleStrings = new List<string>();
+
+        foreach ( var c in row.Elements<Cell>() )
+        {
+          if ( c.DataType != null && c.DataType == CellValues.SharedString )
+          {
+            var ssid = int.Parse( c.CellValue.Text );
+            var str = sst.ChildElements[ ssid ].InnerText;
+
+            switch ( column )
+            {
+              case 0:
+                userRequest.Operation = str;
+                break;
+              case 1:
+                userRequest.Username = str;
+                break;
+              case 2:
+                userRequest.NickName = str;
+                break;
+              case 3:
+                userRequest.EMail = str;
+                break;
+              case 4:
+                userRequest.Password = str;
+                break;
+              default:
+                groupRoleStrings.Add( str );
+                break;
+            }
+
+          }
+
+          column++;
+        }
+
+        userRequest.GroupRoles = string.Join( ",", groupRoleStrings );
+
+        if ( string.IsNullOrEmpty( userRequest.Operation ) || userRequest.Operation == "+" )
+          try
+          {
+            var response = await AddUserAsync( userRequest );
+            responses.Add( new UsersImportDto( response ) { Message = "added" } );
+          }
+          catch ( Exception ex )
+          {
+            responses.Add( new UsersImportDto
+            {
+              UserName = userRequest.Username,
+              Status = false,
+              Message = ex.Message
+            } );
+          }
+
+        else if ( userRequest.Operation == "*" )
+          try
+          {
+            var response = await EditUserAsync( userRequest );
+
+            // test if user previously added (in the responses), if so then
+            // remove previous before adding edited user
+            var existingUser = responses.FirstOrDefault( x => x.Id == response.Id );
+            if ( existingUser != null )
+            {
+              responses.Remove( existingUser );
+              responses.Add( new UsersImportDto( response ) { Message = "added, edited" } );
+            }
+            else
+              responses.Add( new UsersImportDto( response ) { Message = "edited" } );
+
+          }
+          catch ( Exception ex )
+          {
+            responses.Add( new UsersImportDto
+            {
+              UserName = userRequest.Username,
+              Status = false,
+              Message = ex.Message
+            } );
+          }
+
+        else if ( userRequest.Operation == "-" )
+          try
+          {
+            var list = new List<DeleteUsersRequest>();
+            list.Add( new DeleteUsersRequest { UserName = userRequest.Username } );
+            await DeleteUsersAsync( list );
+
+            //responses.Add(new UsersImportDto
+            //{
+            //  UserName = userRequest.Username,
+            //  Message = "deleted"
+            //});
+
+          }
+          catch ( Exception ex )
+          {
+            responses.Add( new UsersImportDto
+            {
+              UserName = userRequest.Username,
+              Status = false,
+              Message = ex.Message
+            } );
+          }
+      }
+    }
+
+    return responses;
+  }
+
+  /// <summary>
+  /// Retrieves a list of users based on the provided name.
+  /// </summary>
+  /// <param name="name">The name to search for. If null or empty, all users are returned.</param>
+  /// <returns>A list of user DTOs that match the search criteria.</returns>
+  public async Task<IList<UsersDto>> GetUsersAsync(string name)
+  {
+    IList<Users> users = new List<Users>();
+
+    if ( !string.IsNullOrEmpty( name ) )
+      users = await _userReaderWriter.GetNameLikeAsync( name );
+    else
+      users = await _userReaderWriter.GetAsync();
+
+    var dtoList = new UsersMapper( GetLogger(), GetDbContext() ).PhysicalToDto( users );
+    return dtoList;
   }
 }

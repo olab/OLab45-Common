@@ -84,7 +84,7 @@ public class UserReaderWriter : ReaderWriter
     var physUser = await GetSingleAsync( id );
     if ( physUser == null )
     {
-      GetLogger().LogInformation( $"user '{physUser.Username}' does not exist for deletion" );
+      GetLogger().LogInformation( $"user '{id}' does not exist for deletion" );
       return false;
     }
 
