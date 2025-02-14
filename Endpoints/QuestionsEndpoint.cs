@@ -19,7 +19,7 @@ namespace OLab.Api.Endpoints;
 
 public partial class QuestionsEndpoint : OLabEndpoint
 {
-  private Questions _mapper;
+  private IOLabMapper<SystemQuestions, QuestionsDto> _mapper;
 
   public QuestionsEndpoint(
     IOLabLogger logger,

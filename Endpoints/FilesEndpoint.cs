@@ -22,7 +22,7 @@ namespace OLab.Api.Endpoints;
 
 public partial class FilesEndpoint : OLabEndpoint
 {
-  private readonly FilesMapper _mapper;
+  private readonly IOLabMapper<SystemFiles, FilesDto> _mapper;
 
   public FilesEndpoint(
     IOLabLogger logger,

@@ -9,6 +9,7 @@ using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace OLab.Api.Endpoints;
 
 public partial class ConstantsEndpoint : OLabEndpoint
 {
-  private readonly ObjectMapper.Constants _mapper;
+  private readonly IOLabMapper<SystemConstants, ConstantsDto> _mapper;
 
   public ConstantsEndpoint(
     IOLabLogger logger,

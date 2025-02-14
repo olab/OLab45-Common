@@ -9,6 +9,7 @@ using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace OLab.Api.Endpoints;
 
 public partial class CountersEndpoint : OLabEndpoint
 {
-  private CounterMapper _mapper;
+  private IOLabMapper<SystemCounters, CountersDto> _mapper;
 
   public CountersEndpoint(
     IOLabLogger logger,

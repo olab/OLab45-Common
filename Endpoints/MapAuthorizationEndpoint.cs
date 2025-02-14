@@ -17,7 +17,7 @@ namespace OLab.Api.Endpoints;
 
 public partial class MapAuthorizationEndpoint : OLabEndpoint
 {
-  private readonly MapGrouprolesMapper mapper;
+  private readonly IOLabMapper<MapGrouproles, MapGrouprolesDto> _mapper;
   private readonly MapsReaderWriter mapReader;
 
   public MapAuthorizationEndpoint(
@@ -32,7 +32,7 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
       wikiTagProvider,
       fileStorageProvider )
   {
-    mapper = new MapGrouprolesMapper( GetLogger(), GetDbContext() );
+    _mapper = new MapGrouprolesMapper( GetLogger(), GetDbContext() );
     mapReader = new MapsReaderWriter( GetLogger(), GetDbContext() );
   }
 
@@ -74,7 +74,7 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     else
       throw new OLabObjectNotFoundException( "MapGroupRole", dto.Id.Value );
 
-    return mapper.PhysicalToDto( mapPhys.MapGrouproles.ToList() );
+    return _mapper.PhysicalToDto( mapPhys.MapGrouproles.ToList() );
 
   }
 
@@ -127,13 +127,13 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     // test if doesn't already exist
     if ( !mapPhys.MapGrouproles.Any( x => x.GroupId == dto.GroupId && x.RoleId == dto.RoleId ) )
     {
-      var mapGroupPhys = mapper.DtoToPhysical( dto );
+      var mapGroupPhys = _mapper.DtoToPhysical( dto );
       mapPhys.MapGrouproles.Add( mapGroupPhys );
 
       GetDbContext().SaveChanges();
     }
 
-    return mapper.PhysicalToDto( mapPhys.MapGrouproles.ToList() );
+    return _mapper.PhysicalToDto( mapPhys.MapGrouproles.ToList() );
 
   }
 

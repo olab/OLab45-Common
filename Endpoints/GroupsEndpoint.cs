@@ -18,7 +18,7 @@ namespace OLab.Api.Endpoints;
 public partial class GroupsEndpoint : OLabEndpoint
 {
   private readonly GroupReaderWriter _readerWriter;
-  private readonly GroupsMapper _mapper;
+  private readonly IOLabMapper<Groups, GroupsDto> _mapper;
 
   public GroupsEndpoint(
     IOLabLogger logger,

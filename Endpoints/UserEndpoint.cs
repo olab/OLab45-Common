@@ -29,7 +29,7 @@ namespace OLab.Api.Endpoints;
 
 public partial class UserEndpoint : OLabEndpoint
 {
-  private readonly UserGroupRolesMapper _mapper;
+  private readonly IOLabMapper<UserGrouproles, UserGroupRolesDto> _mapper;
   private readonly UserReaderWriter _userReaderWriter;
   private readonly IOLabAuthorization _auth;
 

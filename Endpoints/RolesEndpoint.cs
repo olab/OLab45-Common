@@ -17,7 +17,7 @@ namespace OLab.Api.Endpoints;
 public partial class RolesEndpoint : OLabEndpoint
 {
   private readonly RoleReaderWriter _readerWriter;
-  private readonly RolesMapper _mapper;
+  private readonly IOLabMapper<Roles, RolesDto> _mapper;
 
   public RolesEndpoint(
     IOLabLogger logger,

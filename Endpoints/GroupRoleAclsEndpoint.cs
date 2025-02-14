@@ -24,7 +24,7 @@ namespace OLab.Api.Endpoints;
 public partial class GroupRoleAclsEndpoint : OLabEndpoint
 {
   private readonly GroupRoleAclReaderWriter _readerWriter;
-  private readonly GroupRoleAclMapper _mapper;
+  private readonly IOLabMapper<GrouproleAcls, GroupRoleAclDto> _mapper;
 
   public GroupRoleAclsEndpoint(
     IOLabLogger logger,
