@@ -5,6 +5,7 @@ using OLab.Api.Data.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using OLab.Data.Mappers;
 using OLab.Data.ReaderWriters;
 using System.Threading;
@@ -15,7 +16,7 @@ namespace OLab.Api.Endpoints;
 public partial class ApplicationsEndpoint : OLabEndpoint
 {
   private readonly ApplicationReaderWriter _readerWriter;
-  private readonly ApplicationsMapper _mapper;
+  private readonly IOLabMapper<SystemApplications, ApplicationsDto> _mapper;
 
   public ApplicationsEndpoint(
     IOLabLogger logger,

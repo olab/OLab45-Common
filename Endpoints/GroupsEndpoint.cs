@@ -9,6 +9,7 @@ using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using OLab.Data.Mappers;
 using OLab.Data.ReaderWriters;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -47,16 +48,14 @@ public partial class GroupsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     int? take, int? skip)
   {
-    GetLogger().LogInformation( $"GroupsEndpoint.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})" );
-    var pagedDataPhys = await _readerWriter.GetPagedAsync( take, skip );
+    var physItems = await GetPhysAsync<Groups>( auth, take, skip );
 
-    var pagedDataDto = new OLabAPIPagedResponse<GroupsDto>();
+    var dtoResponse = new OLabAPIPagedResponse<GroupsDto>();
+    dtoResponse.Data = _mapper.PhysicalToDto( physItems.Data.OrderBy( x => x.Name ).ToList() );
+    dtoResponse.Remaining = physItems.Remaining;
+    dtoResponse.Count = physItems.Count;
 
-    pagedDataDto.Data = _mapper.PhysicalToDto( pagedDataPhys.Data );
-    pagedDataDto.Remaining = pagedDataPhys.Remaining;
-    pagedDataDto.Count = pagedDataPhys.Count;
-
-    return pagedDataDto;
+    return dtoResponse;
 
   }
 

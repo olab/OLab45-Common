@@ -22,6 +22,8 @@ namespace OLab.Api.Endpoints;
 
 public partial class FilesEndpoint : OLabEndpoint
 {
+  private readonly FilesMapper _mapper;
+
   public FilesEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
@@ -34,6 +36,10 @@ public partial class FilesEndpoint : OLabEndpoint
       wikiTagProvider,
       fileStorageProvider )
   {
+    _mapper = new FilesMapper( 
+      GetLogger(),
+      GetDbContext(),
+      GetWikiProvider() );
   }
 
   private bool Exists(uint id)
@@ -47,41 +53,28 @@ public partial class FilesEndpoint : OLabEndpoint
   /// <param name="take"></param>
   /// <param name="skip"></param>
   /// <returns></returns>
-  public async Task<OLabAPIPagedResponse<FilesDto>> GetAsync(int? take, int? skip)
+  public async Task<OLabAPIPagedResponse<FilesDto>> GetAsync(
+    IOLabAuthorization auth, 
+    int? take, 
+    int? skip)
   {
-    GetLogger().LogInformation( $"FilesController.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})" );
+    var physItems = await GetPhysAsync<SystemFiles>( auth, take, skip );
 
-    var Files = new List<SystemFiles>();
-    var total = 0;
-    var remaining = 0;
-
-    if ( !skip.HasValue )
-      skip = 0;
-
-    Files = await GetDbContext().SystemFiles.OrderBy( x => x.Name ).ToListAsync();
-    total = Files.Count;
-
-    if ( take.HasValue && skip.HasValue )
-    {
-      Files = Files.Skip( skip.Value ).Take( take.Value ).ToList();
-      remaining = total - take.Value - skip.Value;
-    }
-
-    GetLogger().LogInformation( string.Format( "found {0} FilesPhys", Files.Count ) );
-
-    var dtoList = new Files(
-        GetLogger(),
-        GetDbContext(),
-        GetWikiProvider() ).PhysicalToDto( Files );
+    var dtoResponse = new OLabAPIPagedResponse<FilesDto>();
+    dtoResponse.Data = _mapper.PhysicalToDto( physItems.Data );
+    dtoResponse.Remaining = physItems.Remaining;
+    dtoResponse.Count = physItems.Count;
 
     var maps = _mapsReaderWriter.GetMapIdNames();
     var nodes = _nodesReaderWriter.GetNodeIdNames();
     var servers = GetServerIdNames();
 
-    foreach ( var dto in dtoList )
+    foreach ( var dto in dtoResponse.Data )
       dto.ParentInfo = FindParentInfo( dto.ImageableType, dto.ImageableId, maps, nodes, servers );
 
-    return new OLabAPIPagedResponse<FilesDto> { Data = dtoList, Remaining = remaining, Count = total };
+    GetLogger().LogInformation( string.Format( "Found {0} FilesDto", dtoResponse.Data.Count ) );
+
+    return dtoResponse;
   }
 
   /// <summary>

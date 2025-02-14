@@ -19,6 +19,8 @@ namespace OLab.Api.Endpoints;
 
 public partial class QuestionsEndpoint : OLabEndpoint
 {
+  private Questions _mapper;
+
   public QuestionsEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
@@ -32,6 +34,10 @@ public partial class QuestionsEndpoint : OLabEndpoint
         wikiTagProvider,
         fileStorageProvider )
   {
+    _mapper = new Questions(
+      GetLogger(),
+      GetDbContext(),
+      GetWikiProvider() );
   }
 
   /// <summary>
@@ -50,42 +56,26 @@ public partial class QuestionsEndpoint : OLabEndpoint
   /// <param name="take"></param>
   /// <param name="skip"></param>
   /// <returns></returns>
-  public async Task<OLabAPIPagedResponse<QuestionsDto>> GetAsync([FromQuery] int? take, [FromQuery] int? skip)
+  public async Task<OLabAPIPagedResponse<QuestionsDto>> GetAsync(
+    IOLabAuthorization auth,
+    int? take, 
+    int? skip)
   {
+    var physItems = await GetPhysAsync<SystemQuestions>( auth, take, skip );
 
-    GetLogger().LogInformation( $"ReadAsync take={take} skip={skip}" );
-
-    var physList = new List<SystemQuestions>();
-    var total = 0;
-    var remaining = 0;
-
-    if ( !skip.HasValue )
-      skip = 0;
-
-    physList = await GetDbContext().SystemQuestions.OrderBy( x => x.Name ).ToListAsync();
-    total = physList.Count;
-
-    if ( take.HasValue && skip.HasValue )
-    {
-      physList = physList.Skip( skip.Value ).Take( take.Value ).ToList();
-      remaining = total - take.Value - skip.Value;
-    }
-
-    GetLogger().LogInformation( string.Format( "found {0} questions", physList.Count ) );
-
-    var dtoList = new Questions(
-      GetLogger(),
-      GetDbContext(),
-      GetWikiProvider() ).PhysicalToDto( physList );
+    var dtoResponse = new OLabAPIPagedResponse<QuestionsDto>();
+    dtoResponse.Data = _mapper.PhysicalToDto( physItems.Data );
+    dtoResponse.Remaining = physItems.Remaining;
+    dtoResponse.Count = physItems.Count;
 
     var maps = GetDbContext().Maps.Select( x => new IdName() { Id = x.Id, Name = x.Name } ).ToList();
     var nodes = GetDbContext().MapNodes.Select( x => new IdName() { Id = x.Id, Name = x.Title } ).ToList();
     var servers = GetDbContext().Servers.Select( x => new IdName() { Id = x.Id, Name = x.Name } ).ToList();
 
-    foreach ( var dto in dtoList )
+    foreach ( var dto in dtoResponse.Data )
       dto.ParentInfo = FindParentInfo( dto.ImageableType, dto.ImageableId, maps, nodes, servers );
 
-    return new OLabAPIPagedResponse<QuestionsDto> { Data = dtoList, Remaining = remaining, Count = total };
+    return dtoResponse;
 
   }
 

@@ -8,7 +8,7 @@ namespace OLab.Import.OLab3.Dtos;
 
 public class XmlMapElementDto : XmlImportDto<XmlMapElements>
 {
-  private readonly Api.ObjectMapper.Files _mapper;
+  private readonly Api.ObjectMapper.FilesMapper _mapper;
   public XmlMapElementDto(
     IOLabLogger logger,
     Importer importer) : base(
@@ -17,7 +17,7 @@ public class XmlMapElementDto : XmlImportDto<XmlMapElements>
       Importer.DtoTypes.XmlMapElementDto,
       "map_element.xml" )
   {
-    _mapper = new Api.ObjectMapper.Files( GetLogger(), GetDbContext(), GetWikiProvider() );
+    _mapper = new Api.ObjectMapper.FilesMapper( GetLogger(), GetDbContext(), GetWikiProvider() );
   }
 
   /// <summary>

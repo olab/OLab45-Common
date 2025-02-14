@@ -18,12 +18,17 @@ namespace OLab.Api.Endpoints;
 
 public partial class CountersEndpoint : OLabEndpoint
 {
+  private CounterMapper _mapper;
 
   public CountersEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
     OLabDBContext context) : base( logger, configuration, context )
   {
+    _mapper = new CounterMapper(
+      GetLogger(),
+      GetDbContext(),
+      GetWikiProvider() );
   }
 
   /// <summary>
@@ -47,40 +52,21 @@ public partial class CountersEndpoint : OLabEndpoint
     int? take,
     int? skip)
   {
-    GetLogger().LogInformation( $"ReadAsync take={take} skip={skip}" );
+    var physItems = await GetPhysAsync<SystemCounters>( auth, take, skip );
 
-    var countersPhys = new List<SystemCounters>();
-    var total = 0;
-    var remaining = 0;
-
-    if ( !skip.HasValue )
-      skip = 0;
-
-    countersPhys = await GetDbContext().SystemCounters.OrderBy( x => x.Name ).ToListAsync();
-    if ( countersPhys.Count == 0 )
-      return new OLabAPIPagedResponse<CountersDto> { Data = new List<CountersDto>(), Remaining = 0, Count = 0 };
-
-    total = countersPhys.Count;
-
-    if ( take.HasValue && skip.HasValue )
-    {
-      countersPhys = countersPhys.Skip( skip.Value ).Take( take.Value ).ToList();
-      remaining = total - take.Value - skip.Value;
-    }
-
-    var dtoList = new CounterMapper(
-      GetLogger(),
-      GetDbContext(),
-      GetWikiProvider() ).PhysicalToDto( countersPhys );
+    var dtoResponse = new OLabAPIPagedResponse<CountersDto>();
+    dtoResponse.Data = _mapper.PhysicalToDto( physItems.Data );
+    dtoResponse.Remaining = physItems.Remaining;
+    dtoResponse.Count = physItems.Count;
 
     var maps = GetDbContext().Maps.Select( x => new IdName() { Id = x.Id, Name = x.Name } ).ToList();
     var nodes = GetDbContext().MapNodes.Select( x => new IdName() { Id = x.Id, Name = x.Title } ).ToList();
     var servers = GetDbContext().Servers.Select( x => new IdName() { Id = x.Id, Name = x.Name } ).ToList();
 
-    foreach ( var dto in dtoList )
+    foreach ( var dto in dtoResponse.Data )
       dto.ParentInfo = FindParentInfo( dto.ImageableType, dto.ImageableId, maps, nodes, servers );
 
-    return new OLabAPIPagedResponse<CountersDto> { Data = dtoList, Remaining = remaining, Count = total };
+    return dtoResponse;
   }
 
   /// <summary>

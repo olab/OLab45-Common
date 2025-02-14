@@ -121,7 +121,7 @@ public partial class Importer : IImporter
         token );
 
     if ( map == null )
-      throw new OLabObjectNotFoundException( "Maps", mapId );
+      throw new OLabObjectNotFoundException( Api.Utils.Constants.ScopeLevelMap, mapId );
 
     var dto = new MapsFullRelationsMapper(
 

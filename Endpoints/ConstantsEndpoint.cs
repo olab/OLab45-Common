@@ -18,12 +18,17 @@ namespace OLab.Api.Endpoints;
 
 public partial class ConstantsEndpoint : OLabEndpoint
 {
+  private readonly ObjectMapper.Constants _mapper;
 
   public ConstantsEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
     OLabDBContext context) : base( logger, configuration, context )
   {
+    _mapper = new ObjectMapper.Constants(
+      GetLogger(),
+      GetDbContext(),
+      GetWikiProvider() );
   }
 
   /// <summary>
@@ -47,39 +52,21 @@ public partial class ConstantsEndpoint : OLabEndpoint
     int? take,
     int? skip)
   {
-    GetLogger().LogInformation( $"{auth.OLabUser.Id}: ConstantsEndpoint.ReadAsync" );
+    var physItems = await GetPhysAsync<SystemConstants>( auth, take, skip );
 
-    var constantsPhys = new List<SystemConstants>();
-    var total = 0;
-    var remaining = 0;
-
-    if ( !skip.HasValue )
-      skip = 0;
-
-    constantsPhys = await GetDbContext().SystemConstants.OrderBy( x => x.Name ).ToListAsync();
-    total = constantsPhys.Count;
-
-    if ( take.HasValue && skip.HasValue )
-    {
-      constantsPhys = constantsPhys.Skip( skip.Value ).Take( take.Value ).ToList();
-      remaining = total - take.Value - skip.Value;
-    }
-
-    GetLogger().LogInformation( string.Format( "found {0} ConstantsPhys", constantsPhys.Count ) );
-
-    var dtoList = new ObjectMapper.Constants(
-      GetLogger(),
-      GetDbContext(),
-      GetWikiProvider() ).PhysicalToDto( constantsPhys );
+    var dtoResponse = new OLabAPIPagedResponse<ConstantsDto>();
+    dtoResponse.Data = _mapper.PhysicalToDto( physItems.Data.OrderBy( x => x.Name ).ToList() );
+    dtoResponse.Remaining = physItems.Remaining;
+    dtoResponse.Count = physItems.Count;
 
     var maps = GetDbContext().Maps.Select( x => new IdName() { Id = x.Id, Name = x.Name } ).ToList();
     var nodes = GetDbContext().MapNodes.Select( x => new IdName() { Id = x.Id, Name = x.Title } ).ToList();
     var servers = GetDbContext().Servers.Select( x => new IdName() { Id = x.Id, Name = x.Name } ).ToList();
 
-    foreach ( var dto in dtoList )
+    foreach ( var dto in dtoResponse.Data )
       dto.ParentInfo = FindParentInfo( dto.ImageableType, dto.ImageableId, maps, nodes, servers );
 
-    return new OLabAPIPagedResponse<ConstantsDto> { Data = dtoList, Remaining = remaining, Count = total };
+    return dtoResponse;
   }
 
   /// <summary>

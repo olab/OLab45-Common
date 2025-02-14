@@ -33,6 +33,15 @@ public partial class GrouproleAcls
     return acl;
   }
 
+  public static string TruncateToJsonObject(GrouproleAcls phys, int maxDepth)
+  {
+    var json = JsonConvert.SerializeObject(
+      new List<GrouproleAcls> { phys },
+      new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore } );
+
+    return SerializerUtilities.TruncateJsonToDepth( json, maxDepth + 1 );
+  }
+
   public override string ToString()
   {
     var groupName = (Group != null) ? $"{Group?.Name}({GroupId})" : (GroupId != null ? GroupId.ToString() : "*");

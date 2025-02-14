@@ -59,7 +59,7 @@ public partial class MapsEndpoint : OLabEndpoint
       .Include( x => x.SystemCounterActions ).FirstOrDefaultAsync( x => x.Id == id );
 
     if ( phys == null )
-      throw new OLabObjectNotFoundException( "Maps", id );
+      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, id );
 
     return phys;
   }
@@ -161,7 +161,7 @@ public partial class MapsEndpoint : OLabEndpoint
         token );
 
     if ( mapPhys == null )
-      throw new OLabObjectNotFoundException( "Maps", mapId );
+      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, mapId );
 
     if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId ) )
       throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
@@ -224,7 +224,7 @@ public partial class MapsEndpoint : OLabEndpoint
         token );
 
     if ( mapPhys == null )
-      throw new OLabObjectNotFoundException( "Maps", mapId );
+      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, mapId );
 
     if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId ) )
       throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
@@ -358,7 +358,7 @@ public partial class MapsEndpoint : OLabEndpoint
       .FirstOrDefaultAsync( x => x.Id == mapId );
 
     if ( map == null )
-      throw new OLabObjectNotFoundException( "Maps", mapId );
+      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, mapId );
 
     var template = await GetDbContext().Maps
       .AsNoTracking()
@@ -366,7 +366,7 @@ public partial class MapsEndpoint : OLabEndpoint
       .FirstOrDefaultAsync( x => x.Id == body.TemplateId );
 
     if ( template == null )
-      throw new OLabObjectNotFoundException( "Maps", body.TemplateId );
+      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, body.TemplateId );
 
     map = await MapsReaderWriter.Instance( GetLogger(), GetDbContext() )
       .CreateMapWithTemplateAsync( map, template );
@@ -421,7 +421,7 @@ public partial class MapsEndpoint : OLabEndpoint
         .FirstOrDefaultAsync( x => x.Id == body.TemplateId.Value );
 
       if ( template == null )
-        throw new OLabObjectNotFoundException( "Maps", body.TemplateId.Value );
+        throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, body.TemplateId.Value );
 
       map = await MapsReaderWriter.Instance( GetLogger(), GetDbContext() )
         .CreateMapWithTemplateAsync( map, template );

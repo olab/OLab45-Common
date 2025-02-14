@@ -48,16 +48,14 @@ public partial class RolesEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     int? take, int? skip)
   {
-    GetLogger().LogInformation( $"RolesEndpoint.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})" );
-    var pagedDataPhys = await _readerWriter.GetPagedAsync( take, skip );
+    var physItems = await GetPhysAsync<Roles>( auth, take, skip );
 
-    var pagedDataDto = new OLabAPIPagedResponse<RolesDto>();
+    var dtoItems = new OLabAPIPagedResponse<RolesDto>();
+    dtoItems.Data = _mapper.PhysicalToDto( physItems.Data );
+    dtoItems.Remaining = physItems.Remaining;
+    dtoItems.Count = physItems.Count;
 
-    pagedDataDto.Data = _mapper.PhysicalToDto( pagedDataPhys.Data );
-    pagedDataDto.Remaining = pagedDataPhys.Remaining;
-    pagedDataDto.Count = pagedDataPhys.Count;
-
-    return pagedDataDto;
+    return dtoItems;
 
   }
 

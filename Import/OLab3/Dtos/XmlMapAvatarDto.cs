@@ -11,7 +11,7 @@ namespace OLab.Import.OLab3.Dtos;
 public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
 {
   private readonly AvatarsMapper _avMapper;
-  private readonly Files _fileMapper;
+  private readonly FilesMapper _fileMapper;
 
   public XmlMapAvatarDto(
     IOLabLogger logger,
@@ -25,7 +25,7 @@ public class XmlMapAvatarDto : XmlImportDto<XmlMapAvatars>
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() );
-    _fileMapper = new Files(
+    _fileMapper = new FilesMapper(
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() );

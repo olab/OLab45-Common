@@ -4,6 +4,7 @@ using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
 
@@ -27,7 +28,7 @@ public class DecimalDateTimeTypeConverter : ITypeConverter<DateTime, decimal>
   }
 }
 
-public abstract class OLabMapper<P, D> : object where P : new() where D : new()
+public abstract class OLabMapper<P, D> : object, IOLabMapper<P, D> where P : new() where D : new()
 {
   protected readonly Mapper _mapper;
 
