@@ -83,7 +83,7 @@ public partial class CountersEndpoint : OLabEndpoint
     if ( phys == null )
       throw new OLabObjectNotFoundException( "SystemCounters", id );
 
-    var dto = new CountersFull(
+    var dto = new CountersFullMapper(
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() ).PhysicalToDto( phys );
@@ -118,7 +118,7 @@ public partial class CountersEndpoint : OLabEndpoint
 
     try
     {
-      var builder = new CountersFull(
+      var builder = new CountersFullMapper(
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() );
@@ -157,7 +157,7 @@ public partial class CountersEndpoint : OLabEndpoint
     if ( accessResult is UnauthorizedResult )
       throw new OLabUnauthorizedException( "CounterMapper", 0 );
 
-    var builder = new CountersFull(
+    var builder = new CountersFullMapper(
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() );
@@ -191,7 +191,7 @@ public partial class CountersEndpoint : OLabEndpoint
     try
     {
       var phys = await GetCounterAsync( id );
-      var dto = new CountersFull(
+      var dto = new CountersFullMapper(
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() ).PhysicalToDto( phys );

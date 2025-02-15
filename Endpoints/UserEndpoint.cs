@@ -170,7 +170,7 @@ public partial class UserEndpoint : OLabEndpoint
     if ( await _auth.IsSystemSuperuserAsync() )
     {
       var readerWriter = GroupReaderWriter.Instance( GetLogger(), GetDbContext() );
-      groupsPhys.AddRange( await readerWriter.GetAsync() );
+      groupsPhys.AddRange( ( await readerWriter.GetAsync<Groups>() ).items );
     }
     else
     {

@@ -10,10 +10,10 @@ using System.Text;
 
 namespace OLab.Api.ObjectMapper;
 
-public class CountersFull : OLabMapper<SystemCounters, CountersFullDto>
+public class CountersFullMapper : OLabMapper<SystemCounters, CountersFullDto>
 {
 
-  public CountersFull(
+  public CountersFullMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
@@ -21,7 +21,7 @@ public class CountersFull : OLabMapper<SystemCounters, CountersFullDto>
   {
   }
 
-  public CountersFull(
+  public CountersFullMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,

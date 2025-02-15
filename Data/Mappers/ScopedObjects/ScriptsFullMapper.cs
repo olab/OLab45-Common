@@ -6,9 +6,9 @@ using System.Text;
 
 namespace OLab.Api.ObjectMapper;
 
-public class ScriptsFull : OLabMapper<SystemScripts, ScriptsFullDto>
+public class ScriptsFullMapper : OLabMapper<SystemScripts, ScriptsFullDto>
 {
-  public ScriptsFull(
+  public ScriptsFullMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,

@@ -95,7 +95,7 @@ public partial class FilesEndpoint : OLabEndpoint
 
     _fileStorageModule.AttachUrls( phys );
 
-    var dto = new FilesFull(
+    var dto = new FilesFullMapper(
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() ).PhysicalToDto( phys );
@@ -131,7 +131,7 @@ public partial class FilesEndpoint : OLabEndpoint
 
     try
     {
-      var builder = new FilesFull(
+      var builder = new FilesFullMapper(
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() );
@@ -160,7 +160,7 @@ public partial class FilesEndpoint : OLabEndpoint
     CancellationToken token)
   {
     GetLogger().LogInformation( $"FilesController.PostAsync()" );
-    var builder = new FilesFull(
+    var builder = new FilesFullMapper(
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() );
@@ -216,7 +216,7 @@ public partial class FilesEndpoint : OLabEndpoint
       if ( phys == null )
         throw new OLabObjectNotFoundException( "SystemFiles", id );
 
-      var dto = new FilesFull(
+      var dto = new FilesFullMapper(
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() ).PhysicalToDto( phys );

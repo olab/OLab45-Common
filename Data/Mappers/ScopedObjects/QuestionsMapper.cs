@@ -9,9 +9,9 @@ using System.Linq;
 
 namespace OLab.Api.ObjectMapper;
 
-public class Questions : OLabMapper<SystemQuestions, QuestionsDto>
+public class QuestionsMapper : OLabMapper<SystemQuestions, QuestionsDto>
 {
-  public Questions(
+  public QuestionsMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,

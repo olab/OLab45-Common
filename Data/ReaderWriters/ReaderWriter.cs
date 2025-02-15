@@ -22,7 +22,7 @@ public abstract class ReaderWriter
     _logger = logger;
   }
 
-  public virtual async Task<(IList<T> items, int total, int remaining)> GetAsync<T>(int? skip, int? take) where T : class
+  public virtual async Task<(IList<T> items, int count, int remaining)> GetAsync<T>(int? skip = null, int? take = null) where T : class
   {
     var items = new List<T>();
 

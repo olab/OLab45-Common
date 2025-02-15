@@ -47,16 +47,6 @@ public class ApplicationReaderWriter : ReaderWriter
   }
 
   /// <summary>
-  /// Get all SystemApplications
-  /// </summary>
-  /// <returns>SystemApplications</returns>
-  public async Task<IList<SystemApplications>> GetAsync()
-  {
-    var phys = await GetDbContext().SystemApplications.ToListAsync();
-    return phys;
-  }
-
-  /// <summary>
   /// Get Application by id
   /// </summary>
   /// <param name="id">Application Id</param>

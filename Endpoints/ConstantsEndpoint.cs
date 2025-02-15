@@ -26,7 +26,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     IOLabConfiguration configuration,
     OLabDBContext context) : base( logger, configuration, context )
   {
-    _mapper = new ObjectMapper.Constants(
+    _mapper = new ObjectMapper.ConstantsMapper(
       GetLogger(),
       GetDbContext(),
       GetWikiProvider() );
@@ -88,10 +88,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     if ( phys == null )
       throw new OLabObjectNotFoundException( "SystemConstants", id );
 
-    var dto = new ObjectMapper.Constants(
-        GetLogger(),
-        GetDbContext(),
-        GetWikiProvider() ).PhysicalToDto( phys );
+    var dto = _mapper.PhysicalToDto( phys );
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, dto );
@@ -124,7 +121,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
 
     try
     {
-      var builder = new ConstantsFull(
+      var builder = new ConstantsFullMapper(
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() );
@@ -160,7 +157,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     if ( accessResult is UnauthorizedResult )
       throw new OLabUnauthorizedException( "ConstantsPhys", 0 );
 
-    var builder = new ConstantsFull(
+    var builder = new ConstantsFullMapper(
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() );
@@ -192,7 +189,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
     try
     {
       var phys = await GetConstantAsync( id );
-      var dto = new ConstantsFull(
+      var dto = new ConstantsFullMapper(
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() ).PhysicalToDto( phys );

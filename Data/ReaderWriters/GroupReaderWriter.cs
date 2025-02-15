@@ -52,16 +52,6 @@ public class GroupReaderWriter : ReaderWriter
   }
 
   /// <summary>
-  /// Get all groups
-  /// </summary>
-  /// <returns>Groups</returns>
-  public async Task<IList<Groups>> GetAsync()
-  {
-    var phys = await GetDbContext().Groups.ToListAsync();
-    return phys;
-  }
-
-  /// <summary>
   /// Get group by id
   /// </summary>
   /// <param name="id">Group Id</param>
