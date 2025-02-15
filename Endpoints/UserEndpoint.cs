@@ -170,7 +170,7 @@ public partial class UserEndpoint : OLabEndpoint
     var groupsPhys = new List<Groups>();
 
     if ( await _auth.IsSystemSuperuserAsync() )
-      groupsPhys.AddRange( await _groupReaderWriter.GetAsync() );
+      groupsPhys.AddRange( ( await _groupReaderWriter.GetRawAsync<Groups>() ).items );
     else
     {
       var userPhys = await _userReaderWriter.GetSingleAsync( userId );

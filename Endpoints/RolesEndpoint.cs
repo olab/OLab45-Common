@@ -9,6 +9,7 @@ using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using OLab.Data.Mappers;
 using OLab.Data.ReaderWriters;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -48,10 +49,10 @@ public partial class RolesEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     int? take, int? skip)
   {
-    var physItems = await _readerWriter.GetAsync<Roles>( skip, take );
+    var physItems = await _readerWriter.GetRawAsync<Roles>( skip, take );
 
     var dtoItems = new OLabAPIPagedResponse<RolesDto>();
-    dtoItems.Data = _mapper.PhysicalToDto( physItems.items );
+    dtoItems.Data = _mapper.PhysicalToDto( physItems.items.ToList() );
     dtoItems.Remaining = physItems.remaining;
     dtoItems.Count = physItems.count;
 

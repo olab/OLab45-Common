@@ -48,7 +48,7 @@ public partial class GroupsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     int? take, int? skip)
   {
-    var physItems = await _readerWriter.GetAsync<Groups>( skip, take );
+    var physItems = await _readerWriter.GetRawAsync<Groups>( skip, take );
 
     var dtoResponse = new OLabAPIPagedResponse<GroupsDto>();
     dtoResponse.Data = _mapper.PhysicalToDto( physItems.items.OrderBy( x => x.Name ).ToList() );

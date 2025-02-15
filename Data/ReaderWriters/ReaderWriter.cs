@@ -29,7 +29,7 @@ public abstract class ReaderWriter
   /// <param name="skip">Item skip count</param>
   /// <param name="take">Item take count</param>
   /// <returns></returns>
-  public virtual async Task<(IEnumerable<T> items, int count, int remaining)> GetRawAsync<T>(int? skip, int? take) where T : class
+  public virtual async Task<(IEnumerable<T> items, int count, int remaining)> GetRawAsync<T>(int? skip = null, int? take = null) where T : class
   {
     var items = new List<T>();
 
@@ -41,11 +41,8 @@ public abstract class ReaderWriter
 
     if ( take.HasValue && skip.HasValue )
     {
-      var tmp = GetDbContext().Set<T>();
-      GetLogger().LogInformation( tmp.ToString() );
-
       items = await GetDbContext().Set<T>().Skip( skip.Value ).Take( take.Value ).ToListAsync();
-      count = await GetDbContext().Set<T>().CountAsync();
+      count = items.Count;
       remaining = count - take.Value - skip.Value;
     }
     else
