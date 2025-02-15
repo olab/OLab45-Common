@@ -47,16 +47,6 @@ public class ApplicationReaderWriter : ReaderWriter
   }
 
   /// <summary>
-  /// Get all SystemApplications
-  /// </summary>
-  /// <returns>SystemApplications</returns>
-  public async Task<IList<SystemApplications>> GetAsync()
-  {
-    var phys = await GetDbContext().SystemApplications.ToListAsync();
-    return phys;
-  }
-
-  /// <summary>
   /// Get Application by id
   /// </summary>
   /// <param name="id">Application Id</param>
@@ -79,28 +69,10 @@ public class ApplicationReaderWriter : ReaderWriter
   /// <param name="take">(optional) number of objects to return</param>
   /// <param name="skip">(optional) number of objects to skip</param>
   /// <returns>OLabAPIPagedResponse</returns>
-  public async Task<OLabAPIPagedResponse<SystemApplications>> GetPagedAsync(int? take, int? skip)
+  public async Task<( IEnumerable<SystemApplications> items, int count, int remaining )> GetAsync(int? take, int? skip)
   {
-    var response = new OLabAPIPagedResponse<SystemApplications>();
-
-    if ( !take.HasValue && !skip.HasValue )
-    {
-      response.Data = await GetDbContext().SystemApplications.ToListAsync();
-      response.Count = response.Data.Count;
-      response.Remaining = 0;
-    }
-
-    else if ( take.HasValue && skip.HasValue )
-    {
-      response.Data = await GetDbContext().SystemApplications.Skip( skip.Value ).Take( take.Value ).ToListAsync();
-      response.Count += response.Data.Count;
-      response.Remaining = GetDbContext().SystemApplications.Count() - skip.Value - response.Count;
-    }
-
-    else
-      GetLogger().LogWarning( $"invalid/partial take/skip parameters" );
-
-    return response;
+    var result = await GetRawAsync<SystemApplications>( take, skip );
+    return ( result.items.OrderBy( x => x.Name ), result.count, result.remaining);
   }
 
   /// <summary>

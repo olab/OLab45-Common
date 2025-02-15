@@ -30,6 +30,7 @@ namespace OLab.Api.Endpoints;
 public partial class UserEndpoint : OLabEndpoint
 {
   private readonly IOLabMapper<UserGrouproles, UserGroupRolesDto> _mapper;
+  private readonly GroupReaderWriter _groupReaderWriter;
   private readonly UserReaderWriter _userReaderWriter;
   private readonly IOLabAuthorization _auth;
 
@@ -47,6 +48,7 @@ public partial class UserEndpoint : OLabEndpoint
       fileStorageProvider )
   {
     _mapper = new UserGroupRolesMapper( GetLogger(), GetDbContext() );
+    _groupReaderWriter = GroupReaderWriter.Instance( GetLogger(), GetDbContext() );
     _userReaderWriter
       = UserReaderWriter.Instance( GetLogger(), GetDbContext() );
     _auth = auth;
@@ -168,10 +170,7 @@ public partial class UserEndpoint : OLabEndpoint
     var groupsPhys = new List<Groups>();
 
     if ( await _auth.IsSystemSuperuserAsync() )
-    {
-      var readerWriter = GroupReaderWriter.Instance( GetLogger(), GetDbContext() );
-      groupsPhys.AddRange( await readerWriter.GetAsync() );
-    }
+      groupsPhys.AddRange( await _groupReaderWriter.GetAsync() );
     else
     {
       var userPhys = await _userReaderWriter.GetSingleAsync( userId );

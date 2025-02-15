@@ -22,11 +22,18 @@ public abstract class ReaderWriter
     _logger = logger;
   }
 
-  public virtual async Task<(IList<T> items, int total, int remaining)> GetAsync<T>(int? skip, int? take) where T : class
+  /// <summary>
+  /// Generic pages reader
+  /// </summary>
+  /// <typeparam name="T">Object type</typeparam>
+  /// <param name="skip">Item skip count</param>
+  /// <param name="take">Item take count</param>
+  /// <returns></returns>
+  public virtual async Task<(IEnumerable<T> items, int count, int remaining)> GetRawAsync<T>(int? skip, int? take) where T : class
   {
     var items = new List<T>();
 
-    var total = 0;
+    var count = 0;
     var remaining = 0;
 
     if ( !skip.HasValue )
@@ -34,21 +41,21 @@ public abstract class ReaderWriter
 
     if ( take.HasValue && skip.HasValue )
     {
-      var tmp = GetDbContext().Set<T>().Skip( skip.Value ).Take( take.Value );
+      var tmp = GetDbContext().Set<T>();
       GetLogger().LogInformation( tmp.ToString() );
 
       items = await GetDbContext().Set<T>().Skip( skip.Value ).Take( take.Value ).ToListAsync();
-      total = await GetDbContext().Set<T>().CountAsync();
-      remaining = total - take.Value - skip.Value;
+      count = await GetDbContext().Set<T>().CountAsync();
+      remaining = count - take.Value - skip.Value;
     }
     else
     {
       items = await GetDbContext().Set<T>().ToListAsync();
-      total = items.Count;
+      count = items.Count;
     }
 
     GetLogger().LogInformation( $"found {items.Count} {typeof( T ).Name} items" );
-    return ( items, total, remaining);
+    return ( items, count, remaining);
   }
 
 }

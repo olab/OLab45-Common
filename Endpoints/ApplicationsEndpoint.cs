@@ -8,6 +8,7 @@ using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using OLab.Data.Mappers;
 using OLab.Data.ReaderWriters;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,13 +44,13 @@ public partial class ApplicationsEndpoint : OLabEndpoint
     int? take, int? skip)
   {
     GetLogger().LogInformation( $"ApplicationsEndpoint.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})" );
-    var pagedDataPhys = await _readerWriter.GetPagedAsync( take, skip );
+    var pagesResult = await _readerWriter.GetAsync( take, skip );
 
     var pagedDataDto = new OLabAPIPagedResponse<ApplicationsDto>();
 
-    pagedDataDto.Data = _mapper.PhysicalToDto( pagedDataPhys.Data );
-    pagedDataDto.Remaining = pagedDataPhys.Remaining;
-    pagedDataDto.Count = pagedDataPhys.Count;
+    pagedDataDto.Data = _mapper.PhysicalToDto( pagesResult.items.ToList() );
+    pagedDataDto.Remaining = pagesResult.remaining;
+    pagedDataDto.Count = pagesResult.count;
 
     return pagedDataDto;
 

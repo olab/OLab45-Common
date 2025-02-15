@@ -363,13 +363,13 @@ public class OLabEndpoint
     if ( !skip.HasValue )
       skip = 0;
 
+    var tmp = GetDbContext().Set<T>();
+    GetLogger().LogInformation( tmp.ToString() );
+
     if ( take.HasValue && skip.HasValue )
     {
-      var tmp = GetDbContext().Set<T>().Skip( skip.Value ).Take( take.Value );
-      GetLogger().LogInformation( tmp.ToString() );
-
       items = await GetDbContext().Set<T>().Skip( skip.Value ).Take( take.Value ).ToListAsync();
-      total = await GetDbContext().Set<T>().CountAsync();
+      total = items.Count;
       remaining = total - take.Value - skip.Value;
     }
     else

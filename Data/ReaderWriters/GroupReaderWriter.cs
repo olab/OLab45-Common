@@ -52,13 +52,13 @@ public class GroupReaderWriter : ReaderWriter
   }
 
   /// <summary>
-  /// Get all groups
+  /// Get all items
   /// </summary>
-  /// <returns>Groups</returns>
-  public async Task<IList<Groups>> GetAsync()
+  /// <returns>IList Groups</returns>
+  public async Task<IList<Groups>> GetAsync( int? take = null, int? skip = null)
   {
-    var phys = await GetDbContext().Groups.ToListAsync();
-    return phys;
+    var result = await GetRawAsync<Groups>( take, skip );
+    return result.items.OrderBy( x => x.Name ).ToList();
   }
 
   /// <summary>
