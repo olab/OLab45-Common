@@ -9,10 +9,10 @@ using System.Text;
 
 namespace OLab.Api.ObjectMapper;
 
-public class Constants : OLabMapper<SystemConstants, ConstantsDto>
+public class ConstantsMapper : OLabMapper<SystemConstants, ConstantsDto>
 {
 
-  public Constants(
+  public ConstantsMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,

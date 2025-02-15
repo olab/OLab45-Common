@@ -34,7 +34,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
         wikiTagProvider,
         fileStorageProvider )
   {
-    _mapper = new Questions(
+    _mapper = new QuestionsMapper(
       GetLogger(),
       GetDbContext(),
       GetWikiProvider() );
@@ -207,7 +207,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
     try
     {
       var phys = await GetQuestionAsync( id );
-      var dto = new Questions(
+      var dto = new QuestionsMapper(
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() ).PhysicalToDto( phys );

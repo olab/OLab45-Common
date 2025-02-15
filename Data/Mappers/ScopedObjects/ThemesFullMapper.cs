@@ -6,11 +6,11 @@ using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper;
 
-public class ThemesFull : OLabMapper<SystemThemes, ThemesFullDto>
+public class ThemesFullMapper : OLabMapper<SystemThemes, ThemesFullDto>
 {
   protected readonly bool enableWikiTranslation;
 
-  public ThemesFull(
+  public ThemesFullMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider = null,

@@ -6,10 +6,10 @@ using System.IO;
 
 namespace OLab.Api.ObjectMapper;
 
-public class FilesFull : OLabMapper<SystemFiles, FilesFullDto>
+public class FilesFullMapper : OLabMapper<SystemFiles, FilesFullDto>
 {
 
-  public FilesFull(
+  public FilesFullMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
@@ -17,7 +17,7 @@ public class FilesFull : OLabMapper<SystemFiles, FilesFullDto>
   {
   }
 
-  public FilesFull(
+  public FilesFullMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,

@@ -48,12 +48,12 @@ public partial class GroupsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     int? take, int? skip)
   {
-    var physItems = await GetPhysAsync<Groups>( auth, take, skip );
+    var physItems = await _readerWriter.GetAsync<Groups>( skip, take );
 
     var dtoResponse = new OLabAPIPagedResponse<GroupsDto>();
-    dtoResponse.Data = _mapper.PhysicalToDto( physItems.Data.OrderBy( x => x.Name ).ToList() );
-    dtoResponse.Remaining = physItems.Remaining;
-    dtoResponse.Count = physItems.Count;
+    dtoResponse.Data = _mapper.PhysicalToDto( physItems.items.OrderBy( x => x.Name ).ToList() );
+    dtoResponse.Remaining = physItems.remaining;
+    dtoResponse.Count = physItems.count;
 
     return dtoResponse;
 

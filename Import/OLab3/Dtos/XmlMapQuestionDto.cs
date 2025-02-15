@@ -7,7 +7,7 @@ namespace OLab.Import.OLab3.Dtos;
 
 public class XmlMapQuestionDto : XmlImportDto<XmlMapQuestions>
 {
-  private readonly Api.ObjectMapper.Questions _mapper;
+  private readonly Api.ObjectMapper.QuestionsMapper _mapper;
 
   public XmlMapQuestionDto(
     IOLabLogger logger,
@@ -16,7 +16,7 @@ public class XmlMapQuestionDto : XmlImportDto<XmlMapQuestions>
       importer,
       Importer.DtoTypes.XmlMapQuestionDto, "map_question.xml" )
   {
-    _mapper = new Api.ObjectMapper.Questions( logger, GetDbContext(), GetWikiProvider() );
+    _mapper = new Api.ObjectMapper.QuestionsMapper( logger, GetDbContext(), GetWikiProvider() );
   }
 
   /// <summary>

@@ -7,10 +7,10 @@ using System.Text;
 
 namespace OLab.Api.ObjectMapper;
 
-public class ConstantsFull : OLabMapper<SystemConstants, ConstantsDto>
+public class ConstantsFullMapper : OLabMapper<SystemConstants, ConstantsDto>
 {
 
-  public ConstantsFull(
+  public ConstantsFullMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
@@ -18,7 +18,7 @@ public class ConstantsFull : OLabMapper<SystemConstants, ConstantsDto>
   {
   }
 
-  public ConstantsFull(
+  public ConstantsFullMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,

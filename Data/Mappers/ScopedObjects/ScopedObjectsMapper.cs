@@ -40,21 +40,21 @@ public class ScopedObjectsMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
     dto.Counters.AddRange( dtoCountersList );
 
     var dtoConstantsList
-      = new ConstantsFull( GetLogger(),
+      = new ConstantsFullMapper( GetLogger(),
         GetDbContext(),
         GetWikiProvider(),
         _enableWikiTranslation ).PhysicalToDto( phys.ConstantsPhys );
     dto.Constants.AddRange( dtoConstantsList );
 
     var dtoFilesList
-      = new FilesFull( GetLogger(),
+      = new FilesFullMapper( GetLogger(),
         GetDbContext(),
         GetWikiProvider(),
         _enableWikiTranslation ).PhysicalToDto( phys.FilesPhys );
     dto.Files.AddRange( dtoFilesList );
 
     var dtoScriptsList
-      = new ScriptsFull( GetLogger(),
+      = new ScriptsFullMapper( GetLogger(),
         GetDbContext(),
         GetWikiProvider(),
         _enableWikiTranslation ).PhysicalToDto( phys.ScriptsPhys );
@@ -63,7 +63,7 @@ public class ScopedObjectsMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
     if ( _wikiTagModules != null )
     {
       var dtoThemesList
-        = new ThemesFull(
+        = new ThemesFullMapper(
           GetLogger(),
         GetDbContext(),
         GetWikiProvider(),
@@ -96,21 +96,21 @@ public class ScopedObjectsMapper : ObjectMapper<ScopedObjects, ScopedObjectsDto>
     phys.CountersPhys.AddRange( physCounters );
 
     var physConstants
-      = new ConstantsFull( GetLogger(), GetDbContext(), GetWikiProvider(), _enableWikiTranslation ).DtoToPhysical( dto.Constants );
+      = new ConstantsFullMapper( GetLogger(), GetDbContext(), GetWikiProvider(), _enableWikiTranslation ).DtoToPhysical( dto.Constants );
     phys.ConstantsPhys.AddRange( physConstants );
 
     var physFiles
-      = new FilesFull( GetLogger(), GetDbContext(), GetWikiProvider(), _enableWikiTranslation ).DtoToPhysical( dto.Files );
+      = new FilesFullMapper( GetLogger(), GetDbContext(), GetWikiProvider(), _enableWikiTranslation ).DtoToPhysical( dto.Files );
     phys.FilesPhys.AddRange( physFiles );
 
     var physScripts
-      = new ScriptsFull( GetLogger(), GetDbContext(), GetWikiProvider(), _enableWikiTranslation ).DtoToPhysical( dto.Scripts );
+      = new ScriptsFullMapper( GetLogger(), GetDbContext(), GetWikiProvider(), _enableWikiTranslation ).DtoToPhysical( dto.Scripts );
     phys.ScriptsPhys.AddRange( physScripts );
 
     if ( _wikiTagModules != null )
     {
       var physThemes
-        = new ThemesFull( GetLogger(), GetDbContext(), GetWikiProvider(), _enableWikiTranslation ).DtoToPhysical( dto.Themes );
+        = new ThemesFullMapper( GetLogger(), GetDbContext(), GetWikiProvider(), _enableWikiTranslation ).DtoToPhysical( dto.Themes );
       phys.ThemesPhys.AddRange( physThemes );
     }
 

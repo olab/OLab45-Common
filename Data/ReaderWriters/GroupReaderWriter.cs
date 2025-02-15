@@ -52,16 +52,6 @@ public class GroupReaderWriter : ReaderWriter
   }
 
   /// <summary>
-  /// Get all items
-  /// </summary>
-  /// <returns>IList Groups</returns>
-  public async Task<IList<Groups>> GetAsync( int? take = null, int? skip = null)
-  {
-    var result = await GetRawAsync<Groups>( take, skip );
-    return result.items.OrderBy( x => x.Name ).ToList();
-  }
-
-  /// <summary>
   /// Get group by id
   /// </summary>
   /// <param name="id">Group Id</param>
