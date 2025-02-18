@@ -33,11 +33,13 @@ public partial class UserEndpoint : OLabEndpoint
   private readonly GroupReaderWriter _groupReaderWriter;
   private readonly UserReaderWriter _userReaderWriter;
   private readonly IOLabAuthorization _auth;
+  private readonly IOLabAuthentication _authent;
 
   public UserEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
     IOLabAuthorization auth,
+    IOLabAuthentication authent,
     OLabDBContext context,
     IOLabModuleProvider<IWikiTagModule> wikiTagProvider,
     IOLabModuleProvider<IFileStorageModule> fileStorageProvider) : base(
@@ -52,7 +54,7 @@ public partial class UserEndpoint : OLabEndpoint
     _userReaderWriter
       = UserReaderWriter.Instance( GetLogger(), GetDbContext() );
     _auth = auth;
-
+    _authent = authent;
   }
 
   /// <summary>
@@ -170,7 +172,7 @@ public partial class UserEndpoint : OLabEndpoint
     var groupsPhys = new List<Groups>();
 
     if ( await _auth.IsSystemSuperuserAsync() )
-      groupsPhys.AddRange( ( await _groupReaderWriter.GetRawAsync<Groups>() ).items );
+      groupsPhys.AddRange( (await _groupReaderWriter.GetRawAsync<Groups>()).items );
     else
     {
       var userPhys = await _userReaderWriter.GetSingleAsync( userId );
@@ -214,10 +216,7 @@ public partial class UserEndpoint : OLabEndpoint
 
     // update and encrypt password if one was passed in
     if ( !string.IsNullOrEmpty( userRequest.Password ) )
-      ChangePassword( physUser, new ChangePasswordRequest
-      {
-        NewPassword = userRequest.Password
-      } );
+      _authent.UpdatePassword( userRequest.Password, physUser );
 
     await _userReaderWriter.UpdateAsync( physUser );
 
@@ -283,32 +282,6 @@ public partial class UserEndpoint : OLabEndpoint
   }
 
   /// <summary>
-  /// Updates a user record with a new password
-  /// </summary>
-  /// <param name="user">Existing user record from DB</param>
-  /// <param name="model">Change password request model</param>
-  /// <returns></returns>
-  public void ChangePassword(
-    Users user,
-    ChangePasswordRequest model)
-  {
-    Guard.Argument( user, nameof( user ) ).NotNull();
-    Guard.Argument( model, nameof( model ) ).NotNull();
-
-    var clearText = model.NewPassword;
-
-    // add password salt, if it's defined
-    if ( !string.IsNullOrEmpty( user.Salt ) )
-      clearText += user.Salt;
-
-    var hash = SHA1.Create();
-    var plainTextBytes = Encoding.ASCII.GetBytes( clearText );
-    var hashBytes = hash.ComputeHash( plainTextBytes );
-
-    user.Password = BitConverter.ToString( hashBytes ).Replace( "-", "" ).ToLowerInvariant();
-  }
-
-  /// <summary>
   /// Add user based on add user request
   /// </summary>
   /// <param name="userRequest">User request</param>
@@ -326,15 +299,15 @@ public partial class UserEndpoint : OLabEndpoint
     newUserPhys.UserGrouproles.AddRange(
       UserGrouproles.StringToObjectList( GetDbContext(), userRequest.GroupRoles ) );
 
-    // if salt not passed in, then the incoming password is 
-    // cleartext, so we need to do a 'change password'
-    // on it to convert it to a hash before saving to database.
-    if ( string.IsNullOrEmpty( newUserPhys.Salt ) )
-      
-      ChangePassword( newUserPhys, new ChangePasswordRequest
-      {
-        NewPassword = newUserPhys.Password
-      } );
+    // default is system generated password
+    var clearTextPassword = newUserPhys.Password;
+
+    // override system generated password with user
+    // provided password, if provided
+    if ( !string.IsNullOrWhiteSpace( userRequest.Password ) )
+      clearTextPassword = userRequest.Password;
+
+    _authent.UpdatePassword( clearTextPassword, newUserPhys );
 
     newUserPhys = await _userReaderWriter.CreateAsync( newUserPhys );
 

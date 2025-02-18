@@ -41,10 +41,6 @@ public partial class MapsEndpoint : OLabEndpoint
     if ( !body.IsValid() )
       throw new OLabUnauthorizedException( "Object validity check failed" );
 
-    var map = await MapsReaderWriter.Instance( GetLogger(), GetDbContext() ).GetSingleAsync( mapId );
-    if ( map == null )
-      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, mapId );
-
     var dto = await GetRawNodeAsync( mapId, nodeId, true );
 
     // now that we had a real node id (because the call may be asking for node '0', which
@@ -64,9 +60,9 @@ public partial class MapsEndpoint : OLabEndpoint
     foreach ( var mapNodeLink in dto.MapNodeLinks )
     {
       if ( !await auth.HasAccessAsync(
-        IOLabAuthorization.AclBitMaskRead,
-        Utils.Constants.ScopeLevelNode,
-        mapNodeLink.DestinationId ) )
+          IOLabAuthorization.AclBitMaskRead,
+          Utils.Constants.ScopeLevelNode,
+          mapNodeLink.DestinationId ) )
         continue;
 
       // test if the destination node is visit-once
