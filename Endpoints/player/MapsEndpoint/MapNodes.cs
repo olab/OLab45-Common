@@ -62,7 +62,7 @@ public partial class MapsEndpoint : OLabEndpoint
       if ( !await auth.HasAccessAsync(
           IOLabAuthorization.AclBitMaskRead,
           Utils.Constants.ScopeLevelNode,
-          mapNodeLink.DestinationId ) )
+          mapNodeLink.DestinationId.Value ) )
         continue;
 
       // test if the destination node is visit-once
@@ -114,6 +114,28 @@ public partial class MapsEndpoint : OLabEndpoint
       dto.DynamicObjects.Counters = body.Counters;
     }
 
+    ApplyNewSession( auth, mapId, nodeId, body, dto );
+
+    UpdateScopedObjects( body, dto );
+
+    return dto;
+  }
+
+  private void UpdateScopedObjects(DynamicScopedObjectsDto body, MapsNodesFullRelationsDto dto)
+  {
+    dto.DynamicObjects.RefreshChecksum();
+
+    // dump out the dynamic objects for logging
+    dto.DynamicObjects.Dump( GetLogger(), "New" );
+
+    // initialize/update the nodes visited
+    dto.DynamicObjects.NodesVisited = body.NodesVisited;
+    if ( !body.NodesVisited.Contains( dto.Id.Value ) )
+      dto.DynamicObjects.NodesVisited.Add( dto.Id.Value );
+  }
+
+  private void ApplyNewSession(IOLabAuthorization auth, uint mapId, uint nodeId, DynamicScopedObjectsDto body, MapsNodesFullRelationsDto dto)
+  {
     var session = OLabSession.CreateInstance(
       GetLogger(),
       GetDbContext(),
@@ -133,18 +155,6 @@ public partial class MapsEndpoint : OLabEndpoint
 
     // save current session state to database
     session.SaveSessionState( dto.Id.Value, dto.DynamicObjects );
-
-    dto.DynamicObjects.RefreshChecksum();
-
-    // dump out the dynamic objects for logging
-    dto.DynamicObjects.Dump( GetLogger(), "New" );
-
-    // initialize/update the nodes visited
-    dto.DynamicObjects.NodesVisited = body.NodesVisited;
-    if ( !body.NodesVisited.Contains( dto.Id.Value ) )
-      dto.DynamicObjects.NodesVisited.Add( dto.Id.Value );
-
-    return dto;
   }
 
   /// <summary>

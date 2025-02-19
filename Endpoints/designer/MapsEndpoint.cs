@@ -48,7 +48,7 @@ public partial class MapsEndpoint : OLabEndpoint
   private async Task<Maps> GetSimpleAsync(uint mapId)
   {
     var phys = await MapsReaderWriter.Instance( GetLogger(), GetDbContext() ).GetSingleAsync( mapId )
-      ?? throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, mapId );
+      ?? throw new OLabObjectNotFoundException( Constants.ScopeLevelMap, mapId );
     return phys;
   }
 
@@ -63,11 +63,11 @@ public partial class MapsEndpoint : OLabEndpoint
     GetLogger().LogInformation( $"GetMapNodeAsync(uint mapId={mapId}, nodeId={nodeId})" );
 
     // test if user has access to map.
-    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId ) )
-      throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
+    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Constants.ScopeLevelMap, mapId ) )
+      throw new OLabUnauthorizedException( Constants.ScopeLevelMap, mapId );
 
     var map = await MapsReaderWriter.Instance( GetLogger(), GetDbContext() ).GetSingleAsync( mapId )
-      ?? throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, mapId );
+      ?? throw new OLabObjectNotFoundException( Constants.ScopeLevelMap, mapId );
 
     MapsNodesFullRelationsDto dto;
 

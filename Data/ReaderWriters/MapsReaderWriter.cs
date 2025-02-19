@@ -305,4 +305,38 @@ public partial class MapsReaderWriter : ReaderWriter
 
     return mapPhys.MapGrouproles.ToList();
   }
+
+  /// <summary>
+  /// Get list of maps that apply to a group and role
+  /// </summary>
+  /// <param name="groupId"></param>
+  /// <param name="roleId"></param>
+  /// <returns>Map list</returns>
+  public async Task<IEnumerable<Maps>> GetWithGroupRoleAsync(uint groupId, uint roleId)
+  {
+    var maps = await GetDbContext().Maps
+      .Include( c => c.MapGrouproles )
+      .Where( x => Maps.IsAccessible( x, groupId, roleId ) )
+      .ToListAsync();
+
+    return maps;
+  }
+
+  /// <summary>
+  /// Get map if applies to a group and role
+  /// </summary>
+  /// <param name="mapId"></param>
+  /// <param name="groupId"></param>
+  /// <param name="roleId"></param>
+  /// <returns>Map list</returns>
+  public async Task<Maps> GetWithGroupRoleAsync(uint mapId, uint groupId, uint roleId)
+  {
+    var physMap = await GetDbContext().Maps
+      .Include( c => c.MapGrouproles )
+      .Where( x =>
+        x.Id == mapId && (Maps.IsAccessible( x, groupId, roleId )) )
+      .FirstOrDefaultAsync();
+
+    return physMap;
+  }
 }

@@ -7,6 +7,7 @@ using OLab.Api.Model;
 using OLab.Data.BusinessObjects;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints.Player;
@@ -30,7 +31,10 @@ public partial class MapsEndpoint : OLabEndpoint
     GetLogger().LogInformation( $"userid: {auth.OLabUser.Id}: MapsEndpoint.GetDynamicScopedObjectsRawAsync" );
 
     // test if user has access to map.
-    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId ) )
+    if ( !await auth.HasAccessAsync(
+      IOLabAuthorization.AclBitMaskRead,
+      Utils.Constants.ScopeLevelMap,
+      mapId ) )
       throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
 
     var node = await _nodesReaderWriter.GetMapRootNode( mapId, nodeId );
@@ -53,7 +57,10 @@ public partial class MapsEndpoint : OLabEndpoint
     GetLogger().LogInformation( $"userid: {auth.OLabUser.Id}: MapsEndpoint.GetDynamicScopedObjectsTranslatedAsync" );
 
     // test if user has access to map.
-    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId ) )
+    if ( !await auth.HasAccessAsync(
+        IOLabAuthorization.AclBitMaskRead,
+        Utils.Constants.ScopeLevelMap,
+        mapId ) )
       throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
 
     var node = await _nodesReaderWriter.GetMapRootNode( mapId, nodeId );

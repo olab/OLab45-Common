@@ -78,7 +78,7 @@ public partial class MapsEndpoint : OLabEndpoint
   }
 
   /// <summary>
-  /// ReadAsync a list of maps
+  /// Read a list of accesible maps
   /// </summary>
   /// <param name="take">Max number of records to return</param>
   /// <param name="skip">SKip over a number of records</param>
@@ -88,49 +88,62 @@ public partial class MapsEndpoint : OLabEndpoint
     int? take,
     int? skip)
   {
-    GetLogger().LogInformation( $"{auth.OLabUser.Id}: MapsEndpoint.ReadAsync" );
+    GetLogger().LogInformation( $"User: {auth.OLabUser.Id}: MapsEndpoint.ReadAsync" );
 
-    var items = new List<Model.Maps>();
-    var total = 0;
+    var items = new List<Maps>();
     var remaining = 0;
+
+    var mapReaderWrite = MapsReaderWriter.Instance( GetLogger(), GetDbContext() );
+
+    var potentialMaps = new List<Maps>();
+    foreach ( var userGrouprole in auth.UsersGroupRoles )
+    {
+      var mapsSubList = await mapReaderWrite.GetWithGroupRoleAsync(
+        userGrouprole.GroupId,
+        userGrouprole.RoleId );
+
+      potentialMaps.AddRange( mapsSubList );
+    }
+
+    potentialMaps = potentialMaps.Distinct().ToList();
+    GetLogger().LogInformation( string.Format( "found {0} potential maps", potentialMaps.Count ) );
+
+    var accessibleMaps = new List<Maps>();
+    foreach ( var potentialMap in potentialMaps.DistinctBy( x => x.Id ) )
+    {
+      if ( await auth.HasRequestedAccessToMapAsync( GrouproleAcls.ReadMask, potentialMap ) )
+        accessibleMaps.Add( potentialMap );
+    }
+
+    accessibleMaps = potentialMaps.Distinct().ToList();
+    GetLogger().LogInformation( string.Format( "found {0} accessible maps", accessibleMaps.Count ) );
+
+    var tempDtoList = new MapsMapper(
+        GetLogger(),
+        GetDbContext(),
+        GetWikiProvider() ).PhysicalToDto( accessibleMaps );
+
+    GetLogger().LogInformation( string.Format( "found {0} maps", tempDtoList.Count ) );
+
+    var total = accessibleMaps.Count();
 
     if ( !skip.HasValue )
       skip = 0;
 
     if ( take.HasValue && skip.HasValue )
     {
-      total = GetDbContext().Maps.Count();
-      items = await GetDbContext().Maps
+      remaining = total - take.Value - skip.Value;
+
+      accessibleMaps = accessibleMaps
         .Skip( skip.Value )
         .Take( take.Value )
-        .OrderBy( x => x.Name ).ToListAsync();
-      remaining = total - take.Value - skip.Value;
-    }
-    else
-    {
-      items = await GetDbContext().Maps.OrderBy( x => x.Name ).ToListAsync();
+        .OrderBy( x => x.Name ).ToList();
     }
 
-    total = items.Count;
-
-    var tempDtoList = new MapsMapper(
+    var dtoList = new MapsMapper(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider() ).PhysicalToDto( items );
-
-    GetLogger().LogInformation( string.Format( "found {0} maps", tempDtoList.Count ) );
-
-    // filter out any maps user does not have access to.
-    var dtoList = new List<MapsDto>();
-
-    foreach ( var tempDtoItem in tempDtoList )
-    {
-      if ( await auth.HasAccessAsync(
-        IOLabAuthorization.AclBitMaskRead,
-        Utils.Constants.ScopeLevelMap,
-        tempDtoItem.Id ) )
-        dtoList.Add( tempDtoItem );
-    }
+        GetWikiProvider() ).PhysicalToDto( accessibleMaps );
 
     GetLogger().LogInformation( string.Format( $"have access to {dtoList.Count}/{total} maps" ) );
 
@@ -312,7 +325,7 @@ public partial class MapsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     uint id)
   {
-    GetLogger().LogInformation( $"{auth.OLabUser.Id}: MapsEndpoint.ReadAsync" );
+    GetLogger().LogInformation( $"User: {auth.OLabUser.Id}: MapsEndpoint.GetAsync" );
 
     var readerWriter = MapsReaderWriter.Instance( GetLogger(), GetDbContext() );
     var map = await readerWriter.GetSingleWithGroupRolesAsync( id );
