@@ -92,7 +92,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, dto );
-    if ( accessResult is UnauthorizedResult )
+    if ( !accessResult )
       throw new OLabUnauthorizedException( "ConstantsPhys", id );
 
     AttachParentObject( dto );
@@ -116,7 +116,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
-    if ( accessResult is UnauthorizedResult )
+    if ( !accessResult )
       throw new OLabUnauthorizedException( "ConstantsPhys", id );
 
     try
@@ -154,7 +154,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
-    if ( accessResult is UnauthorizedResult )
+    if ( !accessResult )
       throw new OLabUnauthorizedException( "ConstantsPhys", 0 );
 
     var builder = new ConstantsFullMapper(
@@ -196,7 +196,7 @@ public partial class ConstantsEndpoint : OLabEndpoint
 
       // test if user has access to object
       var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
-      if ( accessResult is UnauthorizedResult )
+      if ( !accessResult )
         throw new OLabUnauthorizedException( "ConstantsPhys", id );
 
       GetDbContext().SystemConstants.Remove( phys );

@@ -54,7 +54,7 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dtoQuestionTemp );
-    if ( accessResult is UnauthorizedResult )
+    if ( !accessResult )
       throw new OLabUnauthorizedException( "QuestionResponses", id );
 
     try
@@ -97,7 +97,7 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dtoQuestionTemp );
-    if ( accessResult is UnauthorizedResult )
+    if ( !accessResult )
       throw new OLabUnauthorizedException( "QuestionResponses", 0 );
 
     var responsebuilder = new QuestionResponses(
@@ -140,8 +140,8 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
 
       // test if user has access to objectdtoQuestion
       var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dtoQuestion );
-      if ( accessResult is UnauthorizedResult )
-        return accessResult;
+      if ( !accessResult )
+        return OLabUnauthorizedResult.Result();
 
       GetDbContext().SystemQuestionResponses.Remove( physResponse );
       await GetDbContext().SaveChangesAsync();

@@ -312,11 +312,21 @@ public partial class MapsReaderWriter : ReaderWriter
   /// <param name="groupId"></param>
   /// <param name="roleId"></param>
   /// <returns>Map list</returns>
-  public async Task<IEnumerable<Maps>> GetWithGroupRoleAsync(uint groupId, uint roleId)
+  public async Task<IEnumerable<Maps>> GetWithGroupRoleAsync(uint groupId = 0, uint roleId = 0)
   {
+    if ( groupId == 0 && roleId == 0 )
+      return await GetDbContext().Maps
+         .Include( c => c.MapGrouproles ).ToListAsync();
+
+    // using Maps.IsAccessible is not possible within the where,
+    // so it's hand-bombed in here
     var maps = await GetDbContext().Maps
       .Include( c => c.MapGrouproles )
-      .Where( x => Maps.IsAccessible( x, groupId, roleId ) )
+      .Where( x =>
+        x.MapGrouproles.Any( y => (y.GroupId == groupId && y.RoleId == roleId) ) ||
+        x.MapGrouproles.Any( y => (y.GroupId == groupId && !y.RoleId.HasValue) ) ||
+        x.MapGrouproles.Any( y => (!y.GroupId.HasValue && y.RoleId == roleId) ) ||
+        x.MapGrouproles.Any( y => (!y.GroupId.HasValue && !y.RoleId.HasValue) ) )
       .ToListAsync();
 
     return maps;
@@ -331,12 +341,11 @@ public partial class MapsReaderWriter : ReaderWriter
   /// <returns>Map list</returns>
   public async Task<Maps> GetWithGroupRoleAsync(uint mapId, uint groupId, uint roleId)
   {
-    var physMap = await GetDbContext().Maps
-      .Include( c => c.MapGrouproles )
-      .Where( x =>
-        x.Id == mapId && (Maps.IsAccessible( x, groupId, roleId )) )
-      .FirstOrDefaultAsync();
+    var physMap = await GetSingleWithGroupRolesAsync( mapId );
 
-    return physMap;
+    if ( Maps.IsAccessible( physMap, groupId, roleId ) )
+      return physMap;
+
+    return null;
   }
 }

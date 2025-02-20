@@ -23,6 +23,15 @@ public abstract class ReaderWriter
   }
 
   /// <summary>
+  /// Get count of objects
+  /// </summary>
+  /// <returns></returns>
+  public virtual async Task<int> CountAsync<T>() where T : class
+  {
+    return await GetDbContext().Set<T>().CountAsync();
+  }
+
+  /// <summary>
   /// Generic pages reader
   /// </summary>
   /// <typeparam name="T">Object type</typeparam>

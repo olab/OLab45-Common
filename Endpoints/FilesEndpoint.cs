@@ -102,7 +102,7 @@ public partial class FilesEndpoint : OLabEndpoint
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, dto );
-    if ( accessResult is UnauthorizedResult )
+    if ( !accessResult )
       throw new OLabUnauthorizedException( "FilesPhys", id );
 
     AttachParentObject( dto );
@@ -126,7 +126,7 @@ public partial class FilesEndpoint : OLabEndpoint
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
-    if ( accessResult is UnauthorizedResult )
+    if ( !accessResult )
       throw new OLabUnauthorizedException( "FilesPhys", id );
 
     try
@@ -167,7 +167,7 @@ public partial class FilesEndpoint : OLabEndpoint
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
-    if ( accessResult is UnauthorizedResult )
+    if ( !accessResult )
       throw new OLabUnauthorizedException( "SystemFiles", 0 );
 
     if ( string.IsNullOrEmpty( dto.Mime ) )
@@ -223,7 +223,7 @@ public partial class FilesEndpoint : OLabEndpoint
 
       // test if user has access to object
       var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
-      if ( accessResult is UnauthorizedResult )
+      if ( !accessResult )
         throw new OLabUnauthorizedException( "SystemFiles", id );
 
       var filePath = _fileStorageModule.BuildPath(

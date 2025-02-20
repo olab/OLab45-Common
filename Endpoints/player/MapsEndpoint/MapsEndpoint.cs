@@ -15,6 +15,7 @@ using OLab.Data.ReaderWriters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -95,44 +96,44 @@ public partial class MapsEndpoint : OLabEndpoint
 
     var mapReaderWrite = MapsReaderWriter.Instance( GetLogger(), GetDbContext() );
 
+    var total = await mapReaderWrite.CountAsync<Maps>();
+
     var potentialMaps = new List<Maps>();
-    foreach ( var userGrouprole in auth.UsersGroupRoles )
-    {
-      var mapsSubList = await mapReaderWrite.GetWithGroupRoleAsync(
-        userGrouprole.GroupId,
-        userGrouprole.RoleId );
-
-      potentialMaps.AddRange( mapsSubList );
-    }
-
-    potentialMaps = potentialMaps.Distinct().ToList();
-    GetLogger().LogInformation( string.Format( "found {0} potential maps", potentialMaps.Count ) );
-
     var accessibleMaps = new List<Maps>();
-    foreach ( var potentialMap in potentialMaps.DistinctBy( x => x.Id ) )
+
+    if ( await auth.IsSystemSuperuserAsync() )
+      accessibleMaps = (await mapReaderWrite.GetWithGroupRoleAsync()).ToList();
+    else
     {
-      if ( await auth.HasRequestedAccessToMapAsync( GrouproleAcls.ReadMask, potentialMap ) )
-        accessibleMaps.Add( potentialMap );
+      foreach ( var userGrouprole in auth.UsersGroupRoles )
+      {
+        var mapsSubList = await mapReaderWrite.GetWithGroupRoleAsync(
+          userGrouprole.GroupId,
+          userGrouprole.RoleId );
+
+        potentialMaps.AddRange( mapsSubList );
+      }
+
+      potentialMaps = potentialMaps.Distinct().ToList();
+      GetLogger().LogInformation( string.Format( "found {0} potential maps", potentialMaps.Count ) );
+
+      foreach ( var potentialMap in potentialMaps.DistinctBy( x => x.Id ) )
+      {
+        if ( await auth.HasAccessAsync( GrouproleAcls.ReadMask, potentialMap ) )
+          accessibleMaps.Add( potentialMap );
+      }
+
+      accessibleMaps = potentialMaps.Distinct().ToList();
     }
 
-    accessibleMaps = potentialMaps.Distinct().ToList();
     GetLogger().LogInformation( string.Format( "found {0} accessible maps", accessibleMaps.Count ) );
-
-    var tempDtoList = new MapsMapper(
-        GetLogger(),
-        GetDbContext(),
-        GetWikiProvider() ).PhysicalToDto( accessibleMaps );
-
-    GetLogger().LogInformation( string.Format( "found {0} maps", tempDtoList.Count ) );
-
-    var total = accessibleMaps.Count();
 
     if ( !skip.HasValue )
       skip = 0;
 
     if ( take.HasValue && skip.HasValue )
     {
-      remaining = total - take.Value - skip.Value;
+      remaining = accessibleMaps.Count - take.Value - skip.Value;
 
       accessibleMaps = accessibleMaps
         .Skip( skip.Value )
@@ -145,9 +146,9 @@ public partial class MapsEndpoint : OLabEndpoint
         GetDbContext(),
         GetWikiProvider() ).PhysicalToDto( accessibleMaps );
 
-    GetLogger().LogInformation( string.Format( $"have access to {dtoList.Count}/{total} maps" ) );
+    GetLogger().LogInformation( string.Format( $"returning {dtoList.Count}/{accessibleMaps.Count} accessible maps" ) );
 
-    return new OLabAPIPagedResponse<MapsDto> { Data = dtoList, Remaining = remaining, Count = total };
+    return new OLabAPIPagedResponse<MapsDto> { Data = dtoList, Remaining = remaining, Count = accessibleMaps.Count };
   }
 
   /// <summary>

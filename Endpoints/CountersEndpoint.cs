@@ -90,7 +90,7 @@ public partial class CountersEndpoint : OLabEndpoint
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, dto );
-    if ( accessResult is UnauthorizedResult )
+    if ( !accessResult )
       throw new OLabUnauthorizedException( "CounterMapper", id );
 
     AttachParentObject( dto );
@@ -113,7 +113,7 @@ public partial class CountersEndpoint : OLabEndpoint
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
-    if ( accessResult is UnauthorizedResult )
+    if ( !accessResult )
       throw new OLabUnauthorizedException( "CounterMapper", id );
 
     try
@@ -154,7 +154,7 @@ public partial class CountersEndpoint : OLabEndpoint
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
-    if ( accessResult is UnauthorizedResult )
+    if ( !accessResult )
       throw new OLabUnauthorizedException( "CounterMapper", 0 );
 
     var builder = new CountersFullMapper(
@@ -198,7 +198,7 @@ public partial class CountersEndpoint : OLabEndpoint
 
       // test if user has access to object
       var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
-      if ( accessResult is UnauthorizedResult )
+      if ( !accessResult )
         throw new OLabUnauthorizedException( "CounterMapper", id );
 
       GetDbContext().SystemCounters.Remove( phys );

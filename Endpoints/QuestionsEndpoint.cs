@@ -103,7 +103,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, dto );
-    if ( accessResult is UnauthorizedResult )
+    if ( !accessResult )
       throw new OLabUnauthorizedException( "QuestionsPhys", id );
 
     AttachParentObject( dto );
@@ -128,7 +128,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
-    if ( accessResult is UnauthorizedResult )
+    if ( !accessResult )
       throw new OLabUnauthorizedException( "QuestionsPhys", id );
 
     try
@@ -169,7 +169,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
-    if ( accessResult is UnauthorizedResult )
+    if ( !accessResult )
       throw new OLabUnauthorizedException( "QuestionsPhys", 0 );
 
     var builder = new QuestionsFullMapper(
@@ -214,7 +214,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
 
       // test if user has access to object
       var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
-      if ( accessResult is UnauthorizedResult )
+      if ( !accessResult )
         throw new OLabUnauthorizedException( "Question", id );
 
       if ( GetDbContext().UserResponses.Any( x => x.QuestionId == id ) )
