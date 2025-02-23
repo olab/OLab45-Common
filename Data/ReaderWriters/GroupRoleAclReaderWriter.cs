@@ -217,19 +217,13 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     }
 
     if ( !string.IsNullOrEmpty( objectType ) )
+    {
       query = query.Where( x => x.ImageableType == objectType );
 
-    if ( objectIds != null )
-    {
-      foreach ( var objectId in objectIds )
-      {
-        if ( objectId == null )
-          query = query.Where( x => x.ImageableId == null );
-        else if ( objectId == 0 )
-          query = query.Where( x => x.ImageableId != null );
-        else
-          query = query.Where( x => x.ImageableId == objectId );
-      }
+      if ( objectIds == null )
+        query.Where( x => !x.ImageableId.HasValue );
+      else
+        query.Where( x => objectIds.Contains( x.ImageableId ) );
     }
 
     groupAcls = await query.ToListAsync();

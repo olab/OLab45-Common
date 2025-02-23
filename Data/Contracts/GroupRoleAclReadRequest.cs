@@ -5,6 +5,8 @@ public class GroupRoleAclReadRequest
 {
   public const int AnySelected = 0;
 
+  public string Type { get; set; }
+
   public uint? GroupId { get; set; }
   public uint? RoleId { get; set; }
   public IList<uint?> MapIds { get; set; } = new List<uint?>();

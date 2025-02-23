@@ -123,67 +123,27 @@ public partial class GroupRoleAclsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     GroupRoleAclReadRequest model)
   {
-    var groupRoleAclsPhys = new List<GrouproleAcls>();
-
     // test if user has access 
     if ( !await auth.IsSystemSuperuserAsync() )
       throw new OLabUnauthorizedException();
 
-    if ( model.GroupId == 0 )
-      model.GroupId = null;
+    IList<uint?> ids = null;
 
-    if ( model.RoleId == 0 )
-      model.RoleId = null;
+    if ( ( model.NodeIds != null ) && ( model.NodeIds.Count > 0 ) )
+      ids = model.NodeIds;
+    else if ( (model.MapIds != null) && (model.MapIds.Count > 0) )
+      ids = model.MapIds;
+    else if ( (model.AppIds != null) && (model.AppIds.Count > 0) )
+      ids = model.AppIds;
 
-    // no criteria, so query all
-    if ( !model.GroupId.HasValue &&
-         !model.RoleId.HasValue &&
-         (model.MapIds.Count == 0) &&
-         (model.AppIds.Count == 0) &&
-         (model.NodeIds.Count == 0) )
-      groupRoleAclsPhys.AddRange( await _readerWriter.GetAsync() );
-
-    else
-    {
-      // query by group and role
-      if ( (model.MapIds.Count == 0) &&
-           (model.AppIds.Count == 0) &&
-           (model.NodeIds.Count == 0) )
-        groupRoleAclsPhys.AddRange( await _readerWriter.GetListAsync(
-          model.GroupId,
-          model.RoleId ) );
-
-      // query by node
-      else
-      {
-        if ( model.NodeIds.Count > 0 )
-          groupRoleAclsPhys.AddRange( await _readerWriter.GetListAsync(
-            model.GroupId,
-            model.RoleId,
-            Constants.ScopeLevelNode,
-            model.NodeIds ) );
-
-        // query by map
-        if ( model.MapIds.Count > 0 )
-          groupRoleAclsPhys.AddRange( await _readerWriter.GetListAsync(
-            model.GroupId,
-            model.RoleId,
-            Constants.ScopeLevelMap,
-            model.MapIds ) );
-
-        // query by application
-        if ( model.AppIds.Count > 0 )
-          groupRoleAclsPhys.AddRange( await _readerWriter.GetListAsync(
-            model.GroupId,
-            model.RoleId,
-            Constants.ScopeLevelApp,
-            model.AppIds ) );
-      }
-
-    }
+    var groupRoleAclsPhys = await _readerWriter.GetListAsync(
+        model.GroupId,
+        model.RoleId,
+        model.Type,
+        ids );
 
     var itemsDto = _mapper.PhysicalToDto( groupRoleAclsPhys );
     return itemsDto;
   }
-}
 
+}
