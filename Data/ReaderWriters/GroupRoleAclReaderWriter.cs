@@ -220,10 +220,13 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     {
       query = query.Where( x => x.ImageableType == objectType );
 
-      if ( objectIds == null )
-        query.Where( x => !x.ImageableId.HasValue );
-      else
-        query.Where( x => objectIds.Contains( x.ImageableId ) );
+      if ( objectIds != null )
+      {
+        if ( objectIds.Contains( 0 ) )
+          query = query.Where( x => !x.ImageableId.HasValue );
+        else
+          query.Where( x => objectIds.Contains( x.ImageableId ) );
+      }
     }
 
     groupAcls = await query.ToListAsync();
