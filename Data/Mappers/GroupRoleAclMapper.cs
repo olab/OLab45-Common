@@ -34,7 +34,6 @@ public class GroupRoleAclMapper : OLabMapper<GrouproleAcls, GroupRoleAclDto>
     to.ObjectType = string.IsNullOrEmpty( from.ImageableType ) ? null : from.ImageableType;
     to.Read = (from.Acl2 & GrouproleAcls.ReadMask) == GrouproleAcls.ReadMask;
     to.Write = (from.Acl2 & GrouproleAcls.WriteMask) == GrouproleAcls.WriteMask;
-    to.Execute = (from.Acl2 & GrouproleAcls.ExecuteMask) == GrouproleAcls.ExecuteMask;
 
     return to;
   }
@@ -57,7 +56,6 @@ public class GroupRoleAclMapper : OLabMapper<GrouproleAcls, GroupRoleAclDto>
     to.ImageableType = from.ObjectType;
     to.Acl2 = from.Read ? (ulong)GrouproleAcls.ReadMask : 0;
     to.Acl2 |= from.Write ? (ulong)GrouproleAcls.WriteMask : 0;
-    to.Acl2 |= from.Execute ? (ulong)GrouproleAcls.ExecuteMask : 0;
 
     return to;
   }

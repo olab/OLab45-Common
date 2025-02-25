@@ -181,7 +181,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   /// </summary>
   /// <param name="groupId">Group Id: null = ignore, 0 = null, else id</param>
   /// <param name="roleId">Role Id: null = ignore, 0 = null, else id</param>
-  /// <param name="objectType">Object type: null = ignore</param>
+  /// <param name="objectType">Object types: null = ignore, multiple comma delimited</param>
   /// <param name="objectIds">List of id's: null = ignore, 0 = null, else id</param>
   /// <returns>A list of Group Role ACL records.</returns>
   public async Task<IList<GrouproleAcls>> GetListAsync(
@@ -203,7 +203,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     if ( groupId.HasValue )
     {
       if ( groupId.Value == 0 )
-        query = query.Where( x => !x.GroupId.HasValue );
+        query = query.Where( x => x.GroupId.HasValue );
       else
         query = query.Where( x => x.GroupId.HasValue && x.GroupId.Value == groupId.Value );
     }
@@ -211,21 +211,21 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     if ( roleId.HasValue )
     {
       if ( roleId.Value == 0 )
-        query = query.Where( x => !x.RoleId.HasValue );
+        query = query.Where( x => x.RoleId.HasValue );
       else
         query = query.Where( x => x.RoleId.HasValue && x.RoleId.Value == roleId.Value );
     }
 
     if ( !string.IsNullOrEmpty( objectType ) )
     {
-      query = query.Where( x => x.ImageableType == objectType );
+      query = query.Where( x => !string.IsNullOrEmpty( x.ImageableType ) && objectType.Contains( x.ImageableType ) );
 
       if ( objectIds != null )
       {
         if ( objectIds.Contains( 0 ) )
-          query = query.Where( x => !x.ImageableId.HasValue );
+          query = query.Where( x => x.ImageableId.HasValue );
         else
-          query.Where( x => objectIds.Contains( x.ImageableId ) );
+          query = query.Where( x => x.ImageableId.HasValue && objectIds.Contains( x.ImageableId.Value ) );
       }
     }
 
@@ -299,8 +299,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   /// <param name="commit">optional commit</param>
   /// <returns></returns>
   public async Task<GrouproleAcls> GetAsync(
-    uint id,
-    bool commit = false)
+    uint id)
   {
     var physAcl =
       await GetDbContext().GrouproleAcls.FirstOrDefaultAsync( x => x.Id == id );

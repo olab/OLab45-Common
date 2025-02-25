@@ -139,7 +139,7 @@ public partial class GroupRoleAclsEndpoint : OLabEndpoint
     var groupRoleAclsPhys = await _readerWriter.GetListAsync(
         model.GroupId,
         model.RoleId,
-        model.Type,
+        model.Types,
         ids );
 
     var itemsDto = _mapper.PhysicalToDto( groupRoleAclsPhys );

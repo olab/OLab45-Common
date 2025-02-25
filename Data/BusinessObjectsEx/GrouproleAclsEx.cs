@@ -44,10 +44,10 @@ public partial class GrouproleAcls
 
   public override string ToString()
   {
-    var groupName = (Group != null) ? $"{Group?.Name}({GroupId})" : (GroupId != null ? GroupId.ToString() : "*");
-    var roleName = (Role != null) ? $"{Role?.Name}({RoleId})" : (RoleId != null ? RoleId.ToString() : "*");
+    var groupName = (Group != null) ? $"{Group?.Name}({GroupId})" : (GroupId != null ? (GroupId == 0 ? "*" : GroupId.ToString()) : "null");
+    var roleName = (Role != null) ? $"{Role?.Name}({RoleId})" : (RoleId != null ? (RoleId == 0 ? "*" : RoleId.ToString()) : "null");
     var imageableType = string.IsNullOrEmpty( ImageableType ) ? "*" : ImageableType;
-    var imageableId = ImageableId.HasValue ? $"{ImageableId.Value}" : "*";
+    var imageableId = ImageableId.HasValue ? $"{string.Join( ',', ImageableId.Value )}" : "null";
 
     return $"{Id}: {groupName}{UserGrouproles.ItemSeparator}{roleName} {imageableType}({imageableId}) acl: '{Convert.ToString( (int)Acl2, 2 )}'";
   }
