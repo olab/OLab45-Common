@@ -74,7 +74,9 @@ public class GroupReaderWriter : ReaderWriter
   /// <param name="take">(optional) number of objects to return</param>
   /// <param name="skip">(optional) number of objects to skip</param>
   /// <returns>OLabAPIPagedResponse</returns>
-  public async Task<OLabAPIPagedResponse<Groups>> GetPagedAsync(int? take, int? skip)
+  public async Task<OLabAPIPagedResponse<Groups>> GetPagedAsync(
+    int? take,
+    int? skip)
   {
     var response = new OLabAPIPagedResponse<Groups>();
 

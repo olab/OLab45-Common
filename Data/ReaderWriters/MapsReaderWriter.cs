@@ -13,12 +13,16 @@ namespace OLab.Data.ReaderWriters;
 
 public partial class MapsReaderWriter : ReaderWriter
 {
-  public static MapsReaderWriter Instance(IOLabLogger logger, OLabDBContext context)
+  public static MapsReaderWriter Instance(
+    IOLabLogger logger,
+    OLabDBContext context)
   {
     return new MapsReaderWriter( logger, context );
   }
 
-  public MapsReaderWriter(IOLabLogger logger, OLabDBContext context) : base( logger, context )
+  public MapsReaderWriter(
+    IOLabLogger logger,
+    OLabDBContext context) : base( logger, context )
   {
   }
 
@@ -122,13 +126,17 @@ public partial class MapsReaderWriter : ReaderWriter
     return phys;
   }
 
-  public async Task<IList<Maps>> GetMultipleAsync(int skip = 0, int take = 0)
+  public async Task<IList<Maps>> GetMultipleAsync(
+    int skip = 0,
+    int take = 0)
   {
     var items = await GetDbContext().Maps.Skip( skip ).Take( take ).OrderBy( x => x.Name ).ToListAsync();
     return items;
   }
 
-  public async Task<uint> UpsertAsync(Maps newMapPhys, bool save = true)
+  public async Task<uint> UpsertAsync(
+    Maps newMapPhys,
+    bool save = true)
   {
     if ( newMapPhys.Id == 0 )
     {
@@ -165,7 +173,9 @@ public partial class MapsReaderWriter : ReaderWriter
   /// <param name="map">Target map (map be null, meaning create new map)</param>
   /// <param name="templateId">Source template</param>
   /// <returns>Ammended map</returns>
-  public async Task<Maps> CreateMapWithTemplateAsync(Maps map, Maps template)
+  public async Task<Maps> CreateMapWithTemplateAsync(
+    Maps map,
+    Maps template)
   {
     using var transaction = GetDbContext().Database.BeginTransaction();
 
@@ -191,7 +201,9 @@ public partial class MapsReaderWriter : ReaderWriter
   /// <param name="map">Target map</param>
   /// <param name="template">Source template map</param>
   /// <returns>Modified map</returns>
-  private async Task<Maps> CloneMapAsync(Maps map, Maps template)
+  private async Task<Maps> CloneMapAsync(
+    Maps map,
+    Maps template)
   {
     var oldMapId = template.Id;
 
@@ -312,7 +324,9 @@ public partial class MapsReaderWriter : ReaderWriter
   /// <param name="groupId"></param>
   /// <param name="roleId"></param>
   /// <returns>Map list</returns>
-  public async Task<IEnumerable<Maps>> GetWithGroupRoleAsync(uint groupId = 0, uint roleId = 0)
+  public async Task<IEnumerable<Maps>> GetWithGroupRoleAsync(
+    uint groupId = 0,
+    uint roleId = 0)
   {
     if ( groupId == 0 && roleId == 0 )
       return await GetDbContext().Maps
@@ -339,7 +353,10 @@ public partial class MapsReaderWriter : ReaderWriter
   /// <param name="groupId"></param>
   /// <param name="roleId"></param>
   /// <returns>Map list</returns>
-  public async Task<Maps> GetWithGroupRoleAsync(uint mapId, uint groupId, uint roleId)
+  public async Task<Maps> GetWithGroupRoleAsync(
+    uint mapId,
+    uint groupId,
+    uint roleId)
   {
     var physMap = await GetSingleWithGroupRolesAsync( mapId );
 

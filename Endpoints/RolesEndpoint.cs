@@ -52,7 +52,7 @@ public partial class RolesEndpoint : OLabEndpoint
     var physItems = await _readerWriter.GetRawAsync<Roles>( skip, take );
 
     var dtoItems = new OLabAPIPagedResponse<RolesDto>();
-    dtoItems.Data = _mapper.PhysicalToDto( physItems.items.ToList() );
+    dtoItems.Data = _mapper.PhysicalToDto( physItems.items.OrderBy( x => x.Name ).ToList() );
     dtoItems.Remaining = physItems.remaining;
     dtoItems.Count = physItems.count;
 

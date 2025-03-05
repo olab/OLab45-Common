@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -491,6 +492,7 @@ public partial class UserEndpoint : OLabEndpoint
   /// <param name="name">The name to search for. If null or empty, all users are returned.</param>
   /// <returns>A list of user DTOs that match the search criteria.</returns>
   public async Task<IList<UsersDto>> GetUsersAsync(
+    IOLabAuthorization author,
     string name)
   {
     IList<Users> users = new List<Users>();
@@ -500,7 +502,13 @@ public partial class UserEndpoint : OLabEndpoint
     else
       users = await _userReaderWriter.GetAsync();
 
-    var dtoList = new UsersMapper( GetLogger(), GetDbContext() ).PhysicalToDto( users );
+    /// get groups user is allowed to manage
+    var userManagementGroups = await author.GetAuthorizedUserGroupsAsync();
+
+    var filteredUsers = users.Where( x => x.UserGrouproles.Any( y => userManagementGroups.Any( z => z.Id == y.GroupId ) ) ).ToList();
+    GetLogger().LogInformation( $"GetUsersAsync returning {filteredUsers.Count} of {users.Count} users" );
+
+    var dtoList = new UsersMapper( GetLogger(), GetDbContext() ).PhysicalToDto( filteredUsers );
     return dtoList;
   }
 }

@@ -33,7 +33,8 @@ public partial class GroupsEndpoint : OLabEndpoint
       fileStorageProvider )
   {
     _readerWriter = GroupReaderWriter.Instance( logger, dbContext );
-    _mapper = new GroupsMapper( GetLogger(),
+    _mapper = new GroupsMapper( 
+      GetLogger(),
       GetDbContext(),
       GetWikiProvider() );
   }
@@ -48,15 +49,27 @@ public partial class GroupsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     int? take, int? skip)
   {
-    var physItems = await _readerWriter.GetRawAsync<Groups>( skip, take );
+    var physItems = await _readerWriter.GetRawAsync<Groups>();
+    var total = physItems.count;
 
     var dtoResponse = new OLabAPIPagedResponse<GroupsDto>();
+
+    // if not superuser, then build list of groups user is part of
+    if ( !await auth.IsSystemSuperuserAsync() )
+    {
+      physItems.items
+        = physItems.items.Where( x => auth.UsersGroupRoles.Select( y => y.Id ).ToList().Contains( x.Id ) ).Distinct().ToList();
+      total = physItems.items.Count();
+    }
+
+    if ( take.HasValue )
+      physItems.items = physItems.items.Skip( skip.Value ).Take( take.Value ).ToList();
+
     dtoResponse.Data = _mapper.PhysicalToDto( physItems.items.OrderBy( x => x.Name ).ToList() );
-    dtoResponse.Remaining = physItems.remaining;
-    dtoResponse.Count = physItems.count;
+    dtoResponse.Remaining = total - physItems.items.Count();
+    dtoResponse.Count = physItems.items.Count();
 
     return dtoResponse;
-
   }
 
   /// <summary>

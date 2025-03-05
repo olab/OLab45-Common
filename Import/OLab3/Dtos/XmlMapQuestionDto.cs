@@ -53,6 +53,10 @@ public class XmlMapQuestionDto : XmlImportDto<XmlMapQuestions>
     if ( item.CounterId.HasValue )
       item.CounterId = counterDto.GetIdTranslation( GetFileName(), item.CounterId.Value );
 
+    // special case for NumTries
+    if ( item.EntryTypeId == 4 && item.NumTries == 1 )
+      item.NumTries = -1;
+
     GetDbContext().SystemQuestions.Add( item );
     GetDbContext().SaveChanges();
 
