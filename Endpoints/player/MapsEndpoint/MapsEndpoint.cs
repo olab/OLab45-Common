@@ -110,7 +110,6 @@ public partial class MapsEndpoint : OLabEndpoint
         var mapsSubList = await mapReaderWrite.GetWithGroupRoleAsync(
           userGrouprole.GroupId,
           userGrouprole.RoleId );
-
         potentialMaps.AddRange( mapsSubList );
       }
 
@@ -144,7 +143,7 @@ public partial class MapsEndpoint : OLabEndpoint
     var dtoList = new MapsMapper(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider() ).PhysicalToDto( accessibleMaps.OrderBy( x => x.Name ).ToList() );
+        GetWikiProvider() ).PhysicalToDto( accessibleMaps );
 
     GetLogger().LogInformation( string.Format( $"returning {dtoList.Count}/{accessibleMaps.Count} accessible maps" ) );
 

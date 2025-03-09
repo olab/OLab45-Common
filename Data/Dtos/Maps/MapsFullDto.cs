@@ -42,4 +42,9 @@ public class MapsFullDto : MapsDto
   public uint? ReportNodeId { get; set; }
   [JsonProperty( "groupRoles" )]
   public IList<MapGrouprolesDto> MapGroupRoles { get; set; }
+
+  public override string ToString()
+  {
+    return $"{Name} ({Id})";
+  }
 }

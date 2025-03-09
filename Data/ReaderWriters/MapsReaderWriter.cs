@@ -330,7 +330,9 @@ public partial class MapsReaderWriter : ReaderWriter
   {
     if ( groupId == 0 && roleId == 0 )
       return await GetDbContext().Maps
-         .Include( c => c.MapGrouproles ).ToListAsync();
+        .Include( c => c.MapGrouproles )
+        .OrderBy( x => x.Name )
+        .ToListAsync();
 
     // using Maps.IsAccessible is not possible within the where,
     // so it's hand-bombed in here
@@ -341,6 +343,7 @@ public partial class MapsReaderWriter : ReaderWriter
         x.MapGrouproles.Any( y => (y.GroupId == groupId && !y.RoleId.HasValue) ) ||
         x.MapGrouproles.Any( y => (!y.GroupId.HasValue && y.RoleId == roleId) ) ||
         x.MapGrouproles.Any( y => (!y.GroupId.HasValue && !y.RoleId.HasValue) ) )
+      .OrderBy( x => x.Name )
       .ToListAsync();
 
     return maps;

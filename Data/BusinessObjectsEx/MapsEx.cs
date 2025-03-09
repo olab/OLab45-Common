@@ -95,4 +95,9 @@ public partial class Maps
 
     return accessible;
   }
+
+  public override string ToString()
+  {
+    return $"{Name} ({Id})";
+  }
 }
