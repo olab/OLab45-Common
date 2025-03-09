@@ -138,13 +138,13 @@ public partial class MapsEndpoint : OLabEndpoint
       accessibleMaps = accessibleMaps
         .Skip( skip.Value )
         .Take( take.Value )
-        .OrderBy( x => x.Name ).ToList();
+        .ToList();
     }
 
     var dtoList = new MapsMapper(
         GetLogger(),
         GetDbContext(),
-        GetWikiProvider() ).PhysicalToDto( accessibleMaps );
+        GetWikiProvider() ).PhysicalToDto( accessibleMaps.OrderBy( x => x.Name ).ToList() );
 
     GetLogger().LogInformation( string.Format( $"returning {dtoList.Count}/{accessibleMaps.Count} accessible maps" ) );
 
