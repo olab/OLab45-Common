@@ -67,7 +67,7 @@ public class MapNodesFullMapper : OLabMapper<MapNodes, MapNodesFullDto>
 
     if ( enableWikiTranslation )
     {
-      dto.Text = _reader.DisambiguateWikiQuestions( dto.Text );
+      dto.Text = _reader.DisambiguateWikiQuestions( phys.Id, phys.MapId, dto.Text );
       dto.Text = GetWikiProvider().Translate( dto.Text );
     }
     else

@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
+using OLab.Api.Dto.Designer;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using OLab.Common.Utils;
@@ -34,19 +36,35 @@ public class QuestionReaderWriter : ReaderWriter
     _wikiTagProvider = wikiTagProvider;
   }
 
+
   /// <summary>
-  /// Get question by id or name
+  /// Retrieves a SystemQuestions object based on the provided nodeId, mapId, and source.
   /// </summary>
-  /// <param name="id">Role Id</param>
-  /// <returns>Roles</returns>
-  public SystemQuestions Get(string source)
+  /// <param name="nodeId">The ID of the node.</param>
+  /// <param name="mapId">The ID of the map.</param>
+  /// <param name="source">The source string which can be either an ID or a name.</param>
+  /// <returns>A SystemQuestions object if found; otherwise, null.</returns>
+  public SystemQuestions Get(uint nodeId, uint mapId, string source)
   {
-    SystemQuestions phys;
+    SystemQuestions phys = null;
+    var questions = new List<SystemQuestions>();
 
     if ( uint.TryParse( source, out var id ) )
-      phys = GetDbContext().SystemQuestions.FirstOrDefault( x => x.Id == id );
+      questions = GetDbContext().SystemQuestions.Where( x => x.Id == id ).ToList();
     else
-      phys = GetDbContext().SystemQuestions.FirstOrDefault( x => x.Name == source );
+      questions = GetDbContext().SystemQuestions.Where( x => x.Name == source ).ToList();
+
+    phys = questions.FirstOrDefault( x => x.ImageableType == Api.Utils.Constants.ScopeLevelNode && x.ImageableId == nodeId );
+    if ( phys != null )
+      return phys;
+
+    phys = questions.FirstOrDefault( x => x.ImageableType == Api.Utils.Constants.ScopeLevelMap && x.ImageableId == mapId );
+    if ( phys != null )
+      return phys;
+
+    phys = questions.FirstOrDefault( x => x.ImageableType == Api.Utils.Constants.ScopeLevelServer && x.ImageableId == 1 );
+    if ( phys != null )
+      return phys;
 
     return phys;
   }
@@ -68,13 +86,16 @@ public class QuestionReaderWriter : ReaderWriter
     return phys;
   }
 
+
+
   /// <summary>
-  /// Disambiguate [[QU]] wikitags into specific question type
-  /// Wikitags
+  /// Disambiguates wiki questions based on the provided nodeId, mapId, and source.
   /// </summary>
-  /// <param name="source">Source node text string</param>
-  /// <returns>Revised node text string</returns>
-  public string DisambiguateWikiQuestions(string source)
+  /// <param name="nodeId">The ID of the node.</param>
+  /// <param name="mapId">The ID of the map.</param>
+  /// <param name="source">The source string containing wiki questions to disambiguate.</param>
+  /// <returns>A string with disambiguated wiki questions.</returns>
+  public string DisambiguateWikiQuestions(uint nodeId, uint mapId, string source)
   {
     var wikiMatches = WikiTagUtils.GetWikiTags( "QU", source );
     foreach ( var wikiMatch in wikiMatches )
@@ -82,7 +103,7 @@ public class QuestionReaderWriter : ReaderWriter
       var idName = WikiTagUtils.GetWikiArgument1( wikiMatch );
       GetLogger().LogInformation( $"disambiguating question '{wikiMatch}'" );
 
-      var questionPhys = Get( idName );
+      var questionPhys = Get( nodeId, mapId, idName );
       if ( questionPhys == null )
       {
         GetLogger().LogError( $"unable to disambiguate question '{wikiMatch}'" );
