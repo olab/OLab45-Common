@@ -44,6 +44,18 @@ public class QuestionReaderWriter : ReaderWriter
   /// <param name="mapId">The ID of the map.</param>
   /// <param name="source">The source string which can be either an ID or a name.</param>
   /// <returns>A SystemQuestions object if found; otherwise, null.</returns>
+  public IList<SystemQuestions> Get()
+  {
+    return GetDbContext().SystemQuestions.ToList();
+  }
+
+  /// <summary>
+  /// Retrieves a SystemQuestions object based on the provided nodeId, mapId, and source.
+  /// </summary>
+  /// <param name="nodeId">The ID of the node.</param>
+  /// <param name="mapId">The ID of the map.</param>
+  /// <param name="source">The source string which can be either an ID or a name.</param>
+  /// <returns>A SystemQuestions object if found; otherwise, null.</returns>
   public SystemQuestions Get(uint nodeId, uint mapId, string source)
   {
     SystemQuestions phys = null;
@@ -68,25 +80,6 @@ public class QuestionReaderWriter : ReaderWriter
 
     return phys;
   }
-
-  /// <summary>
-  /// Get question by id or name
-  /// </summary>
-  /// <param name="id">Role Id</param>
-  /// <returns>Roles</returns>
-  public async Task<SystemQuestions> GetAsync(string source)
-  {
-    SystemQuestions phys;
-
-    if ( uint.TryParse( source, out var id ) )
-      phys = await GetDbContext().SystemQuestions.FirstOrDefaultAsync( x => x.Id == id );
-    else
-      phys = await GetDbContext().SystemQuestions.FirstOrDefaultAsync( x => x.Name == source );
-
-    return phys;
-  }
-
-
 
   /// <summary>
   /// Disambiguates wiki questions based on the provided nodeId, mapId, and source.
