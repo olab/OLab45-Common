@@ -26,7 +26,7 @@ public partial class MapNodeCounters
   [StringLength( 20 )]
   public string Function { get; set; }
 
-  [Column( "display", TypeName = "int(10)" )]
+  [Column( "display", TypeName = "int(11)" )]
   public int Display { get; set; }
 
   [ForeignKey( "NodeId" )]

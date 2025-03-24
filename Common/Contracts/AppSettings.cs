@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OLab.Api.Utils;
 
 public class AppSettings

@@ -25,5 +25,5 @@ public partial class MapTypes
   public string Description { get; set; }
 
   [InverseProperty( "Type" )]
-  public virtual ICollection<Maps> Maps { get; } = new List<Maps>();
+  public virtual ICollection<Maps> Maps { get; set; } = new List<Maps>();
 }

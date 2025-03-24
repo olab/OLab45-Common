@@ -1,5 +1,4 @@
 using HeyRed.Mime;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Access.Interfaces;
 using OLab.Api.Common;
@@ -12,7 +11,6 @@ using OLab.Common.Interfaces;
 using OLab.Common.Utils;
 using OLab.Data.Interface;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -36,7 +34,7 @@ public partial class FilesEndpoint : OLabEndpoint
       wikiTagProvider,
       fileStorageProvider )
   {
-    _mapper = new FilesMapper( 
+    _mapper = new FilesMapper(
       GetLogger(),
       GetDbContext(),
       GetWikiProvider() );
@@ -54,8 +52,8 @@ public partial class FilesEndpoint : OLabEndpoint
   /// <param name="skip"></param>
   /// <returns></returns>
   public async Task<OLabAPIPagedResponse<FilesDto>> GetAsync(
-    IOLabAuthorization auth, 
-    int? take, 
+    IOLabAuthorization auth,
+    int? take,
     int? skip)
   {
     var physItems = await GetPhysAsync<SystemFiles>( auth, take, skip );

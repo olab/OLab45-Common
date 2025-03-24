@@ -32,7 +32,7 @@ public partial class SystemConstants
   [Column( "value", TypeName = "blob" )]
   public byte[] Value { get; set; }
 
-  [Column( "is_system", TypeName = "int(10)" )]
+  [Column( "is_system", TypeName = "int(11)" )]
   public int? IsSystem { get; set; }
 
   [Column( "created_at", TypeName = "datetime" )]

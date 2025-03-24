@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using OLab.Api.Common;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using System.Collections.Generic;
@@ -61,7 +60,7 @@ public abstract class ReaderWriter
     }
 
     GetLogger().LogInformation( $"found {items.Count} {typeof( T ).Name} items" );
-    return ( items, count, remaining);
+    return (items, count, remaining);
   }
 
 }

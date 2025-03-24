@@ -36,9 +36,9 @@ public partial class Users
 
   public static string TruncateToJsonObject(Users phys, int maxDepth)
   {
-    var json = JsonConvert.SerializeObject( 
-      new List<Users> { phys }, 
-      new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore} );
+    var json = JsonConvert.SerializeObject(
+      new List<Users> { phys },
+      new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore } );
 
     return SerializerUtilities.TruncateJsonToDepth( json, maxDepth + 1 );
   }

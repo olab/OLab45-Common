@@ -5,12 +5,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
-[Table( "map_collectionMaps" )]
+[Table( "map_collectionmaps" )]
 [Index( "CollectionId", Name = "collection_id" )]
 [Index( "MapId", Name = "map_id" )]
 [MySqlCharSet( "utf8mb3" )]
 [MySqlCollation( "utf8mb3_general_ci" )]
-public partial class MapCollectionMaps
+public partial class MapCollectionmaps
 {
   [Key]
   [Column( "id", TypeName = "int(10) unsigned" )]
@@ -23,10 +23,10 @@ public partial class MapCollectionMaps
   public uint MapId { get; set; }
 
   [ForeignKey( "CollectionId" )]
-  [InverseProperty( "MapCollectionMaps" )]
+  [InverseProperty( "MapCollectionmaps" )]
   public virtual MapCollections Collection { get; set; }
 
   [ForeignKey( "MapId" )]
-  [InverseProperty( "MapCollectionMaps" )]
+  [InverseProperty( "MapCollectionmaps" )]
   public virtual Maps Map { get; set; }
 }

@@ -33,5 +33,5 @@ public partial class MapNodeSections
   public virtual Maps Map { get; set; }
 
   [InverseProperty( "Section" )]
-  public virtual ICollection<MapNodeSectionNodes> MapNodeSectionNodes { get; } = new List<MapNodeSectionNodes>();
+  public virtual ICollection<MapNodeSectionNodes> MapNodeSectionNodes { get; set; } = new List<MapNodeSectionNodes>();
 }

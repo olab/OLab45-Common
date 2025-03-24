@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using OLab.Api.Common;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using System.Collections.Generic;
@@ -69,10 +68,10 @@ public class ApplicationReaderWriter : ReaderWriter
   /// <param name="take">(optional) number of objects to return</param>
   /// <param name="skip">(optional) number of objects to skip</param>
   /// <returns>OLabAPIPagedResponse</returns>
-  public async Task<( IEnumerable<SystemApplications> items, int count, int remaining )> GetAsync(int? take, int? skip)
+  public async Task<(IEnumerable<SystemApplications> items, int count, int remaining)> GetAsync(int? take, int? skip)
   {
     var result = await GetRawAsync<SystemApplications>( take, skip );
-    return ( result.items.OrderBy( x => x.Name ), result.count, result.remaining);
+    return (result.items.OrderBy( x => x.Name ), result.count, result.remaining);
   }
 
   /// <summary>

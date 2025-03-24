@@ -33,7 +33,7 @@ public partial class MapQuestionResponses
   [Column( "is_correct" )]
   public bool IsCorrect { get; set; }
 
-  [Column( "score", TypeName = "int(10)" )]
+  [Column( "score", TypeName = "int(11)" )]
   public int? Score { get; set; }
 
   [Column( "from" )]
@@ -48,7 +48,7 @@ public partial class MapQuestionResponses
   public uint Order { get; set; }
 
   [InverseProperty( "Parent" )]
-  public virtual ICollection<MapQuestionResponses> InverseParent { get; } = new List<MapQuestionResponses>();
+  public virtual ICollection<MapQuestionResponses> InverseParent { get; set; } = new List<MapQuestionResponses>();
 
   [ForeignKey( "ParentId" )]
   [InverseProperty( "InverseParent" )]
@@ -59,5 +59,5 @@ public partial class MapQuestionResponses
   public virtual MapQuestions Question { get; set; }
 
   [InverseProperty( "Response" )]
-  public virtual ICollection<SjtResponse> SjtResponse { get; } = new List<SjtResponse>();
+  public virtual ICollection<SjtResponse> SjtResponse { get; set; } = new List<SjtResponse>();
 }

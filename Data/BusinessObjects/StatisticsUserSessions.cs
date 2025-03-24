@@ -35,7 +35,7 @@ public partial class StatisticsUserSessions
   [Column( "webinar_id", TypeName = "int(10) unsigned" )]
   public uint WebinarId { get; set; }
 
-  [Column( "webinar_step", TypeName = "int(10)" )]
+  [Column( "webinar_step", TypeName = "int(11)" )]
   public int WebinarStep { get; set; }
 
   [Column( "date_save_id", TypeName = "int(10) unsigned" )]

@@ -18,7 +18,7 @@ public partial class Cron
   [Column( "rule_id", TypeName = "int(10) unsigned" )]
   public uint RuleId { get; set; }
 
-  [Column( "activate", TypeName = "int(10)" )]
+  [Column( "activate", TypeName = "int(11)" )]
   public int? Activate { get; set; }
 
   [ForeignKey( "RuleId" )]

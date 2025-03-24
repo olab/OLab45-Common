@@ -25,5 +25,5 @@ public partial class MapSections
   public string Description { get; set; }
 
   [InverseProperty( "Section" )]
-  public virtual ICollection<Maps> Maps { get; } = new List<Maps>();
+  public virtual ICollection<Maps> Maps { get; set; } = new List<Maps>();
 }

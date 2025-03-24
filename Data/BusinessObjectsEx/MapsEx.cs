@@ -86,7 +86,7 @@ public partial class Maps
   /// <param name="groupId"></param>
   /// <param name="roleId"></param>
   /// <returns></returns>
-  public static bool IsAccessible( Maps phys, uint? groupId, uint? roleId )
+  public static bool IsAccessible(Maps phys, uint? groupId, uint? roleId)
   {
     var accessible = (phys.MapGrouproles.Any( y => (y.GroupId == groupId && y.RoleId == roleId) ) ||
         phys.MapGrouproles.Any( y => (y.GroupId == groupId && !y.RoleId.HasValue) ) ||

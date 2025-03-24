@@ -43,5 +43,5 @@ public partial class UserResponses
   public virtual UserSessions Session { get; set; }
 
   [InverseProperty( "Userresponse" )]
-  public virtual ICollection<UserresponseCounterupdate> UserresponseCounterupdate { get; } = new List<UserresponseCounterupdate>();
+  public virtual ICollection<UserresponseCounterupdate> UserresponseCounterupdate { get; set; } = new List<UserresponseCounterupdate>();
 }

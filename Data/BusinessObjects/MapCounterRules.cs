@@ -28,14 +28,14 @@ public partial class MapCounterRules
   [StringLength( 50 )]
   public string Function { get; set; }
 
-  [Column( "redirect_node_id", TypeName = "int(10)" )]
+  [Column( "redirect_node_id", TypeName = "int(11)" )]
   public int? RedirectNodeId { get; set; }
 
   [Column( "message" )]
   [StringLength( 500 )]
   public string Message { get; set; }
 
-  [Column( "counter", TypeName = "int(10)" )]
+  [Column( "counter", TypeName = "int(11)" )]
   public int? Counter { get; set; }
 
   [Column( "counter_value" )]

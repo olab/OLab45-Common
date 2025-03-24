@@ -22,7 +22,7 @@ public partial class QCumulative
   [Column( "map_id", TypeName = "int(10) unsigned" )]
   public uint MapId { get; set; }
 
-  [Column( "reset", TypeName = "int(10)" )]
+  [Column( "reset", TypeName = "int(11)" )]
   public int Reset { get; set; }
 
   [ForeignKey( "MapId" )]

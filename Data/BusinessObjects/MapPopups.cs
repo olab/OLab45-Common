@@ -26,22 +26,22 @@ public partial class MapPopups
   [Column( "text", TypeName = "text" )]
   public string Text { get; set; }
 
-  [Column( "position_type", TypeName = "int(10)" )]
+  [Column( "position_type", TypeName = "int(11)" )]
   public int PositionType { get; set; }
 
   [Column( "position_id", TypeName = "int(10) unsigned" )]
   public uint PositionId { get; set; }
 
-  [Column( "time_before", TypeName = "int(10)" )]
+  [Column( "time_before", TypeName = "int(11)" )]
   public int TimeBefore { get; set; }
 
-  [Column( "time_length", TypeName = "int(10)" )]
+  [Column( "time_length", TypeName = "int(11)" )]
   public int TimeLength { get; set; }
 
   [Column( "is_enabled", TypeName = "tinyint(4)" )]
   public sbyte IsEnabled { get; set; }
 
-  [Column( "title_hide", TypeName = "int(10)" )]
+  [Column( "title_hide", TypeName = "int(11)" )]
   public int TitleHide { get; set; }
 
   [Required]
@@ -50,5 +50,5 @@ public partial class MapPopups
   public string Annotation { get; set; }
 
   [InverseProperty( "Popup" )]
-  public virtual ICollection<MapPopupsCounters> MapPopupsCounters { get; } = new List<MapPopupsCounters>();
+  public virtual ICollection<MapPopupsCounters> MapPopupsCounters { get; set; } = new List<MapPopupsCounters>();
 }

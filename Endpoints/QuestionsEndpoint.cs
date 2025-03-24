@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Access.Interfaces;
 using OLab.Api.Common;
@@ -11,7 +10,6 @@ using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,7 +17,7 @@ namespace OLab.Api.Endpoints;
 
 public partial class QuestionsEndpoint : OLabEndpoint
 {
-  private IOLabMapper<SystemQuestions, QuestionsDto> _mapper;
+  private readonly IOLabMapper<SystemQuestions, QuestionsDto> _mapper;
 
   public QuestionsEndpoint(
     IOLabLogger logger,
@@ -58,7 +56,7 @@ public partial class QuestionsEndpoint : OLabEndpoint
   /// <returns></returns>
   public async Task<OLabAPIPagedResponse<QuestionsDto>> GetAsync(
     IOLabAuthorization auth,
-    int? take, 
+    int? take,
     int? skip)
   {
     var physItems = await GetPhysAsync<SystemQuestions>( auth, take, skip );

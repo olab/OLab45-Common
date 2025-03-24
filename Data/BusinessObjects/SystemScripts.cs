@@ -21,16 +21,16 @@ public partial class SystemScripts
   [Column( "description", TypeName = "text" )]
   public string Description { get; set; }
 
-  [Column( "source", TypeName = "text" )]
-  public string Source { get; set; }
+  [Column( "source", TypeName = "blob" )]
+  public byte[] Source { get; set; }
 
   [Column( "is_raw", TypeName = "bit(1)" )]
   public ulong? IsRaw { get; set; }
 
-  [Column( "order", TypeName = "int(10)" )]
+  [Column( "order", TypeName = "int(11)" )]
   public int? Order { get; set; }
 
-  [Column( "postload_id", TypeName = "int(10)" )]
+  [Column( "postload_id", TypeName = "int(11)" )]
   public int? PostloadId { get; set; }
 
   [Required]

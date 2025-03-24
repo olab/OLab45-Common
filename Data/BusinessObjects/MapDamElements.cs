@@ -23,7 +23,7 @@ public partial class MapDamElements
   [StringLength( 20 )]
   public string ElementType { get; set; }
 
-  [Column( "order", TypeName = "int(10)" )]
+  [Column( "order", TypeName = "int(11)" )]
   public int? Order { get; set; }
 
   [Required]

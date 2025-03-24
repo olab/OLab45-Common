@@ -21,7 +21,7 @@ public partial class MapFeedbackRules
   [Column( "rule_type_id", TypeName = "int(10) unsigned" )]
   public uint RuleTypeId { get; set; }
 
-  [Column( "value", TypeName = "int(10)" )]
+  [Column( "value", TypeName = "int(11)" )]
   public int? Value { get; set; }
 
   [Column( "operator_id", TypeName = "int(10) unsigned" )]

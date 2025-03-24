@@ -41,5 +41,5 @@ public partial class Lrs
   public byte ApiVersion { get; set; }
 
   [InverseProperty( "Lrs" )]
-  public virtual ICollection<LrsStatement> LrsStatement { get; } = new List<LrsStatement>();
+  public virtual ICollection<LrsStatement> LrsStatement { get; set; } = new List<LrsStatement>();
 }

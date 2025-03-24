@@ -44,7 +44,7 @@ public partial class MapNodes
   [Column( "info", TypeName = "text" )]
   public string Info { get; set; }
 
-  [Column( "is_private", TypeName = "int(4)" )]
+  [Column( "is_private", TypeName = "int(11)" )]
   public int IsPrivate { get; set; }
 
   [Column( "link_style_id", TypeName = "int(10) unsigned" )]
@@ -53,7 +53,7 @@ public partial class MapNodes
   [Column( "link_type_id", TypeName = "int(10) unsigned" )]
   public uint? LinkTypeId { get; set; }
 
-  [Column( "priority_id", TypeName = "int(10)" )]
+  [Column( "priority_id", TypeName = "int(11)" )]
   public int? PriorityId { get; set; }
 
   [Column( "kfp" )]
@@ -81,22 +81,22 @@ public partial class MapNodes
   [Column( "annotation", TypeName = "text" )]
   public string Annotation { get; set; }
 
-  [Column( "height", TypeName = "int(10)" )]
+  [Column( "height", TypeName = "int(11)" )]
   public int? Height { get; set; }
 
-  [Column( "width", TypeName = "int(10)" )]
+  [Column( "width", TypeName = "int(11)" )]
   public int? Width { get; set; }
 
-  [Column( "locked", TypeName = "int(10)" )]
+  [Column( "locked", TypeName = "int(11)" )]
   public int? Locked { get; set; }
 
-  [Column( "collapsed", TypeName = "int(10)" )]
+  [Column( "collapsed", TypeName = "int(11)" )]
   public int? Collapsed { get; set; }
 
-  [Column( "visit_once", TypeName = "int(4)" )]
+  [Column( "visit_once", TypeName = "int(11)" )]
   public int? VisitOnce { get; set; }
 
-  [Column( "force_reload", TypeName = "int(10)" )]
+  [Column( "force_reload", TypeName = "int(11)" )]
   public int? ForceReload { get; set; }
 
   [Column( "created_at", TypeName = "datetime" )]
@@ -114,41 +114,41 @@ public partial class MapNodes
   public virtual Maps Map { get; set; }
 
   [InverseProperty( "Node" )]
-  public virtual ICollection<MapNodeCounters> MapNodeCounters { get; } = new List<MapNodeCounters>();
+  public virtual ICollection<MapNodeCounters> MapNodeCounters { get; set; } = new List<MapNodeCounters>();
 
   [InverseProperty( "Node" )]
-  public virtual ICollection<MapNodeGrouproles> MapNodeGrouproles { get; } = new List<MapNodeGrouproles>();
+  public virtual ICollection<MapNodeGrouproles> MapNodeGrouproles { get; set; } = new List<MapNodeGrouproles>();
 
   [InverseProperty( "Node" )]
-  public virtual ICollection<MapNodeJumps> MapNodeJumps { get; } = new List<MapNodeJumps>();
+  public virtual ICollection<MapNodeJumps> MapNodeJumps { get; set; } = new List<MapNodeJumps>();
 
   [InverseProperty( "NodeId1Navigation" )]
-  public virtual ICollection<MapNodeLinks> MapNodeLinksNodeId1Navigation { get; } = new List<MapNodeLinks>();
+  public virtual ICollection<MapNodeLinks> MapNodeLinksNodeId1Navigation { get; set; } = new List<MapNodeLinks>();
 
   [InverseProperty( "NodeId2Navigation" )]
-  public virtual ICollection<MapNodeLinks> MapNodeLinksNodeId2Navigation { get; } = new List<MapNodeLinks>();
+  public virtual ICollection<MapNodeLinks> MapNodeLinksNodeId2Navigation { get; set; } = new List<MapNodeLinks>();
 
   [InverseProperty( "MapNode" )]
-  public virtual ICollection<MapNodeNotes> MapNodeNotes { get; } = new List<MapNodeNotes>();
+  public virtual ICollection<MapNodeNotes> MapNodeNotes { get; set; } = new List<MapNodeNotes>();
 
   [InverseProperty( "Node" )]
-  public virtual ICollection<MapNodeSectionNodes> MapNodeSectionNodes { get; } = new List<MapNodeSectionNodes>();
+  public virtual ICollection<MapNodeSectionNodes> MapNodeSectionNodes { get; set; } = new List<MapNodeSectionNodes>();
 
   [InverseProperty( "Node" )]
-  public virtual ICollection<UserBookmarks> UserBookmarks { get; } = new List<UserBookmarks>();
+  public virtual ICollection<UserBookmarks> UserBookmarks { get; set; } = new List<UserBookmarks>();
 
   [InverseProperty( "Node" )]
-  public virtual ICollection<UserSessiontraces> UserSessiontraces { get; } = new List<UserSessiontraces>();
+  public virtual ICollection<UserSessiontraces> UserSessiontraces { get; set; } = new List<UserSessiontraces>();
 
   [InverseProperty( "MapNode" )]
-  public virtual ICollection<UserState> UserState { get; } = new List<UserState>();
+  public virtual ICollection<UserState> UserState { get; set; } = new List<UserState>();
 
   [InverseProperty( "Node" )]
-  public virtual ICollection<WebinarNodePoll> WebinarNodePoll { get; } = new List<WebinarNodePoll>();
+  public virtual ICollection<WebinarNodePoll> WebinarNodePoll { get; set; } = new List<WebinarNodePoll>();
 
   [InverseProperty( "OnNodeNavigation" )]
-  public virtual ICollection<WebinarPoll> WebinarPollOnNodeNavigation { get; } = new List<WebinarPoll>();
+  public virtual ICollection<WebinarPoll> WebinarPollOnNodeNavigation { get; set; } = new List<WebinarPoll>();
 
   [InverseProperty( "ToNodeNavigation" )]
-  public virtual ICollection<WebinarPoll> WebinarPollToNodeNavigation { get; } = new List<WebinarPoll>();
+  public virtual ICollection<WebinarPoll> WebinarPollToNodeNavigation { get; set; } = new List<WebinarPoll>();
 }

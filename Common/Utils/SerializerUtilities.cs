@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace OLab.Common.Utils;
 public class SerializerUtilities
@@ -12,8 +8,8 @@ public class SerializerUtilities
 
   public static string TruncateJsonToDepth(string jsonString, int maxDepth)
   {
-    using JsonDocument doc = JsonDocument.Parse( jsonString );
-    return JsonSerializer.Serialize( TruncateElement( doc.RootElement, maxDepth + 2) );
+    using var doc = JsonDocument.Parse( jsonString );
+    return JsonSerializer.Serialize( TruncateElement( doc.RootElement, maxDepth + 2 ) );
   }
 
   private static JsonElement TruncateElement(JsonElement element, int maxDepth)

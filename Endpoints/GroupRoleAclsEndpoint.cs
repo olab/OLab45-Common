@@ -1,21 +1,14 @@
-using DocumentFormat.OpenXml.Office2010.Excel;
-using DocumentFormat.OpenXml.Office2016.Excel;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OLab.Access.Interfaces;
-using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
-using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using OLab.Data.Contracts;
 using OLab.Data.Interface;
 using OLab.Data.Mappers;
 using OLab.Data.ReaderWriters;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -129,7 +122,7 @@ public partial class GroupRoleAclsEndpoint : OLabEndpoint
 
     IList<uint?> ids = null;
 
-    if ( ( model.NodeIds != null ) && ( model.NodeIds.Count > 0 ) )
+    if ( (model.NodeIds != null) && (model.NodeIds.Count > 0) )
       ids = model.NodeIds;
     else if ( (model.MapIds != null) && (model.MapIds.Count > 0) )
       ids = model.MapIds;

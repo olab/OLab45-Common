@@ -29,14 +29,14 @@ public partial class Roles
   public sbyte? IsSystem { get; set; }
 
   [InverseProperty( "Role" )]
-  public virtual ICollection<GrouproleAcls> GrouproleAcls { get; } = new List<GrouproleAcls>();
+  public virtual ICollection<GrouproleAcls> GrouproleAcls { get; set; } = new List<GrouproleAcls>();
 
   [InverseProperty( "Role" )]
-  public virtual ICollection<MapGrouproles> MapGrouproles { get; } = new List<MapGrouproles>();
+  public virtual ICollection<MapGrouproles> MapGrouproles { get; set; } = new List<MapGrouproles>();
 
   [InverseProperty( "Role" )]
-  public virtual ICollection<MapNodeGrouproles> MapNodeGrouproles { get; } = new List<MapNodeGrouproles>();
+  public virtual ICollection<MapNodeGrouproles> MapNodeGrouproles { get; set; } = new List<MapNodeGrouproles>();
 
   [InverseProperty( "Role" )]
-  public virtual ICollection<UserGrouproles> UserGrouproles { get; } = new List<UserGrouproles>();
+  public virtual ICollection<UserGrouproles> UserGrouproles { get; set; } = new List<UserGrouproles>();
 }

@@ -27,5 +27,5 @@ public partial class Languages
   public string Key { get; set; }
 
   [InverseProperty( "Language" )]
-  public virtual ICollection<Maps> Maps { get; } = new List<Maps>();
+  public virtual ICollection<Maps> Maps { get; set; } = new List<Maps>();
 }

@@ -22,7 +22,7 @@ public partial class MapNodeSectionNodes
   [Column( "node_id", TypeName = "int(10) unsigned" )]
   public uint NodeId { get; set; }
 
-  [Column( "order", TypeName = "int(10)" )]
+  [Column( "order", TypeName = "int(11)" )]
   public int Order { get; set; }
 
   [Required]

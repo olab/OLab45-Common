@@ -13,6 +13,6 @@ public partial class StatisticsUserDatesave
   [Column( "id", TypeName = "int(10) unsigned" )]
   public uint Id { get; set; }
 
-  [Column( "date_save", TypeName = "int(10)" )]
+  [Column( "date_save", TypeName = "int(11)" )]
   public int DateSave { get; set; }
 }

@@ -94,7 +94,7 @@ public partial class MapAvatars
   [StringLength( 100 )]
   public string Image { get; set; }
 
-  [Column( "is_private", TypeName = "int(4)" )]
+  [Column( "is_private", TypeName = "int(11)" )]
   public int IsPrivate { get; set; }
 
   [ForeignKey( "MapId" )]

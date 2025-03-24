@@ -5,11 +5,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
-[Table( "map_contributors" )]
+[Table( "map_groups" )]
+[Index( "GroupId", Name = "group_id" )]
 [Index( "MapId", Name = "map_id" )]
 [MySqlCharSet( "utf8mb3" )]
 [MySqlCollation( "utf8mb3_general_ci" )]
-public partial class MapContributors
+public partial class MapGroups
 {
   [Key]
   [Column( "id", TypeName = "int(10) unsigned" )]
@@ -18,23 +19,14 @@ public partial class MapContributors
   [Column( "map_id", TypeName = "int(10) unsigned" )]
   public uint MapId { get; set; }
 
-  [Column( "role_id", TypeName = "int(10) unsigned" )]
-  public uint RoleId { get; set; }
+  [Column( "group_id", TypeName = "int(10) unsigned" )]
+  public uint GroupId { get; set; }
 
-  [Required]
-  [Column( "name" )]
-  [StringLength( 200 )]
-  public string Name { get; set; }
-
-  [Required]
-  [Column( "organization" )]
-  [StringLength( 200 )]
-  public string Organization { get; set; }
-
-  [Column( "order", TypeName = "int(11)" )]
-  public int Order { get; set; }
+  [ForeignKey( "GroupId" )]
+  [InverseProperty( "MapGroups" )]
+  public virtual Groups Group { get; set; }
 
   [ForeignKey( "MapId" )]
-  [InverseProperty( "MapContributors" )]
+  [InverseProperty( "MapGroups" )]
   public virtual Maps Map { get; set; }
 }

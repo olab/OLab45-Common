@@ -37,7 +37,7 @@ public partial class Statements
   public DateTime UpdatedAt { get; set; }
 
   [InverseProperty( "Statement" )]
-  public virtual ICollection<LrsStatement> LrsStatement { get; } = new List<LrsStatement>();
+  public virtual ICollection<LrsStatement> LrsStatement { get; set; } = new List<LrsStatement>();
 
   [ForeignKey( "SessionId" )]
   [InverseProperty( "Statements" )]
