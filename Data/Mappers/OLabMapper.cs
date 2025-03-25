@@ -33,13 +33,13 @@ public abstract class OLabMapper<P, D> : object, IOLabMapper<P, D> where P : new
   protected readonly Mapper _mapper;
 
   protected IOLabLogger _logger;
-  protected IOLabLogger GetLogger() { return _logger; }
+  public IOLabLogger GetLogger() { return _logger; }
 
   protected IOLabModuleProvider<IWikiTagModule> _wikiTagModules = null;
   public WikiTagModuleProvider GetWikiProvider() { return _wikiTagModules as WikiTagModuleProvider; }
 
   private readonly OLabDBContext _dbContext;
-  protected OLabDBContext GetDbContext() { return _dbContext; }
+ public OLabDBContext GetDbContext() { return _dbContext; }
 
   // used to hold on to id translation between origin system and new one
   protected IDictionary<uint, uint?> _idTranslation = new Dictionary<uint, uint?>();
