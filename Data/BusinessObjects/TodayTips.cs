@@ -26,7 +26,7 @@ public partial class TodayTips
   [Column( "start_date", TypeName = "datetime" )]
   public DateTime StartDate { get; set; }
 
-  [Column( "weight", TypeName = "int(10)" )]
+  [Column( "weight", TypeName = "int(11)" )]
   public int Weight { get; set; }
 
   [Column( "is_active", TypeName = "tinyint(4)" )]

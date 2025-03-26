@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using OLab.Api.Common;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using System.Collections.Generic;
@@ -64,33 +63,13 @@ public class RoleReaderWriter : ReaderWriter
   }
 
   /// <summary>
-  /// Get groups paged
+  /// Get all items
   /// </summary>
-  /// <param name="take">(optional) number of objects to return</param>
-  /// <param name="skip">(optional) number of objects to skip</param>
-  /// <returns>OLabAPIPagedResponse</returns>
-  public async Task<OLabAPIPagedResponse<Roles>> GetPagedAsync(int? take, int? skip)
+  /// <returns>IList roles</returns>
+  public async Task<IList<Roles>> GetAsync()
   {
-    var response = new OLabAPIPagedResponse<Roles>();
-
-    if ( !take.HasValue && !skip.HasValue )
-    {
-      response.Data = await GetDbContext().Roles.ToListAsync();
-      response.Count = response.Data.Count;
-      response.Remaining = 0;
-    }
-
-    else if ( take.HasValue && skip.HasValue )
-    {
-      response.Data = await GetDbContext().Roles.Skip( skip.Value ).Take( take.Value ).ToListAsync();
-      response.Count += response.Data.Count;
-      response.Remaining = GetDbContext().Roles.Count() - skip.Value - response.Count;
-    }
-
-    else
-      GetLogger().LogWarning( $"invalid/partial take/skip parameters" );
-
-    return response;
+    var result = await GetRawAsync<Roles>( null, null );
+    return result.items.OrderBy( x => x.Name ).ToList();
   }
 
   /// <summary>

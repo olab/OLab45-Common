@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OLab.Api.Utils;
 
 public class AppSettings
@@ -14,6 +12,5 @@ public class AppSettings
   public string Secret { get; set; }
   public string SignalREndpoint { get; set; }
   public int TokenExpiryMinutes { get; set; }
-  public string[] Cors { get; set; } = new List<string>().ToArray();
-
+  public string Cors { get; set; }
 }

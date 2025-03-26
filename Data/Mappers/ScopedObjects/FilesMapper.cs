@@ -9,9 +9,9 @@ using System.Linq;
 
 namespace OLab.Api.ObjectMapper;
 
-public class Files : OLabMapper<SystemFiles, FilesDto>
+public class FilesMapper : OLabMapper<SystemFiles, FilesDto>
 {
-  public Files(
+  public FilesMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
     IOLabModuleProvider<IWikiTagModule> tagProvider,
@@ -19,7 +19,7 @@ public class Files : OLabMapper<SystemFiles, FilesDto>
   {
   }
 
-  public Files(
+  public FilesMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,

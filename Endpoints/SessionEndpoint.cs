@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using OLab.Access.Interfaces;
 using OLab.Api.Data.Exceptions;
-using OLab.Api.Data.Interface;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using OLab.Data.Dtos.Session;
@@ -27,7 +27,7 @@ public partial class SessionEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     string sessionUuid)
   {
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: SessionEndpoint.ReadAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: SessionEndpoint.ReadAsync" );
 
     var session = await GetDbContext().UserSessions
       .Include( session => session.Statements )

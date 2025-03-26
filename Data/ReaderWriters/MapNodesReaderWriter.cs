@@ -121,7 +121,7 @@ public partial class MapNodesReaderWriter : ReaderWriter
           .Include( c => c.MapNodeGrouproles ).ThenInclude( d => d.Group )
           .Include( c => c.MapNodeGrouproles ).ThenInclude( d => d.Role )
           .Where( x => x.MapId == mapId && x.TypeId == 1 )
-          .FirstOrDefaultAsync( x => x.Id == nodeId );
+          .FirstOrDefaultAsync();
 
     // if no explicit map root node, get first node 
     // in database

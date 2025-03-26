@@ -28,7 +28,7 @@ public partial class SystemCounters
   [Column( "value", TypeName = "blob" )]
   public byte[] Value { get; set; }
 
-  [Column( "icon_id", TypeName = "int(10)" )]
+  [Column( "icon_id", TypeName = "int(11)" )]
   public int? IconId { get; set; }
 
   [Column( "prefix" )]
@@ -42,10 +42,10 @@ public partial class SystemCounters
   [Column( "visible" )]
   public bool? Visible { get; set; }
 
-  [Column( "out_of", TypeName = "int(10)" )]
+  [Column( "out_of", TypeName = "int(11)" )]
   public int? OutOf { get; set; }
 
-  [Column( "status", TypeName = "int(1)" )]
+  [Column( "status", TypeName = "int(11)" )]
   public int Status { get; set; }
 
   [Column( "imageable_id", TypeName = "int(10) unsigned" )]
@@ -56,7 +56,7 @@ public partial class SystemCounters
   [StringLength( 45 )]
   public string ImageableType { get; set; }
 
-  [Column( "is_system", TypeName = "int(10)" )]
+  [Column( "is_system", TypeName = "int(11)" )]
   public int? IsSystem { get; set; }
 
   [Column( "created_at", TypeName = "datetime" )]
@@ -66,5 +66,5 @@ public partial class SystemCounters
   public DateTime? UpdatedAt { get; set; }
 
   [InverseProperty( "Counter" )]
-  public virtual ICollection<SystemCounterActions> SystemCounterActions { get; } = new List<SystemCounterActions>();
+  public virtual ICollection<SystemCounterActions> SystemCounterActions { get; set; } = new List<SystemCounterActions>();
 }

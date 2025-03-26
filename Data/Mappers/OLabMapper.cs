@@ -4,6 +4,7 @@ using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using System;
 using System.Collections.Generic;
 
@@ -27,18 +28,18 @@ public class DecimalDateTimeTypeConverter : ITypeConverter<DateTime, decimal>
   }
 }
 
-public abstract class OLabMapper<P, D> : object where P : new() where D : new()
+public abstract class OLabMapper<P, D> : object, IOLabMapper<P, D> where P : new() where D : new()
 {
   protected readonly Mapper _mapper;
 
   protected IOLabLogger _logger;
-  protected IOLabLogger GetLogger() { return _logger; }
+  public IOLabLogger GetLogger() { return _logger; }
 
   protected IOLabModuleProvider<IWikiTagModule> _wikiTagModules = null;
   public WikiTagModuleProvider GetWikiProvider() { return _wikiTagModules as WikiTagModuleProvider; }
 
   private readonly OLabDBContext _dbContext;
-  protected OLabDBContext GetDbContext() { return _dbContext; }
+ public OLabDBContext GetDbContext() { return _dbContext; }
 
   // used to hold on to id translation between origin system and new one
   protected IDictionary<uint, uint?> _idTranslation = new Dictionary<uint, uint?>();

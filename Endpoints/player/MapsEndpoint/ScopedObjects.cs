@@ -1,5 +1,5 @@
+using OLab.Access.Interfaces;
 using OLab.Api.Data.Exceptions;
-using OLab.Api.Data.Interface;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Data;
@@ -17,7 +17,7 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <returns></returns>
   public async Task<Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(IOLabAuthorization auth, uint id)
   {
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: MapsEndpoint.GetScopedObjectsRawAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: MapsEndpoint.GetScopedObjectsRawAsync" );
 
     // test if user has access to map.
     if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, id ) )
@@ -61,6 +61,7 @@ public partial class MapsEndpoint : OLabEndpoint
       GetDbContext(),
       GetWikiProvider(),
       _fileStorageModule );
+
     await phys.AddScopeFromDatabaseAsync( Constants.ScopeLevelMap, map.Id );
 
     // add map-level derived constants

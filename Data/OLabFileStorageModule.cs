@@ -22,6 +22,7 @@ public abstract class OLabFileStorageModule : IFileStorageModule
   protected IOLabConfiguration cfg;
 
   public abstract SystemFiles UpdateUrlPath(string path, SystemFiles source);
+  public abstract SystemScripts UpdateUrlPath(string path, SystemScripts source);
 
   protected OLabFileStorageModule(IOLabLogger logger, IOLabConfiguration configuration)
   {
@@ -99,6 +100,26 @@ public abstract class OLabFileStorageModule : IFileStorageModule
 
   }
 
+  public void AttachUrls(SystemScripts item)
+  {
+    var scopeFolder = GetScopedFolderName(
+      item.ImageableType,
+      item.ImageableId );
+
+    var filePath = BuildPath( FilesRoot, scopeFolder, item.Source );
+
+    if ( FileExists( filePath ) )
+    {
+      item = UpdateUrlPath(
+        scopeFolder,
+        item
+      );
+
+      logger.LogInformation( $"  file '{item.Name}' mapped to url '{item.OriginUrl}'" );
+    }
+
+  }
+
   /// <summary>
   /// Attach browseable URLS for system files
   /// </summary>
@@ -119,6 +140,31 @@ public abstract class OLabFileStorageModule : IFileStorageModule
       catch ( Exception ex )
       {
         logger.LogError( ex, $"AttachUrls error on '{item.Path}' id = {item.Id}" );
+      }
+
+    }
+  }
+
+  /// <summary>
+  /// Attach browseable URLS for system files
+  /// </summary>
+  /// <param name="items">List of system files objects to enhance</param>
+  public void AttachUrls(IList<SystemScripts> items)
+  {
+    if ( items.Count == 0 )
+      return;
+
+    logger.LogInformation( $"Attaching URLs for {items.Count} file records" );
+
+    foreach ( var item in items )
+    {
+      try
+      {
+        AttachUrls( item );
+      }
+      catch ( Exception ex )
+      {
+        logger.LogError( ex, $"AttachUrls error on '{item.Name}' id = {item.Id}" );
       }
 
     }

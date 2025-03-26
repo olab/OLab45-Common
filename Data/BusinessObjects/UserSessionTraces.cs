@@ -74,5 +74,5 @@ public partial class UserSessiontraces
   public virtual UserSessions Session { get; set; }
 
   [InverseProperty( "Sessiontrace" )]
-  public virtual ICollection<UsersessiontraceCounterupdate> UsersessiontraceCounterupdate { get; } = new List<UsersessiontraceCounterupdate>();
+  public virtual ICollection<UsersessiontraceCounterupdate> UsersessiontraceCounterupdate { get; set; } = new List<UsersessiontraceCounterupdate>();
 }

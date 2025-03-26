@@ -1,5 +1,5 @@
 using Newtonsoft.Json;
-using OLab.Api.Data.Interface;
+using OLab.Access.Interfaces;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
@@ -156,7 +156,7 @@ public partial class Importer : IImporter
 
     phys.Id = 0;
     phys.Name = $"IMPORT: {phys.Name}";
-    phys.AuthorId = auth.UserContext.UserId;
+    phys.AuthorId = auth.OLabUser.Id;
     phys.CreatedAt = DateTime.UtcNow;
 
     await _dbContext.Maps.AddAsync( phys );

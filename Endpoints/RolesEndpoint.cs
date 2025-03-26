@@ -1,14 +1,15 @@
 using Microsoft.EntityFrameworkCore;
+using OLab.Access.Interfaces;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
-using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using OLab.Data.Mappers;
 using OLab.Data.ReaderWriters;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace OLab.Api.Endpoints;
 public partial class RolesEndpoint : OLabEndpoint
 {
   private readonly RoleReaderWriter _readerWriter;
-  private readonly RolesMapper _mapper;
+  private readonly IOLabMapper<Roles, RolesDto> _mapper;
 
   public RolesEndpoint(
     IOLabLogger logger,
@@ -48,16 +49,14 @@ public partial class RolesEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     int? take, int? skip)
   {
-    GetLogger().LogInformation( $"RolesEndpoint.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})" );
-    var pagedDataPhys = await _readerWriter.GetPagedAsync( take, skip );
+    var physItems = await _readerWriter.GetRawAsync<Roles>( skip, take );
 
-    var pagedDataDto = new OLabAPIPagedResponse<RolesDto>();
+    var dtoItems = new OLabAPIPagedResponse<RolesDto>();
+    dtoItems.Data = _mapper.PhysicalToDto( physItems.items.OrderBy( x => x.Name ).ToList() );
+    dtoItems.Remaining = physItems.remaining;
+    dtoItems.Count = physItems.count;
 
-    pagedDataDto.Data = _mapper.PhysicalToDto( pagedDataPhys.Data );
-    pagedDataDto.Remaining = pagedDataPhys.Remaining;
-    pagedDataDto.Count = pagedDataPhys.Count;
-
-    return pagedDataDto;
+    return dtoItems;
 
   }
 

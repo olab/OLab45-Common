@@ -1,8 +1,9 @@
 using Dawn;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OLab.Access.Interfaces;
+using OLab.Api.Common;
 using OLab.Api.Data.Exceptions;
-using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
@@ -31,7 +32,7 @@ public class OLabEndpoint
   public WikiTagModuleProvider GetWikiProvider() { return _wikiTagModules as WikiTagModuleProvider; }
 
   protected string token;
-  protected IUserContext _userContext;
+  protected IAuthenticatedContext _userContext;
   protected readonly IOLabConfiguration _configuration;
 
   protected readonly IFileStorageModule _fileStorageModule;
@@ -84,7 +85,7 @@ public class OLabEndpoint
     _wikiTagModules = wikiTagProvider;
   }
 
-  public void SetUserContext(IUserContext userContext)
+  public void SetUserContext(IAuthenticatedContext userContext)
   {
     _userContext = userContext;
   }
@@ -340,6 +341,45 @@ public class OLabEndpoint
     }
 
     return phys;
+  }
+
+  /// <summary>
+  /// Generic get paged results
+  /// </summary>
+  /// <typeparam name="T"></typeparam>
+  /// <param name="skip"></param>
+  /// <param name="take"></param>
+  /// <returns></returns>
+  public virtual async Task<OLabAPIPagedResponse<T>> GetPhysAsync<T>(
+    IOLabAuthorization auth,
+    int? skip,
+    int? take) where T : class
+  {
+    var items = new List<T>();
+
+    var total = 0;
+    var remaining = 0;
+
+    if ( !skip.HasValue )
+      skip = 0;
+
+    var tmp = GetDbContext().Set<T>();
+    GetLogger().LogInformation( tmp.ToString() );
+
+    if ( take.HasValue && skip.HasValue )
+    {
+      items = await GetDbContext().Set<T>().Skip( skip.Value ).Take( take.Value ).ToListAsync();
+      total = items.Count;
+      remaining = total - take.Value - skip.Value;
+    }
+    else
+    {
+      items = await GetDbContext().Set<T>().ToListAsync();
+      total = items.Count;
+    }
+
+    GetLogger().LogInformation( $"found {items.Count} {typeof( T ).Name} items" );
+    return new OLabAPIPagedResponse<T> { Data = items, Remaining = remaining, Count = total };
   }
 
 }

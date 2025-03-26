@@ -1,7 +1,6 @@
 using Dawn;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using System;
@@ -25,30 +24,27 @@ public class OLabConfiguration : IOLabConfiguration
     _configuration = configuration;
     var logger = OLabLogger.CreateNew<OLabConfiguration>( loggerFactory );
 
-    //logger.LogInformation( $"Configuration:" );
-
-    //foreach ( var item in _configuration.AsEnumerable() )
-    //  logger.LogInformation( $"  {item.Key} -> {item.Value}" );
-
-    // Bind configuration to MySettings class
     _appSettings = new AppSettings();
-    configuration.GetSection( "AppSettings" ).Bind( _appSettings );
 
-    //_appSettings = new AppSettings
-    //{
-    //  Audience = _configuration.GetValue<string>( "Audience" ),
-    //  Issuer = _configuration.GetValue<string>( "Issuer" ),
-    //  Secret = _configuration.GetValue<string>( "Secret" ),
-    //  TokenExpiryMinutes = _configuration.GetValue<int>( "TokenExpiryMinutes" ),
-    //  FileStorageRoot = _configuration.GetValue<string>( "FileStorageRoot" ),
-    //  FileStorageUrl = _configuration.GetValue<string>( "FileStorageUrl" ),
-    //  FileStorageType = _configuration.GetValue<string>( "FileStorageType" ),
-    //  FileStorageConnectionString = _configuration.GetValue<string>( "FileStorageConnectionString" )
-    //};
+    // handle case where settings are in 'AppSettings' section or
+    // as environment variables
+    var sect = configuration.GetSection( "AppSettings" );
+    if ( sect.Exists() )
+      configuration.GetSection( "AppSettings" ).Bind( _appSettings );
+    else
+    {
 
-    var json = JsonConvert.SerializeObject( _appSettings );
-    Console.WriteLine( $" Configuration {json}" );
-
+      var properties = typeof( AppSettings ).GetProperties();
+      foreach ( var property in properties )
+      {
+        var envValue = Environment.GetEnvironmentVariable( property.Name );
+        if ( !string.IsNullOrEmpty( envValue ) )
+        {
+          var convertedValue = Convert.ChangeType( envValue, property.PropertyType );
+          property.SetValue( _appSettings, convertedValue );
+        }
+      }
+    }
   }
 
   public IConfiguration GetRawConfiguration() { return _configuration; }

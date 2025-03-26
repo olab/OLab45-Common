@@ -23,7 +23,7 @@ public partial class MapVpds
   public uint VpdTypeId { get; set; }
 
   [InverseProperty( "Vpd" )]
-  public virtual ICollection<MapVpdElements> MapVpdElements { get; } = new List<MapVpdElements>();
+  public virtual ICollection<MapVpdElements> MapVpdElements { get; set; } = new List<MapVpdElements>();
 
   [ForeignKey( "VpdTypeId" )]
   [InverseProperty( "MapVpds" )]

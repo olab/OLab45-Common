@@ -20,22 +20,44 @@ public class GroupRoleAclMapper : OLabMapper<GrouproleAcls, GroupRoleAclDto>
   /// Allows for derived class specific overrides that 
   /// don't fit well with default implementation
   /// </remarks>
-  /// <param name="phys">Physical object</param>
-  /// <param name="source">Base dto object</param>
+  /// <param name="from">Physical object</param>
+  /// <param name="to">Base dto object</param>
   /// <returns>Dto object</returns>
-  public override GroupRoleAclDto PhysicalToDto(GrouproleAcls phys, GroupRoleAclDto source)
+  public override GroupRoleAclDto PhysicalToDto(GrouproleAcls from, GroupRoleAclDto to)
   {
-    source.GroupId = phys.GroupId;
-    source.GroupName = phys.Group == null ? null : phys.Group.Name;
-    source.RoleId = phys.RoleId;
-    source.RoleName = phys.Role == null ? null : phys.Role.Name;
-    source.ObjectIndex = phys.ImageableId == null ? null : phys.ImageableId;
-    source.ObjectType = string.IsNullOrEmpty( phys.ImageableType ) ? null : phys.ImageableType;
-    source.Read = (phys.Acl2 & GrouproleAcls.ReadMask) == GrouproleAcls.ReadMask;
-    source.Write = (phys.Acl2 & GrouproleAcls.WriteMask) == GrouproleAcls.WriteMask;
-    source.Execute = (phys.Acl2 & GrouproleAcls.ExecuteMask) == GrouproleAcls.ExecuteMask;
+    to.Id = from.Id;
+    to.GroupId = from.GroupId;
+    to.GroupName = from.Group == null ? null : from.Group.Name;
+    to.RoleId = from.RoleId;
+    to.RoleName = from.Role == null ? null : from.Role.Name;
+    to.ObjectIndex = from.ImageableId == null ? null : from.ImageableId;
+    to.ObjectType = string.IsNullOrEmpty( from.ImageableType ) ? null : from.ImageableType;
+    to.Read = (from.Acl2 & GrouproleAcls.ReadMask) == GrouproleAcls.ReadMask;
+    to.Write = (from.Acl2 & GrouproleAcls.WriteMask) == GrouproleAcls.WriteMask;
 
-    return source;
+    return to;
+  }
+
+  /// <summary>
+  /// Convert a object to a specific physical . 
+  /// </summary>
+  /// <param name="from"></param>
+  /// <param name="to"></param>
+  /// <returns>physical object</returns>
+  public override GrouproleAcls DtoToPhysical(GroupRoleAclDto from, GrouproleAcls to)
+  {
+    if ( from.Id.HasValue )
+      to.Id = from.Id.Value;
+    to.GroupId = from.GroupId;
+    to.Group = null;
+    to.RoleId = from.RoleId;
+    to.Role = null;
+    to.ImageableId = from.ObjectIndex;
+    to.ImageableType = from.ObjectType;
+    to.Acl2 = from.Read ? (ulong)GrouproleAcls.ReadMask : 0;
+    to.Acl2 |= from.Write ? (ulong)GrouproleAcls.WriteMask : 0;
+
+    return to;
   }
 
 }

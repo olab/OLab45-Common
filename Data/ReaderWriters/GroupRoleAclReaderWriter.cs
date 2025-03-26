@@ -10,10 +10,19 @@ using System.Threading.Tasks;
 
 namespace OLab.Data.ReaderWriters;
 
+/// <summary>
+/// Provides methods to read and write Group Role ACLs.
+/// </summary>
 public class GroupRoleAclReaderWriter : ReaderWriter
 {
   private readonly RoleReaderWriter _roleReaderWriter;
 
+  /// <summary>
+  /// Creates an instance of <see cref="GroupRoleAclReaderWriter"/>.
+  /// </summary>
+  /// <param name="logger">The logger instance.</param>
+  /// <param name="dbContext">The database context.</param>
+  /// <returns>An instance of <see cref="GroupRoleAclReaderWriter"/>.</returns>
   public static GroupRoleAclReaderWriter Instance(
     IOLabLogger logger,
     OLabDBContext dbContext)
@@ -21,19 +30,37 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     return new GroupRoleAclReaderWriter( logger, dbContext );
   }
 
+  /// <summary>
+  /// Initializes a new instance of the <see cref="GroupRoleAclReaderWriter"/> class.
+  /// </summary>
+  /// <param name="logger">The logger instance.</param>
+  /// <param name="dbContext">The database context.</param>
   public GroupRoleAclReaderWriter(
     IOLabLogger logger,
-  OLabDBContext dbContext) : base( logger, dbContext )
+    OLabDBContext dbContext) : base( logger, dbContext )
   {
     _roleReaderWriter = RoleReaderWriter.Instance( GetLogger(), GetDbContext() );
   }
 
   /// <summary>
-  /// Create new Group Role Acls
+  /// Edit a new Group Role ACL.
   /// </summary>
-  /// <param name="newPhys">GrouproleAcls</param>
-  /// <param name="commit">(oprional) commit to db</param>
-  /// <returns>Saved GrouproleAcls</returns>
+  /// <param name="newPhys">The new Group Role ACL to create.</param>
+  /// <returns>The edited Group Role ACL.</returns>
+  public async Task<GrouproleAcls> EditAsync(GrouproleAcls newPhys, bool commit = false)
+  {
+    GetDbContext().GrouproleAcls.Update( newPhys );
+    if ( commit )
+      await GetDbContext().SaveChangesAsync();
+    return newPhys;
+  }
+
+  /// <summary>
+  /// Creates a new Group Role ACL.
+  /// </summary>
+  /// <param name="newPhys">The new Group Role ACL to create.</param>
+  /// <param name="commit">Whether to commit the changes to the database.</param>
+  /// <returns>The created Group Role ACL.</returns>
   public async Task<GrouproleAcls> CreateAsync(GrouproleAcls newPhys, bool commit = false)
   {
     await GetDbContext().GrouproleAcls.AddAsync( newPhys );
@@ -43,12 +70,11 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   }
 
   /// <summary>
-  /// Create default group/role ACLs for group
+  /// Creates default group/role ACLs for a group.
   /// </summary>
-  /// <param name="groupId">Group id</param>
-  public async Task CreateForGroupAsync(uint groupId)
+  /// <param name="groupId">The ID of the group.</param>
+  public async Task CreateDefaultAclsForGroupAsync(uint groupId)
   {
-
     var rolePhys = await _roleReaderWriter.GetAsync( "author" );
     if ( rolePhys == null )
       throw new OLabObjectNotFoundException( "Roles", "author" );
@@ -89,7 +115,6 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     };
 
     await CreateAsync( groupRoleAclPhys, true );
-
 
     rolePhys = await _roleReaderWriter.GetAsync( Roles.SuperUserRole );
     if ( rolePhys == null )
@@ -135,13 +160,12 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     };
 
     await CreateAsync( groupRoleAclPhys );
-
   }
 
   /// <summary>
-  /// Get all ACL records
+  /// Gets all Group Role ACL records.
   /// </summary>
-  /// <returns>List of group role acl records</returns>
+  /// <returns>A list of Group Role ACL records.</returns>
   public async Task<IList<GrouproleAcls>> GetAsync()
   {
     var groupAcls = await GetDbContext()
@@ -152,52 +176,70 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     return groupAcls;
   }
 
-
   /// <summary>
-  /// Get list of group role acls for a set of user group roles
+  /// Gets a list of Group Role ACLs for a set of user group roles.
   /// </summary>
-  /// <param name="groupId">group id or null if 'all'</param>
-  /// <param name="roleId">role id or null if 'all'</param>
-  /// <param name="objectType">Scoped object type</param>
-  /// <param name="objectId">Scoped object id</param>
-  /// <returns>List of group role acl records</returns>
-  public async Task<IList<GrouproleAcls>> GetAsync(
+  /// <param name="groupId">Group Id: null = ignore, 0 = null, else id</param>
+  /// <param name="roleId">Role Id: null = ignore, 0 = null, else id</param>
+  /// <param name="objectType">Object types: null = ignore, multiple comma delimited</param>
+  /// <param name="objectIds">List of id's: null = ignore, 0 = null, else id</param>
+  /// <returns>A list of Group Role ACL records.</returns>
+  public async Task<IList<GrouproleAcls>> GetListAsync(
     uint? groupId,
-    uint? roleId,
-    string objectType,
-    uint? objectId)
+    uint? roleId = null,
+    string objectType = null,
+    IList<uint?> objectIds = null)
   {
     IList<GrouproleAcls> groupAcls = new List<GrouproleAcls>();
 
     // if no object type, change this to null
     objectType = string.IsNullOrEmpty( objectType ) ? null : objectType;
-    objectId = (objectId != null && objectId.HasValue && objectId.Value >= 0) ? objectId.Value : null;
 
-    IQueryable<GrouproleAcls> query = GetDbContext().Set<GrouproleAcls>();
+    var query = GetDbContext().GrouproleAcls
+      .Include( "Group" )
+      .Include( "Role" )
+      .Select( f => f );
 
     if ( groupId.HasValue )
-      query = query.Where( x => x.GroupId == (groupId == 0 ? null : groupId.Value) );
+    {
+      if ( groupId.Value == 0 )
+        query = query.Where( x => x.GroupId.HasValue );
+      else
+        query = query.Where( x => x.GroupId.HasValue && x.GroupId.Value == groupId.Value );
+    }
 
     if ( roleId.HasValue )
-      query = query.Where( x => x.RoleId == (roleId == 0 ? null : roleId.Value) );
+    {
+      if ( roleId.Value == 0 )
+        query = query.Where( x => x.RoleId.HasValue );
+      else
+        query = query.Where( x => x.RoleId.HasValue && x.RoleId.Value == roleId.Value );
+    }
 
-    if ( objectType != null )
-      query = query.Where( x => x.ImageableType == objectType );
+    if ( !string.IsNullOrEmpty( objectType ) )
+    {
+      query = query.Where( x => !string.IsNullOrEmpty( x.ImageableType ) && objectType.Contains( x.ImageableType ) );
 
-    if ( objectId != null )
-      query = query.Where( x => x.ImageableId == (objectId == 0 ? null : objectId.Value) );
+      if ( objectIds != null )
+      {
+        if ( objectIds.Contains( 0 ) )
+          query = query.Where( x => x.ImageableId.HasValue );
+        else
+          query = query.Where( x => x.ImageableId.HasValue && objectIds.Contains( x.ImageableId.Value ) );
+      }
+    }
 
     groupAcls = await query.ToListAsync();
 
-    return groupAcls;
+    return groupAcls.Distinct().ToList();
   }
 
   /// <summary>
-  /// Get list of group role acls for a set of user group roles
+  /// Gets a list of Group Role ACLs for a set of user group roles.
   /// </summary>
-  /// <param name="groupRoles">List of user group/roles</param>
-  /// <returns>List of group role acl records</returns>
-  public IList<GrouproleAcls> GetForUser(IList<UserGrouproles> groupRoles)
+  /// <param name="groupRoles">The list of user group/roles.</param>
+  /// <returns>A list of Group Role ACL records.</returns>
+  public IList<GrouproleAcls> GetByUserGroupRoles(IList<UserGrouproles> groupRoles)
   {
     var groupRoleAcls = new List<GrouproleAcls>();
 
@@ -208,10 +250,10 @@ public class GroupRoleAclReaderWriter : ReaderWriter
   }
 
   /// <summary>
-  /// Get list of group role acls for a specific group
+  /// Gets a list of Group Role ACLs for a specific group.
   /// </summary>
-  /// <param name="groupId">Group id to load</param>
-  /// <returns>List of group role acl records</returns>
+  /// <param name="groupId">The group ID to load.</param>
+  /// <returns>A list of Group Role ACL records.</returns>
   public IList<GrouproleAcls> GetForGroup(uint? groupId)
   {
     var groupAcls = GetDbContext()
@@ -219,10 +261,15 @@ public class GroupRoleAclReaderWriter : ReaderWriter
       .Where( x => (x.GroupId == groupId) || (!x.GroupId.HasValue) );
 
     return groupAcls.ToList();
-
   }
 
-  public async Task<List<DeleteGroupRoleAclResponse>> DeleteGroupRoleAclsAsync(List<uint> aclIds)
+  /// <summary>
+  /// Deletes a list of Group Role ACLs asynchronously.
+  /// </summary>
+  /// <param name="aclIds">The list of ACL IDs to delete.</param>
+  /// <returns>A list of responses for the deleted ACLs.</returns>
+  public async Task<List<DeleteGroupRoleAclResponse>> DeleteAsync(
+    List<uint> aclIds)
   {
     try
     {
@@ -232,7 +279,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
 
       foreach ( var aclId in aclIds )
       {
-        var response = await DeleteGroupRoleAclAsync( aclId, true );
+        var response = await DeleteAsync( aclId, true );
         responses.Add( response );
       }
 
@@ -245,7 +292,32 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     }
   }
 
-  public async Task<DeleteGroupRoleAclResponse> DeleteGroupRoleAclAsync(uint id, bool commit = false)
+  /// <summary>
+  /// Get ACL by id
+  /// </summary>
+  /// <param name="id">Id to get</param>
+  /// <param name="commit">optional commit</param>
+  /// <returns></returns>
+  public async Task<GrouproleAcls> GetAsync(
+    uint id)
+  {
+    var physAcl =
+      await GetDbContext().GrouproleAcls.FirstOrDefaultAsync( x => x.Id == id );
+    if ( physAcl == null )
+      throw new OLabObjectNotFoundException( "GroupRoleAcl", id );
+
+    return physAcl;
+  }
+
+  /// <summary>
+  /// Deletes a Group Role ACL asynchronously.
+  /// </summary>
+  /// <param name="id">The ID of the ACL to delete.</param>
+  /// <param name="commit">Whether to commit the changes to the database.</param>
+  /// <returns>A response for the deleted ACL.</returns>
+  public async Task<DeleteGroupRoleAclResponse> DeleteAsync(
+    uint id,
+    bool commit = false)
   {
     var physAcl =
       await GetDbContext().GrouproleAcls.FirstOrDefaultAsync( x => x.Id == id );
@@ -262,4 +334,65 @@ public class GroupRoleAclReaderWriter : ReaderWriter
 
     return response;
   }
+
+  /// <summary>
+  /// Finds a Group Role ACL by group name and role name.
+  /// </summary>
+  /// <param name="groupName">The name of the group.</param>
+  /// <param name="roleName">The name of the role.</param>
+  /// <returns>The found Group Role ACL.</returns>
+  public GrouproleAcls GetByGroupRole(
+    string groupName,
+    string roleName)
+  {
+    var groupRolePhys
+      = GetDbContext().GrouproleAcls
+        .FirstOrDefault( x => x.Role != null && x.Role.Name == roleName && x.Group != null && x.Group.Name == groupName );
+    return groupRolePhys;
+  }
+
+  /// <summary>
+  /// Finds Group Role ACLs by group name.
+  /// </summary>
+  /// <param name="groupName">The name of the group or null to find ACLs without a group.</param>
+  /// <returns>A list of Group Role ACLs.</returns>
+  public IList<GrouproleAcls> GetByGroup(
+    string groupName = null)
+  {
+    if ( string.IsNullOrEmpty( groupName ) )
+    {
+      var items = GetDbContext().GrouproleAcls
+        .Where( x => !x.GroupId.HasValue );
+      return items.ToList();
+    }
+    else
+    {
+      var items = GetDbContext().GrouproleAcls
+        .Where( x => x.Group != null && x.Group.Name == groupName );
+      return items.ToList();
+    }
+  }
+
+  /// <summary>
+  /// Finds Group Role ACLs by role name.
+  /// </summary>
+  /// <param name="roleName">The name of the role.</param>
+  /// <returns>A list of Group Role ACLs.</returns>
+  public IList<GrouproleAcls> GetByRole(
+    string roleName)
+  {
+    if ( string.IsNullOrEmpty( roleName ) )
+    {
+      var items = GetDbContext().GrouproleAcls
+        .Where( x => !x.RoleId.HasValue );
+      return items.ToList();
+    }
+    else
+    {
+      var items = GetDbContext().GrouproleAcls
+        .Where( x => x.Role != null && x.Role.Name == roleName );
+      return items.ToList();
+    }
+  }
+
 }

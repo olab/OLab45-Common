@@ -43,10 +43,10 @@ public partial class MapCounters
   [Column( "visible" )]
   public bool? Visible { get; set; }
 
-  [Column( "out_of", TypeName = "int(10)" )]
+  [Column( "out_of", TypeName = "int(11)" )]
   public int? OutOf { get; set; }
 
-  [Column( "status", TypeName = "int(1)" )]
+  [Column( "status", TypeName = "int(11)" )]
   public int Status { get; set; }
 
   [ForeignKey( "MapId" )]
@@ -54,5 +54,5 @@ public partial class MapCounters
   public virtual Maps Map { get; set; }
 
   [InverseProperty( "CounterNavigation" )]
-  public virtual ICollection<MapCounterRules> MapCounterRules { get; } = new List<MapCounterRules>();
+  public virtual ICollection<MapCounterRules> MapCounterRules { get; set; } = new List<MapCounterRules>();
 }

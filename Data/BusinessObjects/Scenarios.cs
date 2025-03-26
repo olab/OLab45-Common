@@ -24,5 +24,5 @@ public partial class Scenarios
   public string Description { get; set; }
 
   [InverseProperty( "Scenario" )]
-  public virtual ICollection<ScenarioMaps> ScenarioMaps { get; } = new List<ScenarioMaps>();
+  public virtual ICollection<ScenarioMaps> ScenarioMaps { get; set; } = new List<ScenarioMaps>();
 }

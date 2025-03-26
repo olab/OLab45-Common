@@ -31,7 +31,7 @@ public partial class MapContributors
   [StringLength( 200 )]
   public string Organization { get; set; }
 
-  [Column( "order", TypeName = "int(10)" )]
+  [Column( "order", TypeName = "int(11)" )]
   public int Order { get; set; }
 
   [ForeignKey( "MapId" )]

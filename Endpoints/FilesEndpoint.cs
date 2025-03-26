@@ -1,10 +1,9 @@
 using HeyRed.Mime;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OLab.Access.Interfaces;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
-using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
@@ -12,7 +11,6 @@ using OLab.Common.Interfaces;
 using OLab.Common.Utils;
 using OLab.Data.Interface;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -22,6 +20,8 @@ namespace OLab.Api.Endpoints;
 
 public partial class FilesEndpoint : OLabEndpoint
 {
+  private readonly IOLabMapper<SystemFiles, FilesDto> _mapper;
+
   public FilesEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
@@ -34,6 +34,10 @@ public partial class FilesEndpoint : OLabEndpoint
       wikiTagProvider,
       fileStorageProvider )
   {
+    _mapper = new FilesMapper(
+      GetLogger(),
+      GetDbContext(),
+      GetWikiProvider() );
   }
 
   private bool Exists(uint id)
@@ -47,41 +51,28 @@ public partial class FilesEndpoint : OLabEndpoint
   /// <param name="take"></param>
   /// <param name="skip"></param>
   /// <returns></returns>
-  public async Task<OLabAPIPagedResponse<FilesDto>> GetAsync(int? take, int? skip)
+  public async Task<OLabAPIPagedResponse<FilesDto>> GetAsync(
+    IOLabAuthorization auth,
+    int? take,
+    int? skip)
   {
-    GetLogger().LogInformation( $"FilesController.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})" );
+    var physItems = await GetPhysAsync<SystemFiles>( auth, take, skip );
 
-    var Files = new List<SystemFiles>();
-    var total = 0;
-    var remaining = 0;
-
-    if ( !skip.HasValue )
-      skip = 0;
-
-    Files = await GetDbContext().SystemFiles.OrderBy( x => x.Name ).ToListAsync();
-    total = Files.Count;
-
-    if ( take.HasValue && skip.HasValue )
-    {
-      Files = Files.Skip( skip.Value ).Take( take.Value ).ToList();
-      remaining = total - take.Value - skip.Value;
-    }
-
-    GetLogger().LogInformation( string.Format( "found {0} FilesPhys", Files.Count ) );
-
-    var dtoList = new Files(
-        GetLogger(),
-        GetDbContext(),
-        GetWikiProvider() ).PhysicalToDto( Files );
+    var dtoResponse = new OLabAPIPagedResponse<FilesDto>();
+    dtoResponse.Data = _mapper.PhysicalToDto( physItems.Data );
+    dtoResponse.Remaining = physItems.Remaining;
+    dtoResponse.Count = physItems.Count;
 
     var maps = _mapsReaderWriter.GetMapIdNames();
     var nodes = _nodesReaderWriter.GetNodeIdNames();
     var servers = GetServerIdNames();
 
-    foreach ( var dto in dtoList )
+    foreach ( var dto in dtoResponse.Data )
       dto.ParentInfo = FindParentInfo( dto.ImageableType, dto.ImageableId, maps, nodes, servers );
 
-    return new OLabAPIPagedResponse<FilesDto> { Data = dtoList, Remaining = remaining, Count = total };
+    GetLogger().LogInformation( string.Format( "Found {0} FilesDto", dtoResponse.Data.Count ) );
+
+    return dtoResponse;
   }
 
   /// <summary>
@@ -102,14 +93,14 @@ public partial class FilesEndpoint : OLabEndpoint
 
     _fileStorageModule.AttachUrls( phys );
 
-    var dto = new FilesFull(
+    var dto = new FilesFullMapper(
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() ).PhysicalToDto( phys );
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, dto );
-    if ( accessResult is UnauthorizedResult )
+    if ( !accessResult )
       throw new OLabUnauthorizedException( "FilesPhys", id );
 
     AttachParentObject( dto );
@@ -133,12 +124,12 @@ public partial class FilesEndpoint : OLabEndpoint
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
-    if ( accessResult is UnauthorizedResult )
+    if ( !accessResult )
       throw new OLabUnauthorizedException( "FilesPhys", id );
 
     try
     {
-      var builder = new FilesFull(
+      var builder = new FilesFullMapper(
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() );
@@ -167,14 +158,14 @@ public partial class FilesEndpoint : OLabEndpoint
     CancellationToken token)
   {
     GetLogger().LogInformation( $"FilesController.PostAsync()" );
-    var builder = new FilesFull(
+    var builder = new FilesFullMapper(
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() );
 
     // test if user has access to object
     var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
-    if ( accessResult is UnauthorizedResult )
+    if ( !accessResult )
       throw new OLabUnauthorizedException( "SystemFiles", 0 );
 
     if ( string.IsNullOrEmpty( dto.Mime ) )
@@ -223,14 +214,14 @@ public partial class FilesEndpoint : OLabEndpoint
       if ( phys == null )
         throw new OLabObjectNotFoundException( "SystemFiles", id );
 
-      var dto = new FilesFull(
+      var dto = new FilesFullMapper(
         GetLogger(),
         GetDbContext(),
         GetWikiProvider() ).PhysicalToDto( phys );
 
       // test if user has access to object
       var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dto );
-      if ( accessResult is UnauthorizedResult )
+      if ( !accessResult )
         throw new OLabUnauthorizedException( "SystemFiles", id );
 
       var filePath = _fileStorageModule.BuildPath(

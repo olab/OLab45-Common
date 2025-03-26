@@ -1,4 +1,8 @@
 using AutoMapper;
+using Newtonsoft.Json;
+using OLab.Common.Utils;
+using System.Collections.Generic;
+using System.Linq;
 
 #nullable disable
 
@@ -64,5 +68,36 @@ public partial class Maps
     map.MapNodes.Add( new MapNodes { Title = "New Node", TypeId = 1, Text = "Sample Text" } );
 
     return map;
+  }
+
+  public static string TruncateToJsonObject(IList<Maps> physMaps, int maxDepth)
+  {
+    var json = JsonConvert.SerializeObject(
+      physMaps,
+      new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore } );
+
+    return SerializerUtilities.TruncateJsonToDepth( json, maxDepth + 1 );
+  }
+
+  /// <summary>
+  /// Tests if a map is accessible purely on group/role
+  /// </summary>
+  /// <param name="phys"></param>
+  /// <param name="groupId"></param>
+  /// <param name="roleId"></param>
+  /// <returns></returns>
+  public static bool IsAccessible(Maps phys, uint? groupId, uint? roleId)
+  {
+    var accessible = (phys.MapGrouproles.Any( y => (y.GroupId == groupId && y.RoleId == roleId) ) ||
+        phys.MapGrouproles.Any( y => (y.GroupId == groupId && !y.RoleId.HasValue) ) ||
+        phys.MapGrouproles.Any( y => (!y.GroupId.HasValue && y.RoleId == roleId) ) ||
+        phys.MapGrouproles.Any( y => (!y.GroupId.HasValue && !y.RoleId.HasValue) ));
+
+    return accessible;
+  }
+
+  public override string ToString()
+  {
+    return $"{Name} ({Id})";
   }
 }

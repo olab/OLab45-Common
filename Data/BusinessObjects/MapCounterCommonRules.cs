@@ -23,14 +23,14 @@ public partial class MapCounterCommonRules
   [Column( "rule" )]
   public string Rule { get; set; }
 
-  [Column( "lightning", TypeName = "int(10)" )]
+  [Column( "lightning", TypeName = "int(11)" )]
   public int Lightning { get; set; }
 
   [Column( "isCorrect" )]
   public bool IsCorrect { get; set; }
 
   [InverseProperty( "Rule" )]
-  public virtual ICollection<Cron> Cron { get; } = new List<Cron>();
+  public virtual ICollection<Cron> Cron { get; set; } = new List<Cron>();
 
   [ForeignKey( "MapId" )]
   [InverseProperty( "MapCounterCommonRules" )]

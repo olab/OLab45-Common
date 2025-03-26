@@ -19,7 +19,7 @@ public partial class Webinars
   [StringLength( 250 )]
   public string Title { get; set; }
 
-  [Column( "current_step", TypeName = "int(10)" )]
+  [Column( "current_step", TypeName = "int(11)" )]
   public int? CurrentStep { get; set; }
 
   [Column( "forum_id", TypeName = "int(10) unsigned" )]
@@ -40,8 +40,8 @@ public partial class Webinars
   public string ChangeSteps { get; set; }
 
   [InverseProperty( "Webinar" )]
-  public virtual ICollection<UserNotes> UserNotes { get; } = new List<UserNotes>();
+  public virtual ICollection<UserNotes> UserNotes { get; set; } = new List<UserNotes>();
 
   [InverseProperty( "Webinar" )]
-  public virtual ICollection<WebinarNodePoll> WebinarNodePoll { get; } = new List<WebinarNodePoll>();
+  public virtual ICollection<WebinarNodePoll> WebinarNodePoll { get; set; } = new List<WebinarNodePoll>();
 }

@@ -1,7 +1,7 @@
 using Data.Contracts;
 using Microsoft.EntityFrameworkCore;
+using OLab.Access.Interfaces;
 using OLab.Api.Data.Exceptions;
-using OLab.Api.Data.Interface;
 using OLab.Api.Endpoints;
 using OLab.Api.Model;
 using OLab.Api.Utils;
@@ -36,7 +36,7 @@ public partial class ReportEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     string contextId)
   {
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: ReportEndpoint.ReadAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: ReportEndpoint.ReadAsync" );
 
     var dto = new SessionReport();
 

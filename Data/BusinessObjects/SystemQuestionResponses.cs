@@ -37,10 +37,10 @@ public partial class SystemQuestionResponses
   [Column( "feedback", TypeName = "text" )]
   public string Feedback { get; set; }
 
-  [Column( "is_correct", TypeName = "int(10)" )]
+  [Column( "is_correct", TypeName = "int(11)" )]
   public int? IsCorrect { get; set; }
 
-  [Column( "score", TypeName = "int(10)" )]
+  [Column( "score", TypeName = "int(11)" )]
   public int? Score { get; set; }
 
   [Column( "from" )]
@@ -61,7 +61,7 @@ public partial class SystemQuestionResponses
   public DateTime? UpdatedAt { get; set; }
 
   [InverseProperty( "Parent" )]
-  public virtual ICollection<SystemQuestionResponses> InverseParent { get; } = new List<SystemQuestionResponses>();
+  public virtual ICollection<SystemQuestionResponses> InverseParent { get; set; } = new List<SystemQuestionResponses>();
 
   [ForeignKey( "ParentId" )]
   [InverseProperty( "InverseParent" )]

@@ -27,10 +27,10 @@ public partial class SystemScripts
   [Column( "is_raw", TypeName = "bit(1)" )]
   public ulong? IsRaw { get; set; }
 
-  [Column( "order", TypeName = "int(10)" )]
+  [Column( "order", TypeName = "int(11)" )]
   public int? Order { get; set; }
 
-  [Column( "postload_id", TypeName = "int(10)" )]
+  [Column( "postload_id", TypeName = "int(11)" )]
   public int? PostloadId { get; set; }
 
   [Required]

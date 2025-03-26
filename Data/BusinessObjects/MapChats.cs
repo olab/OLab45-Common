@@ -27,7 +27,7 @@ public partial class MapChats
   [Column( "stem", TypeName = "text" )]
   public string Stem { get; set; }
 
-  [Column( "is_private", TypeName = "int(4)" )]
+  [Column( "is_private", TypeName = "int(11)" )]
   public int IsPrivate { get; set; }
 
   [ForeignKey( "MapId" )]
@@ -35,5 +35,5 @@ public partial class MapChats
   public virtual Maps Map { get; set; }
 
   [InverseProperty( "Chat" )]
-  public virtual ICollection<MapChatElements> MapChatElements { get; } = new List<MapChatElements>();
+  public virtual ICollection<MapChatElements> MapChatElements { get; set; } = new List<MapChatElements>();
 }

@@ -31,14 +31,14 @@ public partial class SystemFiles
   [StringLength( 300 )]
   public string Path { get; set; }
 
-  [Column( "type", TypeName = "int(10)" )]
+  [Column( "type", TypeName = "int(11)" )]
   public int? Type { get; set; }
 
   [Column( "args" )]
   [StringLength( 100 )]
   public string Args { get; set; }
 
-  [Column( "width", TypeName = "int(10)" )]
+  [Column( "width", TypeName = "int(11)" )]
   public int? Width { get; set; }
 
   [Required]
@@ -46,7 +46,7 @@ public partial class SystemFiles
   [StringLength( 2 )]
   public string WidthType { get; set; }
 
-  [Column( "height", TypeName = "int(10)" )]
+  [Column( "height", TypeName = "int(11)" )]
   public int? Height { get; set; }
 
   [Required]
@@ -70,7 +70,7 @@ public partial class SystemFiles
   [StringLength( 45 )]
   public string Copyright { get; set; }
 
-  [Column( "file_size", TypeName = "int(10)" )]
+  [Column( "file_size", TypeName = "int(11)" )]
   public int? FileSize { get; set; }
 
   [Column( "is_shared", TypeName = "tinyint(4)" )]
@@ -96,7 +96,7 @@ public partial class SystemFiles
   [StringLength( 45 )]
   public string ImageableType { get; set; }
 
-  [Column( "is_system", TypeName = "int(10)" )]
+  [Column( "is_system", TypeName = "int(11)" )]
   public int? IsSystem { get; set; }
 
   [Column( "created_at", TypeName = "datetime" )]

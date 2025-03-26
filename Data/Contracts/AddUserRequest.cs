@@ -65,6 +65,12 @@ public class AddUserRequest
     this.dbContext = dbContext;
   }
 
+  public bool PasswordProvided()
+  {
+    var passwordProvided = Password.Trim( '*' ) != string.Empty;
+    return passwordProvided;
+  }
+
   public void BuildGroupRoleObjects(string groupRoleString = null)
   {
     // if not passed in, then look for it in the GroupRoles string

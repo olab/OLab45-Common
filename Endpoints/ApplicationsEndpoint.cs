@@ -1,12 +1,14 @@
+using OLab.Access.Interfaces;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
-using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using OLab.Data.Interface;
 using OLab.Data.Mappers;
 using OLab.Data.ReaderWriters;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,7 +17,7 @@ namespace OLab.Api.Endpoints;
 public partial class ApplicationsEndpoint : OLabEndpoint
 {
   private readonly ApplicationReaderWriter _readerWriter;
-  private readonly ApplicationsMapper _mapper;
+  private readonly IOLabMapper<SystemApplications, ApplicationsDto> _mapper;
 
   public ApplicationsEndpoint(
     IOLabLogger logger,
@@ -42,13 +44,13 @@ public partial class ApplicationsEndpoint : OLabEndpoint
     int? take, int? skip)
   {
     GetLogger().LogInformation( $"ApplicationsEndpoint.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})" );
-    var pagedDataPhys = await _readerWriter.GetPagedAsync( take, skip );
+    var pagesResult = await _readerWriter.GetAsync( take, skip );
 
     var pagedDataDto = new OLabAPIPagedResponse<ApplicationsDto>();
 
-    pagedDataDto.Data = _mapper.PhysicalToDto( pagedDataPhys.Data );
-    pagedDataDto.Remaining = pagedDataPhys.Remaining;
-    pagedDataDto.Count = pagedDataPhys.Count;
+    pagedDataDto.Data = _mapper.PhysicalToDto( pagesResult.items.ToList() );
+    pagedDataDto.Remaining = pagesResult.remaining;
+    pagedDataDto.Count = pagesResult.count;
 
     return pagedDataDto;
 

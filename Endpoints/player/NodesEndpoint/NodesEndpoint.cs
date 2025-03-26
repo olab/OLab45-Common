@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OLab.Access.Interfaces;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
-using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
@@ -64,7 +64,7 @@ public partial class NodesEndpoint : OLabEndpoint
   /// <returns>MapsNodesFullRelationsDto response</returns>
   public async Task<MapsNodesFullRelationsDto> GetNodeTranslatedAsync(IOLabAuthorization auth, uint nodeId)
   {
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: NodesEndpoint.GetNodeTranslatedAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: NodesEndpoint.GetNodeTranslatedAsync" );
     return await GetNodeAsync( nodeId, true );
   }
 
@@ -76,7 +76,7 @@ public partial class NodesEndpoint : OLabEndpoint
   /// <returns></returns>
   public async Task PutNodeAsync(IOLabAuthorization auth, uint id, MapNodesFullDto dto)
   {
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: NodesEndpoint.PutNodeAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: NodesEndpoint.PutNodeAsync" );
 
     var phys = await GetMapNodeAsync( id );
     if ( phys == null )
@@ -110,7 +110,7 @@ public partial class NodesEndpoint : OLabEndpoint
     MapNodeLinksPostDataDto data
   )
   {
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: NodesEndpoint.PostLinkAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: NodesEndpoint.PostLinkAsync" );
 
     var node = GetSimple( GetDbContext(), nodeId );
     if ( node == null )
@@ -145,7 +145,7 @@ public partial class NodesEndpoint : OLabEndpoint
     [FromBody] MapNodesPostDataDto data
   )
   {
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: NodesEndpoint.PostNodeAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: NodesEndpoint.PostNodeAsync" );
 
     using var transaction = GetDbContext().Database.BeginTransaction();
 

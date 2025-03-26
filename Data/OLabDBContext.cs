@@ -4,10 +4,6 @@ namespace OLab.Api.Model;
 
 public partial class OLabDBContext : DbContext
 {
-  public OLabDBContext()
-  {
-    
-  }
   public OLabDBContext(DbContextOptions<OLabDBContext> options)
       : base( options )
   {
@@ -71,7 +67,7 @@ public partial class OLabDBContext : DbContext
 
   public virtual DbSet<MapChats> MapChats { get; set; }
 
-  public virtual DbSet<MapCollectionMaps> MapCollectionMaps { get; set; }
+  public virtual DbSet<MapCollectionmaps> MapCollectionmaps { get; set; }
 
   public virtual DbSet<MapCollections> MapCollections { get; set; }
 
@@ -102,6 +98,8 @@ public partial class OLabDBContext : DbContext
   public virtual DbSet<MapFeedbackTypes> MapFeedbackTypes { get; set; }
 
   public virtual DbSet<MapGrouproles> MapGrouproles { get; set; }
+
+  public virtual DbSet<MapGroups> MapGroups { get; set; }
 
   public virtual DbSet<MapKeys> MapKeys { get; set; }
 
@@ -482,13 +480,13 @@ public partial class OLabDBContext : DbContext
       entity.HasOne( d => d.Map ).WithMany( p => p.MapChats ).HasConstraintName( "map_chats_ibfk_1" );
     } );
 
-    modelBuilder.Entity<MapCollectionMaps>( entity =>
+    modelBuilder.Entity<MapCollectionmaps>( entity =>
     {
       entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
 
-      entity.HasOne( d => d.Collection ).WithMany( p => p.MapCollectionMaps ).HasConstraintName( "map_collectionmaps_ibfk_1" );
+      entity.HasOne( d => d.Collection ).WithMany( p => p.MapCollectionmaps ).HasConstraintName( "map_collectionmaps_ibfk_1" );
 
-      entity.HasOne( d => d.Map ).WithMany( p => p.MapCollectionMaps ).HasConstraintName( "map_collectionmaps_ibfk_2" );
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapCollectionmaps ).HasConstraintName( "map_collectionmaps_ibfk_2" );
     } );
 
     modelBuilder.Entity<MapCollections>( entity =>
@@ -598,6 +596,17 @@ public partial class OLabDBContext : DbContext
       entity.HasOne( d => d.Map ).WithMany( p => p.MapGrouproles ).HasConstraintName( "mgr_ibfk_node" );
 
       entity.HasOne( d => d.Role ).WithMany( p => p.MapGrouproles ).HasConstraintName( "mgr_ibfk_role" );
+    } );
+
+    modelBuilder.Entity<MapGroups>( entity =>
+    {
+      entity.HasKey( e => e.Id ).HasName( "PRIMARY" );
+
+      entity.HasOne( d => d.Group ).WithMany( p => p.MapGroups )
+              .OnDelete( DeleteBehavior.ClientSetNull )
+              .HasConstraintName( "mp_ibfk_group" );
+
+      entity.HasOne( d => d.Map ).WithMany( p => p.MapGroups ).HasConstraintName( "mp_ibfk_map" );
     } );
 
     modelBuilder.Entity<MapKeys>( entity =>

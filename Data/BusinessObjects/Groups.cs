@@ -25,14 +25,17 @@ public partial class Groups
   public sbyte IsSystem { get; set; }
 
   [InverseProperty( "Group" )]
-  public virtual ICollection<GrouproleAcls> GrouproleAcls { get; } = new List<GrouproleAcls>();
+  public virtual ICollection<GrouproleAcls> GrouproleAcls { get; set; } = new List<GrouproleAcls>();
 
   [InverseProperty( "Group" )]
-  public virtual ICollection<MapGrouproles> MapGrouproles { get; } = new List<MapGrouproles>();
+  public virtual ICollection<MapGrouproles> MapGrouproles { get; set; } = new List<MapGrouproles>();
 
   [InverseProperty( "Group" )]
-  public virtual ICollection<MapNodeGrouproles> MapNodeGrouproles { get; } = new List<MapNodeGrouproles>();
+  public virtual ICollection<MapGroups> MapGroups { get; set; } = new List<MapGroups>();
 
   [InverseProperty( "Group" )]
-  public virtual ICollection<UserGrouproles> UserGrouproles { get; } = new List<UserGrouproles>();
+  public virtual ICollection<MapNodeGrouproles> MapNodeGrouproles { get; set; } = new List<MapNodeGrouproles>();
+
+  [InverseProperty( "Group" )]
+  public virtual ICollection<UserGrouproles> UserGrouproles { get; set; } = new List<UserGrouproles>();
 }

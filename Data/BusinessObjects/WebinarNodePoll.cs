@@ -22,7 +22,7 @@ public partial class WebinarNodePoll
   [Column( "webinar_id", TypeName = "int(10) unsigned" )]
   public uint WebinarId { get; set; }
 
-  [Column( "time", TypeName = "int(10)" )]
+  [Column( "time", TypeName = "int(11)" )]
   public int Time { get; set; }
 
   [ForeignKey( "NodeId" )]

@@ -55,16 +55,16 @@ public partial class Users
   [Column( "resetHashKeyTime", TypeName = "datetime" )]
   public DateTime? ResetHashKeyTime { get; set; }
 
-  [Column( "resetAttempt", TypeName = "int(10)" )]
+  [Column( "resetAttempt", TypeName = "int(11)" )]
   public int? ResetAttempt { get; set; }
 
   [Column( "resetTimestamp", TypeName = "datetime" )]
   public DateTime? ResetTimestamp { get; set; }
 
-  [Column( "visualEditorAutosaveTime", TypeName = "int(10)" )]
+  [Column( "visualEditorAutosaveTime", TypeName = "int(11)" )]
   public int? VisualEditorAutosaveTime { get; set; }
 
-  [Column( "oauth_provider_id", TypeName = "int(10)" )]
+  [Column( "oauth_provider_id", TypeName = "int(11)" )]
   public int? OauthProviderId { get; set; }
 
   [Column( "oauth_id" )]
@@ -78,7 +78,7 @@ public partial class Users
   [Column( "history_readonly" )]
   public bool? HistoryReadonly { get; set; }
 
-  [Column( "history_timestamp", TypeName = "int(10)" )]
+  [Column( "history_timestamp", TypeName = "int(11)" )]
   public int? HistoryTimestamp { get; set; }
 
   [Required]
@@ -92,17 +92,17 @@ public partial class Users
   public string Settings { get; set; }
 
   [InverseProperty( "User" )]
-  public virtual ICollection<MapUsers> MapUsers { get; } = new List<MapUsers>();
+  public virtual ICollection<MapUsers> MapUsers { get; set; } = new List<MapUsers>();
 
   [InverseProperty( "User" )]
-  public virtual ICollection<UserBookmarks> UserBookmarks { get; } = new List<UserBookmarks>();
+  public virtual ICollection<UserBookmarks> UserBookmarks { get; set; } = new List<UserBookmarks>();
 
   [InverseProperty( "User" )]
-  public virtual ICollection<UserGrouproles> UserGrouproles { get; } = new List<UserGrouproles>();
+  public virtual ICollection<UserGrouproles> UserGrouproles { get; set; } = new List<UserGrouproles>();
 
   [InverseProperty( "User" )]
-  public virtual ICollection<UserNotes> UserNotes { get; } = new List<UserNotes>();
+  public virtual ICollection<UserNotes> UserNotes { get; set; } = new List<UserNotes>();
 
   [InverseProperty( "User" )]
-  public virtual ICollection<WebinarUsers> WebinarUsers { get; } = new List<WebinarUsers>();
+  public virtual ICollection<WebinarUsers> WebinarUsers { get; set; } = new List<WebinarUsers>();
 }

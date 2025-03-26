@@ -11,9 +11,9 @@ public class ScopedObjectDto
   public string Name { get; set; }
   [JsonProperty( "description" )]
   public string Description { get; set; }
-  [JsonProperty( "ScopeLevel" )]
+  [JsonProperty( "scopeLevel" )]
   public string ScopeLevel { get; set; }
-  [JsonProperty( "ScopeId" )]
+  [JsonProperty( "scopeId" )]
   public uint ParentId { get; set; }
   [JsonProperty( "wiki" )]
   public string Wiki { get; set; }

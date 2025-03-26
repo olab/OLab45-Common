@@ -23,7 +23,7 @@ public partial class MapDams
   [StringLength( 500 )]
   public string Name { get; set; }
 
-  [Column( "is_private", TypeName = "int(4)" )]
+  [Column( "is_private", TypeName = "int(11)" )]
   public int IsPrivate { get; set; }
 
   [ForeignKey( "MapId" )]
@@ -31,5 +31,5 @@ public partial class MapDams
   public virtual Maps Map { get; set; }
 
   [InverseProperty( "Dam" )]
-  public virtual ICollection<MapDamElements> MapDamElements { get; } = new List<MapDamElements>();
+  public virtual ICollection<MapDamElements> MapDamElements { get; set; } = new List<MapDamElements>();
 }

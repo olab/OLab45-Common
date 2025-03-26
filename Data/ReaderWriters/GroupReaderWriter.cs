@@ -41,7 +41,7 @@ public class GroupReaderWriter : ReaderWriter
       GetDbContext().SaveChanges();
 
       // add default ACL's for new group
-      await GroupRoleAclReaderWriter.Instance( GetLogger(), GetDbContext() ).CreateForGroupAsync( newPhys.Id );
+      await GroupRoleAclReaderWriter.Instance( GetLogger(), GetDbContext() ).CreateDefaultAclsForGroupAsync( newPhys.Id );
       GetDbContext().SaveChanges();
 
     }
@@ -49,16 +49,6 @@ public class GroupReaderWriter : ReaderWriter
       newPhys = existingPhys;
 
     return newPhys;
-  }
-
-  /// <summary>
-  /// Get all groups
-  /// </summary>
-  /// <returns>Groups</returns>
-  public async Task<IList<Groups>> GetAsync()
-  {
-    var phys = await GetDbContext().Groups.ToListAsync();
-    return phys;
   }
 
   /// <summary>
@@ -84,7 +74,9 @@ public class GroupReaderWriter : ReaderWriter
   /// <param name="take">(optional) number of objects to return</param>
   /// <param name="skip">(optional) number of objects to skip</param>
   /// <returns>OLabAPIPagedResponse</returns>
-  public async Task<OLabAPIPagedResponse<Groups>> GetPagedAsync(int? take, int? skip)
+  public async Task<OLabAPIPagedResponse<Groups>> GetPagedAsync(
+    int? take,
+    int? skip)
   {
     var response = new OLabAPIPagedResponse<Groups>();
 

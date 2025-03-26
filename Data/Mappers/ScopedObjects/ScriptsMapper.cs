@@ -1,16 +1,15 @@
 using OLab.Api.Dto;
 using OLab.Api.Model;
-using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 
 namespace OLab.Api.ObjectMapper;
 
-public class Themes : OLabMapper<SystemThemes, ThemesDto>
+public class ScriptsMapper : OLabMapper<SystemScripts, ScriptsDto>
 {
-  public Themes(
+  public ScriptsMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
-    WikiTagModuleProvider tagProvider,
+    IOLabModuleProvider<IWikiTagModule> tagProvider,
     bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }

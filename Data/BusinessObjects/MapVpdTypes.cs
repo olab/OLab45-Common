@@ -25,5 +25,5 @@ public partial class MapVpdTypes
   public string Label { get; set; }
 
   [InverseProperty( "VpdType" )]
-  public virtual ICollection<MapVpds> MapVpds { get; } = new List<MapVpds>();
+  public virtual ICollection<MapVpds> MapVpds { get; set; } = new List<MapVpds>();
 }

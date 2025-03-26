@@ -7,7 +7,7 @@ namespace OLab.Import.OLab3.Dtos;
 
 public class XmlMapQuestionDto : XmlImportDto<XmlMapQuestions>
 {
-  private readonly Api.ObjectMapper.Questions _mapper;
+  private readonly Api.ObjectMapper.QuestionsMapper _mapper;
 
   public XmlMapQuestionDto(
     IOLabLogger logger,
@@ -16,7 +16,7 @@ public class XmlMapQuestionDto : XmlImportDto<XmlMapQuestions>
       importer,
       Importer.DtoTypes.XmlMapQuestionDto, "map_question.xml" )
   {
-    _mapper = new Api.ObjectMapper.Questions( logger, GetDbContext(), GetWikiProvider() );
+    _mapper = new Api.ObjectMapper.QuestionsMapper( logger, GetDbContext(), GetWikiProvider() );
   }
 
   /// <summary>
@@ -52,6 +52,10 @@ public class XmlMapQuestionDto : XmlImportDto<XmlMapQuestions>
     var counterDto = GetImporter().GetDto( Importer.DtoTypes.XmlMapCounterDto ) as XmlMapCounterDto;
     if ( item.CounterId.HasValue )
       item.CounterId = counterDto.GetIdTranslation( GetFileName(), item.CounterId.Value );
+
+    // special case for NumTries
+    if ( item.EntryTypeId == 4 && item.NumTries == 1 )
+      item.NumTries = -1;
 
     GetDbContext().SystemQuestions.Add( item );
     GetDbContext().SaveChanges();

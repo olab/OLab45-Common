@@ -10,9 +10,9 @@ public class DesignerConstantsDto
   public string Name { get; set; }
   [JsonProperty( "description" )]
   public string Description { get; set; }
-  [JsonProperty( "ScopeLevel" )]
+  [JsonProperty( "scopeLevel" )]
   public string ImageableType { get; set; }
-  [JsonProperty( "ScopeId" )]
+  [JsonProperty( "scopeId" )]
   public uint ImageableId { get; set; }
   [JsonProperty( "wiki" )]
   public string Wiki { get; set; }

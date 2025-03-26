@@ -33,10 +33,10 @@ public partial class SystemQuestions
   [Column( "entry_type_id", TypeName = "int(10) unsigned" )]
   public uint EntryTypeId { get; set; }
 
-  [Column( "width", TypeName = "int(10)" )]
+  [Column( "width", TypeName = "int(11)" )]
   public int Width { get; set; }
 
-  [Column( "height", TypeName = "int(10)" )]
+  [Column( "height", TypeName = "int(11)" )]
   public int Height { get; set; }
 
   [Column( "feedback" )]
@@ -53,7 +53,7 @@ public partial class SystemQuestions
   [Column( "counter_id", TypeName = "int(10) unsigned" )]
   public uint? CounterId { get; set; }
 
-  [Column( "num_tries", TypeName = "int(10)" )]
+  [Column( "num_tries", TypeName = "int(11)" )]
   public int NumTries { get; set; }
 
   [Column( "show_submit", TypeName = "tinyint(4)" )]
@@ -66,16 +66,16 @@ public partial class SystemQuestions
   [StringLength( 200 )]
   public string SubmitText { get; set; }
 
-  [Column( "type_display", TypeName = "int(10)" )]
+  [Column( "type_display", TypeName = "int(11)" )]
   public int TypeDisplay { get; set; }
 
   [Column( "settings", TypeName = "text" )]
   public string Settings { get; set; }
 
-  [Column( "is_private", TypeName = "int(4)" )]
+  [Column( "is_private", TypeName = "int(11)" )]
   public int IsPrivate { get; set; }
 
-  [Column( "order", TypeName = "int(10)" )]
+  [Column( "order", TypeName = "int(11)" )]
   public int? Order { get; set; }
 
   [Column( "external_source_id" )]
@@ -97,18 +97,18 @@ public partial class SystemQuestions
   public DateTime? UpdatedAt { get; set; }
 
   [InverseProperty( "Parent" )]
-  public virtual ICollection<SystemQuestions> InverseParent { get; } = new List<SystemQuestions>();
+  public virtual ICollection<SystemQuestions> InverseParent { get; set; } = new List<SystemQuestions>();
 
   [ForeignKey( "ParentId" )]
   [InverseProperty( "InverseParent" )]
   public virtual SystemQuestions Parent { get; set; }
 
   [InverseProperty( "Question" )]
-  public virtual ICollection<SystemQuestionResponses> SystemQuestionResponses { get; } = new List<SystemQuestionResponses>();
+  public virtual ICollection<SystemQuestionResponses> SystemQuestionResponses { get; set; } = new List<SystemQuestionResponses>();
 
   [InverseProperty( "Question" )]
-  public virtual ICollection<SystemQuestionValidation> SystemQuestionValidation { get; } = new List<SystemQuestionValidation>();
+  public virtual ICollection<SystemQuestionValidation> SystemQuestionValidation { get; set; } = new List<SystemQuestionValidation>();
 
   [InverseProperty( "Question" )]
-  public virtual ICollection<UserResponses> UserResponses { get; } = new List<UserResponses>();
+  public virtual ICollection<UserResponses> UserResponses { get; set; } = new List<UserResponses>();
 }

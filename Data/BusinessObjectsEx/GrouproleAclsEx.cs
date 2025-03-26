@@ -1,9 +1,9 @@
 #nullable disable
 
-using OLab.Api.Data.Interface;
+using Newtonsoft.Json;
+using OLab.Common.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace OLab.Api.Model;
 
@@ -14,7 +14,6 @@ public partial class GrouproleAcls
   public const int ExecuteMask = 1;
 
   public static GrouproleAcls CreateDefault(
-    IUserContext userContext,
     Groups groupPhys,
     Roles rolePhys,
     string imageableType,
@@ -34,41 +33,21 @@ public partial class GrouproleAcls
     return acl;
   }
 
-  public static IList<GrouproleAcls> FindByGroup(
-    OLabDBContext dbContext,
-    string groupName)
+  public static string TruncateToJsonObject(GrouproleAcls phys, int maxDepth)
   {
-    if ( string.IsNullOrEmpty( groupName ) )
-    {
-      var items = dbContext.GrouproleAcls
-        .Where( x => !x.GroupId.HasValue );
-      return items.ToList();
-    }
-    else
-    {
+    var json = JsonConvert.SerializeObject(
+      new List<GrouproleAcls> { phys },
+      new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore } );
 
-      var items = dbContext.GrouproleAcls
-        .Where( x => x.Group.Name == groupName );
-      return items.ToList();
-    }
-  }
-
-  public static GrouproleAcls Find(
-  OLabDBContext dbContext,
-  string groupName,
-  string roleName)
-  {
-    var groupRolePhys = dbContext.GrouproleAcls
-      .FirstOrDefault( x => x.Role.Name == groupName && x.Group.Name == roleName );
-    return groupRolePhys;
+    return SerializerUtilities.TruncateJsonToDepth( json, maxDepth + 1 );
   }
 
   public override string ToString()
   {
-    var groupName = (Group != null) ? $"{Group.Name}({Group.Id})" : "NULL";
-    var roleName = (Role != null) ? $"{Role.Name}({Role.Id})" : "NULL";
-    var imageableType = string.IsNullOrEmpty( ImageableType ) ? ImageableType : "*";
-    var imageableId = ImageableId.HasValue ? $"{ImageableId.Value}" : "*";
+    var groupName = (Group != null) ? $"{Group?.Name}({GroupId})" : (GroupId != null ? (GroupId == 0 ? "*" : GroupId.ToString()) : "null");
+    var roleName = (Role != null) ? $"{Role?.Name}({RoleId})" : (RoleId != null ? (RoleId == 0 ? "*" : RoleId.ToString()) : "null");
+    var imageableType = string.IsNullOrEmpty( ImageableType ) ? "*" : ImageableType;
+    var imageableId = ImageableId.HasValue ? $"{string.Join( ',', ImageableId.Value )}" : "null";
 
     return $"{Id}: {groupName}{UserGrouproles.ItemSeparator}{roleName} {imageableType}({imageableId}) acl: '{Convert.ToString( (int)Acl2, 2 )}'";
   }

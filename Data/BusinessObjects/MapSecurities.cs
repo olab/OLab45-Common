@@ -25,5 +25,5 @@ public partial class MapSecurities
   public string Description { get; set; }
 
   [InverseProperty( "Security" )]
-  public virtual ICollection<Maps> Maps { get; } = new List<Maps>();
+  public virtual ICollection<Maps> Maps { get; set; } = new List<Maps>();
 }

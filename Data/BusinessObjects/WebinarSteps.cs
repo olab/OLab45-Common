@@ -23,5 +23,5 @@ public partial class WebinarSteps
   public string Name { get; set; }
 
   [InverseProperty( "StepNavigation" )]
-  public virtual ICollection<WebinarMaps> WebinarMaps { get; } = new List<WebinarMaps>();
+  public virtual ICollection<WebinarMaps> WebinarMaps { get; set; } = new List<WebinarMaps>();
 }

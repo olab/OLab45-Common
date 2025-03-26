@@ -9,22 +9,15 @@ using System.Linq;
 
 namespace OLab.Api.ObjectMapper;
 
-public class Questions : OLabMapper<SystemQuestions, QuestionsDto>
+public class QuestionsMapper : OLabMapper<SystemQuestions, QuestionsDto>
 {
-  public Questions(
+  public QuestionsMapper(
     IOLabLogger logger,
     OLabDBContext dbContext,
     WikiTagModuleProvider tagProvider,
     bool enableWikiTranslation = true) : base( logger, dbContext, tagProvider )
   {
   }
-
-  //public QuestionsPhys(
-  //  IOLabLogger Logger, 
-  //  WikiTagProvider tagProvider, 
-  //  bool _enableWikiTranslation = true) : base(Logger, tagProvider)
-  //{
-  //}
 
   public override SystemQuestions ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
   {

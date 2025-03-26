@@ -29,10 +29,10 @@ public partial class MapNodeJumps
   [StringLength( 500 )]
   public string Text { get; set; }
 
-  [Column( "order", TypeName = "int(10)" )]
+  [Column( "order", TypeName = "int(11)" )]
   public int? Order { get; set; }
 
-  [Column( "probability", TypeName = "int(10)" )]
+  [Column( "probability", TypeName = "int(11)" )]
   public int? Probability { get; set; }
 
   [Column( "hidden" )]
@@ -41,17 +41,17 @@ public partial class MapNodeJumps
   [Column( "link_style_id", TypeName = "int(10) unsigned" )]
   public uint? LinkStyleId { get; set; }
 
-  [Column( "thickness", TypeName = "int(10)" )]
+  [Column( "thickness", TypeName = "int(11)" )]
   public int? Thickness { get; set; }
 
-  [Column( "line_type", TypeName = "int(10)" )]
+  [Column( "line_type", TypeName = "int(11)" )]
   public int? LineType { get; set; }
 
   [Column( "color" )]
   [StringLength( 45 )]
   public string Color { get; set; }
 
-  [Column( "follow_once", TypeName = "int(4)" )]
+  [Column( "follow_once", TypeName = "int(11)" )]
   public int? FollowOnce { get; set; }
 
   [ForeignKey( "MapId" )]

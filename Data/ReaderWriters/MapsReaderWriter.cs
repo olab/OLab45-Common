@@ -13,12 +13,16 @@ namespace OLab.Data.ReaderWriters;
 
 public partial class MapsReaderWriter : ReaderWriter
 {
-  public static MapsReaderWriter Instance(IOLabLogger logger, OLabDBContext context)
+  public static MapsReaderWriter Instance(
+    IOLabLogger logger,
+    OLabDBContext context)
   {
     return new MapsReaderWriter( logger, context );
   }
 
-  public MapsReaderWriter(IOLabLogger logger, OLabDBContext context) : base( logger, context )
+  public MapsReaderWriter(
+    IOLabLogger logger,
+    OLabDBContext context) : base( logger, context )
   {
   }
 
@@ -107,8 +111,9 @@ public partial class MapsReaderWriter : ReaderWriter
       .Include( c => c.MapGrouproles ).ThenInclude( d => d.Role )
       .FirstOrDefaultAsync( x => x.Id == id );
 
-    if ( phys.Id == 0 )
+    if ( phys == null || phys.Id == 0 )
       return null;
+
     return phys;
   }
 
@@ -121,13 +126,17 @@ public partial class MapsReaderWriter : ReaderWriter
     return phys;
   }
 
-  public async Task<IList<Maps>> GetMultipleAsync(int skip = 0, int take = 0)
+  public async Task<IList<Maps>> GetMultipleAsync(
+    int skip = 0,
+    int take = 0)
   {
     var items = await GetDbContext().Maps.Skip( skip ).Take( take ).OrderBy( x => x.Name ).ToListAsync();
     return items;
   }
 
-  public async Task<uint> UpsertAsync(Maps newMapPhys, bool save = true)
+  public async Task<uint> UpsertAsync(
+    Maps newMapPhys,
+    bool save = true)
   {
     if ( newMapPhys.Id == 0 )
     {
@@ -164,7 +173,9 @@ public partial class MapsReaderWriter : ReaderWriter
   /// <param name="map">Target map (map be null, meaning create new map)</param>
   /// <param name="templateId">Source template</param>
   /// <returns>Ammended map</returns>
-  public async Task<Maps> CreateMapWithTemplateAsync(Maps map, Maps template)
+  public async Task<Maps> CreateMapWithTemplateAsync(
+    Maps map,
+    Maps template)
   {
     using var transaction = GetDbContext().Database.BeginTransaction();
 
@@ -190,7 +201,9 @@ public partial class MapsReaderWriter : ReaderWriter
   /// <param name="map">Target map</param>
   /// <param name="template">Source template map</param>
   /// <returns>Modified map</returns>
-  private async Task<Maps> CloneMapAsync(Maps map, Maps template)
+  private async Task<Maps> CloneMapAsync(
+    Maps map,
+    Maps template)
   {
     var oldMapId = template.Id;
 
@@ -209,7 +222,7 @@ public partial class MapsReaderWriter : ReaderWriter
       GetDbContext().Entry( map ).State = EntityState.Added;
       await GetDbContext().SaveChangesAsync();
 
-      GetLogger().LogError( $"  New Map {map.Id}" );
+      GetLogger().LogDebug( $"  New Map {map.Id}" );
     }
     else
     {
@@ -303,5 +316,56 @@ public partial class MapsReaderWriter : ReaderWriter
       await GetDbContext().SaveChangesAsync();
 
     return mapPhys.MapGrouproles.ToList();
+  }
+
+  /// <summary>
+  /// Get list of maps that apply to a group and role
+  /// </summary>
+  /// <param name="groupId"></param>
+  /// <param name="roleId"></param>
+  /// <returns>Map list</returns>
+  public async Task<IEnumerable<Maps>> GetWithGroupRoleAsync(
+    uint groupId = 0,
+    uint roleId = 0)
+  {
+    if ( groupId == 0 && roleId == 0 )
+      return await GetDbContext().Maps
+        .Include( c => c.MapGrouproles )
+        .OrderBy( x => x.Name )
+        .ToListAsync();
+
+    // using Maps.IsAccessible is not possible within the where,
+    // so it's hand-bombed in here
+    var maps = await GetDbContext().Maps
+      .Include( c => c.MapGrouproles )
+      .Where( x =>
+        x.MapGrouproles.Any( y => (y.GroupId == groupId && y.RoleId == roleId) ) ||
+        x.MapGrouproles.Any( y => (y.GroupId == groupId && !y.RoleId.HasValue) ) ||
+        x.MapGrouproles.Any( y => (!y.GroupId.HasValue && y.RoleId == roleId) ) ||
+        x.MapGrouproles.Any( y => (!y.GroupId.HasValue && !y.RoleId.HasValue) ) )
+      .OrderBy( x => x.Name )
+      .ToListAsync();
+
+    return maps;
+  }
+
+  /// <summary>
+  /// Get map if applies to a group and role
+  /// </summary>
+  /// <param name="mapId"></param>
+  /// <param name="groupId"></param>
+  /// <param name="roleId"></param>
+  /// <returns>Map list</returns>
+  public async Task<Maps> GetWithGroupRoleAsync(
+    uint mapId,
+    uint groupId,
+    uint roleId)
+  {
+    var physMap = await GetSingleWithGroupRolesAsync( mapId );
+
+    if ( Maps.IsAccessible( physMap, groupId, roleId ) )
+      return physMap;
+
+    return null;
   }
 }

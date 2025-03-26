@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using OLab.Access;
+using OLab.Access.Interfaces;
 using OLab.Api.Common.Exceptions;
-using OLab.Api.Data;
 using OLab.Api.Data.Exceptions;
-using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
-using OLab.Data.ReaderWriters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +30,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId ) )
       throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
 
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: MapsEndpoint.PlayMapNodeAsync: map {mapId}, node {nodeId}, new play? {body.NewPlay}" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: MapsEndpoint.PlayMapNodeAsync: map {mapId}, node {nodeId}, new play? {body.NewPlay}" );
 
     // dump out original dynamic objects for logging
     body.Dump( GetLogger(), "Original" );
@@ -39,10 +38,6 @@ public partial class MapsEndpoint : OLabEndpoint
     // test for valid dynamic objects
     if ( !body.IsValid() )
       throw new OLabUnauthorizedException( "Object validity check failed" );
-
-    var map = await MapsReaderWriter.Instance( GetLogger(), GetDbContext() ).GetSingleAsync( mapId );
-    if ( map == null )
-      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, mapId );
 
     var dto = await GetRawNodeAsync( mapId, nodeId, true );
 
@@ -63,9 +58,9 @@ public partial class MapsEndpoint : OLabEndpoint
     foreach ( var mapNodeLink in dto.MapNodeLinks )
     {
       if ( !await auth.HasAccessAsync(
-        IOLabAuthorization.AclBitMaskRead,
-        Utils.Constants.ScopeLevelNode,
-        mapNodeLink.DestinationId ) )
+          IOLabAuthorization.AclBitMaskRead,
+          Utils.Constants.ScopeLevelNode,
+          mapNodeLink.DestinationId.Value ) )
         continue;
 
       // test if the destination node is visit-once
@@ -117,10 +112,32 @@ public partial class MapsEndpoint : OLabEndpoint
       dto.DynamicObjects.Counters = body.Counters;
     }
 
+    ApplyNewSession( auth, mapId, nodeId, body, dto );
+
+    UpdateScopedObjects( body, dto );
+
+    return dto;
+  }
+
+  private void UpdateScopedObjects(DynamicScopedObjectsDto body, MapsNodesFullRelationsDto dto)
+  {
+    dto.DynamicObjects.RefreshChecksum();
+
+    // dump out the dynamic objects for logging
+    dto.DynamicObjects.Dump( GetLogger(), "New" );
+
+    // initialize/update the nodes visited
+    dto.DynamicObjects.NodesVisited = body.NodesVisited;
+    if ( !body.NodesVisited.Contains( dto.Id.Value ) )
+      dto.DynamicObjects.NodesVisited.Add( dto.Id.Value );
+  }
+
+  private void ApplyNewSession(IOLabAuthorization auth, uint mapId, uint nodeId, DynamicScopedObjectsDto body, MapsNodesFullRelationsDto dto)
+  {
     var session = OLabSession.CreateInstance(
       GetLogger(),
       GetDbContext(),
-      auth.UserContext );
+      auth.AuthenticatedContext );
 
     session.SetMapId( mapId );
 
@@ -136,18 +153,6 @@ public partial class MapsEndpoint : OLabEndpoint
 
     // save current session state to database
     session.SaveSessionState( dto.Id.Value, dto.DynamicObjects );
-
-    dto.DynamicObjects.RefreshChecksum();
-
-    // dump out the dynamic objects for logging
-    dto.DynamicObjects.Dump( GetLogger(), "New" );
-
-    // initialize/update the nodes visited
-    dto.DynamicObjects.NodesVisited = body.NodesVisited;
-    if ( !body.NodesVisited.Contains( dto.Id.Value ) )
-      dto.DynamicObjects.NodesVisited.Add( dto.Id.Value );
-
-    return dto;
   }
 
   /// <summary>
@@ -166,7 +171,7 @@ public partial class MapsEndpoint : OLabEndpoint
     bool hideHidden,
     bool enableWikiTranslation = true)
   {
-    GetLogger().LogInformation( $"MapsEndpoint.GetRawNodeAsync" );
+    GetLogger().LogInformation( $"MapsEndpoint.GetRawNodeAsync: map {mapId}, node {nodeId}" );
 
     MapsNodesFullRelationsDto dto;
     if ( nodeId > 0 )
@@ -201,7 +206,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId ) )
       throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
 
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: MapsEndpoint.DeleteNodeAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: MapsEndpoint.DeleteNodeAsync" );
 
     nodeId = await _mapNodesReader.DeleteNodeAsync( nodeId );
 
@@ -231,7 +236,7 @@ public partial class MapsEndpoint : OLabEndpoint
     if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId ) )
       throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
 
-    GetLogger().LogInformation( $"{auth.UserContext.UserId}: MapsEndpoint.PutNodeAsync" );
+    GetLogger().LogInformation( $"{auth.OLabUser.Id}: MapsEndpoint.PutNodeAsync" );
 
     var newId = await _mapNodesReader.PutNodeAsync( dto, GetWikiProvider() );
 

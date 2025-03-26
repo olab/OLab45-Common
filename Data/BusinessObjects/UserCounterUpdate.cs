@@ -20,8 +20,8 @@ public partial class UserCounterUpdate
   public string CounterState { get; set; }
 
   [InverseProperty( "Counterupdate" )]
-  public virtual ICollection<UserresponseCounterupdate> UserresponseCounterupdate { get; } = new List<UserresponseCounterupdate>();
+  public virtual ICollection<UserresponseCounterupdate> UserresponseCounterupdate { get; set; } = new List<UserresponseCounterupdate>();
 
   [InverseProperty( "Counterupdate" )]
-  public virtual ICollection<UsersessiontraceCounterupdate> UsersessiontraceCounterupdate { get; } = new List<UsersessiontraceCounterupdate>();
+  public virtual ICollection<UsersessiontraceCounterupdate> UsersessiontraceCounterupdate { get; set; } = new List<UsersessiontraceCounterupdate>();
 }

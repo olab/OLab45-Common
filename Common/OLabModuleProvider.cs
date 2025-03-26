@@ -11,7 +11,7 @@ namespace OLab.Api.Common;
 
 public class OLabModuleProvider<T> : IOLabModuleProvider<T> where T : class
 {
-  protected Dictionary<string, T> Modules = new();
+  public Dictionary<string, T> Modules = new();
   protected readonly IOLabLogger Logger;
   protected readonly IOLabConfiguration _configuration;
 

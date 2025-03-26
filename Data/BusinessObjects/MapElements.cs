@@ -36,7 +36,7 @@ public partial class MapElements
   [StringLength( 100 )]
   public string Args { get; set; }
 
-  [Column( "width", TypeName = "int(10)" )]
+  [Column( "width", TypeName = "int(11)" )]
   public int? Width { get; set; }
 
   [Required]
@@ -44,7 +44,7 @@ public partial class MapElements
   [StringLength( 2 )]
   public string WidthType { get; set; }
 
-  [Column( "height", TypeName = "int(10)" )]
+  [Column( "height", TypeName = "int(11)" )]
   public int? Height { get; set; }
 
   [Required]

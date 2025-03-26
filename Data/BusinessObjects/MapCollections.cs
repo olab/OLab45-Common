@@ -19,5 +19,5 @@ public partial class MapCollections
   public string Name { get; set; }
 
   [InverseProperty( "Collection" )]
-  public virtual ICollection<MapCollectionMaps> MapCollectionMaps { get; } = new List<MapCollectionMaps>();
+  public virtual ICollection<MapCollectionmaps> MapCollectionmaps { get; set; } = new List<MapCollectionmaps>();
 }

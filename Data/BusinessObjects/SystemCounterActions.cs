@@ -32,7 +32,7 @@ public partial class SystemCounterActions
   [StringLength( 256 )]
   public string Expression { get; set; }
 
-  [Column( "visible", TypeName = "int(10)" )]
+  [Column( "visible", TypeName = "int(11)" )]
   public int Visible { get; set; }
 
   [Column( "imageable_id", TypeName = "int(10) unsigned" )]

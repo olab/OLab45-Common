@@ -1,14 +1,15 @@
 using Microsoft.EntityFrameworkCore;
+using OLab.Access.Interfaces;
 using OLab.Api.Common;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
-using OLab.Api.Data.Interface;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using OLab.Data.Mappers;
 using OLab.Data.ReaderWriters;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace OLab.Api.Endpoints;
 public partial class GroupsEndpoint : OLabEndpoint
 {
   private readonly GroupReaderWriter _readerWriter;
-  private readonly GroupsMapper _mapper;
+  private readonly IOLabMapper<Groups, GroupsDto> _mapper;
 
   public GroupsEndpoint(
     IOLabLogger logger,
@@ -32,7 +33,8 @@ public partial class GroupsEndpoint : OLabEndpoint
       fileStorageProvider )
   {
     _readerWriter = GroupReaderWriter.Instance( logger, dbContext );
-    _mapper = new GroupsMapper( GetLogger(),
+    _mapper = new GroupsMapper(
+      GetLogger(),
       GetDbContext(),
       GetWikiProvider() );
   }
@@ -47,17 +49,27 @@ public partial class GroupsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     int? take, int? skip)
   {
-    GetLogger().LogInformation( $"GroupsEndpoint.ReadAsync([FromQuery] int? take={take}, [FromQuery] int? skip={skip})" );
-    var pagedDataPhys = await _readerWriter.GetPagedAsync( take, skip );
+    var physItems = await _readerWriter.GetRawAsync<Groups>();
+    var total = physItems.count;
 
-    var pagedDataDto = new OLabAPIPagedResponse<GroupsDto>();
+    var dtoResponse = new OLabAPIPagedResponse<GroupsDto>();
 
-    pagedDataDto.Data = _mapper.PhysicalToDto( pagedDataPhys.Data );
-    pagedDataDto.Remaining = pagedDataPhys.Remaining;
-    pagedDataDto.Count = pagedDataPhys.Count;
+    // if not superuser, then build list of groups user is part of
+    if ( !await auth.IsSystemSuperuserAsync() )
+    {
+      physItems.items
+        = physItems.items.Where( x => auth.UsersGroupRoles.Select( y => y.Id ).ToList().Contains( x.Id ) ).Distinct().ToList();
+      total = physItems.items.Count();
+    }
 
-    return pagedDataDto;
+    if ( take.HasValue )
+      physItems.items = physItems.items.Skip( skip.Value ).Take( take.Value ).ToList();
 
+    dtoResponse.Data = _mapper.PhysicalToDto( physItems.items.OrderBy( x => x.Name ).ToList() );
+    dtoResponse.Remaining = total - physItems.items.Count();
+    dtoResponse.Count = physItems.items.Count();
+
+    return dtoResponse;
   }
 
   /// <summary>

@@ -18,10 +18,10 @@ public partial class SjtResponse
   [Column( "response_id", TypeName = "int(10) unsigned" )]
   public uint ResponseId { get; set; }
 
-  [Column( "position", TypeName = "int(10)" )]
+  [Column( "position", TypeName = "int(11)" )]
   public int Position { get; set; }
 
-  [Column( "points", TypeName = "int(10)" )]
+  [Column( "points", TypeName = "int(11)" )]
   public int Points { get; set; }
 
   [ForeignKey( "ResponseId" )]

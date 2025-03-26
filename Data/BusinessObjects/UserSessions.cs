@@ -47,10 +47,10 @@ public partial class UserSessions
   [StringLength( 50 )]
   public string UserIp { get; set; }
 
-  [Column( "webinar_id", TypeName = "int(10)" )]
+  [Column( "webinar_id", TypeName = "int(11)" )]
   public int? WebinarId { get; set; }
 
-  [Column( "webinar_step", TypeName = "int(10)" )]
+  [Column( "webinar_step", TypeName = "int(11)" )]
   public int? WebinarStep { get; set; }
 
   [Column( "notCumulative" )]
@@ -69,17 +69,17 @@ public partial class UserSessions
   public virtual Maps Map { get; set; }
 
   [InverseProperty( "Session" )]
-  public virtual ICollection<Statements> Statements { get; } = new List<Statements>();
+  public virtual ICollection<Statements> Statements { get; set; } = new List<Statements>();
 
   [InverseProperty( "Session" )]
-  public virtual ICollection<UserBookmarks> UserBookmarks { get; } = new List<UserBookmarks>();
+  public virtual ICollection<UserBookmarks> UserBookmarks { get; set; } = new List<UserBookmarks>();
 
   [InverseProperty( "Session" )]
   public virtual UserNotes UserNotes { get; set; }
 
   [InverseProperty( "Session" )]
-  public virtual ICollection<UserResponses> UserResponses { get; } = new List<UserResponses>();
+  public virtual ICollection<UserResponses> UserResponses { get; set; } = new List<UserResponses>();
 
   [InverseProperty( "Session" )]
-  public virtual ICollection<UserSessiontraces> UserSessiontraces { get; } = new List<UserSessiontraces>();
+  public virtual ICollection<UserSessiontraces> UserSessiontraces { get; set; } = new List<UserSessiontraces>();
 }
