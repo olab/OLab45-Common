@@ -136,7 +136,7 @@ public class XmlMediaElementsDto : XmlImportDto<XmlMediaElement>
       var map = mapDto.GetModel().Data.FirstOrDefault();
 
       var targetDirectory =
-        GetFileModule().GetPublicFileDirectory( "Maps", map.Id );
+        GetFileModule().BuildPath( "Maps", map.Id );
 
       foreach ( var element in elements )
       {

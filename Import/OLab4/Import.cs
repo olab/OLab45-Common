@@ -112,7 +112,7 @@ public partial class Importer : IImporter
         OLabFileStorageModule.ImportRoot,
         importFileName ),
       _fileModule.BuildPath(
-       OLabFileStorageModule.ImportRoot,
+        OLabFileStorageModule.ImportRoot,
         ExtractFolderName ),
       token );
 
@@ -127,7 +127,7 @@ public partial class Importer : IImporter
           OLabFileStorageModule.ImportRoot,
           ExtractFolderName,
           MapFileName ),
-        token );
+          token );
       mapJson = Encoding.UTF8.GetString( mapStream.ToArray() );
     }
 
@@ -213,7 +213,6 @@ public partial class Importer : IImporter
     var sourceFiles = _fileModule.GetFiles( importFilesFolder, token );
 
     var mapFilesFolder = _fileModule.BuildPath(
-      OLabFileStorageModule.FilesRoot,
       Api.Utils.Constants.ScopeLevelMap,
       _newMapPhys.Id );
 
@@ -269,38 +268,4 @@ public partial class Importer : IImporter
     return phys.Id;
   }
 
-  //private async Task<uint> ProcessMapAsync(
-  //  MapsFullRelationsDto mapFullDto,
-  //  CancellationToken token)
-  //{
-  //  try
-  //  {
-  //    // import the map, get new map id
-  //    var mapPhys = await WriteMapToDatabaseAsync(mapFullDto, token);
-
-  //    // import the map nodes, save the new node ids for
-  //    // when we import the map node links
-  //    foreach (var mapNodeDto in mapFullDto.MapNodes)
-  //    {
-  //      var nodeId = await WriteMapNodesDtoToDatabase(_mapId, mapNodeDto, token);
-  //      GetLogger().LogInformation($"  imported map node '{mapNodeDto.Title}' {mapNodeDto.Id.Value} -> {nodeId}");
-  //    }
-
-  //    // import the map nodes, save the new node ids for
-  //    // when we import the map node links
-  //    foreach (var mapNodeLinkDto in mapFullDto.MapNodeLinks)
-  //    {
-  //      var nodeLinkId = await WriteMapNodeLinkToDatabaseAsync(_mapId, mapNodeLinkDto, token);
-  //      GetLogger().LogInformation($"  imported map node link {mapNodeLinkDto.Id.Value} -> {nodeLinkId}");
-  //    }
-
-  //    return _mapId;
-  //  }
-
-  //  catch (Exception)
-  //  {
-  //    await _dbContext.Database.RollbackTransactionAsync();
-  //    throw;
-  //  }
-  //}
 }
