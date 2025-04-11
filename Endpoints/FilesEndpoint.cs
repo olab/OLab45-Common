@@ -177,7 +177,8 @@ public partial class FilesEndpoint : OLabEndpoint
     GetDbContext().SystemFiles.Add( phys );
     await GetDbContext().SaveChangesAsync();
 
-    var physFilePath = _fileStorageModule.GetPublicFileDirectory(
+    var physFilePath = _fileStorageModule.BuildPath(
+      OLabFileStorageModule.FilesRoot,
       dto.ImageableType,
       dto.ImageableId,
       dto.FileName );
