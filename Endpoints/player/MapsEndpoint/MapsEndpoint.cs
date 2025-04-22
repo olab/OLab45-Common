@@ -164,9 +164,9 @@ public partial class MapsEndpoint : OLabEndpoint
     var mapPhys = await GetDbContext().Maps
       .Include( map => map.MapNodes )
       .Include( map => map.MapNodeLinks )
+      .AsSplitQuery()
       .Include( map => map.MapGrouproles ).ThenInclude( y => y.Group )
       .Include( map => map.MapGrouproles ).ThenInclude( y => y.Role )
-
       .AsNoTracking()
       .FirstOrDefaultAsync(
         x => x.Id == mapId,
