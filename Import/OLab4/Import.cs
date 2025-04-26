@@ -56,11 +56,11 @@ public partial class Importer : IImporter
       _newMapPhys = await WriteMapToDatabaseAsync( auth, mapFullDto, token );
 
       await ProcessMapNodesAsync( mapFullDto, token );
-      await ProcessAttachedImportFiles( token );
+      await ProcessImportFilesAsync( token );
 
       await _scopedObjectPhys.WriteAllToDatabaseAsync( _newMapPhys.Id, token );
 
-      await CleanupImportAsync();
+      await CleanupImportFilesAsync();
 
       if ( GetLogger().HasErrorMessage() )
         await _dbContext.Database.RollbackTransactionAsync();
@@ -176,7 +176,7 @@ public partial class Importer : IImporter
     // when we import the map node links
     foreach ( var mapNodeDto in mapFullDto.MapNodes )
     {
-      var nodePhys = await WriteMapNodesDtoToDatabase( _newMapPhys.Id, mapNodeDto, token );
+      var nodePhys = await WriteMapNodeDtoToDatabase( _newMapPhys.Id, mapNodeDto, token );
       _scopedObjectPhys.AddMapNodeIdCrossReference( mapNodeDto.Id.Value, nodePhys.Id );
 
       _scopedObjectPhys.AddScopeFromDto( mapNodeDto.ScopedObjects );
@@ -190,7 +190,7 @@ public partial class Importer : IImporter
     }
   }
 
-  private async Task CleanupImportAsync()
+  private async Task CleanupImportFilesAsync()
   {
     // delete any existing import files left over
     // from previous run
@@ -200,7 +200,7 @@ public partial class Importer : IImporter
         ExtractFolderName ) );
   }
 
-  private async Task ProcessAttachedImportFiles(
+  private async Task ProcessImportFilesAsync(
     CancellationToken token)
   {
     // list and move map-level files
@@ -225,7 +225,7 @@ public partial class Importer : IImporter
       token );
   }
 
-  private async Task<MapNodes> WriteMapNodesDtoToDatabase(
+  private async Task<MapNodes> WriteMapNodeDtoToDatabase(
     uint mapId,
     MapNodesFullDto dto,
     CancellationToken token)
