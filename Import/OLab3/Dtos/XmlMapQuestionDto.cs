@@ -54,7 +54,16 @@ public class XmlMapQuestionDto : XmlImportDto<XmlMapQuestions>
       item.CounterId = counterDto.GetIdTranslation( GetFileName(), item.CounterId.Value );
 
     // special case for NumTries
-    if ( item.EntryTypeId == 3 && item.NumTries == 2 )
+    if ( ( item.EntryTypeId == 3 || item.EntryTypeId == 4 ) && item.NumTries == 1 )
+      item.NumTries = 1;
+
+    if ( (item.EntryTypeId == 3 || item.EntryTypeId == 4) && item.NumTries == 2 )
+      item.NumTries = -1;
+
+    if ( item.EntryTypeId == 12 && item.NumTries == 1 )
+      item.NumTries = -1;
+
+    if ( item.EntryTypeId == 12 && item.NumTries == 2 )
       item.NumTries = -1;
 
     GetDbContext().SystemQuestions.Add( item );
