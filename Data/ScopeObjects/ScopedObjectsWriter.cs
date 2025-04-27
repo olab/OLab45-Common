@@ -1,4 +1,5 @@
 using OLab.Api.Model;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -94,9 +95,10 @@ public partial class ScopedObjects
     if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelNode )
       phys.ImageableId = GetMapNodeIdCrossReference( phys.ImageableId );
 
-
     await _dbContext.SystemFiles.AddAsync( phys );
     await _dbContext.SaveChangesAsync( token );
+
+    AddFileIdCrossReference( oldId, phys.Id );
 
     _logger.LogInformation( $"  wrote file '{phys.Name}' {phys.Path} {phys.Mime}, {oldId} -> {phys.Id}" );
   }
@@ -115,6 +117,8 @@ public partial class ScopedObjects
 
     await _dbContext.SystemConstants.AddAsync( phys );
     await _dbContext.SaveChangesAsync( token );
+
+    AddConstantIdCrossReference( oldId, phys.Id );
 
     _logger.LogInformation( $"  wrote constant '{phys.Name}', {oldId} -> {phys.Id}" );
   }
@@ -153,4 +157,5 @@ public partial class ScopedObjects
       _logger.LogInformation( $"    wrote response '{responsePhys.Response}', {oldResponseIds[ index++ ]} -> {responsePhys.Id}" );
 
   }
+
 }

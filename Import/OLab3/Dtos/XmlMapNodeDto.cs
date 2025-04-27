@@ -40,31 +40,31 @@ public class XmlMapNodeDto : XmlImportDto<XmlMapNodes>
     int recordIndex,
     IEnumerable<dynamic> elements)
   {
-    var item = _mapper.ElementsToPhys( elements );
-    var oldId = item.Id;
+    var physMapNode = _mapper.ElementsToPhys( elements );
+    var oldId = physMapNode.Id;
 
     CurrentRecordIndex = recordIndex;
 
-    item.Id = 0;
+    physMapNode.Id = 0;
 
     var mapDto = GetImporter().GetDto( Importer.DtoTypes.XmlMapDto );
-    item.MapId = mapDto.GetIdTranslation( GetFileName(), item.MapId ).Value;
+    physMapNode.MapId = mapDto.GetIdTranslation( GetFileName(), physMapNode.MapId ).Value;
 
     // remap 'true' MR's before Avatars since Avatars are rendered as MR's.
-    RemapWikiTags<MediaResourceWikiTag>( item, Importer.DtoTypes.XmlMapElementDto );
-    RemapWikiTags<QuestionWikiTag>( item, Importer.DtoTypes.XmlMapQuestionDto );
-    RemapWikiTags<ConstantWikiTag>( item, Importer.DtoTypes.XmlMapVpdElementDto );
-    RemapWikiTags<CounterWikiTag>( item, Importer.DtoTypes.XmlMapCounterDto );
-    ReplaceVpdWikiTags( item );
-    ReplaceAvWikiTags( item );
+    RemapWikiTags<MediaResourceWikiTag>( physMapNode, Importer.DtoTypes.XmlMapElementDto );
+    RemapWikiTags<QuestionWikiTag>( physMapNode, Importer.DtoTypes.XmlMapQuestionDto );
+    RemapWikiTags<ConstantWikiTag>( physMapNode, Importer.DtoTypes.XmlMapVpdElementDto );
+    RemapWikiTags<CounterWikiTag>( physMapNode, Importer.DtoTypes.XmlMapCounterDto );
+    ReplaceVpdWikiTags( physMapNode );
+    ReplaceAvWikiTags( physMapNode );
 
-    item.Info = $"\nImported from map_node.xml. id = {oldId}";
+    physMapNode.Info = $"\nImported from map_node.xml. id = {oldId}";
 
-    GetDbContext().MapNodes.Add( item );
+    GetDbContext().MapNodes.Add( physMapNode );
     GetDbContext().SaveChanges();
 
-    CreateIdTranslation( oldId, item.Id );
-    GetModel().Data.Add( item );
+    CreateIdTranslation( oldId, physMapNode.Id );
+    GetModel().Data.Add( physMapNode );
 
     return true;
   }

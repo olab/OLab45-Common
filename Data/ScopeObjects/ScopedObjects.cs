@@ -1,21 +1,21 @@
+using Humanizer;
 using OLab.Api.Model;
 using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
+using System;
 using System.Collections.Generic;
 
 namespace OLab.Data;
 
 public partial class ScopedObjects
 {
-  private readonly IDictionary<uint, uint> _counterIds =
-    new Dictionary<uint, uint>();
-  private readonly IDictionary<uint, uint> _nodeIds =
-    new Dictionary<uint, uint>();
-  private readonly IDictionary<uint, uint> _questionIds =
-    new Dictionary<uint, uint>();
-  private readonly IDictionary<uint, uint> _mapIds =
-    new Dictionary<uint, uint>();
+  private readonly IDictionary<uint, uint> _counterIds = new Dictionary<uint, uint>();
+  private readonly IDictionary<uint, uint> _nodeIds = new Dictionary<uint, uint>();
+  private readonly IDictionary<uint, uint> _questionIds = new Dictionary<uint, uint>();
+  private readonly IDictionary<uint, uint> _mapIds = new Dictionary<uint, uint>();
+  private readonly IDictionary<uint, uint> _fileIds = new Dictionary<uint, uint>();
+  private readonly IDictionary<uint, uint> _constantIds = new Dictionary<uint, uint>();
 
   private IOLabLogger _logger { get; }
   protected IOLabLogger GetLogger() { return _logger; }
@@ -87,11 +87,15 @@ public partial class ScopedObjects
   public void AddCounterIdCrossReference(uint from, uint to) { _counterIds.Add( from, to ); }
   public void AddMapNodeIdCrossReference(uint from, uint to) { _nodeIds.Add( from, to ); }
   public void AddQuestionIdCrossReference(uint from, uint to) { _questionIds.Add( from, to ); }
+  public void AddConstantIdCrossReference(uint from, uint to) { _constantIds.Add( from, to ); }
+  public void AddFileIdCrossReference(uint from, uint to) { _fileIds.Add( from, to ); }
 
   public uint GetMapIdCrossReference(uint from) { return _mapIds[ from ]; }
   public uint GetMapNodeIdCrossReference(uint from) { return _nodeIds[ from ]; }
   public uint GetQuestionIdCrossReference(uint from) { return _questionIds[ from ]; }
   public uint GetCounterIdCrossReference(uint from) { return _counterIds[ from ]; }
+  public uint GetConstantIdCrossReference(uint from) { return _constantIds[ from ]; }
+  public uint GetFileIdCrossReference(uint from) { return _fileIds[ from ]; }
 
   /// <summary>
   /// Appends a ScopedObjectsMapper to the current one
