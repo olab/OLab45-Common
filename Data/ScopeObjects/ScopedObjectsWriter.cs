@@ -1,4 +1,5 @@
 using OLab.Api.Model;
+using OLab.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -48,7 +49,7 @@ public partial class ScopedObjects
     var oldId = phys.Id;
 
     phys.Id = 0;
-    phys.CounterId = GetCounterIdCrossReference( phys.Id );
+    phys.CounterId = Convert.ToUInt32( GetCounterCrossReference( phys.Id.ToString() ) );
 
     if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
       phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
@@ -65,8 +66,11 @@ public partial class ScopedObjects
     SystemCounters phys,
     CancellationToken token)
   {
-    var oldId = phys.Id;
+    var oldPhys = SerializerUtilities.DeepCopy( phys );
     phys.Id = 0;
+
+    // remap if name is same as id
+    var rename = oldPhys.Name == oldPhys.Id.ToString();
 
     if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
       phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
@@ -76,19 +80,27 @@ public partial class ScopedObjects
     await _dbContext.SystemCounters.AddAsync( phys );
     await _dbContext.SaveChangesAsync( token );
 
-    // save the new counter id since creating
-    // counter actions will need this mapping.
-    AddCounterIdCrossReference( oldId, phys.Id );
+    AddCounterCrossReference( oldPhys, phys );
 
-    _logger.LogInformation( $"  wrote counter '{phys.Name}', {oldId}  ->  {phys.Id}" );
+    if ( rename )
+    {
+      phys.Name = phys.Id.ToString();
+      _dbContext.SystemCounters.Update( phys );
+      await _dbContext.SaveChangesAsync( token );
+    }
+
+    _logger.LogInformation( $"  wrote file '{phys.Name}', {oldPhys.Id} -> {phys.Id}" );
   }
 
   private async Task WriteFileToDatebaseAsync(
     SystemFiles phys,
     CancellationToken token)
   {
-    var oldId = phys.Id;
+    var oldPhys = SerializerUtilities.DeepCopy( phys );
     phys.Id = 0;
+
+    // remap if name is same as id
+    var rename = oldPhys.Name == oldPhys.Id.ToString();
 
     if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
       phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
@@ -98,17 +110,27 @@ public partial class ScopedObjects
     await _dbContext.SystemFiles.AddAsync( phys );
     await _dbContext.SaveChangesAsync( token );
 
-    AddFileIdCrossReference( oldId, phys.Id );
+    AddFileCrossReference( oldPhys, phys );
 
-    _logger.LogInformation( $"  wrote file '{phys.Name}' {phys.Path} {phys.Mime}, {oldId} -> {phys.Id}" );
+    if ( rename )
+    {
+      phys.Name = phys.Id.ToString();
+      _dbContext.SystemFiles.Update( phys );
+      await _dbContext.SaveChangesAsync( token );
+    }
+
+    _logger.LogInformation( $"  wrote file '{phys.Name}', {oldPhys.Id} -> {phys.Id}" );
   }
 
   private async Task WriteConstantToDatabaseAsync(
     SystemConstants phys,
     CancellationToken token)
   {
-    var oldId = phys.Id;
+    var oldPhys = SerializerUtilities.DeepCopy( phys );
     phys.Id = 0;
+
+    // remap if name is same as id
+    var rename = oldPhys.Name == oldPhys.Id.ToString();
 
     if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
       phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
@@ -118,9 +140,16 @@ public partial class ScopedObjects
     await _dbContext.SystemConstants.AddAsync( phys );
     await _dbContext.SaveChangesAsync( token );
 
-    AddConstantIdCrossReference( oldId, phys.Id );
+    AddConstantCrossReference( oldPhys, phys );
 
-    _logger.LogInformation( $"  wrote constant '{phys.Name}', {oldId} -> {phys.Id}" );
+    if ( rename )
+    {
+      phys.Name = phys.Id.ToString();
+      _dbContext.SystemConstants.Update( phys );
+      await _dbContext.SaveChangesAsync( token );
+    }
+
+    _logger.LogInformation( $"  wrote constant '{phys.Name}', {oldPhys.Id} -> {phys.Id}" );
   }
 
   private async Task WriteQuestionToDatabaseAsync(
@@ -129,8 +158,11 @@ public partial class ScopedObjects
   {
     var oldResponseIds = new List<uint>();
 
-    var oldId = phys.Id;
+    var oldPhys = SerializerUtilities.DeepCopy( phys );
     phys.Id = 0;
+
+    // remap if name is same as id
+    var rename = oldPhys.Name == oldPhys.Id.ToString();
 
     if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
       phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
@@ -148,9 +180,16 @@ public partial class ScopedObjects
     await _dbContext.SystemQuestions.AddAsync( phys );
     await _dbContext.SaveChangesAsync( token );
 
-    _logger.LogInformation( $"  wrote question '{phys.Stem}', {oldId} -> {phys.Id}" );
+    AddQuestionCrossReference( oldPhys, phys );
 
-    AddQuestionIdCrossReference( oldId, phys.Id );
+    if ( rename )
+    {
+      phys.Name = phys.Id.ToString();
+      _dbContext.SystemQuestions.Update( phys );
+      await _dbContext.SaveChangesAsync( token );
+    }
+
+    _logger.LogInformation( $"  wrote question '{phys.Stem}', {oldPhys.Id} -> {phys.Id}" );
 
     var index = 0;
     foreach ( var responsePhys in phys.SystemQuestionResponses )

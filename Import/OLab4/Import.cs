@@ -1,3 +1,4 @@
+using Humanizer;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Newtonsoft.Json;
 using OLab.Access.Interfaces;
@@ -64,7 +65,7 @@ public partial class Importer : IImporter
 
       await _scopedObjectPhys.WriteAllToDatabaseAsync( _newMapPhys.Id, token );
 
-      await ProcessMapNodesScopedObjectsAsync( mapFullDto, token );
+      ProcessMapNodesScopedObjects( mapFullDto, token );
 
       await CleanupImportFilesAsync();
 
@@ -84,12 +85,14 @@ public partial class Importer : IImporter
     }
   }
 
-  private async Task ProcessMapNodesScopedObjectsAsync(MapsFullRelationsDto mapFullDto, CancellationToken token)
+  private void ProcessMapNodesScopedObjects(MapsFullRelationsDto mapFullDto, CancellationToken token)
   {
     // import the map nodes, save the new node ids for
     // when we import the map node links
     foreach ( var mapNodeDto in mapFullDto.MapNodes )
     {
+      GetLogger().LogInformation( $"  post processing map node '{mapNodeDto.Title}' {mapNodeDto.Id.Value}" );
+
       // remap 'true' MR's before Avatars since Avatars are rendered as MR's.
       RemapWikiTags<MediaResourceWikiTag>( mapNodeDto );
       RemapWikiTags<QuestionWikiTag>( mapNodeDto );
@@ -291,21 +294,21 @@ public partial class Importer : IImporter
     return phys.Id;
   }
 
-  private uint GetIdCrossReference(WikiTag1ArgumentModule wiki, uint sourceId)
+  private string GetIdCrossReference(WikiTag1ArgumentModule wiki, string id)
   {
     if ( wiki is MediaResourceWikiTag )
-      return _scopedObjectPhys.GetFileIdCrossReference( sourceId );
+      return _scopedObjectPhys.GetFileCrossReference( id );
 
     if ( wiki is QuestionWikiTag )
-      return _scopedObjectPhys.GetQuestionIdCrossReference( sourceId );
+      return _scopedObjectPhys.GetQuestionCrossReference( id );
 
     if ( wiki is ConstantWikiTag )
-      return _scopedObjectPhys.GetConstantIdCrossReference( sourceId );
+      return _scopedObjectPhys.GetConstantCrossReference( id );
 
     if ( wiki is CounterWikiTag )
-      return _scopedObjectPhys.GetConstantIdCrossReference( sourceId );
+      return _scopedObjectPhys.GetCounterCrossReference( id );
 
-    return _scopedObjectPhys.GetFileIdCrossReference( sourceId );
+    return _scopedObjectPhys.GetFileCrossReference( id );
   }
 
   /// <summary>
@@ -316,32 +319,42 @@ public partial class Importer : IImporter
   public bool ReplaceVpdWikiTags(MapNodesFullDto dto)
   {
     var rc = false;
+    var mappedWikiTags = new Dictionary<string, string>();
 
-    var wiki = new VpdWikiTag( GetLogger(), _configuration );
-    while ( wiki.HaveWikiTag( dto.Text ) )
+    var originalWiki = new VpdWikiTag( GetLogger(), _configuration );
+    while ( originalWiki.HaveWikiTag( dto.Text ) )
     {
       try
       {
-        var id = Convert.ToUInt32( wiki.GetWikiArgument1() );
+        var id = originalWiki.GetWikiArgument1();
         var newWiki = new VpdWikiTag( GetLogger(), _configuration );
 
         var newId = GetIdCrossReference( newWiki, id );
 
-        newWiki.Set( "CONST", newId.ToString() );
+        newWiki.Set( "const", newId.ToString() );
 
-        GetLogger().LogInformation( $"    replacing '{wiki.GetWiki()}' -> '{newWiki.GetWiki()}'" );
-        dto.Text = dto.Text.Replace( wiki.GetWiki(), newWiki.GetWiki() );
+        GetLogger().LogInformation( $"    replacing '{originalWiki.GetWiki()}' -> '{newWiki.GetWiki()}'" );
+        dto.Text = dto.Text.Replace( originalWiki.GetWiki(), newWiki.GetWiki() );
 
         rc = true;
+        mappedWikiTags.Add( newWiki.GetWiki(), originalWiki.GetWiki() );
+
       }
       catch ( KeyNotFoundException )
       {
-        GetLogger().LogError( $"ERROR: MapNode '{dto.Title}': could not resolve: '{wiki.GetWiki()}'" );
+        GetLogger().LogError( $"ERROR: MapNode '{dto.Title}': could not resolve: '{originalWiki.GetWiki()}'" );
 
-        dto.Text = dto.Text.Replace( wiki.GetWiki(), $"{wiki.GetUnquotedWiki()}: could not resolve" );
+        dto.Text = dto.Text.Replace( originalWiki.GetWiki(), $"{originalWiki.GetUnquotedWiki()}: could not resolve" );
 
         rc = false;
       }
+    }
+
+    // remap the wiki tags to upper case so they are valid
+    foreach ( var key in mappedWikiTags.Keys )
+    {
+      GetLogger().LogInformation( $"    remapping '{mappedWikiTags[ key ]}' -> {key.ToUpper()}" );
+      dto.Text = dto.Text.Replace( key, key.ToUpper() );
     }
 
     return rc;
@@ -355,20 +368,31 @@ public partial class Importer : IImporter
   public bool ReplaceAvWikiTags(MapNodesFullDto dto)
   {
     var rc = false;
+    var mappedWikiTags = new Dictionary<string, string>();
 
-    var wiki = new AvatarWikiTag( GetLogger(), _configuration );
-    while ( wiki.HaveWikiTag( dto.Text ) )
+    var originalWiki = new AvatarWikiTag( GetLogger(), _configuration );
+    while ( originalWiki.HaveWikiTag( dto.Text ) )
     {
-      var id = Convert.ToUInt16( wiki.GetWikiArgument1() );
-      var newId = dto.GetIdTranslation( GetFileName(), id );
-
+      var id = originalWiki.GetWikiArgument1();
       var newWiki = new AvatarWikiTag( GetLogger(), _configuration );
-      newWiki.Set( "MR", newId.Value.ToString() );
 
-      GetLogger().LogInformation( $"    replacing '{wiki.GetWiki()}' -> '{newWiki.GetWiki()}'" );
-      dto.Text = dto.Text.Replace( wiki.GetWiki(), newWiki.GetWiki() );
+      var newId = GetIdCrossReference( newWiki, id );
+
+      newWiki.Set( "mr", newId.ToString() );
+
+      GetLogger().LogInformation( $"    replacing '{originalWiki.GetWiki()}' -> '{newWiki.GetWiki()}'" );
+      dto.Text = dto.Text.Replace( originalWiki.GetWiki(), newWiki.GetWiki() );
 
       rc = true;
+      mappedWikiTags.Add( newWiki.GetWiki(), originalWiki.GetWiki() );
+
+    }
+
+    // remap the wiki tags to upper case so they are valid
+    foreach ( var key in mappedWikiTags.Keys )
+    {
+      GetLogger().LogInformation( $"    remapping '{mappedWikiTags[ key ]}' -> {key.ToUpper()}" );
+      dto.Text = dto.Text.Replace( key, key.ToUpper() );
     }
 
     return rc;
@@ -379,33 +403,35 @@ public partial class Importer : IImporter
     var rc = true;
     var mappedWikiTags = new Dictionary<string, string>();
 
-    var wiki = (T)Activator.CreateInstance( typeof( T ), GetLogger(), _configuration );
-    while ( wiki.HaveWikiTag( dto.Text ) )
+    var originalWiki = (T)Activator.CreateInstance( typeof( T ), GetLogger(), _configuration );
+    while ( originalWiki.HaveWikiTag( dto.Text ) )
     {
-      var id = Convert.ToUInt32( wiki.GetWikiArgument1() );
-
       try
       {
-        var newId = _scopedObjectPhys.GetMapNodeIdCrossReference( id );
-
+        var wikiArgument1 = originalWiki.GetWikiArgument1();
         var newWiki = (T)Activator.CreateInstance( typeof( T ), GetLogger(), _configuration );
-        newWiki.Set( wiki.GetWikiType().ToLower(), newId.Value.ToString() );
 
-        dto.Text = dto.Text.Replace( wiki.GetWiki(), newWiki.GetWiki() );
+        var newId = GetIdCrossReference( newWiki, wikiArgument1 );
 
-        mappedWikiTags.Add( newWiki.GetWiki(), wiki.GetWiki() );
+        // set the wiki using ToLower to prevent the wiki from being 
+        // being matched again in the while loop
+        newWiki.Set( originalWiki.GetWikiType().ToLower(), newId.ToString() );
+
+        dto.Text = dto.Text.Replace( originalWiki.GetWiki(), newWiki.GetWiki() );
+
+        mappedWikiTags.Add( newWiki.GetWiki(), originalWiki.GetWiki() );
+
       }
       catch ( KeyNotFoundException )
       {
-        GetLogger().LogError( $"ERROR: MapNode '{item.Title}': could not resolve: '{wiki.GetWiki()}'" );
-
-        dto.Text = dto.Text.Replace( wiki.GetWiki(), $"{wiki.GetUnquotedWiki()}: could not resolve" );
-
+        GetLogger().LogError( $"ERROR: {typeof( T ).Name}: could not resolve: '{originalWiki.GetWiki()}'" );
+        dto.Text = dto.Text.Replace( originalWiki.GetWiki(), $"{originalWiki.GetUnquotedWiki()}: could not resolve" );
         rc = false;
       }
 
     }
 
+    // remap the wiki tags to upper case so they are valid
     foreach ( var key in mappedWikiTags.Keys )
     {
       GetLogger().LogInformation( $"    remapping '{mappedWikiTags[ key ]}' -> {key.ToUpper()}" );
@@ -414,6 +440,5 @@ public partial class Importer : IImporter
 
     return rc;
   }
-
 
 }
