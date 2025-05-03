@@ -13,6 +13,7 @@ using OLab.Import.OLab3.Dtos;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,12 +61,13 @@ public partial class Importer : IImporter
 
       _newMapPhys = await WriteMapToDatabaseAsync( auth, mapFullDto, token );
 
-      await ProcessMapNodesAsync( mapFullDto, token );
+      var nodePhysList = await ProcessMapNodesAsync( mapFullDto, token );
       await ProcessImportFilesAsync( token );
 
       await _scopedObjectPhys.WriteAllToDatabaseAsync( _newMapPhys.Id, token );
-
       ProcessMapNodesScopedObjects( mapFullDto, token );
+
+      await UpdateMapNodesInDatabaseAsync( auth, nodePhysList, mapFullDto.MapNodes, token );
 
       await CleanupImportFilesAsync();
 
@@ -196,8 +198,37 @@ public partial class Importer : IImporter
     return phys;
   }
 
-  private async Task ProcessMapNodesAsync(MapsFullRelationsDto mapFullDto, CancellationToken token)
+  private async Task UpdateMapNodesInDatabaseAsync(
+    IOLabAuthorization auth,
+    IList<MapNodes> mapNodesPhys,
+    IList<MapNodesFullDto> mapNodesDto,
+    CancellationToken token)
   {
+    foreach ( var mapNodeDto in mapNodesDto )
+    {
+      var mapNodePhysId = _scopedObjectPhys.GetMapNodeIdCrossReference( mapNodeDto.Id.Value );
+
+      var mapNodePhys = mapNodesPhys.FirstOrDefault( x => x.Id == mapNodePhysId );
+      if ( mapNodePhys == null )
+      {
+        GetLogger().LogError( $"ERROR: MapNode could not find map node {mapNodeDto.Id}" );
+        continue;
+      }
+
+      mapNodePhys.Text = mapNodeDto.Text;
+
+      _dbContext.MapNodes.Update( mapNodePhys );
+      await _dbContext.SaveChangesAsync( token );
+
+      GetLogger().LogInformation( $"  updated '{mapNodePhys.Title}' node text" );
+
+    }
+  }
+
+  private async Task<IList<MapNodes>> ProcessMapNodesAsync(MapsFullRelationsDto mapFullDto, CancellationToken token)
+  {
+    var nodePhysList = new List<MapNodes>();
+
     // import the map nodes, save the new node ids for
     // when we import the map node links
     foreach ( var mapNodeDto in mapFullDto.MapNodes )
@@ -206,6 +237,8 @@ public partial class Importer : IImporter
       _scopedObjectPhys.AddMapNodeIdCrossReference( mapNodeDto.Id.Value, nodePhys.Id );
 
       _scopedObjectPhys.AddScopeFromDto( mapNodeDto.ScopedObjects );
+
+      nodePhysList.Add( nodePhys );
     }
 
     // import the map node links
@@ -214,6 +247,8 @@ public partial class Importer : IImporter
       var nodeLinkId = await WriteMapNodeLinkToDatabaseAsync( _newMapPhys.Id, mapNodeLinkDto, token );
       GetLogger().LogInformation( $"  imported map node link {mapNodeLinkDto.Id.Value} -> {nodeLinkId}" );
     }
+
+    return nodePhysList;
   }
 
   private async Task CleanupImportFilesAsync()
@@ -417,8 +452,11 @@ public partial class Importer : IImporter
         // being matched again in the while loop
         newWiki.Set( originalWiki.GetWikiType().ToLower(), newId.ToString() );
 
+        GetLogger().LogInformation( $"    remapping '{originalWiki.GetWiki()}' -> [[{newWiki.GetWikiType().ToUpper()}:{newWiki.GetWikiId()}]]" );
+
         dto.Text = dto.Text.Replace( originalWiki.GetWiki(), newWiki.GetWiki() );
 
+        originalWiki.SetWikiId( newWiki.GetWikiId() );
         mappedWikiTags.Add( newWiki.GetWiki(), originalWiki.GetWiki() );
 
       }
@@ -433,10 +471,7 @@ public partial class Importer : IImporter
 
     // remap the wiki tags to upper case so they are valid
     foreach ( var key in mappedWikiTags.Keys )
-    {
-      GetLogger().LogInformation( $"    remapping '{mappedWikiTags[ key ]}' -> {key.ToUpper()}" );
-      dto.Text = dto.Text.Replace( key, key.ToUpper() );
-    }
+      dto.Text = dto.Text.Replace( key, mappedWikiTags[ key ] );
 
     return rc;
   }
