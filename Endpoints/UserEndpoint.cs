@@ -194,11 +194,11 @@ public partial class UserEndpoint : OLabEndpoint
   public async Task<UsersDto> EditUserAsync(
     AddUserRequest userRequest)
   {
-    var physUser = await _userReaderWriter.GetSingleAsync( userRequest.Username );
+    var physUser = await _userReaderWriter.GetSingleAsync( userRequest.Id.Value );
     if ( physUser == null )
-      throw new OLabBadRequestException( $"user: '{userRequest.Username}' does not exist" );
+      throw new OLabBadRequestException( $"user: '{userRequest.Id}' does not exist" );
 
-    GetLogger().LogInformation( $"editing user '{userRequest.Username}'" );
+    GetLogger().LogInformation( $"editing user '{userRequest.Username}'({userRequest.Id})" );
 
     // need to set the logger and the dbContext since
     // they are not present when AddUserRequest created by webApi
@@ -211,7 +211,7 @@ public partial class UserEndpoint : OLabEndpoint
     Users.CreatePhysFromRequest( physUser, userRequest );
 
     // update and encrypt password if one was passed in
-    if ( !string.IsNullOrEmpty( userRequest.Password ) )
+    if ( !string.IsNullOrEmpty( userRequest.Password ) && (userRequest.Password != "*****") )
       _authent.UpdatePassword( userRequest.Password, physUser );
 
     await _userReaderWriter.UpdateAsync( physUser );
