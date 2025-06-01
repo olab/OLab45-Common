@@ -22,6 +22,8 @@ public class MapNodeLinksDto
   public uint? LinkStyleId { get; set; }
   public bool IsHidden { get; internal set; }
   public bool FollowOnce { get; internal set; }
+  [JsonProperty( "visible" )]
+  public bool? Visible { get; set; } = true;
   public override string ToString()
   {
     return $"{Id} {SourceId} -> {DestinationTitle}({DestinationId})";

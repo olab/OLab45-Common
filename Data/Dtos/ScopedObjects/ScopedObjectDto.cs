@@ -23,7 +23,8 @@ public class ScopedObjectDto
   public DateTime? CreatedAt { get; set; }
   [JsonProperty( "updatedat" )]
   public DateTime? UpdatedAt { get; set; }
-
+  [JsonProperty( "visible" )]
+  public bool? Visible { get; set; } = true;
   [JsonProperty( "scopeLevelObj" )]
   public IdName ParentInfo { get; set; }
 

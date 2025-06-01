@@ -1,12 +1,17 @@
+using Humanizer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Microsoft.EntityFrameworkCore;
 using OLab.Access;
 using OLab.Access.Interfaces;
 using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Dto;
+using OLab.Api.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints.Player;
@@ -39,23 +44,57 @@ public partial class MapsEndpoint : OLabEndpoint
     if ( !body.IsValid() )
       throw new OLabUnauthorizedException( "Object validity check failed" );
 
-    var dto = await GetRawNodeAsync( mapId, nodeId, true );
+    var nodeDto = await GetRawNodeAsync( mapId, nodeId, true );
 
     // now that we had a real node id (because the call may be asking for node '0', which
     // is the map root node), test if user has access to node.
     if ( !await auth.HasAccessAsync(
       IOLabAuthorization.AclBitMaskRead,
       Utils.Constants.ScopeLevelNode,
-      dto.Id.Value ) )
-      throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelNode, dto.Id.Value );
+      nodeDto.Id.Value ) )
+      throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelNode, nodeDto.Id.Value );
 
     // get all nodes for the map
-    var mapNodesPhys = await _nodesReaderWriter.GetByMapAsync( mapId );
+    var nodesPhys = await _nodesReaderWriter.GetByMapAsync( mapId );
 
-    // filter out any destination links the user
-    // does not have access to 
+    // filter out any destination links the user does not have access to 
+    nodeDto.MapNodeLinks = await ProcessFilteredLinks( auth, body, nodeDto, nodesPhys );
+
+    UpdateNodeCountCounter();
+
+    nodeDto.DynamicObjects = await GetDynamicScopedObjectsTranslatedAsync( auth, mapId, nodeDto.Id.Value );
+
+    if ( body.IsEmpty() && (nodeDto.TypeId == 1) )
+      // requested a root node, so return an initial set of dynamic objects
+      nodeDto.DynamicObjects = await GetDynamicScopedObjectsRawAsync(
+        auth,
+        mapId,
+        nodeDto.Id.Value );
+    else
+    {
+      // apply any node open counter actions
+      await ProcessOnNodeOpenActions( body, nodeDto );
+
+      // update any server-level counters
+      await UpdateServerCounters( body );
+
+      nodeDto.DynamicObjects.Counters = body.Counters;
+    }
+
+    await GetDbContext().SaveChangesAsync();
+
+    ApplyNewSession( auth, mapId, nodeDto.Id.Value, body, nodeDto );
+    UpdateNodesVisited( body, nodeDto );
+
+    nodeDto.DynamicObjects.RefreshChecksum();
+
+    return nodeDto;
+  }
+
+  private static async Task<List<MapNodeLinksDto>> ProcessFilteredLinks(IOLabAuthorization auth, DynamicScopedObjectsDto body, MapsNodesFullRelationsDto nodeDto, IList<MapNodes> nodesPhys)
+  {
     var filteredLinks = new List<MapNodeLinksDto>();
-    foreach ( var mapNodeLink in dto.MapNodeLinks )
+    foreach ( var mapNodeLink in nodeDto.MapNodeLinks )
     {
       if ( !await auth.HasAccessAsync(
           IOLabAuthorization.AclBitMaskRead,
@@ -66,7 +105,7 @@ public partial class MapsEndpoint : OLabEndpoint
       // test if the destination node is visit-once
       // AND has been visited previously
       var destinationNodePhys =
-        mapNodesPhys.FirstOrDefault( x => x.Id == mapNodeLink.DestinationId );
+        nodesPhys.FirstOrDefault( x => x.Id == mapNodeLink.DestinationId );
       if ( destinationNodePhys.VisitOnce.HasValue && destinationNodePhys.VisitOnce.Value == 1 )
       {
         if ( body.NodesVisited.Contains( destinationNodePhys.Id ) )
@@ -76,53 +115,49 @@ public partial class MapsEndpoint : OLabEndpoint
       filteredLinks.Add( mapNodeLink );
     }
 
-    // replace original map node links with acl-filtered links
-    dto.MapNodeLinks = filteredLinks;
-
-    UpdateNodeCounter();
-
-    dto.DynamicObjects = await GetDynamicScopedObjectsTranslatedAsync( auth, mapId, nodeId );
-
-    if ( body.IsEmpty() || (dto.TypeId == 1) )
-      // requested a root node, so return an initial set of dynamic objects
-      dto.DynamicObjects = await GetDynamicScopedObjectsRawAsync(
-        auth,
-        mapId,
-        nodeId );
-    else
-    {
-      // apply any node open counter actions
-      var newCounters = await ProcessNodeOpenCountersAsync(
-        nodeId,
-        body.Counters.Counters.Where( x => x.ImageableType == Utils.Constants.ScopeLevelMap ).ToList() );
-
-      // update body counter with any that might have just changed
-      foreach ( var newCounter in newCounters )
-      {
-        var targetCounter =
-          body.Counters.Counters.FirstOrDefault( x => x.Id == newCounter.Id );
-
-        if ( targetCounter != null )
-        {
-          targetCounter.SetValue( newCounter.Value );
-          targetCounter.UpdatedAt = DateTime.UtcNow;
-        }
-      }
-
-      dto.DynamicObjects.Counters = body.Counters;
-    }
-
-    ApplyNewSession( auth, mapId, nodeId, body, dto );
-
-    UpdateScopedObjects( body, dto );
-
-    return dto;
+    return filteredLinks;
   }
 
-  private void UpdateScopedObjects(DynamicScopedObjectsDto body, MapsNodesFullRelationsDto dto)
+  private async Task ProcessOnNodeOpenActions(DynamicScopedObjectsDto body, MapsNodesFullRelationsDto nodeDto)
   {
-    dto.DynamicObjects.RefreshChecksum();
+    var newCounters = await ProcessNodeOpenCountersAsync(
+      nodeDto.Id.Value,
+      body.Counters.Where( x => x.ImageableType == Utils.Constants.ScopeLevelMap ).ToList() );
 
+    // update body counter with any that might have just changed
+    foreach ( var newCounter in newCounters )
+    {
+      var targetCounter =
+        body.Counters.FirstOrDefault( x => x.Id == newCounter.Id );
+
+      if ( targetCounter != null )
+      {
+        targetCounter.SetValue( newCounter.Value );
+        targetCounter.UpdatedAt = DateTime.UtcNow;
+      }
+    }
+  }
+
+  private async Task UpdateServerCounters(DynamicScopedObjectsDto body)
+  {
+    var serverCounters
+      = body.Counters.Where( x => x.ImageableType == Utils.Constants.ScopeLevelServer ).ToList();
+
+    foreach ( var serverCounter in serverCounters )
+    {
+      GetLogger().LogInformation( $"Updating server-level counter {serverCounter.Name} = {serverCounter.Value}" );
+
+      var phys = await GetDbContext().SystemCounters
+        .FirstOrDefaultAsync( x => x.Id == serverCounter.Id );
+
+      phys.Value = Encoding.ASCII.GetBytes( serverCounter.Value );
+
+      GetDbContext().SystemCounters.Update( phys );
+    }
+  }
+
+  private void UpdateNodesVisited(DynamicScopedObjectsDto body, MapsNodesFullRelationsDto dto)
+  {
     // dump out the dynamic objects for logging
     dto.DynamicObjects.Dump( GetLogger(), "New" );
 
@@ -271,7 +306,7 @@ public partial class MapsEndpoint : OLabEndpoint
   /// <summary>
   /// 
   /// </summary>
-  public void UpdateNodeCounter()
+  public void UpdateNodeCountCounter()
   {
     var counter = GetDbContext().SystemCounters.Where( x => x.Name == "nodeCounter" ).FirstOrDefault();
 

@@ -1,3 +1,5 @@
+using DocumentFormat.OpenXml.Office2010.Excel;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using OLab.Access.Interfaces;
 using OLab.Api.Common;
@@ -8,9 +10,11 @@ using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Data.Contracts;
 using OLab.Data.Interface;
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints;
@@ -212,4 +216,43 @@ public partial class CountersEndpoint : OLabEndpoint
 
   }
 
+  public async Task<DynamicScopedObjectsDto> PutUpdateAsync(
+    IOLabAuthorization auth,
+    uint counterId,
+    PutCounterValueRequest putCounterValue)
+  {
+    // test if user has access to map.
+    //if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Constants.ScopeLevelMap, mapId ) )
+    //  throw new OLabUnauthorizedException( Constants.ScopeLevelMap, mapId );
+
+    // update server-level counters
+    foreach ( var dto in putCounterValue.DynamicObjects.Counters )
+    {
+      if ( dto.Id != putCounterValue.Counter.Id )
+        continue;
+
+      if ( dto.ImageableType == Constants.ScopeLevelServer )
+      {
+        GetLogger().LogInformation( $"Updating server-level counter {dto.Name} = {dto.Value}" );
+
+        var phys = await GetDbContext().SystemCounters
+          .FirstOrDefaultAsync( x => x.Id == dto.Id );
+
+        phys.Value = Encoding.ASCII.GetBytes( dto.Value );
+        phys.Visible = dto.Visible;
+
+        GetDbContext().SystemCounters.Update( phys );
+        await GetDbContext().SaveChangesAsync();
+      }
+      else
+      {
+        dto.Value = putCounterValue.Counter.Value;
+        dto.Visible = putCounterValue.Counter.Visible;
+      }
+    }
+
+    putCounterValue.DynamicObjects.RefreshChecksum();
+
+    return putCounterValue.DynamicObjects;
+  }
 }

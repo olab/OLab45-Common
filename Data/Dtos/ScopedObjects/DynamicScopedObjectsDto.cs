@@ -60,8 +60,10 @@ public class DynamicScopedObjectsDto
   [JsonProperty( "checksum" )]
   public string Checksum { get; set; }
 
+  //[JsonProperty( "counters" )]
+  //public CounterDynamicScopedObjects Counters { get; set; }
   [JsonProperty( "counters" )]
-  public CounterDynamicScopedObjects Counters { get; set; }
+  public List<CountersDto> Counters { get; set; }
 
   [JsonProperty( "nodesVisitedList" )]
   public IList<uint> NodesVisited { get; set; }
@@ -69,13 +71,14 @@ public class DynamicScopedObjectsDto
   public DynamicScopedObjectsDto()
   {
     UpdatedAt = DateTime.Now;
-    Counters = new CounterDynamicScopedObjects();
+    //Counters = new CounterDynamicScopedObjects();
+    Counters = new List<CountersDto>();
     NodesVisited = new List<uint>();
   }
 
   public bool IsEmpty()
   {
-    return Counters.Counters.Count == 0;
+    return Counters.Count == 0;
   }
 
   /// <summary>
@@ -136,7 +139,7 @@ public class DynamicScopedObjectsDto
   {
     var counterValues = UpdatedAt.ToString() + "/";
 
-    foreach ( var counter in Counters.Counters.OrderBy( x => x.Id ) )
+    foreach ( var counter in Counters.OrderBy( x => x.Id ) )
       counterValues += counter.Value + "/";
 
     return counterValues;
@@ -154,7 +157,7 @@ public class DynamicScopedObjectsDto
     CountersDto dto = null;
 
     if ( string.IsNullOrEmpty( scopeType ) )
-      dto = Counters.Counters.FirstOrDefault( x => x.Id == id );
+      dto = Counters.FirstOrDefault( x => x.Id == id );
 
     return dto;
   }
@@ -179,7 +182,7 @@ public class DynamicScopedObjectsDto
     message += $"Text:   {plainText}{Environment.NewLine}";
     message += $"Bytes:  {GetPlainTextBytes( plainText )}{Environment.NewLine}";
 
-    foreach ( var counter in Counters.Counters )
+    foreach ( var counter in Counters )
       message += $"Counter:    {counter}{Environment.NewLine}";
 
     message += $"Update  {UpdatedAt.ToString()}{Environment.NewLine}";
@@ -204,7 +207,7 @@ public class DynamicScopedObjectsDto
       return;
     }
 
-    responseCounterDto = Counters.Counters.FirstOrDefault( x => x.Id == counterDto.Id );
+    responseCounterDto = Counters.FirstOrDefault( x => x.Id == counterDto.Id );
 
     if ( responseCounterDto == null )
       logger.LogError( $"unable to update counter {counterDto.Name}({counterDto.Id}) value. not found in response" );
