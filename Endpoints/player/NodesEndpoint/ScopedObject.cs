@@ -38,7 +38,7 @@ public partial class NodesEndpoint : OLabEndpoint
       GetDbContext(),
       GetWikiProvider(),
       _fileStorageModule );
-    await phys.AddScopeFromDatabaseAsync( Constants.ScopeLevelNode, node.Id );
+    await phys.LoadScopedObjectsFromDatabaseAsync( Constants.ScopeLevelNode, node.Id );
 
     phys.ConstantsPhys.Add( new SystemConstants
     {

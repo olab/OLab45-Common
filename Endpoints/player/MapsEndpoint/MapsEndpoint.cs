@@ -298,7 +298,7 @@ public partial class MapsEndpoint : OLabEndpoint
         GetWikiProvider() );
 
     // apply scoped objects to the map dto
-    await scopedObjectsPhys.AddScopeFromDatabaseAsync( scopeLevel, id );
+    await scopedObjectsPhys.LoadScopedObjectsFromDatabaseAsync( scopeLevel, id );
 
     dto.Constants += scopedObjectsPhys.ConstantsPhys.Count;
     dto.Files += scopedObjectsPhys.FilesPhys.Count;

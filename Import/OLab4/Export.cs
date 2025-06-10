@@ -134,7 +134,7 @@ public partial class Importer : IImporter
       GetLogger(), GetDbContext(), GetWikiProvider() );
 
     // apply map-level scoped objects to the map dto
-    await phys.AddScopeFromDatabaseAsync( Api.Utils.Constants.ScopeLevelMap, mapId );
+    await phys.LoadScopedObjectsFromDatabaseAsync( Api.Utils.Constants.ScopeLevelMap, mapId );
 
     var scopedObjectMapper = new ScopedObjectsMapper(
         GetLogger(),
@@ -156,7 +156,7 @@ public partial class Importer : IImporter
         GetWikiProvider() );
 
       // apply node-level scoped objects
-      await phys.AddScopeFromDatabaseAsync( Api.Utils.Constants.ScopeLevelNode, nodeDto.Id.Value );
+      await phys.LoadScopedObjectsFromDatabaseAsync( Api.Utils.Constants.ScopeLevelNode, nodeDto.Id.Value );
 
       GetLogger().LogInformation( $"  exporting node {nodeDto.Id} " );
 

@@ -13,7 +13,6 @@ public class FilesFullDto : FilesDto
   public int? FileSize { get; set; }
   public int? Height { get; set; }
   public int? IsSystem { get; set; }
-  public int? Type { get; set; }
   public int? Width { get; set; }
   public sbyte IsPrivate { get; set; }
   public sbyte IsShared { get; set; }

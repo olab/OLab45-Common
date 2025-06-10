@@ -65,7 +65,7 @@ public partial class ServerEndpoint : OLabEndpoint
       GetDbContext(),
       GetWikiProvider(), _fileStorageModule );
 
-    await phys.AddScopeFromDatabaseAsync( Utils.Constants.ScopeLevelServer, 1 );
+    await phys.LoadScopedObjectsFromDatabaseAsync( Utils.Constants.ScopeLevelServer, 1 );
 
     var builder = new ScopedObjectsMapper(
       GetLogger(),
@@ -77,4 +77,59 @@ public partial class ServerEndpoint : OLabEndpoint
 
     return dto;
   }
+
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <param name="serverId"></param>
+  /// <returns></returns>
+  public async Task<Dto.ScopedObjectsDto> GetDynamicObjectsRawAsync(uint serverId)
+  {
+    GetLogger().LogInformation( $"ServerEndpoint.GetDynamicObjectsRawAsync(uint serverId={serverId})" );
+    var dto = await GetDynamicObjectsAsync( serverId, false );
+    return dto;
+  }
+
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <param name="serverId"></param>
+  /// <returns></returns>
+  public async Task<Dto.ScopedObjectsDto> GetDynamicObjectsTranslatedAsync(uint serverId)
+  {
+    GetLogger().LogInformation( $"ServerEndpoint.GetDynamicObjectsTranslatedAsync(uint serverId={serverId})" );
+    var dto = await GetDynamicObjectsAsync( serverId, true );
+    return dto;
+  }
+
+  /// <summary>
+  /// 
+  /// </summary>
+  /// <param name="serverId"></param>
+  /// <param name="enableWikiTranslation"></param>
+  /// <returns></returns>
+  public async Task<Dto.ScopedObjectsDto> GetDynamicObjectsAsync(
+    uint serverId,
+    bool enableWikiTranslation)
+  {
+    GetLogger().LogInformation( $"ServerEndpoint.GetDynamicObjectsAsync(uint serverId={serverId})" );
+
+    var phys = new ScopedObjects(
+      GetLogger(),
+      GetDbContext(),
+      GetWikiProvider(), _fileStorageModule );
+
+    await phys.LoadDynamicObjectsFromDatabaseAsync( Utils.Constants.ScopeLevelServer, 1 );
+
+    var builder = new ScopedObjectsMapper(
+      GetLogger(),
+      GetDbContext(),
+      GetWikiProvider(),
+      enableWikiTranslation );
+
+    var dto = builder.PhysicalToDto( phys );
+
+    return dto;
+  }
+
 }

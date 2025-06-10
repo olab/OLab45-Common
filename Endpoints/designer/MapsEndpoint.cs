@@ -379,8 +379,8 @@ public partial class MapsEndpoint : OLabEndpoint
       GetWikiProvider(),
       _fileStorageModule );
 
-    await phys.AddScopeFromDatabaseAsync( Utils.Constants.ScopeLevelServer, 1 );
-    await phys.AddScopeFromDatabaseAsync( Utils.Constants.ScopeLevelMap, map.Id );
+    await phys.LoadScopedObjectsFromDatabaseAsync( Utils.Constants.ScopeLevelServer, 1 );
+    await phys.LoadScopedObjectsFromDatabaseAsync( Utils.Constants.ScopeLevelMap, map.Id );
 
     phys.ConstantsPhys.Add( new SystemConstants
     {

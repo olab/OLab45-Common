@@ -20,13 +20,30 @@ public partial class ScopedObjects
   /// </summary>
   /// <param name="scopeLevel">Scope level to load</param>
   /// <param name="id">Scope id</param>
-  public async Task<ScopedObjects> AddScopeFromDatabaseAsync(
+  public async Task<ScopedObjects> LoadScopedObjectsFromDatabaseAsync(
     string scopeLevel,
     uint id)
   {
     _logger.LogInformation( $"  Reading scope {scopeLevel} {id} from database" );
 
-    var phys = await LoadAllFromDatabaseAsync( scopeLevel, id );
+    var phys = await LoadScopedFromDatabaseAsync( scopeLevel, id );
+    Combine( phys );
+
+    return phys;
+  }
+
+  /// <summary>
+  /// Add a scope level from the database
+  /// </summary>
+  /// <param name="scopeLevel">Scope level to load</param>
+  /// <param name="id">Scope id</param>
+  public async Task<ScopedObjects> LoadDynamicObjectsFromDatabaseAsync(
+    string scopeLevel,
+    uint id)
+  {
+    _logger.LogInformation( $"  Reading scope {scopeLevel} {id} from database" );
+
+    var phys = await LoadDynamicFromDatabaseAsync( scopeLevel, id );
     Combine( phys );
 
     return phys;
@@ -45,7 +62,7 @@ public partial class ScopedObjects
     Combine( phys );
   }
 
-  private async ValueTask<ScopedObjects> LoadAllFromDatabaseAsync(
+  private async ValueTask<ScopedObjects> LoadScopedFromDatabaseAsync(
     string scopeLevel,
     uint id)
   {
@@ -58,6 +75,25 @@ public partial class ScopedObjects
       ThemesPhys = await LoadThemesFromDatabaseAsync( scopeLevel, id ),
       CountersPhys = await LoadCountersFromDatabaseAsync( scopeLevel, id, 0 ),
       CounterActionsPhys = await LoadCounterActionsFromDatabaseAsync( scopeLevel, id )
+    };
+
+    return phys;
+
+  }
+
+  private async ValueTask<ScopedObjects> LoadDynamicFromDatabaseAsync(
+    string scopeLevel,
+    uint id)
+  {
+    var phys = new ScopedObjects
+    {
+      //ConstantsPhys = await LoadConstantsFromDatabaseAsync( scopeLevel, id ),
+      //QuestionsPhys = await LoadQuestionsFromDatabaseAsync( scopeLevel, id ),
+      //FilesPhys = await LoadFilesFromDatabaseAsync( scopeLevel, id ),
+      //ScriptsPhys = await LoadScriptsFromDatabaseAsync( scopeLevel, id ),
+      //ThemesPhys = await LoadThemesFromDatabaseAsync( scopeLevel, id ),
+      CountersPhys = await LoadCountersFromDatabaseAsync( scopeLevel, id, 0 ),
+      //CounterActionsPhys = await LoadCounterActionsFromDatabaseAsync( scopeLevel, id )
     };
 
     return phys;
