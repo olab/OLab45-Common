@@ -45,25 +45,25 @@ public class ScopedObjectsDto
     logger.LogInformation( $" CounterActionsPhys {CounterActions.Count}" );
 
     foreach ( var item in Constants )
-      logger.LogInformation( $" Constant {item}" );
+      logger.LogDebug( $" Constant {item}" );
 
     foreach ( var item in Questions )
-      logger.LogInformation( $" Question {item}" );
+      logger.LogDebug( $" Question {item}" );
 
     foreach ( var item in Counters )
-      logger.LogInformation( $" Counter {item}" );
+      logger.LogDebug( $" Counter {item}" );
 
     foreach ( var item in Files )
-      logger.LogInformation( $" File {item}" );
+      logger.LogDebug( $" File {item}" );
 
     foreach ( var item in Scripts )
-      logger.LogInformation( $" Script {item}" );
+      logger.LogDebug( $" Script {item}" );
 
     foreach ( var item in Themes )
-      logger.LogInformation( $" Theme {item}" );
+      logger.LogDebug( $" Theme {item}" );
 
     foreach ( var item in CounterActions )
-      logger.LogInformation( $" CounterAction {item}" );
+      logger.LogDebug( $" CounterAction {item}" );
   }
 
 }

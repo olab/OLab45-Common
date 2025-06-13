@@ -189,11 +189,11 @@ public partial class ScopedObjects
       await _dbContext.SaveChangesAsync( token );
     }
 
-    _logger.LogInformation( $"  wrote question '{phys.Stem}', {oldPhys.Id} -> {phys.Id}" );
+    _logger.LogDebug( $"  wrote question '{phys.Stem}', {oldPhys.Id} -> {phys.Id}" );
 
     var index = 0;
     foreach ( var responsePhys in phys.SystemQuestionResponses )
-      _logger.LogInformation( $"    wrote response '{responsePhys.Response}', {oldResponseIds[ index++ ]} -> {responsePhys.Id}" );
+      _logger.LogDebug( $"    wrote response '{responsePhys.Response}', {oldResponseIds[ index++ ]} -> {responsePhys.Id}" );
 
   }
 

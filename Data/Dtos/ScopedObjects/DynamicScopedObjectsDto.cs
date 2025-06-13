@@ -188,7 +188,7 @@ public class DynamicScopedObjectsDto
     message += $"Update  {UpdatedAt.ToString()}{Environment.NewLine}";
     message += $"ChkSum  {Checksum}{Environment.NewLine}";
 
-    logger.LogInformation( message );
+    logger.LogDebug( message );
 
   }
 
