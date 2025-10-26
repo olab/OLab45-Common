@@ -32,7 +32,7 @@ public class OLabEndpoint
   public WikiTagModuleProvider GetWikiProvider() { return _wikiTagModules as WikiTagModuleProvider; }
 
   protected string token;
-  protected IAuthenticatedContext _userContext;
+  protected IAuthenticatedContext _authContext;
   protected readonly IOLabConfiguration _configuration;
 
   protected readonly IFileStorageModule _fileStorageModule;
@@ -85,9 +85,9 @@ public class OLabEndpoint
     _wikiTagModules = wikiTagProvider;
   }
 
-  public void SetUserContext(IAuthenticatedContext userContext)
+  public void SetUserContext(IAuthenticatedContext authContext)
   {
-    _userContext = userContext;
+    _authContext = authContext;
   }
 
   /// <summary>
