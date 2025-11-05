@@ -1,38 +1,38 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
-[Table( "map_counter_common_rules" )]
-[Index( "MapId", Name = "map_id" )]
-[MySqlCharSet( "utf8mb3" )]
-[MySqlCollation( "utf8mb3_general_ci" )]
+[Table("map_counter_common_rules")]
+[Index("MapId", Name = "map_id")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class MapCounterCommonRules
 {
-  [Key]
-  [Column( "id", TypeName = "int(10) unsigned" )]
-  public uint Id { get; set; }
+    [Key]
+    [Column("id")]
+    public uint Id { get; set; }
 
-  [Column( "map_id", TypeName = "int(10) unsigned" )]
-  public uint MapId { get; set; }
+    [Column("map_id")]
+    public uint MapId { get; set; }
 
-  [Required]
-  [Column( "rule" )]
-  public string Rule { get; set; }
+    [Required]
+    [Column("rule")]
+    public string Rule { get; set; }
 
-  [Column( "lightning", TypeName = "int(11)" )]
-  public int Lightning { get; set; }
+    [Column("lightning")]
+    public int Lightning { get; set; }
 
-  [Column( "isCorrect" )]
-  public bool IsCorrect { get; set; }
+    [Column("isCorrect")]
+    public bool IsCorrect { get; set; }
 
-  [InverseProperty( "Rule" )]
-  public virtual ICollection<Cron> Cron { get; set; } = new List<Cron>();
+    [InverseProperty("Rule")]
+    public virtual ICollection<Cron> Cron { get; set; } = new List<Cron>();
 
-  [ForeignKey( "MapId" )]
-  [InverseProperty( "MapCounterCommonRules" )]
-  public virtual Maps Map { get; set; }
+    [ForeignKey("MapId")]
+    [InverseProperty("MapCounterCommonRules")]
+    public virtual Maps Map { get; set; }
 }

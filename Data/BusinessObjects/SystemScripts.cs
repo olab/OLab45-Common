@@ -1,53 +1,54 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
-[Table( "system_scripts" )]
-[MySqlCharSet( "utf8mb3" )]
-[MySqlCollation( "utf8mb3_general_ci" )]
+[Table("system_scripts")]
+[MySqlCharSet("utf8mb3")]
+[MySqlCollation("utf8mb3_general_ci")]
 public partial class SystemScripts
 {
-  [Key]
-  [Column( "id", TypeName = "int(10) unsigned" )]
-  public uint Id { get; set; }
+    [Key]
+    [Column("id")]
+    public uint Id { get; set; }
 
-  [Column( "name" )]
-  [StringLength( 45 )]
-  public string Name { get; set; }
+    [Column("name")]
+    [StringLength(45)]
+    public string Name { get; set; }
 
-  [Column( "description", TypeName = "text" )]
-  public string Description { get; set; }
+    [Column("description", TypeName = "text")]
+    public string Description { get; set; }
 
-  [Column( "source", TypeName = "text" )]
-  public string Source { get; set; }
+    [Column("source", TypeName = "blob")]
+    public byte[] Source { get; set; }
 
-  [Column( "is_raw", TypeName = "bit(1)" )]
-  public ulong? IsRaw { get; set; }
+    [Column("is_raw", TypeName = "bit(1)")]
+    public ulong? IsRaw { get; set; }
 
-  [Column( "order", TypeName = "int(11)" )]
-  public int? Order { get; set; }
+    [Column("order")]
+    public int? Order { get; set; }
 
-  [Column( "postload_id", TypeName = "int(11)" )]
-  public int? PostloadId { get; set; }
+    [Column("postload_id")]
+    public int? PostloadId { get; set; }
 
-  [Required]
-  [Column( "imageable_type" )]
-  [StringLength( 45 )]
-  public string ImageableType { get; set; }
+    [Required]
+    [Column("imageable_type")]
+    [StringLength(45)]
+    public string ImageableType { get; set; }
 
-  [Column( "imageable_id", TypeName = "int(10) unsigned" )]
-  public uint ImageableId { get; set; }
+    [Column("imageable_id")]
+    public uint ImageableId { get; set; }
 
-  [Column( "system_scriptscol" )]
-  [StringLength( 45 )]
-  public string SystemScriptscol { get; set; }
+    [Column("system_scriptscol")]
+    [StringLength(45)]
+    public string SystemScriptscol { get; set; }
 
-  [Column( "created_at", TypeName = "datetime" )]
-  public DateTime? CreatedAt { get; set; }
+    [Column("created_at", TypeName = "datetime")]
+    public DateTime? CreatedAt { get; set; }
 
-  [Column( "updated_At", TypeName = "datetime" )]
-  public DateTime? UpdatedAt { get; set; }
+    [Column("updated_At", TypeName = "datetime")]
+    public DateTime? UpdatedAt { get; set; }
 }
