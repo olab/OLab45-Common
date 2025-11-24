@@ -36,6 +36,13 @@ public partial class MapNodes
     set => Undo = value.HasValue ? (value.Value ? (sbyte)1 : (sbyte)0) : (sbyte?)null;
   }
 
+  [NotMapped]
+  public bool IsShowInfo
+  {
+    get => ShowInfo == 1;
+    set => ShowInfo = value ? (sbyte)1 : (sbyte)0;
+  }
+
   public enum NodeType : int
   {
     RootNode = 1,

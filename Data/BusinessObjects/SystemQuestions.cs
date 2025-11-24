@@ -56,7 +56,7 @@ public partial class SystemQuestions
     [Column("num_tries")]
     public int NumTries { get; set; }
 
-    [Column("show_submit")]
+    [Column("show_submit", TypeName = "tinyint(1)")]
     public sbyte ShowSubmit { get; set; }
 
     [Column("redirect_node_id")]

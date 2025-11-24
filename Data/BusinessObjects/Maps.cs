@@ -162,9 +162,6 @@ public partial class Maps
     public virtual ICollection<MapCounterCommonRules> MapCounterCommonRules { get; set; } = new List<MapCounterCommonRules>();
 
     [InverseProperty("Map")]
-    public virtual ICollection<MapCounters> MapCounters { get; set; } = new List<MapCounters>();
-
-    [InverseProperty("Map")]
     public virtual ICollection<MapDams> MapDams { get; set; } = new List<MapDams>();
 
     [InverseProperty("Map")]
@@ -195,16 +192,7 @@ public partial class Maps
     public virtual ICollection<MapNodes> MapNodes { get; set; } = new List<MapNodes>();
 
     [InverseProperty("Map")]
-    public virtual ICollection<MapNodesCopy> MapNodesCopy { get; set; } = new List<MapNodesCopy>();
-
-    [InverseProperty("Map")]
-    public virtual ICollection<MapQuestions> MapQuestions { get; set; } = new List<MapQuestions>();
-
-    [InverseProperty("Map")]
     public virtual ICollection<MapUsers> MapUsers { get; set; } = new List<MapUsers>();
-
-    [InverseProperty("Map")]
-    public virtual ICollection<QCumulative> QCumulative { get; set; } = new List<QCumulative>();
 
     [InverseProperty("Map")]
     public virtual ICollection<ScenarioMaps> ScenarioMaps { get; set; } = new List<ScenarioMaps>();

@@ -41,6 +41,20 @@ public partial class Maps
     set => ShowScore = value ? (sbyte)1 : (sbyte)0;
   }
 
+  [NotMapped]
+  public bool IsRevisableAnswers
+  {
+    get => RevisableAnswers == 1;
+    set => RevisableAnswers = value ? (sbyte)1 : (sbyte)0;
+  }
+
+  [NotMapped]
+  public bool IsTiming
+  {
+    get => Timing == 1;
+    set => Timing = value ? (sbyte)1 : (sbyte)0;
+  }
+
   public const int MapSecurityAnonymous = 1;
 
   public static Maps CreateDefault(Maps templateMap)

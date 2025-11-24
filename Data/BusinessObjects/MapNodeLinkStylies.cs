@@ -27,7 +27,4 @@ public partial class MapNodeLinkStylies
 
     [InverseProperty("LinkStyle")]
     public virtual ICollection<MapNodes> MapNodes { get; set; } = new List<MapNodes>();
-
-    [InverseProperty("LinkStyle")]
-    public virtual ICollection<MapNodesCopy> MapNodesCopy { get; set; } = new List<MapNodesCopy>();
 }

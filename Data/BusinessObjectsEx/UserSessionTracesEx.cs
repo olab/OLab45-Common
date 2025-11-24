@@ -10,21 +10,14 @@ using System.Linq;
 
 namespace OLab.Api.Model;
 
-public partial class MapQuestions
+public partial class UserSessiontraces
 {
 
   [NotMapped]
-  public bool IsShowAnswer
+  public bool IsRedirected
   {
-    get => ShowAnswer == 1;
-    set => ShowAnswer = value ? (sbyte)1 : (sbyte)0;
-  }
-
-  [NotMapped]
-  public bool IsShowSubmit
-  {
-    get => ShowSubmit == 1;
-    set => ShowSubmit = value ? (sbyte)1 : (sbyte)0;
+    get => Redirected == 1;
+    set => Redirected = value ? (sbyte)1 : (sbyte)0;
   }
 
 }

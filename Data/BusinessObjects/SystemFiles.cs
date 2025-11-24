@@ -74,16 +74,16 @@ public partial class SystemFiles
     [Column("file_size")]
     public int? FileSize { get; set; }
 
-    [Column("shared")]
+    [Column("shared", TypeName = "tinyint(1)")]
     public sbyte Shared { get; set; }
 
-    [Column("private")]
+    [Column("private", TypeName = "tinyint(1)")]
     public sbyte Private { get; set; }
 
-    [Column("embedded")]
+    [Column("embedded", TypeName = "tinyint(1)")]
     public sbyte? Embedded { get; set; }
 
-    [Column("media")]
+    [Column("media", TypeName = "tinyint(1)")]
     public sbyte? Media { get; set; }
 
     [Column("encoded_content", TypeName = "blob")]

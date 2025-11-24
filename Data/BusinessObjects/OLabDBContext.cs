@@ -85,10 +85,6 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<MapCounterRuleRelations> MapCounterRuleRelations { get; set; }
 
-    public virtual DbSet<MapCounterRules> MapCounterRules { get; set; }
-
-    public virtual DbSet<MapCounters> MapCounters { get; set; }
-
     public virtual DbSet<MapDamElements> MapDamElements { get; set; }
 
     public virtual DbSet<MapDams> MapDams { get; set; }
@@ -108,8 +104,6 @@ public partial class OLabDBContext : DbContext
     public virtual DbSet<MapGroups> MapGroups { get; set; }
 
     public virtual DbSet<MapKeys> MapKeys { get; set; }
-
-    public virtual DbSet<MapNodeCounters> MapNodeCounters { get; set; }
 
     public virtual DbSet<MapNodeGrouproles> MapNodeGrouproles { get; set; }
 
@@ -135,8 +129,6 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<MapNodes> MapNodes { get; set; }
 
-    public virtual DbSet<MapNodesCopy> MapNodesCopy { get; set; }
-
     public virtual DbSet<MapPopupAssignTypes> MapPopupAssignTypes { get; set; }
 
     public virtual DbSet<MapPopupPositionTypes> MapPopupPositionTypes { get; set; }
@@ -150,14 +142,6 @@ public partial class OLabDBContext : DbContext
     public virtual DbSet<MapPopupsCounters> MapPopupsCounters { get; set; }
 
     public virtual DbSet<MapPopupsStyles> MapPopupsStyles { get; set; }
-
-    public virtual DbSet<MapQuestionResponses> MapQuestionResponses { get; set; }
-
-    public virtual DbSet<MapQuestionTypes> MapQuestionTypes { get; set; }
-
-    public virtual DbSet<MapQuestionValidation> MapQuestionValidation { get; set; }
-
-    public virtual DbSet<MapQuestions> MapQuestions { get; set; }
 
     public virtual DbSet<MapSections> MapSections { get; set; }
 
@@ -185,8 +169,6 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<Phinxlog> Phinxlog { get; set; }
 
-    public virtual DbSet<QCumulative> QCumulative { get; set; }
-
     public virtual DbSet<Roles> Roles { get; set; }
 
     public virtual DbSet<ScenarioMaps> ScenarioMaps { get; set; }
@@ -196,8 +178,6 @@ public partial class OLabDBContext : DbContext
     public virtual DbSet<ScopeTypes> ScopeTypes { get; set; }
 
     public virtual DbSet<Servers> Servers { get; set; }
-
-    public virtual DbSet<SjtResponse> SjtResponse { get; set; }
 
     public virtual DbSet<Statements> Statements { get; set; }
 
@@ -542,24 +522,6 @@ public partial class OLabDBContext : DbContext
             entity.HasKey(e => e.Id).HasName("PRIMARY");
         });
 
-        modelBuilder.Entity<MapCounterRules>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.HasOne(d => d.CounterNavigation).WithMany(p => p.MapCounterRules).HasConstraintName("map_counter_rules_ibfk_1");
-        });
-
-        modelBuilder.Entity<MapCounters>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.Property(e => e.Visible).HasDefaultValueSql("'0'");
-
-            entity.HasOne(d => d.Map).WithMany(p => p.MapCounters)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("map_counters_ibfk_1");
-        });
-
         modelBuilder.Entity<MapDamElements>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -642,15 +604,6 @@ public partial class OLabDBContext : DbContext
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
             entity.HasOne(d => d.Map).WithMany(p => p.MapKeys).HasConstraintName("map_keys_ibfk_1");
-        });
-
-        modelBuilder.Entity<MapNodeCounters>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.Property(e => e.Display).HasDefaultValueSql("'1'");
-
-            entity.HasOne(d => d.Node).WithMany(p => p.MapNodeCounters).HasConstraintName("map_node_counters_ibfk_1");
         });
 
         modelBuilder.Entity<MapNodeGrouproles>(entity =>
@@ -756,20 +709,6 @@ public partial class OLabDBContext : DbContext
             entity.HasOne(d => d.Map).WithMany(p => p.MapNodes).HasConstraintName("map_nodes_ibfk_1");
         });
 
-        modelBuilder.Entity<MapNodesCopy>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.Property(e => e.ForceReload).HasDefaultValueSql("'0'");
-            entity.Property(e => e.LinkTypeId).HasDefaultValueSql("'1'");
-
-            entity.HasOne(d => d.LinkStyle).WithMany(p => p.MapNodesCopy)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("map_nodes_copy_ibfk_2");
-
-            entity.HasOne(d => d.Map).WithMany(p => p.MapNodesCopy).HasConstraintName("map_nodes_copy_ibfk_1");
-        });
-
         modelBuilder.Entity<MapPopupAssignTypes>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -809,46 +748,6 @@ public partial class OLabDBContext : DbContext
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
             entity.Property(e => e.IsDefaultBackgroundColor).HasDefaultValueSql("'1'");
-        });
-
-        modelBuilder.Entity<MapQuestionResponses>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.HasOne(d => d.Parent).WithMany(p => p.InverseParent)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("map_question_responses_ibfk_2");
-
-            entity.HasOne(d => d.Question).WithMany(p => p.MapQuestionResponses)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("map_question_responses_ibfk_1");
-        });
-
-        modelBuilder.Entity<MapQuestionTypes>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-        });
-
-        modelBuilder.Entity<MapQuestionValidation>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.HasOne(d => d.Question).WithMany(p => p.MapQuestionValidation).HasConstraintName("map_question_validation_ibfk_1");
-        });
-
-        modelBuilder.Entity<MapQuestions>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.Property(e => e.NumTries).HasDefaultValueSql("'-1'");
-
-            entity.HasOne(d => d.Map).WithMany(p => p.MapQuestions)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("map_questions_ibfk_1");
-
-            entity.HasOne(d => d.Parent).WithMany(p => p.InverseParent)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("map_questions_ibfk_2");
         });
 
         modelBuilder.Entity<MapSections>(entity =>
@@ -952,20 +851,11 @@ public partial class OLabDBContext : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
         });
 
-        modelBuilder.Entity<QCumulative>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.HasOne(d => d.Map).WithMany(p => p.QCumulative).HasConstraintName("q_cumulative_ibfk_2");
-
-            entity.HasOne(d => d.Question).WithMany(p => p.QCumulative).HasConstraintName("q_cumulative_ibfk_1");
-        });
-
         modelBuilder.Entity<Roles>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.Property(e => e.IsSystem).HasDefaultValueSql("'0'");
+            entity.Property(e => e.System).HasDefaultValueSql("'0'");
         });
 
         modelBuilder.Entity<ScenarioMaps>(entity =>
@@ -998,13 +888,6 @@ public partial class OLabDBContext : DbContext
         modelBuilder.Entity<Servers>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
-        });
-
-        modelBuilder.Entity<SjtResponse>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.HasOne(d => d.Response).WithMany(p => p.SjtResponse).HasConstraintName("sjt_response_ibfk_1");
         });
 
         modelBuilder.Entity<Statements>(entity =>
@@ -1078,8 +961,8 @@ public partial class OLabDBContext : DbContext
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
             entity.Property(e => e.HeightType).HasDefaultValueSql("'px'");
-            entity.Property(e => e.IsMedia).HasDefaultValueSql("'1'");
-            entity.Property(e => e.IsShared).HasDefaultValueSql("'1'");
+            entity.Property(e => e.Media).HasDefaultValueSql("'1'");
+            entity.Property(e => e.Shared).HasDefaultValueSql("'1'");
             entity.Property(e => e.System).HasDefaultValueSql("'0'");
             entity.Property(e => e.WidthType).HasDefaultValueSql("'px'");
         });
@@ -1273,7 +1156,7 @@ public partial class OLabDBContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.Property(e => e.IsLti).HasDefaultValueSql("'0'");
+            entity.Property(e => e.Lti).HasDefaultValueSql("'0'");
             entity.Property(e => e.VisualEditorAutosaveTime).HasDefaultValueSql("'50000'");
         });
 

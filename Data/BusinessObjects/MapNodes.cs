@@ -114,9 +114,6 @@ public partial class MapNodes
     public virtual Maps Map { get; set; }
 
     [InverseProperty("Node")]
-    public virtual ICollection<MapNodeCounters> MapNodeCounters { get; set; } = new List<MapNodeCounters>();
-
-    [InverseProperty("Node")]
     public virtual ICollection<MapNodeGrouproles> MapNodeGrouproles { get; set; } = new List<MapNodeGrouproles>();
 
     [InverseProperty("Node")]

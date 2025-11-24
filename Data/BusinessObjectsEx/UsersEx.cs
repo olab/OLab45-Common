@@ -19,6 +19,13 @@ public partial class Users
     set => HistoryReadonly = value.HasValue ? (value.Value ? (sbyte)1 : (sbyte)0) : (sbyte?)null;
   }
 
+  [NotMapped]
+  public bool? IsLti
+  {
+    get => Lti.HasValue ? Lti.Value == 1 : (bool?)null;
+    set => Lti = value.HasValue ? (value.Value ? (sbyte)1 : (sbyte)0) : (sbyte?)null;
+  }
+
   public static Users CreatePhysFromRequest(Users sourceUser, AddUserRequest model)
   {
     if ( sourceUser == null )

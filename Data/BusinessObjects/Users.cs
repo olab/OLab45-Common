@@ -85,8 +85,8 @@ public partial class Users
     [Column("modeUI", TypeName = "enum('easy','advanced')")]
     public string ModeUi { get; set; }
 
-    [Column("is_lti", TypeName = "tinyint(1)")]
-    public sbyte? IsLti { get; set; }
+    [Column("lti", TypeName = "tinyint(1)")]
+    public sbyte? Lti { get; set; }
 
     [Column("settings", TypeName = "text")]
     public string Settings { get; set; }

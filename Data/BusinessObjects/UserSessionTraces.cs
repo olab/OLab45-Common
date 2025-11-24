@@ -31,8 +31,8 @@ public partial class UserSessiontraces
     [Column("node_id")]
     public uint NodeId { get; set; }
 
-    [Column("is_redirected", TypeName = "tinyint(1)")]
-    public sbyte IsRedirected { get; set; }
+    [Column("redirected", TypeName = "tinyint(1)")]
+    public sbyte Redirected { get; set; }
 
     [Column("counters")]
     [StringLength(2000)]

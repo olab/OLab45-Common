@@ -25,7 +25,7 @@ public partial class Roles
     [StringLength(100)]
     public string Name { get; set; }
 
-    [Column("is_system")]
+    [Column("system")]
     public sbyte? System { get; set; }
 
     [InverseProperty("Role")]
