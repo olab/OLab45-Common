@@ -75,9 +75,6 @@ public partial class UserSessions
     public virtual ICollection<UserBookmarks> UserBookmarks { get; set; } = new List<UserBookmarks>();
 
     [InverseProperty("Session")]
-    public virtual UserNotes UserNotes { get; set; }
-
-    [InverseProperty("Session")]
     public virtual ICollection<UserResponses> UserResponses { get; set; } = new List<UserResponses>();
 
     [InverseProperty("Session")]

@@ -233,8 +233,6 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<UserGrouproles> UserGrouproles { get; set; }
 
-    public virtual DbSet<UserNotes> UserNotes { get; set; }
-
     public virtual DbSet<UserResponses> UserResponses { get; set; }
 
     public virtual DbSet<UserSessions> UserSessions { get; set; }
@@ -252,22 +250,6 @@ public partial class OLabDBContext : DbContext
     public virtual DbSet<UsersessiontraceCounterupdate> UsersessiontraceCounterupdate { get; set; }
 
     public virtual DbSet<Vocablets> Vocablets { get; set; }
-
-    public virtual DbSet<WebinarGroups> WebinarGroups { get; set; }
-
-    public virtual DbSet<WebinarMacros> WebinarMacros { get; set; }
-
-    public virtual DbSet<WebinarMaps> WebinarMaps { get; set; }
-
-    public virtual DbSet<WebinarNodePoll> WebinarNodePoll { get; set; }
-
-    public virtual DbSet<WebinarPoll> WebinarPoll { get; set; }
-
-    public virtual DbSet<WebinarSteps> WebinarSteps { get; set; }
-
-    public virtual DbSet<WebinarUsers> WebinarUsers { get; set; }
-
-    public virtual DbSet<Webinars> Webinars { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -1083,23 +1065,6 @@ public partial class OLabDBContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.UserGrouproles).HasConstraintName("user_grouproles_ibfk_1");
         });
 
-        modelBuilder.Entity<UserNotes>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.HasOne(d => d.Session).WithOne(p => p.UserNotes)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("user_notes_ibfk_2");
-
-            entity.HasOne(d => d.User).WithMany(p => p.UserNotes)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("user_notes_ibfk_1");
-
-            entity.HasOne(d => d.Webinar).WithMany(p => p.UserNotes)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("user_notes_ibfk_3");
-        });
-
         modelBuilder.Entity<UserResponses>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -1170,58 +1135,6 @@ public partial class OLabDBContext : DbContext
         });
 
         modelBuilder.Entity<Vocablets>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-        });
-
-        modelBuilder.Entity<WebinarGroups>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-        });
-
-        modelBuilder.Entity<WebinarMacros>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-        });
-
-        modelBuilder.Entity<WebinarMaps>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.HasOne(d => d.StepNavigation).WithMany(p => p.WebinarMaps).HasConstraintName("webinar_maps_ibfk_1");
-        });
-
-        modelBuilder.Entity<WebinarNodePoll>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.HasOne(d => d.Node).WithMany(p => p.WebinarNodePoll).HasConstraintName("webinar_node_poll_ibfk_2");
-
-            entity.HasOne(d => d.Webinar).WithMany(p => p.WebinarNodePoll).HasConstraintName("webinar_node_poll_ibfk_1");
-        });
-
-        modelBuilder.Entity<WebinarPoll>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.HasOne(d => d.OnNodeNavigation).WithMany(p => p.WebinarPollOnNodeNavigation).HasConstraintName("webinar_poll_ibfk_1");
-
-            entity.HasOne(d => d.ToNodeNavigation).WithMany(p => p.WebinarPollToNodeNavigation).HasConstraintName("webinar_poll_ibfk_2");
-        });
-
-        modelBuilder.Entity<WebinarSteps>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-        });
-
-        modelBuilder.Entity<WebinarUsers>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.HasOne(d => d.User).WithMany(p => p.WebinarUsers).HasConstraintName("webinar_users_ibfk_1");
-        });
-
-        modelBuilder.Entity<Webinars>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
         });

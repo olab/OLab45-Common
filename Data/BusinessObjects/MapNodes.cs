@@ -139,13 +139,4 @@ public partial class MapNodes
 
     [InverseProperty("MapNode")]
     public virtual ICollection<UserState> UserState { get; set; } = new List<UserState>();
-
-    [InverseProperty("Node")]
-    public virtual ICollection<WebinarNodePoll> WebinarNodePoll { get; set; } = new List<WebinarNodePoll>();
-
-    [InverseProperty("OnNodeNavigation")]
-    public virtual ICollection<WebinarPoll> WebinarPollOnNodeNavigation { get; set; } = new List<WebinarPoll>();
-
-    [InverseProperty("ToNodeNavigation")]
-    public virtual ICollection<WebinarPoll> WebinarPollToNodeNavigation { get; set; } = new List<WebinarPoll>();
 }

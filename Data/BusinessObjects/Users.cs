@@ -99,10 +99,4 @@ public partial class Users
 
     [InverseProperty("User")]
     public virtual ICollection<UserGrouproles> UserGrouproles { get; set; } = new List<UserGrouproles>();
-
-    [InverseProperty("User")]
-    public virtual ICollection<UserNotes> UserNotes { get; set; } = new List<UserNotes>();
-
-    [InverseProperty("User")]
-    public virtual ICollection<WebinarUsers> WebinarUsers { get; set; } = new List<WebinarUsers>();
 }
