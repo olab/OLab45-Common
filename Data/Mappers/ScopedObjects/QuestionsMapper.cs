@@ -37,7 +37,7 @@ public class QuestionsMapper : OLabMapper<SystemQuestions, QuestionsDto>
     phys.Feedback = Conversions.Base64Decode( elements.FirstOrDefault( x => x.Name == "feedback" ) );
     phys.Prompt = Conversions.Base64Decode( elements.FirstOrDefault( x => x.Name == "prompt" ) );
 
-    phys.ShowAnswer = Convert.ToInt32( elements.FirstOrDefault( x => x.Name == "show_answer" ).Value ) == 1 ? true : false;
+    phys.IsShowAnswer = Convert.ToInt32( elements.FirstOrDefault( x => x.Name == "show_answer" ).Value ) == 1 ? true : false;
     if ( uint.TryParse( elements.FirstOrDefault( x => x.Name == "counter_id" ).Value, out uint id1 ) )
       phys.CounterId = id1;
 

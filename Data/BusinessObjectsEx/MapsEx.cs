@@ -1,7 +1,9 @@
 using AutoMapper;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Newtonsoft.Json;
 using OLab.Common.Utils;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 #nullable disable
@@ -10,6 +12,34 @@ namespace OLab.Api.Model;
 
 public partial class Maps
 {
+
+  [NotMapped]
+  public bool IsEnabled
+  {
+    get => Enabled == 1;
+    set => Enabled = value ? (sbyte)1 : (sbyte)0;
+  }
+
+  [NotMapped]
+  public bool IsSendXapiStatements
+  {
+    get => SendXapiStatements == 1;
+    set => SendXapiStatements = value ? (sbyte)1 : (sbyte)0;
+  }
+
+  [NotMapped]
+  public bool IsShowBar
+  {
+    get => ShowBar == 1;
+    set => ShowBar = value ? (sbyte)1 : (sbyte)0;
+  }
+
+  [NotMapped]
+  public bool IsShowScore
+  {
+    get => ShowScore == 1;
+    set => ShowScore = value ? (sbyte)1 : (sbyte)0;
+  }
 
   public const int MapSecurityAnonymous = 1;
 
@@ -41,7 +71,7 @@ public partial class Maps
       Abstract = "<b>New Map</b>",
       DeltaTime = 0,
       DevNotes = "",
-      Enabled = true,
+      IsEnabled = true,
       Feedback = "",
       Guid = "",
       IsTemplate = 0,
@@ -53,9 +83,9 @@ public partial class Maps
       RendererVersion = 4,
       SectionId = 2,
       SecurityId = 3,
-      SendXapiStatements = false,
-      ShowBar = false,
-      ShowScore = false,
+      IsSendXapiStatements = false,
+      IsShowBar = false,
+      IsShowScore = false,
       SkinId = 1,
       SourceId = 0,
       Source = "",
@@ -100,4 +130,5 @@ public partial class Maps
   {
     return $"{Name} ({Id})";
   }
+
 }

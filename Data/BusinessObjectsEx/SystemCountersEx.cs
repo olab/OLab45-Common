@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace OLab.Api.Model;
@@ -7,6 +8,13 @@ namespace OLab.Api.Model;
 public partial class SystemCounters
 {
   public const string NotANumber = "#NaN";
+
+  [NotMapped]
+  public bool IsVisible
+  {
+    get => Visible == 1;
+    set => Visible = value ? (sbyte)1 : (sbyte)0;
+  }
 
   public SystemCounters()
   {

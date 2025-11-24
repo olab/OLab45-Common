@@ -239,7 +239,7 @@ public partial class CountersEndpoint : OLabEndpoint
           .FirstOrDefaultAsync( x => x.Id == dto.Id );
 
         phys.Value = Encoding.ASCII.GetBytes( dto.Value );
-        phys.Visible = dto.Visible;
+        phys.IsVisible = dto.Visible.HasValue && dto.Visible.Value;
 
         GetDbContext().SystemCounters.Update( phys );
         await GetDbContext().SaveChangesAsync();

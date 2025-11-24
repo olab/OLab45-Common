@@ -63,7 +63,7 @@ public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
     dto.Id = Conversions.OptionalIdSafeAssign( phys.Id );
     dto.LinkStyleId = phys.LinkStyleId;
     dto.LinkText = phys.Text;
-    dto.IsHidden = phys.Hidden.HasValue ? phys.Hidden.Value : false;
+    dto.IsHidden = phys.Hidden.HasValue ? phys.IsHidden.Value : false;
     dto.FollowOnce = phys.FollowOnce.HasValue ? phys.FollowOnce.Value == 1 : false;
   }
 
@@ -82,7 +82,7 @@ public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
     phys.Id = (uint)Conversions.OptionalIdSafeAssign( dto.Id );
     phys.LinkStyleId = phys.LinkStyleId;
     phys.Text = dto.LinkText;
-    phys.Hidden = dto.IsHidden;
+    phys.IsHidden = dto.IsHidden;
     phys.FollowOnce = dto.FollowOnce ? 1 : 0;
   }
 
@@ -108,7 +108,7 @@ public class MapNodeLinksMapper : ObjectMapper<MapNodeLinks, MapNodeLinksDto>
     phys.Order = Convert.ToInt32( elements.FirstOrDefault( x => x.Name == "order" ).Value );
     phys.Probability = Convert.ToInt32( elements.FirstOrDefault( x => x.Name == "probability" ).Value );
     if ( int.TryParse( elements.FirstOrDefault( x => x.Name == "hidden" ).Value, out int nTemp ) )
-      phys.Hidden = (nTemp == 1);
+      phys.IsHidden = (nTemp == 1);
     phys.CreatedAt = DateTime.Now;
 
     // Logger.LogInformation($"loaded MapNodeLinks {phys.Id}");
