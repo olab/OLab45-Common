@@ -1080,7 +1080,7 @@ public partial class OLabDBContext : DbContext
             entity.Property(e => e.HeightType).HasDefaultValueSql("'px'");
             entity.Property(e => e.IsMedia).HasDefaultValueSql("'1'");
             entity.Property(e => e.IsShared).HasDefaultValueSql("'1'");
-            entity.Property(e => e.IsSystem).HasDefaultValueSql("'0'");
+            entity.Property(e => e.System).HasDefaultValueSql("'0'");
             entity.Property(e => e.WidthType).HasDefaultValueSql("'px'");
         });
 

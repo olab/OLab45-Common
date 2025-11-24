@@ -1,7 +1,9 @@
+using DocumentFormat.OpenXml.Office2010.PowerPoint;
 using Newtonsoft.Json;
 using OLab.Api.Utils;
 using OLab.Common.Utils;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
@@ -9,6 +11,13 @@ public partial class Users
 {
   public const string AnonymousUserName = "anonymous";
   public const int PasswordLength = 8;
+
+  [NotMapped]
+  public bool? IsHistoryReadonly
+  {
+    get => HistoryReadonly.HasValue ? HistoryReadonly.Value == 1 : (bool?)null;
+    set => HistoryReadonly = value.HasValue ? (value.Value ? (sbyte)1 : (sbyte)0) : (sbyte?)null;
+  }
 
   public static Users CreatePhysFromRequest(Users sourceUser, AddUserRequest model)
   {

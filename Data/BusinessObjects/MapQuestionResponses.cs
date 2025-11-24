@@ -30,8 +30,8 @@ public partial class MapQuestionResponses
     [Column("feedback", TypeName = "text")]
     public string Feedback { get; set; }
 
-    [Column("is_correct", TypeName = "tinyint(1)")]
-    public sbyte IsCorrect { get; set; }
+    [Column("correct", TypeName = "tinyint(1)")]
+    public sbyte Correct { get; set; }
 
     [Column("score")]
     public int? Score { get; set; }

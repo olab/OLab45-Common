@@ -14,6 +14,12 @@ public partial class SystemQuestions
     set => ShowAnswer = value ? (sbyte)1 : (sbyte)0;
   }
 
+  [NotMapped]
+  public bool IsShowSubmit
+  {
+    get => ShowSubmit == 1;
+    set => ShowSubmit = value ? (sbyte)1 : (sbyte)0;
+  }
 
   public string GetWikiTag()
   {

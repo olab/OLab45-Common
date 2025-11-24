@@ -74,17 +74,17 @@ public partial class SystemFiles
     [Column("file_size")]
     public int? FileSize { get; set; }
 
-    [Column("is_shared")]
-    public sbyte IsShared { get; set; }
+    [Column("shared")]
+    public sbyte Shared { get; set; }
 
-    [Column("is_private")]
-    public sbyte IsPrivate { get; set; }
+    [Column("private")]
+    public sbyte Private { get; set; }
 
-    [Column("is_embedded")]
-    public sbyte? IsEmbedded { get; set; }
+    [Column("embedded")]
+    public sbyte? Embedded { get; set; }
 
-    [Column("is_media")]
-    public sbyte? IsMedia { get; set; }
+    [Column("media")]
+    public sbyte? Media { get; set; }
 
     [Column("encoded_content", TypeName = "blob")]
     public byte[] EncodedContent { get; set; }
@@ -97,8 +97,8 @@ public partial class SystemFiles
     [StringLength(45)]
     public string ImageableType { get; set; }
 
-    [Column("is_system")]
-    public int? IsSystem { get; set; }
+    [Column("system")]
+    public int? System { get; set; }
 
     [Column("created_at", TypeName = "datetime")]
     public DateTime? CreatedAt { get; set; }
