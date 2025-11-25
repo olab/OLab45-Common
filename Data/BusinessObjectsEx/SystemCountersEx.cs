@@ -9,13 +9,6 @@ public partial class SystemCounters
 {
   public const string NotANumber = "#NaN";
 
-  [NotMapped]
-  public bool IsVisible
-  {
-    get => Visible == 1;
-    set => Visible = value ? (sbyte)1 : (sbyte)0;
-  }
-
   public SystemCounters()
   {
     SystemCounterActions = new HashSet<SystemCounterActions>();
