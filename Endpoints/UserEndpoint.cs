@@ -289,6 +289,9 @@ public partial class UserEndpoint : OLabEndpoint
     if ( user != null )
       throw new OLabBadRequestException( $"'{userRequest.Username}' already exists" );
 
+    if ( userRequest.Username.ToLower() != userRequest.Username )
+      throw new OLabBadRequestException( $"username: '{userRequest.Username}' must be all lower case" );
+
     GetLogger().LogInformation( $"adding user '{userRequest.Username}'" );
 
     var newUserPhys = Users.CreatePhysFromRequest( null, userRequest );
@@ -319,6 +322,13 @@ public partial class UserEndpoint : OLabEndpoint
       var responses = new List<UsersDto>();
 
       GetLogger().LogDebug( $"AddUserAsync(items count '{items.Count}')" );
+
+      foreach ( var item in items )
+      {
+        var validationString = item.ValidateRequest();
+        if ( !string.IsNullOrEmpty( validationString ) )
+          throw new Exception( validationString );
+      }
 
       foreach ( var item in items )
       {

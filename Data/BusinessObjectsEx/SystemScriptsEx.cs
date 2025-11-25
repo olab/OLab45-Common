@@ -1,5 +1,7 @@
 #nullable disable
 
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace OLab.Api.Model;
 
 public partial class SystemScripts
@@ -13,6 +15,13 @@ public partial class SystemScripts
 
   [System.ComponentModel.DataAnnotations.Schema.NotMapped]
   public string OriginUrl { get; set; }
+
+  [NotMapped]
+  public bool IsRaw
+  {
+    get => Raw == 1;
+    set => Raw = value ? (sbyte)1 : (sbyte)0;
+  }
 
   public override string ToString()
   {

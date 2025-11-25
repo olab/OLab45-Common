@@ -57,6 +57,19 @@ public class AddUserRequest
     this.dbContext = dbContext;
   }
 
+  public string ValidateRequest()
+  {
+    if ( string.IsNullOrEmpty( Username ) )
+      return "Username is required";
+    if ( Username.ToLower() != Username )
+      return "Username must be lower case";
+    if ( string.IsNullOrEmpty( EMail ) )
+      return "EMail is required";
+    if ( string.IsNullOrEmpty( NickName ) )
+      return "NickName is required";
+    return "";
+  }
+
   public void SetInfrastructure(
     IOLabLogger logger,
     OLabDBContext dbContext)

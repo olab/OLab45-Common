@@ -109,7 +109,7 @@ public partial class GroupsEndpoint : OLabEndpoint
 
     // test for reserved object
     var orgPhys = await _readerWriter.GetAsync( groupName );
-    if ( (orgPhys != null) && (orgPhys.IsSystem == 1) )
+    if ( (orgPhys != null) && orgPhys.IsSystem )
       throw new OLabUnauthorizedException();
 
     // test 
@@ -136,7 +136,7 @@ public partial class GroupsEndpoint : OLabEndpoint
       throw new OLabObjectNotFoundException( "Groups", source );
 
     // test if reserved object
-    if ( (phys != null) && (phys.IsSystem == 1) )
+    if ( (phys != null) && phys.IsSystem )
       throw new OLabUnauthorizedException();
 
     // test if in use somewhere

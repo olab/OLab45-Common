@@ -1,15 +1,24 @@
+using DocumentFormat.OpenXml.Vml.Spreadsheet;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;
 
 public partial class MapNodeLinks
 {
+  [NotMapped]
+  public bool? IsHidden
+  {
+    get => Hidden.HasValue ? Hidden.Value == 1 : (bool?)null;
+    set => Hidden = value.HasValue ? (value.Value ? (sbyte)1 : (sbyte)0) : (sbyte?)null;
+  }
+
   public static MapNodeLinks CreateDefault()
   {
     return new MapNodeLinks
     {
-      Hidden = false,
+      IsHidden = false,
       Order = 0,
       Probability = 0,
       LinkStyleId = 5,

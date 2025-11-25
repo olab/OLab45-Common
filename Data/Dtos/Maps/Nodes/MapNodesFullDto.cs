@@ -25,7 +25,7 @@ public class MapNodesFullDto : MapNodesDto
   public uint? TypeId { get; set; }
   public int? VisitOnce { get; set; }
   public int? Width { get; set; }
-  public sbyte ShowInfo { get; set; }
+  public bool IsShowInfo { get; set; }
   public string Annotation { get; set; }
   public string Conditional { get; set; }
   public string ConditionalMessage { get; set; }
