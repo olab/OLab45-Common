@@ -994,7 +994,7 @@ public partial class OLabDBContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.Property(e => e.IsRaw).HasDefaultValueSql("b'0'");
+            entity.Property(e => e.Raw).HasDefaultValueSql("'0'");
         });
 
         modelBuilder.Entity<SystemServers>(entity =>

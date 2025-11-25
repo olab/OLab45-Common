@@ -25,8 +25,8 @@ public partial class SystemScripts
     [Column("source", TypeName = "blob")]
     public byte[] Source { get; set; }
 
-    [Column("is_raw")]
-    public bool? IsRaw { get; set; }
+    [Column("raw", TypeName = "tinyint(1)")]
+    public sbyte? Raw { get; set; }
 
     [Column("order")]
     public int? Order { get; set; }
