@@ -39,8 +39,8 @@ public partial class SystemCounters
     [StringLength(20)]
     public string Suffix { get; set; }
 
-    [Column("visible")]
-    public int? Visible { get; set; }
+    [Column("visible", TypeName = "tinyint(1)")]
+    public sbyte? Visible { get; set; }
 
     [Column("out_of")]
     public int? OutOf { get; set; }

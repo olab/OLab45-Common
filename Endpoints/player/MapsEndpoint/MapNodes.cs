@@ -64,12 +64,13 @@ public partial class MapsEndpoint : OLabEndpoint
 
     nodeDto.DynamicObjects = await GetDynamicScopedObjectsTranslatedAsync( auth, mapId, nodeDto.Id.Value );
 
-    if ( body.IsEmpty() && (nodeDto.TypeId == 1) )
-      // requested a root node, so return an initial set of dynamic objects
+    //if ( body.IsEmpty() && (nodeDto.TypeId == 1) )
+    // requested a root node, so return an initial set of dynamic objects
+    if ( body.IsEmpty() )
       nodeDto.DynamicObjects = await GetDynamicScopedObjectsRawAsync(
-        auth,
-        mapId,
-        nodeDto.Id.Value );
+          auth,
+          mapId,
+          nodeDto.Id.Value );
     else
     {
       // apply any node open counter actions

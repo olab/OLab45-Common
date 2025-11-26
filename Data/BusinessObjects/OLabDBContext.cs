@@ -247,6 +247,8 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<Users> Users { get; set; }
 
+    public virtual DbSet<UsersCopy> UsersCopy { get; set; }
+
     public virtual DbSet<UsersessiontraceCounterupdate> UsersessiontraceCounterupdate { get; set; }
 
     public virtual DbSet<Vocablets> Vocablets { get; set; }
@@ -1118,6 +1120,14 @@ public partial class OLabDBContext : DbContext
         });
 
         modelBuilder.Entity<Users>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.Property(e => e.Lti).HasDefaultValueSql("'0'");
+            entity.Property(e => e.VisualEditorAutosaveTime).HasDefaultValueSql("'50000'");
+        });
+
+        modelBuilder.Entity<UsersCopy>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
