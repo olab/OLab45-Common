@@ -15,7 +15,6 @@ namespace OLab.Api.Endpoints.Player;
 
 public partial class ServerEndpoint : OLabEndpoint
 {
-  private SessionEndpoint _sessionEndpoint;
 
   public ServerEndpoint(
     IOLabLogger logger,
@@ -30,7 +29,6 @@ public partial class ServerEndpoint : OLabEndpoint
         wikiTagProvider,
         fileStorageProvider )
   {
-    _sessionEndpoint = new SessionEndpoint( logger, configuration, context );
   }
 
   /// <summary>
@@ -57,10 +55,6 @@ public partial class ServerEndpoint : OLabEndpoint
   {
     GetLogger().LogInformation( $"ServerEndpoint.GetScopedObjectsTranslatedAsync(uint serverId={serverId})" );
     var dto = await GetScopedObjectsAsync( serverId, true );
-
-    var sessionId = headers.TryGetValue( "OlabSessionId", out var sessionIds ) ?
-      sessionIds.FirstOrDefault() ??
-      string.Empty : string.Empty;
 
     dto.Constants.Add(
       new Dto.ConstantsDto
@@ -97,60 +91,6 @@ public partial class ServerEndpoint : OLabEndpoint
         IsSystem = 1,
         CreatedAt = DateTime.UtcNow
       } );
-
-
-    if ( !string.IsNullOrEmpty( sessionId ) )
-    {
-      SessionStatistics sessionStats = await _sessionEndpoint.GetSessionStats( sessionId );
-
-      dto.Constants.Add(
-        new Dto.ConstantsDto
-        {
-          Id = 0,
-          Name = "SessionId",
-          Value = sessionStats.SessionId,
-          ImageableId = 1,
-          ImageableType = "Server",
-          IsSystem = 1,
-          CreatedAt = DateTime.UtcNow
-        } );
-
-      dto.Constants.Add(
-        new Dto.ConstantsDto
-        {
-          Id = 0,
-          Name = "SessionTimeStamp",
-          Value = sessionStats.SessionStart.HasValue ? $"{sessionStats.SessionStart.Value.ToString()} UTC" : "<unknown>",
-          ImageableId = 1,
-          ImageableType = "Server",
-          IsSystem = 1,
-          CreatedAt = DateTime.UtcNow
-        } );
-
-      dto.Constants.Add(
-        new Dto.ConstantsDto
-        {
-          Id = 0,
-          Name = "SessionDuration",
-          Value = Math.Floor( sessionStats.SessionDuration.TotalSeconds ).ToString(),
-          ImageableId = 1,
-          ImageableType = "Server",
-          IsSystem = 1,
-          CreatedAt = DateTime.UtcNow
-        } );
-
-      dto.Constants.Add(
-        new Dto.ConstantsDto
-        {
-          Id = 0,
-          Name = "NodesVisited",
-          Value = sessionStats.NodeCount.ToString(),
-          ImageableId = 1,
-          ImageableType = "Server",
-          IsSystem = 1,
-          CreatedAt = DateTime.UtcNow
-        } );
-    }
 
     return dto;
   }

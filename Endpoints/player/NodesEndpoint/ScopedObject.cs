@@ -1,8 +1,13 @@
+using DocumentFormat.OpenXml.Spreadsheet;
+using OLab.Access.Interfaces;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Contracts;
 using OLab.Data;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,21 +15,28 @@ namespace OLab.Api.Endpoints.Player;
 
 public partial class NodesEndpoint : OLabEndpoint
 {
-
-  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(uint nodeId)
+  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsRawAsync(
+    uint nodeId,
+    IOLabAuthorization auth,
+    Dictionary<string, IEnumerable<string>> headers)
   {
     GetLogger().LogInformation( $"NodesController.GetScopedObjectsRawAsync(uint nodeId={nodeId})" );
-    return await GetScopedObjectsAsync( nodeId, false );
+    return await GetScopedObjectsAsync( nodeId, auth, headers, false );
   }
 
-  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(uint nodeId)
+  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(
+    uint nodeId,
+    IOLabAuthorization auth,
+    Dictionary<string, IEnumerable<string>> headers)
   {
     GetLogger().LogInformation( $"NodesController.GetScopedObjectsAsync(uint nodeId={nodeId})" );
-    return await GetScopedObjectsAsync( nodeId, true );
+    return await GetScopedObjectsAsync( nodeId, auth, headers, true );
   }
 
   public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(
     uint id,
+    IOLabAuthorization auth,
+    Dictionary<string, IEnumerable<string>> headers,
     bool enableWikiTranslation)
   {
     GetLogger().LogInformation( $"NodesController.GetScopedObjectsAsync(uint nodeId={id})" );
@@ -69,6 +81,60 @@ public partial class NodesEndpoint : OLabEndpoint
       IsSystem = 1,
       Value = Encoding.ASCII.GetBytes( DateTime.UtcNow.ToString() + " UTC" )
     } );
+
+    var sessionId = headers.TryGetValue( "OlabSessionId", out var sessionIds ) ?
+      sessionIds.FirstOrDefault() ??
+      string.Empty : string.Empty;
+
+    SessionStatistics sessionStats = await _sessionEndpoint.GetSessionStats( sessionId );
+
+    phys.ConstantsPhys.Add(
+      new SystemConstants
+      {
+        Id = 0,
+        Name = "SessionId",
+        Value = Encoding.ASCII.GetBytes( sessionStats.SessionId ),
+        ImageableId = 1,
+        ImageableType = "Server",
+        IsSystem = 1,
+        CreatedAt = DateTime.UtcNow
+      } );
+
+    phys.ConstantsPhys.Add(
+      new SystemConstants
+      {
+        Id = 0,
+        Name = "SessionTimeStamp",
+        Value = Encoding.ASCII.GetBytes( sessionStats.SessionStart.HasValue ? $"{sessionStats.SessionStart.Value.ToString()} UTC" : "<unknown>" ),
+        ImageableId = 1,
+        ImageableType = "Server",
+        IsSystem = 1,
+        CreatedAt = DateTime.UtcNow
+      } );
+
+    phys.ConstantsPhys.Add(
+      new SystemConstants
+      {
+        Id = 0,
+        Name = "SessionDuration",
+        Value = Encoding.ASCII.GetBytes( Math.Floor( sessionStats.SessionDuration.TotalSeconds ).ToString() ),
+        ImageableId = 1,
+        ImageableType = "Server",
+        IsSystem = 1,
+        CreatedAt = DateTime.UtcNow
+      } );
+
+    phys.ConstantsPhys.Add(
+      new SystemConstants
+      {
+        Id = 0,
+        Name = "NodesVisited",
+        Value = Encoding.ASCII.GetBytes( sessionStats.NodeCount.ToString() ),
+        ImageableId = 1,
+        ImageableType = "Server",
+        IsSystem = 1,
+        CreatedAt = DateTime.UtcNow
+      } );
 
     var builder = new ObjectMapper.ScopedObjectsMapper(
       GetLogger(),
