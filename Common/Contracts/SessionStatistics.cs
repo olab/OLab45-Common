@@ -11,4 +11,5 @@ public class SessionStatistics
   public DateTime? SessionEnd { get; set; }
   public TimeSpan SessionDuration{ get; set; }
   public int NodeCount { get; set; }
+  public string SessionId { get; set; }
 }

@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using OLab.Access.Interfaces;
 using OLab.Api.Data.Exceptions;
@@ -54,22 +55,33 @@ public partial class SessionEndpoint : OLabEndpoint
   {
     var sessionStats = new SessionStatistics();
 
-    var session = await GetDbContext().UserSessions
-      .Include( session => session.UserSessiontraces )
-      .FirstOrDefaultAsync( x => x.Uuid == sessionUuid );
+    try
+    {
+      sessionStats.SessionId = sessionUuid;
 
-    var firstSessionEntry = session.UserSessiontraces.Min( x => x.DateStamp );
-    if ( firstSessionEntry.HasValue )
-      sessionStats.SessionStart = Conversions.GetTime( firstSessionEntry.Value );
-    else
-      sessionStats.SessionStart = DateTime.UtcNow;
+      var session = await GetDbContext().UserSessions
+        .Include( session => session.UserSessiontraces )
+        .FirstOrDefaultAsync( x => x.Uuid == sessionUuid );
 
-    TimeSpan timeSpan = DateTime.UtcNow - sessionStats.SessionStart.Value;
-    sessionStats.SessionDuration = timeSpan;
+      var firstSessionEntry = session.UserSessiontraces.Min( x => x.DateStamp );
+      if ( firstSessionEntry.HasValue )
+        sessionStats.SessionStart = Conversions.GetTime( firstSessionEntry.Value );
+      else
+        sessionStats.SessionStart = DateTime.UtcNow;
 
-    sessionStats.NodeCount = session.UserSessiontraces.Count();
+      TimeSpan timeSpan = DateTime.UtcNow - sessionStats.SessionStart.Value;
+      sessionStats.SessionDuration = timeSpan;
+
+      sessionStats.NodeCount = session.UserSessiontraces.Count();
+
+    }
+    catch ( Exception ex)
+    {
+      GetLogger().LogError( ex, "Error in GetSessionStats" );
+    }
 
     return sessionStats;
+
   }
 
 

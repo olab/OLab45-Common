@@ -66,18 +66,6 @@ public partial class ServerEndpoint : OLabEndpoint
       new Dto.ConstantsDto
       {
         Id = 0,
-        Name = "SessionId",
-        Value = sessionId,
-        ImageableId = 1,
-        ImageableType = "Server",
-        IsSystem = 1,
-        CreatedAt = DateTime.UtcNow
-      } );
-
-    dto.Constants.Add(
-      new Dto.ConstantsDto
-      {
-        Id = 0,
         Name = "LoginId",
         Value = auth.OLabUser.Username,
         ImageableId = 1,
@@ -114,6 +102,18 @@ public partial class ServerEndpoint : OLabEndpoint
     if ( !string.IsNullOrEmpty( sessionId ) )
     {
       SessionStatistics sessionStats = await _sessionEndpoint.GetSessionStats( sessionId );
+
+      dto.Constants.Add(
+        new Dto.ConstantsDto
+        {
+          Id = 0,
+          Name = "SessionId",
+          Value = sessionStats.SessionId,
+          ImageableId = 1,
+          ImageableType = "Server",
+          IsSystem = 1,
+          CreatedAt = DateTime.UtcNow
+        } );
 
       dto.Constants.Add(
         new Dto.ConstantsDto
