@@ -82,7 +82,7 @@ public partial class NodesEndpoint : OLabEndpoint
       Value = Encoding.ASCII.GetBytes( DateTime.UtcNow.ToString() + " UTC" )
     } );
 
-    var sessionId = headers.TryGetValue( "OlabSessionId", out var sessionIds ) ?
+    var sessionId = headers.TryGetValue( "OLabSessionId", out var sessionIds ) ?
       sessionIds.FirstOrDefault() ??
       string.Empty : string.Empty;
 
