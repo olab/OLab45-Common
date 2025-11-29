@@ -1,14 +1,22 @@
+using Microsoft.IdentityModel.Protocols;
+using OLab.Access.Interfaces;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
+using OLab.Common.Contracts;
 using OLab.Common.Interfaces;
 using OLab.Data;
 using OLab.Data.Interface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints.Player;
 
 public partial class ServerEndpoint : OLabEndpoint
 {
+  private SessionEndpoint _sessionEndpoint;
+
   public ServerEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
@@ -22,6 +30,7 @@ public partial class ServerEndpoint : OLabEndpoint
         wikiTagProvider,
         fileStorageProvider )
   {
+    _sessionEndpoint = new SessionEndpoint( logger, configuration, context );
   }
 
   /// <summary>
@@ -41,10 +50,108 @@ public partial class ServerEndpoint : OLabEndpoint
   /// </summary>
   /// <param name="serverId"></param>
   /// <returns></returns>
-  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsTranslatedAsync(uint serverId)
+  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsTranslatedAsync(
+    uint serverId,
+    IOLabAuthorization auth,
+    Dictionary<string, IEnumerable<string>> headers)
   {
     GetLogger().LogInformation( $"ServerEndpoint.GetScopedObjectsTranslatedAsync(uint serverId={serverId})" );
     var dto = await GetScopedObjectsAsync( serverId, true );
+
+    var sessionId = headers.TryGetValue( "OlabSessionId", out var sessionIds ) ?
+      sessionIds.FirstOrDefault() ??
+      string.Empty : string.Empty;
+
+    dto.Constants.Add(
+      new Dto.ConstantsDto
+      {
+        Id = 0,
+        Name = "SessionId",
+        Value = sessionId,
+        ImageableId = 1,
+        ImageableType = "Server",
+        IsSystem = 1,
+        CreatedAt = DateTime.UtcNow
+      } );
+
+    dto.Constants.Add(
+      new Dto.ConstantsDto
+      {
+        Id = 0,
+        Name = "LoginId",
+        Value = auth.OLabUser.Username,
+        ImageableId = 1,
+        ImageableType = "Server",
+        IsSystem = 1,
+        CreatedAt = DateTime.UtcNow
+      } );
+
+    dto.Constants.Add(
+      new Dto.ConstantsDto
+      {
+        Id = 0,
+        Name = "UserName",
+        Value = auth.OLabUser.Nickname,
+        ImageableId = 1,
+        ImageableType = "Server",
+        IsSystem = 1,
+        CreatedAt = DateTime.UtcNow
+      } );
+
+    dto.Constants.Add(
+      new Dto.ConstantsDto
+      {
+        Id = 0,
+        Name = "UserId",
+        Value = auth.OLabUser.Id.ToString(),
+        ImageableId = 1,
+        ImageableType = "Server",
+        IsSystem = 1,
+        CreatedAt = DateTime.UtcNow
+      } );
+
+
+    if ( !string.IsNullOrEmpty( sessionId ) )
+    {
+      SessionStatistics sessionStats = await _sessionEndpoint.GetSessionStats( sessionId );
+
+      dto.Constants.Add(
+        new Dto.ConstantsDto
+        {
+          Id = 0,
+          Name = "SessionTimeStamp",
+          Value = sessionStats.SessionStart.HasValue ? $"{sessionStats.SessionStart.Value.ToString()} UTC" : "<unknown>",
+          ImageableId = 1,
+          ImageableType = "Server",
+          IsSystem = 1,
+          CreatedAt = DateTime.UtcNow
+        } );
+
+      dto.Constants.Add(
+        new Dto.ConstantsDto
+        {
+          Id = 0,
+          Name = "SessionDuration",
+          Value = Math.Floor( sessionStats.SessionDuration.TotalSeconds ).ToString(),
+          ImageableId = 1,
+          ImageableType = "Server",
+          IsSystem = 1,
+          CreatedAt = DateTime.UtcNow
+        } );
+
+      dto.Constants.Add(
+        new Dto.ConstantsDto
+        {
+          Id = 0,
+          Name = "NodesVisited",
+          Value = sessionStats.NodeCount.ToString(),
+          ImageableId = 1,
+          ImageableType = "Server",
+          IsSystem = 1,
+          CreatedAt = DateTime.UtcNow
+        } );
+    }
+
     return dto;
   }
 

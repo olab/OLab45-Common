@@ -2,9 +2,13 @@ using Microsoft.EntityFrameworkCore;
 using OLab.Access.Interfaces;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Model;
+using OLab.Api.Utils;
+using OLab.Common.Contracts;
 using OLab.Common.Interfaces;
 using OLab.Data.Dtos.Session;
 using OLab.Data.Mappers;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints;
@@ -45,4 +49,28 @@ public partial class SessionEndpoint : OLabEndpoint
 
     return dto;
   }
+
+  public async Task<SessionStatistics> GetSessionStats(string sessionUuid)
+  {
+    var sessionStats = new SessionStatistics();
+
+    var session = await GetDbContext().UserSessions
+      .Include( session => session.UserSessiontraces )
+      .FirstOrDefaultAsync( x => x.Uuid == sessionUuid );
+
+    var firstSessionEntry = session.UserSessiontraces.Min( x => x.DateStamp );
+    if ( firstSessionEntry.HasValue )
+      sessionStats.SessionStart = Conversions.GetTime( firstSessionEntry.Value );
+    else
+      sessionStats.SessionStart = DateTime.UtcNow;
+
+    TimeSpan timeSpan = DateTime.UtcNow - sessionStats.SessionStart.Value;
+    sessionStats.SessionDuration = timeSpan;
+
+    sessionStats.NodeCount = session.UserSessiontraces.Count();
+
+    return sessionStats;
+  }
+
+
 }
