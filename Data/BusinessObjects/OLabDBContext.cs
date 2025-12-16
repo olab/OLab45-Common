@@ -161,8 +161,6 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<Maps> Maps { get; set; }
 
-    public virtual DbSet<Mapswithttalkview> Mapswithttalkview { get; set; }
-
     public virtual DbSet<OauthProviders> OauthProviders { get; set; }
 
     public virtual DbSet<Options> Options { get; set; }
@@ -221,8 +219,6 @@ public partial class OLabDBContext : DbContext
 
     public virtual DbSet<TodayTips> TodayTips { get; set; }
 
-    public virtual DbSet<Ttalkqu2mapsview> Ttalkqu2mapsview { get; set; }
-
     public virtual DbSet<TwitterCredits> TwitterCredits { get; set; }
 
     public virtual DbSet<UserAcls> UserAcls { get; set; }
@@ -246,8 +242,6 @@ public partial class OLabDBContext : DbContext
     public virtual DbSet<UserresponseCounterupdate> UserresponseCounterupdate { get; set; }
 
     public virtual DbSet<Users> Users { get; set; }
-
-    public virtual DbSet<UsersCopy> UsersCopy { get; set; }
 
     public virtual DbSet<UsersessiontraceCounterupdate> UsersessiontraceCounterupdate { get; set; }
 
@@ -806,11 +800,6 @@ public partial class OLabDBContext : DbContext
                 .HasConstraintName("maps_ibfk_3");
         });
 
-        modelBuilder.Entity<Mapswithttalkview>(entity =>
-        {
-            entity.ToView("mapswithttalkview");
-        });
-
         modelBuilder.Entity<OauthProviders>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -1019,11 +1008,6 @@ public partial class OLabDBContext : DbContext
             entity.HasKey(e => e.Id).HasName("PRIMARY");
         });
 
-        modelBuilder.Entity<Ttalkqu2mapsview>(entity =>
-        {
-            entity.ToView("ttalkqu2mapsview");
-        });
-
         modelBuilder.Entity<TwitterCredits>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -1120,14 +1104,6 @@ public partial class OLabDBContext : DbContext
         });
 
         modelBuilder.Entity<Users>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.Property(e => e.Lti).HasDefaultValueSql("'0'");
-            entity.Property(e => e.VisualEditorAutosaveTime).HasDefaultValueSql("'50000'");
-        });
-
-        modelBuilder.Entity<UsersCopy>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
