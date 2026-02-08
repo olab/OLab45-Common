@@ -47,14 +47,14 @@ public class MapsMapper : OLabMapper<Maps, Dto.MapsDto>
     phys.Units = elements.FirstOrDefault( x => x.Name == "units" ).Value;
     phys.SecurityId = Convert.ToUInt32( elements.FirstOrDefault( x => x.Name == "security_id" ).Value );
     phys.Guid = elements.FirstOrDefault( x => x.Name == "guid" ).Value;
-    phys.Timing = Convert.ToInt32( elements.FirstOrDefault( x => x.Name == "timing" ).Value ) == 1;
+    phys.Timing = Convert.ToSByte( elements.FirstOrDefault( x => x.Name == "timing" ).Value );
     phys.DeltaTime = Convert.ToInt32( elements.FirstOrDefault( x => x.Name == "delta_time" ).Value );
     phys.ReminderMsg = Conversions.Base64Decode( elements.FirstOrDefault( x => x.Name == "reminder_msg" ) );
     phys.ReminderTime = Convert.ToInt32( elements.FirstOrDefault( x => x.Name == "reminder_time" ).Value );
-    phys.ShowBar = Convert.ToInt32( elements.FirstOrDefault( x => x.Name == "show_bar" ).Value ) == 1;
-    phys.ShowScore = Convert.ToInt32( elements.FirstOrDefault( x => x.Name == "show_score" ).Value ) == 1;
+    phys.ShowBar = Convert.ToSByte( elements.FirstOrDefault( x => x.Name == "show_bar" ).Value );
+    phys.ShowScore = Convert.ToSByte( elements.FirstOrDefault( x => x.Name == "show_score" ).Value );
     phys.SkinId = Convert.ToUInt32( elements.FirstOrDefault( x => x.Name == "skin_id" ).Value );
-    phys.Enabled = Convert.ToInt32( elements.FirstOrDefault( x => x.Name == "enabled" ).Value ) == 1;
+    phys.Enabled = Convert.ToSByte( elements.FirstOrDefault( x => x.Name == "enabled" ).Value );
     phys.SectionId = Convert.ToUInt32( elements.FirstOrDefault( x => x.Name == "section_id" ).Value );
     phys.LanguageId = Convert.ToUInt32( elements.FirstOrDefault( x => x.Name == "language_id" ).Value );
     phys.Feedback = Conversions.Base64Decode( elements.FirstOrDefault( x => x.Name == "feedback" ) );
@@ -63,8 +63,8 @@ public class MapsMapper : OLabMapper<Maps, Dto.MapsDto>
     phys.SourceId = Convert.ToUInt32( elements.FirstOrDefault( x => x.Name == "source_id" ).Value );
     phys.Verification = Conversions.Base64Decode( elements.FirstOrDefault( x => x.Name == "verification" ) );
     phys.AuthorRights = Convert.ToInt32( elements.FirstOrDefault( x => x.Name == "author_rights" ).Value );
-    phys.RevisableAnswers = Convert.ToInt32( elements.FirstOrDefault( x => x.Name == "revisable_answers" ).Value ) == 1;
-    phys.SendXapiStatements = Convert.ToInt32( elements.FirstOrDefault( x => x.Name == "send_xapi_statements" ).Value ) == 1;
+    phys.RevisableAnswers = Convert.ToSByte( elements.FirstOrDefault( x => x.Name == "revisable_answers" ).Value );
+    phys.SendXapiStatements = Convert.ToSByte( elements.FirstOrDefault( x => x.Name == "send_xapi_statements" ).Value );
     phys.CreatedAt = TimeUtils.UtcNow();
 
     if ( elements.Any( x => x.Name == "report_node_id" ) )
