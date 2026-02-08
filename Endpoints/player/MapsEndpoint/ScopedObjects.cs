@@ -1,8 +1,13 @@
+using Humanizer;
 using OLab.Access.Interfaces;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Model;
 using OLab.Api.Utils;
+using OLab.Common.Contracts;
 using OLab.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,14 +37,18 @@ public partial class MapsEndpoint : OLabEndpoint
   /// </summary>
   /// <param name="id">Map Id</param>
   /// <returns>ScopedObjectsMapper dto</returns>
-  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(IOLabAuthorization auth, uint id)
+  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsAsync(
+    uint id,
+    IOLabAuthorization auth,
+    Dictionary<string, IEnumerable<string>> headers)
   {
     // test if user has access to map.
     if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, id ) )
       throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, id );
 
-    var result = await GetScopedObjectsAsync( id, true );
-    return result;
+    var dto = await GetScopedObjectsAsync( id, true );
+
+    return dto;
   }
 
   /// <summary>
