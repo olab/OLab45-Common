@@ -1,6 +1,5 @@
 #nullable disable
 
-using DocumentFormat.OpenXml.Wordprocessing;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OLab.Api.Model;

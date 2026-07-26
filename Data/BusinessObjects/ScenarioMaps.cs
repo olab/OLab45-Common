@@ -1,33 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
-[Table("scenario_maps")]
-[Index("MapId", Name = "fk_scenario_maps_maps_idx")]
-[Index("ScenarioId", Name = "fk_scenerio_maps_idx")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[Table( "scenario_maps" )]
+[Index( "MapId", Name = "fk_scenario_maps_maps_idx" )]
+[Index( "ScenarioId", Name = "fk_scenerio_maps_idx" )]
+[MySqlCharSet( "utf8mb3" )]
+[MySqlCollation( "utf8mb3_general_ci" )]
 public partial class ScenarioMaps
 {
-    [Key]
-    [Column("id")]
-    public uint Id { get; set; }
+  [Key]
+  [Column( "id" )]
+  public uint Id { get; set; }
 
-    [Column("map_id")]
-    public uint MapId { get; set; }
+  [Column( "map_id" )]
+  public uint MapId { get; set; }
 
-    [Column("scenario_id")]
-    public uint ScenarioId { get; set; }
+  [Column( "scenario_id" )]
+  public uint ScenarioId { get; set; }
 
-    [ForeignKey("MapId")]
-    [InverseProperty("ScenarioMaps")]
-    public virtual Maps Map { get; set; }
+  [ForeignKey( "MapId" )]
+  [InverseProperty( "ScenarioMaps" )]
+  public virtual Maps Map { get; set; }
 
-    [ForeignKey("ScenarioId")]
-    [InverseProperty("ScenarioMaps")]
-    public virtual Scenarios Scenario { get; set; }
+  [ForeignKey( "ScenarioId" )]
+  [InverseProperty( "ScenarioMaps" )]
+  public virtual Scenarios Scenario { get; set; }
 }

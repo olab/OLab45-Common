@@ -1,4 +1,3 @@
-using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using OLab.Access.Interfaces;
 using OLab.Api.Data.Exceptions;
@@ -75,7 +74,7 @@ public partial class SessionEndpoint : OLabEndpoint
       sessionStats.NodeCount = session.UserSessiontraces.Count();
 
     }
-    catch ( Exception ex)
+    catch ( Exception ex )
     {
       GetLogger().LogError( ex, "Error in GetSessionStats" );
     }

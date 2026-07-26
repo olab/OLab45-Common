@@ -1,31 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
-[PrimaryKey("LibraryId", "LanguageCode")]
-[Table("h5p_libraries_languages")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[PrimaryKey( "LibraryId", "LanguageCode" )]
+[Table( "h5p_libraries_languages" )]
+[MySqlCharSet( "utf8mb3" )]
+[MySqlCollation( "utf8mb3_general_ci" )]
 public partial class H5pLibrariesLanguages
 {
-    [Key]
-    [Column("library_id")]
-    public uint LibraryId { get; set; }
+  [Key]
+  [Column( "library_id" )]
+  public uint LibraryId { get; set; }
 
-    [Key]
-    [Column("language_code")]
-    [StringLength(31)]
-    [MySqlCharSet("utf8mb4")]
-    [MySqlCollation("utf8mb4_unicode_ci")]
-    public string LanguageCode { get; set; }
+  [Key]
+  [Column( "language_code" )]
+  [StringLength( 31 )]
+  [MySqlCharSet( "utf8mb4" )]
+  [MySqlCollation( "utf8mb4_unicode_ci" )]
+  public string LanguageCode { get; set; }
 
-    [Required]
-    [Column("translation", TypeName = "text")]
-    [MySqlCharSet("utf8mb4")]
-    [MySqlCollation("utf8mb4_unicode_ci")]
-    public string Translation { get; set; }
+  [Required]
+  [Column( "translation", TypeName = "text" )]
+  [MySqlCharSet( "utf8mb4" )]
+  [MySqlCollation( "utf8mb4_unicode_ci" )]
+  public string Translation { get; set; }
 }
