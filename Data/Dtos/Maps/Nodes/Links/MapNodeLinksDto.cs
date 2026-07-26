@@ -20,10 +20,10 @@ public class MapNodeLinksDto
   public string DestinationTitle { get; set; }
   [JsonProperty( "linkStyleId" )]
   public uint? LinkStyleId { get; set; }
+  [JsonProperty( "isHidden" )]
   public bool IsHidden { get; internal set; }
+  [JsonProperty( "followOnce" )]
   public bool FollowOnce { get; internal set; }
-  [JsonProperty( "visible" )]
-  public bool? Visible { get; set; } = true;
   [JsonProperty( "type" )]
   public string ObjectType = "link";
   public override string ToString()
