@@ -16,6 +16,8 @@ namespace OLab.Api.Endpoints.Player;
 
 public partial class NodesEndpoint : OLabEndpoint
 {
+  private SessionEndpoint _sessionEndpoint;
+
   public NodesEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
@@ -29,6 +31,7 @@ public partial class NodesEndpoint : OLabEndpoint
         wikiTagProvider,
         fileStorageProvider )
   {
+    _sessionEndpoint = new SessionEndpoint( logger, configuration, context );
   }
 
   /// <summary>

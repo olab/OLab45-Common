@@ -48,8 +48,8 @@ public class FilesMapper : OLabMapper<SystemFiles, FilesDto>
     phys.HAlign = elements.FirstOrDefault( x => x.Name == "h_align" ).Value;
     phys.VAlign = elements.FirstOrDefault( x => x.Name == "v_align" ).Value;
 
-    phys.IsShared = Convert.ToSByte( elements.FirstOrDefault( x => x.Name == "is_shared" ).Value );
-    phys.IsPrivate = Convert.ToSByte( elements.FirstOrDefault( x => x.Name == "is_private" ).Value );
+    phys.Shared = Convert.ToSByte( elements.FirstOrDefault( x => x.Name == "is_shared" ).Value );
+    phys.Private = Convert.ToSByte( elements.FirstOrDefault( x => x.Name == "is_private" ).Value );
     phys.CreatedAt = DateTime.Now;
 
     return phys;

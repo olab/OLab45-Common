@@ -1,14 +1,21 @@
+using Microsoft.IdentityModel.Protocols;
+using OLab.Access.Interfaces;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
+using OLab.Common.Contracts;
 using OLab.Common.Interfaces;
 using OLab.Data;
 using OLab.Data.Interface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OLab.Api.Endpoints.Player;
 
 public partial class ServerEndpoint : OLabEndpoint
 {
+
   public ServerEndpoint(
     IOLabLogger logger,
     IOLabConfiguration configuration,
@@ -41,10 +48,50 @@ public partial class ServerEndpoint : OLabEndpoint
   /// </summary>
   /// <param name="serverId"></param>
   /// <returns></returns>
-  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsTranslatedAsync(uint serverId)
+  public async Task<Dto.ScopedObjectsDto> GetScopedObjectsTranslatedAsync(
+    uint serverId,
+    IOLabAuthorization auth,
+    Dictionary<string, IEnumerable<string>> headers)
   {
     GetLogger().LogInformation( $"ServerEndpoint.GetScopedObjectsTranslatedAsync(uint serverId={serverId})" );
     var dto = await GetScopedObjectsAsync( serverId, true );
+
+    dto.Constants.Add(
+      new Dto.ConstantsDto
+      {
+        Id = 0,
+        Name = "LoginId",
+        Value = auth.OLabUser.Username,
+        ImageableId = 1,
+        ImageableType = "Server",
+        IsSystem = 1,
+        CreatedAt = DateTime.UtcNow
+      } );
+
+    dto.Constants.Add(
+      new Dto.ConstantsDto
+      {
+        Id = 0,
+        Name = "UserName",
+        Value = auth.OLabUser.Nickname,
+        ImageableId = 1,
+        ImageableType = "Server",
+        IsSystem = 1,
+        CreatedAt = DateTime.UtcNow
+      } );
+
+    dto.Constants.Add(
+      new Dto.ConstantsDto
+      {
+        Id = 0,
+        Name = "UserId",
+        Value = auth.OLabUser.Id.ToString(),
+        ImageableId = 1,
+        ImageableType = "Server",
+        IsSystem = 1,
+        CreatedAt = DateTime.UtcNow
+      } );
+
     return dto;
   }
 
