@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using OLab.Api.Dto.Designer;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
@@ -42,10 +43,12 @@ public class Counters : OLabMapper<SystemCounters, ScopedObjectDto>
   protected override MapperConfiguration GetConfiguration()
   {
     return new MapperConfiguration( cfg =>
-     cfg.CreateMap<SystemCounters, ScopedObjectDto>()
-      .ForMember( dest => dest.ScopeLevel, act => act.MapFrom( src => src.ImageableType ) )
-      .ForMember( dest => dest.ParentId, act => act.MapFrom( src => src.ImageableId ) )
-      .ReverseMap()
-    );
+    {
+      cfg.CreateMap<SystemCounters, ScopedObjectDto>()
+       .ForMember( dest => dest.ScopeLevel, act => act.MapFrom( src => src.ImageableType ) )
+       .ForMember( dest => dest.ParentId, act => act.MapFrom( src => src.ImageableId ) )
+       .ReverseMap();
+    },
+    NullLoggerFactory.Instance );
   }
 }

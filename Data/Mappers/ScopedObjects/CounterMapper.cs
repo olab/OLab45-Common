@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
@@ -42,7 +43,8 @@ public class CounterMapper : OLabMapper<SystemCounters, CountersDto>
 
       cfg.CreateMap<CountersDto, SystemCounters>()
                 .ForMember( dst => dst.Value, opt => opt.MapFrom( src => Encoding.ASCII.GetBytes( src.Value ) ) );
-    } );
+    },
+        NullLoggerFactory.Instance );
   }
 
   public override CountersDto PhysicalToDto(SystemCounters phys, CountersDto dto)

@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.WikiTag;
@@ -37,7 +38,8 @@ public class ConstantsFullMapper : OLabMapper<SystemConstants, ConstantsDto>
       cfg.CreateMap<string, byte[]>().ConvertUsing( s => Encoding.UTF8.GetBytes( s ) );
       cfg.CreateMap<byte[], string>().ConvertUsing( s => Encoding.UTF8.GetString( s ) );
       cfg.CreateMap<SystemConstants, ConstantsDto>().ReverseMap();
-    } );
+    },
+        NullLoggerFactory.Instance );
   }
 
 }

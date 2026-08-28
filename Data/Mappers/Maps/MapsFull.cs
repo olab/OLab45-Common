@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
@@ -29,7 +30,8 @@ public class MapsFullMapper : OLabMapper<Model.Maps, MapsFullDto>
         .ForMember( dest => dest.Description, act => act.MapFrom( src => src.Abstract ) )
         .ReverseMap();
       cfg.CreateMap<MapGrouproles, MapGrouprolesDto>().ReverseMap();
-    } );
+    },
+        NullLoggerFactory.Instance );
 
   }
 

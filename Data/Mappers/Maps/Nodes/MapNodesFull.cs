@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
@@ -39,7 +40,8 @@ public class MapNodesFullMapper : OLabMapper<MapNodes, MapNodesFullDto>
       cfg.CreateMap<MapNodes, MapNodesFullDto>().ReverseMap();
       cfg.CreateMap<MapNodeLinks, MapNodeLinksFullDto>().ReverseMap();
       cfg.CreateMap<MapNodeGrouproles, MapNodeGroupRolesDto>().ReverseMap();
-    } );
+    },
+        NullLoggerFactory.Instance );
   }
 
   public override MapNodes DtoToPhysical(MapNodesFullDto dto, MapNodes phys)

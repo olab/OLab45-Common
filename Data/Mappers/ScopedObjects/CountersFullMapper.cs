@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
@@ -81,7 +82,8 @@ public class CountersFullMapper : OLabMapper<SystemCounters, CountersFullDto>
       cfg.CreateMap<string, byte[]>().ConvertUsing( s => Encoding.ASCII.GetBytes( s ) );
       cfg.CreateMap<byte[], string>().ConvertUsing( s => Encoding.ASCII.GetString( s ) );
       cfg.CreateMap<SystemCounters, CountersFullDto>().ReverseMap();
-    } );
+    },
+        NullLoggerFactory.Instance );
   }
 
 }

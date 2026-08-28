@@ -21,18 +21,27 @@ public static class ZipFileHelper
 
     if ( ZipArchive.IsZipFile( stream ) )
     {
-      var zipReaderOptions = new ReaderOptions()
+      var zipReaderOptions = new ReaderOptions
       {
-        ArchiveEncoding = new ArchiveEncoding( Encoding.UTF8, Encoding.UTF8 ),
+        ArchiveEncoding = new ArchiveEncoding
+        {
+          Default = Encoding.UTF8,
+          Forced = Encoding.UTF8
+        },
         LookForHeader = true
       };
 
       stream.Position = 0;
 
-      using var reader = ZipArchive.Open( stream, zipReaderOptions );
+      using var reader = ReaderFactory.OpenReader( stream, zipReaderOptions );
 
-      foreach ( var archiveEntry in reader.Entries.Where( entry => !entry.IsDirectory ) )
-        files.Add( archiveEntry.Key );
+      while ( reader.MoveToNextEntry() )
+      {
+        var entry = reader.Entry;
+
+        if ( !entry.IsDirectory )
+          files.Add( entry.Key );
+      }
 
       stream.Position = 0;
     }
@@ -45,27 +54,38 @@ public static class ZipFileHelper
   /// </summary>
   /// <param name="stream">Zip file stream</param>
   /// <returns>List of zip archive entries</returns>
-  public static IList<ZipArchiveEntry> GetFileEntries(Stream stream)
+  public static IList<IEntry> GetFileEntries(Stream stream)
   {
-    var entries = new List<ZipArchiveEntry>();
+    var entries = new List<IEntry>();
 
     if ( ZipArchive.IsZipFile( stream ) )
     {
-      var zipReaderOptions = new ReaderOptions()
+      var zipReaderOptions = new ReaderOptions
       {
-        ArchiveEncoding = new ArchiveEncoding( Encoding.UTF8, Encoding.UTF8 ),
+        ArchiveEncoding = new ArchiveEncoding
+        {
+          Default = Encoding.UTF8,
+          Forced = Encoding.UTF8
+        },
         LookForHeader = true
       };
 
       stream.Position = 0;
 
-      using var reader = ZipArchive.Open( stream, zipReaderOptions );
-      entries = reader.Entries.ToList();
+      using var reader = ReaderFactory.OpenReader( stream, zipReaderOptions );
+
+      while ( reader.MoveToNextEntry() )
+      {
+        var entry = reader.Entry;
+
+        if ( !entry.IsDirectory )
+          entries.Add( entry );
+      }
 
       stream.Position = 0;
-
     }
 
     return entries;
   }
+
 }

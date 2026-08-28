@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
@@ -19,14 +20,20 @@ public class MapNodeLinksFullMapper : OLabMapper<Model.MapNodeLinks, MapNodeLink
   /// Default (overridable) AutoMapper cfg
   /// </summary>
   /// <returns>MapperConfiguration</returns>
+
   protected override MapperConfiguration GetConfiguration()
   {
-    return new MapperConfiguration( cfg =>
-     cfg.CreateMap<Model.MapNodeLinks, Dto.MapNodeLinksFullDto>()
-      .ForMember( dest => dest.SourceId, act => act.MapFrom( src => src.NodeId1 ) )
-      .ForMember( dest => dest.DestinationId, act => act.MapFrom( src => src.NodeId2 ) )
-      .ReverseMap()
+    return new MapperConfiguration(
+        cfg =>
+        {
+          cfg.CreateMap<Model.MapNodeLinks, Dto.MapNodeLinksFullDto>()
+                .ForMember( dest => dest.SourceId, act => act.MapFrom( src => src.NodeId1 ) )
+                .ForMember( dest => dest.DestinationId, act => act.MapFrom( src => src.NodeId2 ) )
+                .ReverseMap();
+        },
+        NullLoggerFactory.Instance
     );
   }
+
 
 }

@@ -1,5 +1,6 @@
 using AutoMapper;
 using Dawn;
+using Microsoft.Extensions.Logging.Abstractions;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Api.WikiTag;
@@ -85,7 +86,8 @@ public abstract class OLabMapper<P, D> : object, IOLabMapper<P, D> where P : new
     return new MapperConfiguration( cfg =>
     {
       cfg.CreateMap<P, D>().ReverseMap();
-    } );
+    },
+        NullLoggerFactory.Instance );
   }
 
   /// <summary>

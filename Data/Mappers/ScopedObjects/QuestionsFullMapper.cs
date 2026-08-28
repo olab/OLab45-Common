@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using NuGet.Packaging;
 using OLab.Api.Dto;
 using OLab.Api.Model;
@@ -26,10 +27,12 @@ public class QuestionsFullMapper : OLabMapper<SystemQuestions, QuestionsFullDto>
   protected override MapperConfiguration GetConfiguration()
   {
     return new MapperConfiguration( cfg =>
-     cfg.CreateMap<SystemQuestions, QuestionsFullDto>()
-      .ForMember( dest => dest.TryCount, act => act.MapFrom( src => src.NumTries ) )
-      .ReverseMap()
-    );
+    {
+      cfg.CreateMap<SystemQuestions, QuestionsFullDto>()
+       .ForMember( dest => dest.TryCount, act => act.MapFrom( src => src.NumTries ) )
+       .ReverseMap();
+    },
+    NullLoggerFactory.Instance );
   }
 
   public override SystemQuestions DtoToPhysical(QuestionsFullDto dto)

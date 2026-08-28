@@ -1,5 +1,6 @@
 using AutoMapper;
 using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using OLab.Common.Utils;
 using System.Collections.Generic;
@@ -57,12 +58,15 @@ public partial class Maps
 
   public const int MapSecurityAnonymous = 1;
 
+
   public static Maps CreateDefault(Maps templateMap)
   {
-    // use AutoMapper to do a Deep Copy
-    var mapper = new Mapper( new MapperConfiguration( cfg =>
-      cfg.CreateMap<Maps, Maps>().ReverseMap()
-    ) );
+    var config = new MapperConfiguration(
+        cfg => cfg.CreateMap<Maps, Maps>().ReverseMap(),
+        NullLoggerFactory.Instance
+    );
+
+    var mapper = config.CreateMapper();
 
     var map = mapper.Map<Maps>( templateMap );
 
@@ -71,6 +75,7 @@ public partial class Maps
 
     return map;
   }
+
 
   public void AppendMapNodes(Maps sourceMap)
   {

@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.Utils;
@@ -33,7 +34,8 @@ public class MapsFullRelationsMapper : OLabMapper<Maps, MapsFullRelationsDto>
       cfg.CreateMap<Maps, MapsFullRelationsDto>().ReverseMap();
       cfg.CreateMap<MapNodes, MapNodesFullDto>().ReverseMap();
       cfg.CreateMap<MapNodeLinks, MapNodeLinksFullDto>().ReverseMap();
-    } );
+    },
+        NullLoggerFactory.Instance );
   }
 
   /// <summary>

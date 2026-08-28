@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Api.WikiTag;
@@ -29,7 +30,8 @@ public class SessionMapper : OLabMapper<UserSessions, SessionDto>
       cfg.CreateMap<UserSessions, SessionDto>().ReverseMap();
       cfg.CreateMap<decimal, DateTime>().ConvertUsing( new DateTimeTypeConverter() );
       cfg.CreateMap<DateTime, decimal>().ConvertUsing( new DecimalDateTimeTypeConverter() );
-    } );
+    },
+        NullLoggerFactory.Instance );
   }
 
 }

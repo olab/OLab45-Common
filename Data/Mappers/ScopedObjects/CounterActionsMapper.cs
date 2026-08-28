@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
@@ -28,12 +29,14 @@ public class CounterActionsMapper : OLabMapper<SystemCounterActions, CounterActi
   protected override MapperConfiguration GetConfiguration()
   {
     return new MapperConfiguration( cfg =>
-     cfg.CreateMap<SystemCounterActions, CounterActionsDto>()
-      .ForMember( dest => dest.NodeId, act => act.MapFrom( src => src.ImageableId ) )
-      .ForMember( dest => dest.Function, act => act.MapFrom( src => src.Expression ) )
-      .ForMember( dest => dest.Display, act => act.MapFrom( src => src.Visible ) )
-      .ReverseMap()
-    );
+    {
+      cfg.CreateMap<SystemCounterActions, CounterActionsDto>()
+       .ForMember( dest => dest.NodeId, act => act.MapFrom( src => src.ImageableId ) )
+       .ForMember( dest => dest.Function, act => act.MapFrom( src => src.Expression ) )
+       .ForMember( dest => dest.Display, act => act.MapFrom( src => src.Visible ) )
+       .ReverseMap();
+    },
+    NullLoggerFactory.Instance );
   }
 
   public override SystemCounterActions ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)

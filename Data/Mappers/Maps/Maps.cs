@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using OLab.Api.Model;
 using OLab.Api.Utils;
 using OLab.Common.Interfaces;
@@ -26,10 +27,12 @@ public class MapsMapper : OLabMapper<Maps, Dto.MapsDto>
   protected override MapperConfiguration GetConfiguration()
   {
     return new MapperConfiguration( cfg =>
-     cfg.CreateMap<Maps, Dto.MapsDto>()
-      .ForMember( dest => dest.Description, act => act.MapFrom( src => src.Abstract ) )
-      .ReverseMap()
-    );
+    {
+      cfg.CreateMap<Maps, Dto.MapsDto>()
+       .ForMember( dest => dest.Description, act => act.MapFrom( src => src.Abstract ) )
+       .ReverseMap();
+    },
+    NullLoggerFactory.Instance );
   }
 
   public override Maps ElementsToPhys(IEnumerable<dynamic> elements, Object source = null)
