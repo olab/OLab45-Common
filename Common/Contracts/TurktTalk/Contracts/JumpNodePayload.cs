@@ -1,4 +1,4 @@
-namespace OLab.Api.TurkTalk.Contracts;
+namespace OLab.Common.Contracts.TurktTalk.Contracts;
 
 public class TargetNode
 {

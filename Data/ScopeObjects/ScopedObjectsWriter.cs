@@ -51,9 +51,9 @@ public partial class ScopedObjects
     phys.Id = 0;
     phys.CounterId = Convert.ToUInt32( GetCounterCrossReference( phys.Id.ToString() ) );
 
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
+    if ( phys.ImageableType == Constants.ScopeLevelMap )
       phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelNode )
+    if ( phys.ImageableType == Constants.ScopeLevelNode )
       phys.ImageableId = GetMapNodeIdCrossReference( phys.ImageableId );
 
     await _dbContext.SystemCounterActions.AddAsync( phys );
@@ -72,9 +72,9 @@ public partial class ScopedObjects
     // remap if name is same as id
     var rename = oldPhys.Name == oldPhys.Id.ToString();
 
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
+    if ( phys.ImageableType == Constants.ScopeLevelMap )
       phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelNode )
+    if ( phys.ImageableType == Constants.ScopeLevelNode )
       phys.ImageableId = GetMapNodeIdCrossReference( phys.ImageableId );
 
     await _dbContext.SystemCounters.AddAsync( phys );
@@ -102,9 +102,9 @@ public partial class ScopedObjects
     // remap if name is same as id
     var rename = oldPhys.Name == oldPhys.Id.ToString();
 
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
+    if ( phys.ImageableType == Constants.ScopeLevelMap )
       phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelNode )
+    if ( phys.ImageableType == Constants.ScopeLevelNode )
       phys.ImageableId = GetMapNodeIdCrossReference( phys.ImageableId );
 
     await _dbContext.SystemFiles.AddAsync( phys );
@@ -132,9 +132,9 @@ public partial class ScopedObjects
     // remap if name is same as id
     var rename = oldPhys.Name == oldPhys.Id.ToString();
 
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
+    if ( phys.ImageableType == Constants.ScopeLevelMap )
       phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelNode )
+    if ( phys.ImageableType == Constants.ScopeLevelNode )
       phys.ImageableId = GetMapNodeIdCrossReference( phys.ImageableId );
 
     await _dbContext.SystemConstants.AddAsync( phys );
@@ -164,9 +164,9 @@ public partial class ScopedObjects
     // remap if name is same as id
     var rename = oldPhys.Name == oldPhys.Id.ToString();
 
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelMap )
+    if ( phys.ImageableType == Constants.ScopeLevelMap )
       phys.ImageableId = GetMapIdCrossReference( phys.ImageableId );
-    if ( phys.ImageableType == Api.Utils.Constants.ScopeLevelNode )
+    if ( phys.ImageableType == Constants.ScopeLevelNode )
       phys.ImageableId = GetMapNodeIdCrossReference( phys.ImageableId );
 
     foreach ( var responsePhys in phys.SystemQuestionResponses )

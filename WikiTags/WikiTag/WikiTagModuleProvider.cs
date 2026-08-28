@@ -1,4 +1,4 @@
-using OLab.Api.Common;
+using OLab.Common;
 using OLab.Common.Interfaces;
 
 namespace OLab.Api.WikiTag;

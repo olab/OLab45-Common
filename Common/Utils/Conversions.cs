@@ -2,7 +2,7 @@ using Microsoft.CSharp.RuntimeBinder;
 using System;
 using System.Text;
 
-namespace OLab.Api.Utils;
+namespace OLab.Common.Utils;
 
 public static class Conversions
 {
@@ -15,7 +15,7 @@ public static class Conversions
 
   public static uint? OptionalIdSafeAssign(uint? source)
   {
-    if ( (source > 0) && (source.HasValue) )
+    if ( source > 0 && source.HasValue )
       return source;
     return null;
   }
@@ -45,12 +45,10 @@ public static class Conversions
     catch ( FormatException )
     {
       if ( !returnClearTextIfError )
-      {
         if ( string.IsNullOrEmpty( name ) )
           throw new Exception( $"cannot decode '{data.Value.ToString()}'" );
         else
           throw new Exception( $"cannot decode '{name}' = '{data.Value.ToString()}'" );
-      }
     }
 
     return data.Value.ToString();

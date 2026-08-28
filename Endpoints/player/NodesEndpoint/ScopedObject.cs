@@ -2,8 +2,8 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using OLab.Access.Interfaces;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Model;
-using OLab.Api.Utils;
 using OLab.Common.Contracts;
+using OLab.Common.Utils;
 using OLab.Data;
 using System;
 using System.Collections.Generic;
@@ -43,7 +43,7 @@ public partial class NodesEndpoint : OLabEndpoint
 
     var node = GetSimple( GetDbContext(), id );
     if ( node == null )
-      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelNode, id );
+      throw new OLabObjectNotFoundException( Constants.ScopeLevelNode, id );
 
     var phys = new ScopedObjects(
       GetLogger(),
@@ -55,9 +55,9 @@ public partial class NodesEndpoint : OLabEndpoint
     phys.ConstantsPhys.Add( new SystemConstants
     {
       Id = 0,
-      Name = Utils.Constants.ReservedConstantNodeId,
+      Name = Constants.ReservedConstantNodeId,
       ImageableId = node.Id,
-      ImageableType = Utils.Constants.ScopeLevelNode,
+      ImageableType = Constants.ScopeLevelNode,
       IsSystem = 1,
       Value = Encoding.ASCII.GetBytes( node.Id.ToString() )
     } );
@@ -65,9 +65,9 @@ public partial class NodesEndpoint : OLabEndpoint
     phys.ConstantsPhys.Add( new SystemConstants
     {
       Id = 0,
-      Name = Utils.Constants.ReservedConstantNodeName,
+      Name = Constants.ReservedConstantNodeName,
       ImageableId = node.Id,
-      ImageableType = Utils.Constants.ScopeLevelNode,
+      ImageableType = Constants.ScopeLevelNode,
       IsSystem = 1,
       Value = Encoding.UTF8.GetBytes( node.Title )
     } );
@@ -75,9 +75,9 @@ public partial class NodesEndpoint : OLabEndpoint
     phys.ConstantsPhys.Add( new SystemConstants
     {
       Id = 0,
-      Name = Utils.Constants.ReservedConstantSystemTime,
+      Name = Constants.ReservedConstantSystemTime,
       ImageableId = 1,
-      ImageableType = Utils.Constants.ScopeLevelNode,
+      ImageableType = Constants.ScopeLevelNode,
       IsSystem = 1,
       Value = Encoding.ASCII.GetBytes( DateTime.UtcNow.ToString() + " UTC" )
     } );

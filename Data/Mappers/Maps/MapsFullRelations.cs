@@ -2,7 +2,6 @@ using AutoMapper;
 using Microsoft.Extensions.Logging.Abstractions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
-using OLab.Api.Utils;
 using OLab.Common.Interfaces;
 using OLab.Common.Utils;
 using System.Collections.Generic;

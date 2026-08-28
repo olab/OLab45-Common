@@ -1,5 +1,5 @@
 using Newtonsoft.Json;
-using OLab.Api.Utils;
+using OLab.Common.Utils;
 
 namespace OLab.Api.Dto.Designer;
 

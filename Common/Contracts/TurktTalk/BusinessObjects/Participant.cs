@@ -1,13 +1,13 @@
-using Common.Utils;
 using Dawn;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using OLab.Common.Utils;
 using System;
 using System.Net;
 using System.Security.Claims;
 
 
-namespace OLab.Api.TurkTalk.BusinessObjects;
+namespace OLab.Common.Contracts.TurktTalk.BusinessObjects;
 
 public class Participant
 {

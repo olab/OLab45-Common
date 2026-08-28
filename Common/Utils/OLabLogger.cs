@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OLab.Api.Utils;
+namespace OLab.Common.Utils;
 
 public class OLabLogMessage
 {

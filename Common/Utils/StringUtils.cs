@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using OLab.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace OLab.Api.Utils;
+namespace OLab.Common.Utils;
 
 public class StringUtils
 {
@@ -66,9 +65,7 @@ public class StringUtils
       using var memoryStream = new MemoryStream();
       using var cryptoStream = new CryptoStream( memoryStream, encryptor, CryptoStreamMode.Write );
       using ( var streamWriter = new StreamWriter( cryptoStream ) )
-      {
         streamWriter.Write( plainText );
-      }
 
       array = memoryStream.ToArray();
     }

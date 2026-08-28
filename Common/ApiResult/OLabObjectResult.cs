@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace OLab.Api.Common;
+namespace OLab.Common.ApiResult;
 
 public class OLabObjectResult<D> : ObjectResult
 {

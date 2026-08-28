@@ -1,4 +1,4 @@
-namespace OLab.Api.Utils;
+namespace OLab.Common.Utils;
 
 public static class Constants
 {

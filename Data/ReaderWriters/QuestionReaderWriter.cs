@@ -64,15 +64,15 @@ public class QuestionReaderWriter : ReaderWriter
     else
       questions = GetDbContext().SystemQuestions.Where( x => x.Name == source ).ToList();
 
-    phys = questions.FirstOrDefault( x => x.ImageableType == Api.Utils.Constants.ScopeLevelNode && x.ImageableId == nodeId );
+    phys = questions.FirstOrDefault( x => x.ImageableType == Constants.ScopeLevelNode && x.ImageableId == nodeId );
     if ( phys != null )
       return phys;
 
-    phys = questions.FirstOrDefault( x => x.ImageableType == Api.Utils.Constants.ScopeLevelMap && x.ImageableId == mapId );
+    phys = questions.FirstOrDefault( x => x.ImageableType == Constants.ScopeLevelMap && x.ImageableId == mapId );
     if ( phys != null )
       return phys;
 
-    phys = questions.FirstOrDefault( x => x.ImageableType == Api.Utils.Constants.ScopeLevelServer && x.ImageableId == 1 );
+    phys = questions.FirstOrDefault( x => x.ImageableType == Constants.ScopeLevelServer && x.ImageableId == 1 );
     if ( phys != null )
       return phys;
 

@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace OLab.Api.TurkTalk.Contracts;
+namespace OLab.Common.Contracts.TurktTalk.Contracts;
 
 public class RegisterAttendeePayload
 {

@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using OLab.Access.Interfaces;
-using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
-using OLab.Api.Utils;
+using OLab.Common.Exceptions;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using OLab.Data;
 using OLab.Data.Interface;
 using OLab.Data.ReaderWriters;
@@ -82,7 +82,7 @@ public partial class MapsEndpoint : OLabEndpoint
     dto = await GetNodeAsync( map.Id, nodeId, false, false );
 
     if ( !dto.Id.HasValue )
-      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelNode, nodeId );
+      throw new OLabObjectNotFoundException( Constants.ScopeLevelNode, nodeId );
 
     return dto;
   }
@@ -99,12 +99,12 @@ public partial class MapsEndpoint : OLabEndpoint
     GetLogger().LogInformation( $"GetMapNodesAsync(uint mapId={mapId})" );
 
     // test if user has access to map.
-    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId ) )
-      throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
+    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Constants.ScopeLevelMap, mapId ) )
+      throw new OLabUnauthorizedException( Constants.ScopeLevelMap, mapId );
 
     var map = await MapsReaderWriter.Instance( GetLogger(), GetDbContext() ).GetSingleAsync( mapId );
     if ( map == null )
-      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, mapId );
+      throw new OLabObjectNotFoundException( Constants.ScopeLevelMap, mapId );
 
     // get node with no wikitag translation
     var dtoList = await GetNodesAsync( map, false );
@@ -126,16 +126,16 @@ public partial class MapsEndpoint : OLabEndpoint
     try
     {
       // test if user has access to map.
-      if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId ) )
-        throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
+      if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Constants.ScopeLevelMap, mapId ) )
+        throw new OLabUnauthorizedException( Constants.ScopeLevelMap, mapId );
 
       var sourceNode = await GetMapNodeAsync( nodeId );
       if ( sourceNode == null )
-        throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelNode, nodeId );
+        throw new OLabObjectNotFoundException( Constants.ScopeLevelNode, nodeId );
 
       var destinationNode = await GetMapNodeAsync( body.DestinationId );
       if ( destinationNode == null )
-        throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelNode, body.DestinationId );
+        throw new OLabObjectNotFoundException( Constants.ScopeLevelNode, body.DestinationId );
 
       var phys = MapNodeLinks.CreateDefault();
       phys.MapId = sourceNode.MapId;
@@ -178,8 +178,8 @@ public partial class MapsEndpoint : OLabEndpoint
     try
     {
       // test if user has access to map.
-      if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId ) )
-        throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
+      if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Constants.ScopeLevelMap, mapId ) )
+        throw new OLabUnauthorizedException( Constants.ScopeLevelMap, mapId );
 
       var phys = MapNodes.CreateDefault();
       phys.X = body.X;
@@ -240,11 +240,11 @@ public partial class MapsEndpoint : OLabEndpoint
       var map = await GetSimpleAsync( mapId );
 
       if ( map == null )
-        throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, mapId );
+        throw new OLabObjectNotFoundException( Constants.ScopeLevelMap, mapId );
 
       // test if user has access to map.
-      if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, map.Id ) )
-        throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, map.Id );
+      if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Constants.ScopeLevelMap, map.Id ) )
+        throw new OLabUnauthorizedException( Constants.ScopeLevelMap, map.Id );
 
       foreach ( var nodeDto in body )
       {
@@ -302,8 +302,8 @@ public partial class MapsEndpoint : OLabEndpoint
     try
     {
       // test if user has access to map.
-      if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId ) )
-        throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
+      if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Constants.ScopeLevelMap, mapId ) )
+        throw new OLabUnauthorizedException( Constants.ScopeLevelMap, mapId );
 
       var link = GetLinkSimple( GetDbContext(), id );
 
@@ -334,8 +334,8 @@ public partial class MapsEndpoint : OLabEndpoint
     GetLogger().LogInformation( $"MapsController.GetScopedObjectsRawAsync(uint id={id})" );
 
     // test if user has access to map.
-    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, id ) )
-      throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, id );
+    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Constants.ScopeLevelMap, id ) )
+      throw new OLabUnauthorizedException( Constants.ScopeLevelMap, id );
 
     return await GetScopedObjectsAsync( id, false );
   }
@@ -353,8 +353,8 @@ public partial class MapsEndpoint : OLabEndpoint
 
     // test if user has access to map.
     // test if user has access to map.
-    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, id ) )
-      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, id );
+    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Constants.ScopeLevelMap, id ) )
+      throw new OLabObjectNotFoundException( Constants.ScopeLevelMap, id );
 
     return await GetScopedObjectsAsync( id, true );
   }
@@ -379,15 +379,15 @@ public partial class MapsEndpoint : OLabEndpoint
       GetWikiProvider(),
       _fileStorageModule );
 
-    await phys.LoadScopedObjectsFromDatabaseAsync( Utils.Constants.ScopeLevelServer, 1 );
-    await phys.LoadScopedObjectsFromDatabaseAsync( Utils.Constants.ScopeLevelMap, map.Id );
+    await phys.LoadScopedObjectsFromDatabaseAsync( Constants.ScopeLevelServer, 1 );
+    await phys.LoadScopedObjectsFromDatabaseAsync( Constants.ScopeLevelMap, map.Id );
 
     phys.ConstantsPhys.Add( new SystemConstants
     {
       Id = 0,
-      Name = Utils.Constants.ReservedConstantMapId,
+      Name = Constants.ReservedConstantMapId,
       ImageableId = map.Id,
-      ImageableType = Utils.Constants.ScopeLevelMap,
+      ImageableType = Constants.ScopeLevelMap,
       IsSystem = 1,
       Value = Encoding.ASCII.GetBytes( map.Id.ToString() )
     } );
@@ -395,9 +395,9 @@ public partial class MapsEndpoint : OLabEndpoint
     phys.ConstantsPhys.Add( new SystemConstants
     {
       Id = 0,
-      Name = Utils.Constants.ReservedConstantMapName,
+      Name = Constants.ReservedConstantMapName,
       ImageableId = map.Id,
-      ImageableType = Utils.Constants.ScopeLevelMap,
+      ImageableType = Constants.ScopeLevelMap,
       IsSystem = 1,
       Value = Encoding.UTF8.GetBytes( map.Name )
     } );
@@ -405,9 +405,9 @@ public partial class MapsEndpoint : OLabEndpoint
     phys.ConstantsPhys.Add( new SystemConstants
     {
       Id = 0,
-      Name = Utils.Constants.ReservedConstantSystemTime,
+      Name = Constants.ReservedConstantSystemTime,
       ImageableId = 1,
-      ImageableType = Utils.Constants.ScopeLevelNode,
+      ImageableType = Constants.ScopeLevelNode,
       IsSystem = 1,
       Value = Encoding.ASCII.GetBytes( DateTime.UtcNow.ToString() + " UTC" )
     } );
@@ -520,7 +520,7 @@ public partial class MapsEndpoint : OLabEndpoint
     && (
       // note: this excludes `ImageableType == "*"` entries, allowing authors
       // to manipulate those rows may lead to unwanted side-effects
-      x.ImageableType == Utils.Constants.ScopeLevelMap /*|| x.ImageableType == "*"*/
+      x.ImageableType == Constants.ScopeLevelMap /*|| x.ImageableType == "*"*/
     ) ).ToList();
 
     return users;
@@ -549,7 +549,7 @@ public partial class MapsEndpoint : OLabEndpoint
     && (
       // note: this excludes `ImageableType == "*"` entries, allowing authors
       // to manipulate those rows may lead to unwanted side-effects
-      x.ImageableType == Utils.Constants.ScopeLevelMap
+      x.ImageableType == Constants.ScopeLevelMap
       && x.UserId == body.UserId
     ) );
 
@@ -558,7 +558,7 @@ public partial class MapsEndpoint : OLabEndpoint
 
     securityUser.ImageableId = map.Id;
     securityUser.UserId = physUser.Id;
-    securityUser.ImageableType = Utils.Constants.ScopeLevelMap;
+    securityUser.ImageableType = Constants.ScopeLevelMap;
     securityUser.Acl = body.Acl;
 
     try
@@ -600,7 +600,7 @@ public partial class MapsEndpoint : OLabEndpoint
     && (
       // note: this excludes `ImageableType == "*"` entries, allowing authors
       // to manipulate those rows may lead to unwanted side-effects
-      x.ImageableType == Utils.Constants.ScopeLevelMap
+      x.ImageableType == Constants.ScopeLevelMap
       && x.UserId == userId
     ) );
 
@@ -630,11 +630,11 @@ public partial class MapsEndpoint : OLabEndpoint
     GetLogger().LogInformation( $"GetMapNodeLinkAsync(uint mapId={mapId}, id={id})" );
 
     // test if user has access to map.
-    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId ) )
-      throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
+    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Constants.ScopeLevelMap, mapId ) )
+      throw new OLabUnauthorizedException( Constants.ScopeLevelMap, mapId );
 
     var map = await MapsReaderWriter.Instance( GetLogger(), GetDbContext() ).GetSingleAsync( mapId )
-      ?? throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, mapId );
+      ?? throw new OLabObjectNotFoundException( Constants.ScopeLevelMap, mapId );
 
     var phys = await GetDbContext().MapNodeLinks.Where( x => x.Id == id ).FirstOrDefaultAsync();
 
@@ -660,14 +660,14 @@ public partial class MapsEndpoint : OLabEndpoint
   public async Task<IList<MapGrouprolesDto>> GetMapGroupsAsync(IOLabAuthorization auth, uint mapId)
   {
     // test if user has access to map.
-    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, mapId ) )
-      throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
+    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Constants.ScopeLevelMap, mapId ) )
+      throw new OLabUnauthorizedException( Constants.ScopeLevelMap, mapId );
 
     var readWriter = MapsReaderWriter.Instance( GetLogger(), GetDbContext() );
 
     var mapPhys = await readWriter.GetSingleWithGroupRolesAsync( mapId );
     if ( mapPhys == null )
-      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, mapId );
+      throw new OLabObjectNotFoundException( Constants.ScopeLevelMap, mapId );
 
     var mapper = new MapGrouprolesMapper( GetLogger(), GetDbContext() );
     var mapGroupDto = mapper.PhysicalToDto( mapPhys.MapGrouproles.ToList() );
@@ -685,14 +685,14 @@ public partial class MapsEndpoint : OLabEndpoint
   public async Task<IList<MapGrouprolesDto>> PutMapGroupsAsync(IOLabAuthorization auth, uint mapId, IList<MapGrouprolesDto> groupRolesDto)
   {
     // test if user has access to map.
-    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId ) )
-      throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
+    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Constants.ScopeLevelMap, mapId ) )
+      throw new OLabUnauthorizedException( Constants.ScopeLevelMap, mapId );
 
     var readWriter = MapsReaderWriter.Instance( GetLogger(), GetDbContext() );
 
     var mapPhys = await readWriter.GetSingleWithGroupRolesAsync( mapId );
     if ( mapPhys == null )
-      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, mapId );
+      throw new OLabObjectNotFoundException( Constants.ScopeLevelMap, mapId );
 
     var mapper = new MapGrouprolesMapper( GetLogger(), GetDbContext() );
     var mapGroupRolesPhys = mapper.DtoToPhysical( groupRolesDto );

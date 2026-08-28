@@ -1,7 +1,7 @@
 using OLab.Access.Interfaces;
 using OLab.Api.Model;
-using OLab.Api.Utils;
 using OLab.Api.WikiTag;
+using OLab.Common.Contracts;
 using OLab.Common.Interfaces;
 using OLab.Data.Interface;
 using OLab.Import.Interface;

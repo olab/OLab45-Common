@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 
-namespace OLab.Api.Common;
+namespace OLab.Common.ApiResult;
 
 public class OLabServerErrorResult
 {

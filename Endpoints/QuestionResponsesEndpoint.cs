@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Access.Interfaces;
-using OLab.Api.Common;
-using OLab.Api.Common.Exceptions;
+using OLab.Common.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
+using OLab.Common.ApiResult;
 using OLab.Common.Interfaces;
 using System;
 using System.Linq;

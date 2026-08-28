@@ -1,4 +1,4 @@
-namespace OLab.Api.Utils;
+namespace OLab.Common.Contracts;
 
 public class AppSettings
 {

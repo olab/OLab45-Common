@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using OLab.Access.Interfaces;
-using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
+using OLab.Common.Exceptions;
+using OLab.Common.Utils;
 using OLab.Data.BusinessObjects;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,9 +33,9 @@ public partial class MapsEndpoint : OLabEndpoint
     // test if user has access to map.
     if ( !await auth.HasAccessAsync(
       IOLabAuthorization.AclBitMaskRead,
-      Utils.Constants.ScopeLevelMap,
+      Constants.ScopeLevelMap,
       mapId ) )
-      throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
+      throw new OLabUnauthorizedException( Constants.ScopeLevelMap, mapId );
 
     var node = await _nodesReaderWriter.GetMapRootNode( mapId, nodeId );
     return await GetDynamicScopedObjectsAsync( 1, node, sinceTime, false );
@@ -58,9 +59,9 @@ public partial class MapsEndpoint : OLabEndpoint
     // test if user has access to map.
     if ( !await auth.HasAccessAsync(
         IOLabAuthorization.AclBitMaskRead,
-        Utils.Constants.ScopeLevelMap,
+        Constants.ScopeLevelMap,
         mapId ) )
-      throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
+      throw new OLabUnauthorizedException( Constants.ScopeLevelMap, mapId );
 
     var node = await _nodesReaderWriter.GetMapRootNode( mapId, nodeId );
     return await GetDynamicScopedObjectsAsync( 1, node, sinceTime, true );
@@ -105,7 +106,7 @@ public partial class MapsEndpoint : OLabEndpoint
 
     var counterActions = await GetDbContext().SystemCounterActions.Where( x =>
       (x.ImageableId == node.Id) &&
-      (x.ImageableType == Utils.Constants.ScopeLevelNode) &&
+      (x.ImageableType == Constants.ScopeLevelNode) &&
       (x.OperationType == "open") ).ToListAsync();
 
     GetLogger().LogInformation( $"Found {counterActions.Count} counterActions records for node {node.Id} " );
@@ -159,7 +160,7 @@ public partial class MapsEndpoint : OLabEndpoint
   {
     var counterActions = await GetDbContext().SystemCounterActions.Where( x =>
       (x.ImageableId == node.Id) &&
-      (x.ImageableType == Utils.Constants.ScopeLevelNode) &&
+      (x.ImageableType == Constants.ScopeLevelNode) &&
       (x.OperationType == "open") ).ToListAsync();
 
     GetLogger().LogInformation( $"Found {counterActions.Count} counterActions records for node {node.Id} " );

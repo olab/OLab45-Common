@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Configuration;
-using OLab.Api.Utils;
+using OLab.Common.Contracts;
 
 namespace OLab.Common.Interfaces;
 public interface IOLabConfiguration

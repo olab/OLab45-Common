@@ -1,8 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OLab.Api.TurkTalk.Methods;
 
-namespace OLab.Api.TurkTalk.Commands;
+namespace OLab.Common.Contracts.TurktTalk.Method.Commands;
 
 public class ModeratorDisconnectedCommand : CommandMethod
 {

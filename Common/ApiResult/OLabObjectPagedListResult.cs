@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace OLab.Api.Common;
+namespace OLab.Common.ApiResult;
 
 public class OLabObjectPagedListResult<D>
 {

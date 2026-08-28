@@ -1,4 +1,4 @@
-namespace Common.Utils;
+namespace OLab.Common.Utils;
 
 public static class ConnectionIdUtils
 {

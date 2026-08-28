@@ -1,7 +1,6 @@
+using OLab.Common.Contracts.TurktTalk.BusinessObjects;
 
-using OLab.Api.TurkTalk.BusinessObjects;
-
-namespace OLab.Api.TurkTalk.Contracts;
+namespace OLab.Common.Contracts.TurktTalk.Contracts;
 
 
 public class SessionInfo

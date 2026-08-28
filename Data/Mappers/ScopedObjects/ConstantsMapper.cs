@@ -1,7 +1,7 @@
 using OLab.Api.Dto;
 using OLab.Api.Model;
-using OLab.Api.Utils;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +47,7 @@ public class ConstantsMapper : OLabMapper<SystemConstants, ConstantsDto>
 
     if ( uint.TryParse( elements.FirstOrDefault( x => x.Name == "map_id" ).Value, out uint id ) )
       phys.ImageableId = id;
-    phys.ImageableType = Utils.Constants.ScopeLevelMap;
+    phys.ImageableType = Constants.ScopeLevelMap;
 
     dynamic value = Conversions.Base64Decode( elements.FirstOrDefault( x => x.Name == "mime" ) );
     phys.Name = Conversions.Base64Decode( elements.FirstOrDefault( x => x.Name == "name" ) );

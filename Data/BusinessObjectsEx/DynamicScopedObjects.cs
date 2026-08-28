@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using OLab.Api.Model;
-using OLab.Api.Utils;
 using OLab.Api.WikiTag;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

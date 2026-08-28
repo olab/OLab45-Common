@@ -83,9 +83,9 @@ public partial class Importer : IImporter
     await _fileModule.CopyFolderToArchiveAsync(
       zipArchive,
       _fileModule.BuildPath(
-        Api.Utils.Constants.ScopeLevelMap,
+        Constants.ScopeLevelMap,
         dto.Map.Id ),
-      Api.Utils.Constants.ScopeLevelMap,
+      Constants.ScopeLevelMap,
       true,
       token );
 
@@ -95,10 +95,10 @@ public partial class Importer : IImporter
       await _fileModule.CopyFolderToArchiveAsync(
         zipArchive,
         _fileModule.BuildPath(
-          Api.Utils.Constants.ScopeLevelNode,
+          Constants.ScopeLevelNode,
           nodeDto.Id ),
         _fileModule.BuildPath(
-          Api.Utils.Constants.ScopeLevelNode,
+          Constants.ScopeLevelNode,
           nodeDto.Id ),
         true,
         token );
@@ -120,7 +120,7 @@ public partial class Importer : IImporter
         token );
 
     if ( map == null )
-      throw new OLabObjectNotFoundException( Api.Utils.Constants.ScopeLevelMap, mapId );
+      throw new OLabObjectNotFoundException( Constants.ScopeLevelMap, mapId );
 
     var dto = new MapsFullRelationsMapper(
 
@@ -134,7 +134,7 @@ public partial class Importer : IImporter
       GetLogger(), GetDbContext(), GetWikiProvider() );
 
     // apply map-level scoped objects to the map dto
-    await phys.LoadScopedObjectsFromDatabaseAsync( Api.Utils.Constants.ScopeLevelMap, mapId );
+    await phys.LoadScopedObjectsFromDatabaseAsync( Constants.ScopeLevelMap, mapId );
 
     var scopedObjectMapper = new ScopedObjectsMapper(
         GetLogger(),
@@ -156,7 +156,7 @@ public partial class Importer : IImporter
         GetWikiProvider() );
 
       // apply node-level scoped objects
-      await phys.LoadScopedObjectsFromDatabaseAsync( Api.Utils.Constants.ScopeLevelNode, nodeDto.Id.Value );
+      await phys.LoadScopedObjectsFromDatabaseAsync( Constants.ScopeLevelNode, nodeDto.Id.Value );
 
       GetLogger().LogInformation( $"  exporting node {nodeDto.Id} " );
 

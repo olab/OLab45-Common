@@ -1,7 +1,7 @@
 using Dawn;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using OLab.Api.Utils;
+using OLab.Common.Contracts;
 using OLab.Common.Interfaces;
 using System;
 

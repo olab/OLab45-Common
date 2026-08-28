@@ -1,7 +1,8 @@
-using OLab.Api.Common.Exceptions;
+using OLab.Common.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using System;
 using System.Threading.Tasks;
 
@@ -71,7 +72,7 @@ public partial class ResponseEndpoint : OLabEndpoint
         body.DynamicObjects.UpdateCounter( GetLogger(), counterDto );
 
         // if a server-level counter value has changed, write it to db
-        if ( dbCounter.ImageableType == Utils.Constants.ScopeLevelServer )
+        if ( dbCounter.ImageableType == Constants.ScopeLevelServer )
         {
           dbCounter.ValueFromNumber( counterDto.ValueAsNumber() );
           GetDbContext().SystemCounters.Update( dbCounter );
@@ -112,7 +113,7 @@ public partial class ResponseEndpoint : OLabEndpoint
     {
       // if counter is server-level, then take db value and copy
       // it to dynamic object version, which is passed back to caller
-      if ( dbCounter.ImageableType == Utils.Constants.ScopeLevelServer )
+      if ( dbCounter.ImageableType == Constants.ScopeLevelServer )
         dynamicCounter.Value = dbCounter.ValueAsString();
     }
 

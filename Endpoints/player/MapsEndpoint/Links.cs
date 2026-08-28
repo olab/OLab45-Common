@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using OLab.Access.Interfaces;
-using OLab.Api.Common.Exceptions;
+using OLab.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
+using OLab.Common.Utils;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -41,8 +42,8 @@ public partial class MapsEndpoint : OLabEndpoint
     GetLogger().LogInformation( $"{auth.OLabUser.Id}: MapsEndpoint.PutMapNodeLinksAsync" );
 
     // test if user has access to map.
-    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Utils.Constants.ScopeLevelMap, mapId ) )
-      throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
+    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, Constants.ScopeLevelMap, mapId ) )
+      throw new OLabUnauthorizedException( Constants.ScopeLevelMap, mapId );
 
     try
     {
@@ -59,7 +60,7 @@ public partial class MapsEndpoint : OLabEndpoint
     {
       var existingMap = GetLinkSimple( GetDbContext(), linkId );
       if ( existingMap == null )
-        throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, mapId );
+        throw new OLabObjectNotFoundException( Constants.ScopeLevelMap, mapId );
     }
 
   }

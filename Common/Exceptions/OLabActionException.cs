@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 
-namespace OLab.Api.Common.Exceptions;
+namespace OLab.Common.Exceptions;
 
 public class OLabActionException : Exception
 {

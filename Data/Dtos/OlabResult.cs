@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using OLab.Api.Common;
+using OLab.Common.ApiResult;
 using System.Collections.Generic;
 
 namespace OLab.Api.Dto;

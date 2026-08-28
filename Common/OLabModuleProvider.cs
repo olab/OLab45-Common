@@ -1,13 +1,13 @@
 using Dawn;
-using OLab.Api.Utils;
 using OLab.Common.Attributes;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
-namespace OLab.Api.Common;
+namespace OLab.Common;
 
 public class OLabModuleProvider<T> : IOLabModuleProvider<T> where T : class
 {

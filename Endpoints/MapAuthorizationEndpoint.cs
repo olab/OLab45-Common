@@ -1,11 +1,12 @@
 using NuGet.Packaging;
 using OLab.Access.Interfaces;
-using OLab.Api.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
+using OLab.Common.Exceptions;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using OLab.Data.Interface;
 using OLab.Data.ReaderWriters;
 using System.Collections.Generic;
@@ -55,15 +56,15 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     // test if user has access to parent object
     var accessResult = await auth.HasAccessAsync(
       IOLabAuthorization.AclBitMaskWrite,
-      Utils.Constants.ScopeLevelMap,
+      Constants.ScopeLevelMap,
       dto.MapId );
 
     if ( !accessResult )
-      throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, dto.MapId );
+      throw new OLabUnauthorizedException( Constants.ScopeLevelMap, dto.MapId );
 
     var mapPhys = await mapReader.GetSingleWithGroupRolesAsync( dto.MapId );
     if ( mapPhys == null )
-      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, dto.MapId );
+      throw new OLabObjectNotFoundException( Constants.ScopeLevelMap, dto.MapId );
 
     var mapGroupPhys = mapPhys.MapGrouproles.FirstOrDefault( x => x.Id == dto.Id );
     if ( mapGroupPhys != null )
@@ -98,7 +99,7 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     // test if user has access to parent object
     var accessResult = await auth.HasAccessAsync(
       IOLabAuthorization.AclBitMaskWrite,
-      Utils.Constants.ScopeLevelMap,
+      Constants.ScopeLevelMap,
       dto.MapId );
 
     if ( !accessResult )
@@ -106,7 +107,7 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
 
     var mapPhys = await mapReader.GetSingleWithGroupRolesAsync( dto.MapId );
     if ( mapPhys == null )
-      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, dto.MapId );
+      throw new OLabObjectNotFoundException( Constants.ScopeLevelMap, dto.MapId );
 
     if ( dto.GroupId.HasValue )
     {
@@ -156,18 +157,18 @@ public partial class MapAuthorizationEndpoint : OLabEndpoint
     // test if user has access to parent object
     var accessResult = await auth.HasAccessAsync(
       IOLabAuthorization.AclBitMaskWrite,
-      Utils.Constants.ScopeLevelMap,
+      Constants.ScopeLevelMap,
       mapId );
 
     if ( !accessResult )
-      throw new OLabUnauthorizedException( Utils.Constants.ScopeLevelMap, mapId );
+      throw new OLabUnauthorizedException( Constants.ScopeLevelMap, mapId );
 
     var readerWriter = MapsReaderWriter.Instance( GetLogger(), GetDbContext() );
     var mapPhys = await readerWriter.GetSingleWithGroupRolesAsync( mapId );
 
     // ensure map exists
     if ( mapPhys == null )
-      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, mapId );
+      throw new OLabObjectNotFoundException( Constants.ScopeLevelMap, mapId );
 
     mapPhys.MapGrouproles.Clear();
 

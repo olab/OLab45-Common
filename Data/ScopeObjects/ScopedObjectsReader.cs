@@ -5,6 +5,7 @@ using NuGet.Packaging;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
+using OLab.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -265,7 +266,7 @@ public partial class ScopedObjects
     string scopeLevel,
     uint id)
   {
-    if ( ScopeLevel == Api.Utils.Constants.ScopeLevelMap )
+    if ( ScopeLevel == Constants.ScopeLevelMap )
     {
       var items = new List<SystemCounterActions>();
       items.AddRange( await _dbContext.SystemCounterActions.Where( x =>

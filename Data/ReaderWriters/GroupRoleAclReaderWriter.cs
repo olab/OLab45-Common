@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using OLab.Data.Model;
 using System;
 using System.Collections.Generic;
@@ -82,7 +83,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     var groupRoleAclPhys = new GrouproleAcls
     {
       ImageableId = 0,
-      ImageableType = Api.Utils.Constants.ScopeLevelNode,
+      ImageableType = Constants.ScopeLevelNode,
       GroupId = groupId,
       RoleId = rolePhys.Id,
       Acl2 = 7
@@ -97,7 +98,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     groupRoleAclPhys = new GrouproleAcls
     {
       ImageableId = 0,
-      ImageableType = Api.Utils.Constants.ScopeLevelMap,
+      ImageableType = Constants.ScopeLevelMap,
       GroupId = groupId,
       RoleId = rolePhys.Id,
       Acl2 = 5
@@ -108,7 +109,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     groupRoleAclPhys = new GrouproleAcls
     {
       ImageableId = 0,
-      ImageableType = Api.Utils.Constants.ScopeLevelNode,
+      ImageableType = Constants.ScopeLevelNode,
       GroupId = groupId,
       RoleId = rolePhys.Id,
       Acl2 = 5
@@ -138,7 +139,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     groupRoleAclPhys = new GrouproleAcls
     {
       ImageableId = 0,
-      ImageableType = Api.Utils.Constants.ScopeLevelMap,
+      ImageableType = Constants.ScopeLevelMap,
       GroupId = groupId,
       RoleId = rolePhys.Id,
       Acl2 = 7
@@ -153,7 +154,7 @@ public class GroupRoleAclReaderWriter : ReaderWriter
     groupRoleAclPhys = new GrouproleAcls
     {
       ImageableId = 0,
-      ImageableType = Api.Utils.Constants.ScopeLevelMap,
+      ImageableType = Constants.ScopeLevelMap,
       GroupId = groupId,
       RoleId = rolePhys.Id,
       Acl2 = 7

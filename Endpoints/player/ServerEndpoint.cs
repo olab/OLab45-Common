@@ -4,6 +4,7 @@ using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.Contracts;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using OLab.Data;
 using OLab.Data.Interface;
 using System;
@@ -112,7 +113,7 @@ public partial class ServerEndpoint : OLabEndpoint
       GetDbContext(),
       GetWikiProvider(), _fileStorageModule );
 
-    await phys.LoadScopedObjectsFromDatabaseAsync( Utils.Constants.ScopeLevelServer, 1 );
+    await phys.LoadScopedObjectsFromDatabaseAsync( Constants.ScopeLevelServer, 1 );
 
     var builder = new ScopedObjectsMapper(
       GetLogger(),
@@ -166,7 +167,7 @@ public partial class ServerEndpoint : OLabEndpoint
       GetDbContext(),
       GetWikiProvider(), _fileStorageModule );
 
-    await phys.LoadDynamicObjectsFromDatabaseAsync( Utils.Constants.ScopeLevelServer, 1 );
+    await phys.LoadDynamicObjectsFromDatabaseAsync( Constants.ScopeLevelServer, 1 );
 
     var builder = new ScopedObjectsMapper(
       GetLogger(),

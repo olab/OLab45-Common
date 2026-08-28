@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Common.Interfaces;
+using OLab.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +48,7 @@ public class CounterActionsMapper : OLabMapper<SystemCounterActions, CounterActi
     phys.OperationType = "open";
 
     phys.ImageableId = Convert.ToUInt32( elements.FirstOrDefault( x => x.Name == "node_id" ).Value );
-    phys.ImageableType = Utils.Constants.ScopeLevelNode;
+    phys.ImageableType = Constants.ScopeLevelNode;
     phys.CounterId = Convert.ToUInt32( elements.FirstOrDefault( x => x.Name == "counter_id" ).Value );
     phys.Expression = elements.FirstOrDefault( x => x.Name == "function" ).Value;
     phys.Visible = Convert.ToInt32( elements.FirstOrDefault( x => x.Name == "display" ).Value );

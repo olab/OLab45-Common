@@ -2,8 +2,8 @@ using Humanizer;
 using OLab.Access.Interfaces;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Model;
-using OLab.Api.Utils;
 using OLab.Common.Contracts;
+using OLab.Common.Utils;
 using OLab.Data;
 using System;
 using System.Collections.Generic;
@@ -25,8 +25,8 @@ public partial class MapsEndpoint : OLabEndpoint
     GetLogger().LogInformation( $"{auth.OLabUser.Id}: MapsEndpoint.GetScopedObjectsRawAsync" );
 
     // test if user has access to map.
-    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, id ) )
-      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, id );
+    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Constants.ScopeLevelMap, id ) )
+      throw new OLabObjectNotFoundException( Constants.ScopeLevelMap, id );
 
     var result = await GetScopedObjectsAsync( id, false );
     return result;
@@ -43,8 +43,8 @@ public partial class MapsEndpoint : OLabEndpoint
     Dictionary<string, IEnumerable<string>> headers)
   {
     // test if user has access to map.
-    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Utils.Constants.ScopeLevelMap, id ) )
-      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, id );
+    if ( !await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskRead, Constants.ScopeLevelMap, id ) )
+      throw new OLabObjectNotFoundException( Constants.ScopeLevelMap, id );
 
     var dto = await GetScopedObjectsAsync( id, true );
 
@@ -63,7 +63,7 @@ public partial class MapsEndpoint : OLabEndpoint
   {
     var map = GetSimple( GetDbContext(), id );
     if ( map == null )
-      throw new OLabObjectNotFoundException( Utils.Constants.ScopeLevelMap, id );
+      throw new OLabObjectNotFoundException( Constants.ScopeLevelMap, id );
 
     var phys = new ScopedObjects(
       GetLogger(),
@@ -77,9 +77,9 @@ public partial class MapsEndpoint : OLabEndpoint
     phys.ConstantsPhys.Add( new SystemConstants
     {
       Id = 0,
-      Name = Utils.Constants.ReservedConstantMapId,
+      Name = Constants.ReservedConstantMapId,
       ImageableId = map.Id,
-      ImageableType = Utils.Constants.ScopeLevelMap,
+      ImageableType = Constants.ScopeLevelMap,
       IsSystem = 1,
       Value = Encoding.ASCII.GetBytes( map.Id.ToString() )
     } );
@@ -87,9 +87,9 @@ public partial class MapsEndpoint : OLabEndpoint
     phys.ConstantsPhys.Add( new SystemConstants
     {
       Id = 0,
-      Name = Utils.Constants.ReservedConstantMapName,
+      Name = Constants.ReservedConstantMapName,
       ImageableId = map.Id,
-      ImageableType = Utils.Constants.ScopeLevelMap,
+      ImageableType = Constants.ScopeLevelMap,
       IsSystem = 1,
       Value = Encoding.UTF8.GetBytes( map.Name )
     } );

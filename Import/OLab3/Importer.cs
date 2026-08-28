@@ -1,8 +1,8 @@
 using OLab.Access.Interfaces;
 using OLab.Api.Dto;
 using OLab.Api.Model;
-using OLab.Api.Utils;
 using OLab.Api.WikiTag;
+using OLab.Common.Contracts;
 using OLab.Common.Interfaces;
 using OLab.Common.Utils;
 using OLab.Data.Interface;

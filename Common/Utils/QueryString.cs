@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 
-namespace OLab.Api.Utils;
+namespace OLab.Common.Utils;
 
 public class QueryStringUtils
 {
@@ -11,9 +11,7 @@ public class QueryStringUtils
   public QueryStringUtils(HttpRequest req)
   {
     foreach ( var item in req.Query )
-    {
       _values.Add( item.Key, item.Value );
-    }
   }
 
   public string Get(string key)
