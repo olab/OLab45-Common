@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using OLab.Access.Interfaces;
-using OLab.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
+using OLab.Common.Exceptions;
 using OLab.Common.Utils;
 using System.Linq;
 using System.Threading.Tasks;

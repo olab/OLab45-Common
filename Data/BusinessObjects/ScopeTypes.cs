@@ -1,26 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
-[Table("scope_types")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[Table( "scope_types" )]
+[MySqlCharSet( "utf8mb3" )]
+[MySqlCollation( "utf8mb3_general_ci" )]
 public partial class ScopeTypes
 {
-    [Key]
-    [Column("id")]
-    public uint Id { get; set; }
+  [Key]
+  [Column( "id" )]
+  public uint Id { get; set; }
 
-    [Required]
-    [Column("name")]
-    [StringLength(45)]
-    public string Name { get; set; }
+  [Required]
+  [Column( "name" )]
+  [StringLength( 45 )]
+  public string Name { get; set; }
 
-    [Column("description")]
-    [StringLength(45)]
-    public string Description { get; set; }
+  [Column( "description" )]
+  [StringLength( 45 )]
+  public string Description { get; set; }
 }

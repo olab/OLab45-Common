@@ -1,13 +1,10 @@
-using Humanizer;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 using OLab.Access;
 using OLab.Access.Interfaces;
-using OLab.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
+using OLab.Common.Exceptions;
 using OLab.Common.Utils;
 using System;
 using System.Collections.Generic;
@@ -266,7 +263,7 @@ public partial class MapsEndpoint : OLabEndpoint
     IOLabAuthorization auth,
     uint mapId,
     uint nodeId,
-    [FromBody] MapNodesFullDto dto
+    MapNodesFullDto dto
   )
   {
     // test if user has access to map.

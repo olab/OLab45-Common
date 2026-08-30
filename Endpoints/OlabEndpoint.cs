@@ -1,5 +1,4 @@
 using Dawn;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Access.Interfaces;
 using OLab.Api.Data.Exceptions;
@@ -94,7 +93,6 @@ public class OLabEndpoint
   /// Attach parent information to scoped object
   /// </summary>
   /// <param name="dto"></param>
-  [NonAction]
   protected void AttachParentObject(ScopedObjectDto dto)
   {
     if ( dto.ImageableType == Constants.ScopeLevelServer )
@@ -156,7 +154,6 @@ public class OLabEndpoint
   /// <param name="map">Parent map to query for</param>
   /// <param name="enableWikiTanslation">PErform Name translation</param>
   /// <returns>List of mapnode dto's</returns>
-  [NonAction]
   protected async Task<IList<MapNodesFullDto>> GetNodesAsync(Maps map, bool enableWikiTanslation = true)
   {
     var physList = await _nodesReaderWriter.GetByMapAsync( map.Id );
@@ -186,7 +183,6 @@ public class OLabEndpoint
   /// <param name="hideHidden">flag to hide hidden links</param>
   /// <param name="enableWikiTranslation">PErform Name translation</param>
   /// <returns>MapsNodesFullRelationsDto</returns>
-  [NonAction]
   protected async Task<MapsNodesFullRelationsDto> GetNodeAsync(
     uint mapId,
     uint nodeId,
@@ -225,7 +221,6 @@ public class OLabEndpoint
   /// </summary>
   /// <param name="nodeId">Node id</param>
   /// <returns></returns>
-  [NonAction]
   public async ValueTask<MapNodes> GetMapNodeAsync(uint nodeId)
   {
     var item = await _nodesReaderWriter.GetNodeAsync( nodeId );
@@ -243,7 +238,6 @@ public class OLabEndpoint
   /// </summary>
   /// <param name="id">id</param>
   /// <returns></returns>
-  [NonAction]
   protected async ValueTask<SystemQuestionResponses> GetQuestionResponseAsync(uint id)
   {
     var item = await GetDbContext().SystemQuestionResponses.FirstOrDefaultAsync( x => x.Id == id );
@@ -259,7 +253,6 @@ public class OLabEndpoint
   /// </summary>
   /// <param name="id">question id</param>
   /// <returns></returns>
-  [NonAction]
   protected async ValueTask<SystemConstants> GetConstantAsync(uint id)
   {
     var item = await GetDbContext().SystemConstants
@@ -276,7 +269,6 @@ public class OLabEndpoint
   /// </summary>
   /// <param name="id">file id</param>
   /// <returns></returns>
-  [NonAction]
   protected async ValueTask<SystemFiles> GetFileAsync(uint id)
   {
     var item = await GetDbContext().SystemFiles
@@ -293,7 +285,6 @@ public class OLabEndpoint
   /// </summary>
   /// <param name="id">question id</param>
   /// <returns></returns>
-  [NonAction]
   protected async ValueTask<SystemQuestions> GetQuestionSimpleAsync(uint id)
   {
     var item = await GetDbContext().SystemQuestions
@@ -310,7 +301,6 @@ public class OLabEndpoint
   /// </summary>
   /// <param name="id">question id</param>
   /// <returns></returns>
-  [NonAction]
   protected async ValueTask<SystemQuestions> GetQuestionAsync(uint id)
   {
     var item = await GetDbContext().SystemQuestions
@@ -328,7 +318,6 @@ public class OLabEndpoint
   /// </summary>
   /// <param name="id">counter id</param>
   /// <returns>Counter</returns>
-  [NonAction]
   protected async Task<SystemCounters> GetCounterAsync(uint id)
   {
     var phys = await GetDbContext().SystemCounters.SingleOrDefaultAsync( x => x.Id == id );

@@ -1,7 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OLab.Common.Contracts.TurktTalk.Contracts;
-using OLab.Common.Contracts.TurktTalk.Method;
 
 namespace OLab.Common.Contracts.TurktTalk.Method.Commands;
 

@@ -1,55 +1,54 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
-[Table("map_popups")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[Table( "map_popups" )]
+[MySqlCharSet( "utf8mb3" )]
+[MySqlCollation( "utf8mb3_general_ci" )]
 public partial class MapPopups
 {
-    [Key]
-    [Column("id")]
-    public uint Id { get; set; }
+  [Key]
+  [Column( "id" )]
+  public uint Id { get; set; }
 
-    [Column("map_id")]
-    public uint MapId { get; set; }
+  [Column( "map_id" )]
+  public uint MapId { get; set; }
 
-    [Required]
-    [Column("title")]
-    [StringLength(300)]
-    public string Title { get; set; }
+  [Required]
+  [Column( "title" )]
+  [StringLength( 300 )]
+  public string Title { get; set; }
 
-    [Required]
-    [Column("text", TypeName = "text")]
-    public string Text { get; set; }
+  [Required]
+  [Column( "text", TypeName = "text" )]
+  public string Text { get; set; }
 
-    [Column("position_type")]
-    public int PositionType { get; set; }
+  [Column( "position_type" )]
+  public int PositionType { get; set; }
 
-    [Column("position_id")]
-    public uint PositionId { get; set; }
+  [Column( "position_id" )]
+  public uint PositionId { get; set; }
 
-    [Column("time_before")]
-    public int TimeBefore { get; set; }
+  [Column( "time_before" )]
+  public int TimeBefore { get; set; }
 
-    [Column("time_length")]
-    public int TimeLength { get; set; }
+  [Column( "time_length" )]
+  public int TimeLength { get; set; }
 
-    [Column("is_enabled")]
-    public sbyte IsEnabled { get; set; }
+  [Column( "is_enabled" )]
+  public sbyte IsEnabled { get; set; }
 
-    [Column("title_hide")]
-    public int TitleHide { get; set; }
+  [Column( "title_hide" )]
+  public int TitleHide { get; set; }
 
-    [Required]
-    [Column("annotation")]
-    [StringLength(50)]
-    public string Annotation { get; set; }
+  [Required]
+  [Column( "annotation" )]
+  [StringLength( 50 )]
+  public string Annotation { get; set; }
 
-    [InverseProperty("Popup")]
-    public virtual ICollection<MapPopupsCounters> MapPopupsCounters { get; set; } = new List<MapPopupsCounters>();
+  [InverseProperty( "Popup" )]
+  public virtual ICollection<MapPopupsCounters> MapPopupsCounters { get; set; } = new List<MapPopupsCounters>();
 }

@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Access.Interfaces;
-using OLab.Common.Exceptions;
+using OLab.Api.Data.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
 using OLab.Api.ObjectMapper;
 using OLab.Common.ApiResult;
+using OLab.Common.Exceptions;
 using OLab.Common.Interfaces;
 using System;
 using System.Linq;
@@ -119,38 +119,30 @@ public partial class QuestionResponsesEndpoint : OLabEndpoint
   /// </summary>
   /// <param name="id"></param>
   /// <returns></returns>
-  public async Task<IActionResult> DeleteAsync(
+  public async Task DeleteAsync(
     IOLabAuthorization auth,
     uint id)
   {
     GetLogger().LogInformation( $"QuestionResponsesController.DeleteAsync(uint id={id})" );
 
     if ( !Exists( id ) )
-      return OLabNotFoundResult<uint>.Result( id );
+      throw new OLabObjectNotFoundException( "QuestionResponse", id );
 
-    try
-    {
-      var physResponse = await GetQuestionResponseAsync( id );
-      var physQuestion = await GetQuestionAsync( physResponse.QuestionId.Value );
-      var questionBuilder = new QuestionsFullMapper(
-        GetLogger(),
-        GetDbContext(),
-        GetWikiProvider() );
-      var dtoQuestion = questionBuilder.PhysicalToDto( physQuestion );
+    var physResponse = await GetQuestionResponseAsync( id );
+    var physQuestion = await GetQuestionAsync( physResponse.QuestionId.Value );
+    var questionBuilder = new QuestionsFullMapper(
+      GetLogger(),
+      GetDbContext(),
+      GetWikiProvider() );
+    var dtoQuestion = questionBuilder.PhysicalToDto( physQuestion );
 
-      // test if user has access to objectdtoQuestion
-      var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dtoQuestion );
-      if ( !accessResult )
-        return OLabUnauthorizedResult.Result();
+    // test if user has access to objectdtoQuestion
+    var accessResult = await auth.HasAccessAsync( IOLabAuthorization.AclBitMaskWrite, dtoQuestion );
+    if ( !accessResult )
+      throw new OLabUnauthorizedException();
 
-      GetDbContext().SystemQuestionResponses.Remove( physResponse );
-      await GetDbContext().SaveChangesAsync();
-      return null;
-    }
-    catch ( Exception ex )
-    {
-      return OLabServerErrorResult.Result( ex.Message );
-    }
+    GetDbContext().SystemQuestionResponses.Remove( physResponse );
+    await GetDbContext().SaveChangesAsync();
 
   }
 

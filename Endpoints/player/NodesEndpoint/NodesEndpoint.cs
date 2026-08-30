@@ -1,10 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OLab.Access.Interfaces;
-using OLab.Common.Exceptions;
 using OLab.Api.Data.Exceptions;
 using OLab.Api.Dto;
 using OLab.Api.Model;
+using OLab.Common.Exceptions;
 using OLab.Common.Interfaces;
 using OLab.Common.Utils;
 using OLab.Data.Interface;
@@ -145,7 +144,7 @@ public partial class NodesEndpoint : OLabEndpoint
   public async Task<MapNodesPostResponseDto> PostNodeAsync(
     IOLabAuthorization auth,
     uint mapId,
-    [FromBody] MapNodesPostDataDto data
+    MapNodesPostDataDto data
   )
   {
     GetLogger().LogInformation( $"{auth.OLabUser.Id}: NodesEndpoint.PostNodeAsync" );

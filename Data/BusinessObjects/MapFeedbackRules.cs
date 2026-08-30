@@ -1,40 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace OLab.Api.Model;
 
-[Table("map_feedback_rules")]
-[Index("MapId", Name = "map_id")]
-[MySqlCharSet("utf8mb3")]
-[MySqlCollation("utf8mb3_general_ci")]
+[Table( "map_feedback_rules" )]
+[Index( "MapId", Name = "map_id" )]
+[MySqlCharSet( "utf8mb3" )]
+[MySqlCollation( "utf8mb3_general_ci" )]
 public partial class MapFeedbackRules
 {
-    [Key]
-    [Column("id")]
-    public uint Id { get; set; }
+  [Key]
+  [Column( "id" )]
+  public uint Id { get; set; }
 
-    [Column("map_id")]
-    public uint MapId { get; set; }
+  [Column( "map_id" )]
+  public uint MapId { get; set; }
 
-    [Column("rule_type_id")]
-    public uint RuleTypeId { get; set; }
+  [Column( "rule_type_id" )]
+  public uint RuleTypeId { get; set; }
 
-    [Column("value")]
-    public int? Value { get; set; }
+  [Column( "value" )]
+  public int? Value { get; set; }
 
-    [Column("operator_id")]
-    public uint? OperatorId { get; set; }
+  [Column( "operator_id" )]
+  public uint? OperatorId { get; set; }
 
-    [Column("message", TypeName = "text")]
-    public string Message { get; set; }
+  [Column( "message", TypeName = "text" )]
+  public string Message { get; set; }
 
-    [Column("counter_id")]
-    public uint? CounterId { get; set; }
+  [Column( "counter_id" )]
+  public uint? CounterId { get; set; }
 
-    [ForeignKey("MapId")]
-    [InverseProperty("MapFeedbackRules")]
-    public virtual Maps Map { get; set; }
+  [ForeignKey( "MapId" )]
+  [InverseProperty( "MapFeedbackRules" )]
+  public virtual Maps Map { get; set; }
 }
